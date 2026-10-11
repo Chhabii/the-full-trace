@@ -1,0 +1,3302 @@
+{
+  "meta": {
+    "script": "sim/weights_kv_math.py",
+    "generated_at": "2026-10-09T06:46:40+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T06:45:24+00:00",
+      "sha256": "36e36e01982d"
+    },
+    "constants_used": {
+      "extra.sims_s1.h_teach_gpus_per_node": 8,
+      "extra.sims_s1.mimo_v2_6_pro_global_layers": 10,
+      "extra.sims_s1.mimo_v2_6_pro_model_id": "XiaomiMiMo/MiMo-V2.6-Pro-RL",
+      "extra.sims_s1.mimo_v2_6_pro_num_hidden_layers": 70,
+      "extra.sims_s1.mimo_v2_6_pro_num_key_value_heads": 8,
+      "extra.sims_s1.mimo_v2_6_pro_qk_head_dim": 192,
+      "extra.sims_s1.mimo_v2_6_pro_sliding_window": 128,
+      "extra.sims_s1.mimo_v2_6_pro_swa_layers": 60,
+      "extra.sims_s1.mimo_v2_6_pro_v_head_dim": 128,
+      "hardware.H-frontier.gb300_gpu_hbm": 288,
+      "hardware.H-teach.h100_sxm_hbm_capacity": 80,
+      "hardware.formats.mxfp4_block_size": 32,
+      "hardware.formats.nvfp4_bits_per_value": 4.5,
+      "hardware.formats.nvfp4_block_size": 16,
+      "hypothetical.serving_assumptions.concurrent_sequences_example": 1000,
+      "hypothetical.serving_assumptions.non_kv_overhead_per_gpu_gib": 4.0,
+      "models.M-dense.checkpoint_bytes_one_copy": 133600000000.0,
+      "models.M-dense.flops_per_token_matmul": 246800000000.0,
+      "models.M-dense.head_dim": 128,
+      "models.M-dense.hidden_size": 12288,
+      "models.M-dense.intermediate_size": 28672,
+      "models.M-dense.kv_bytes_per_token_bf16": 360448,
+      "models.M-dense.kv_bytes_per_token_fp8": 180224,
+      "models.M-dense.max_position_embeddings": 262144,
+      "models.M-dense.model_id": "mistralai/Mistral-Medium-3.5-128B",
+      "models.M-dense.num_attention_heads": 96,
+      "models.M-dense.num_hidden_layers": 88,
+      "models.M-dense.num_key_value_heads": 8,
+      "models.M-dense.text_params": 125025988608,
+      "models.M-dense.tie_word_embeddings": false,
+      "models.M-dense.torch_dtype": "bfloat16",
+      "models.M-dense.total_params": 127704210176,
+      "models.M-dense.vision_params": 2678221568,
+      "models.M-dense.vllm_recipe": {
+        "recommended_hw": "8x H200 (alt 4x B200, 2-8x MI300X)",
+        "tp": 8,
+        "eagle_num_speculative_tokens": 3,
+        "mi300x_tp8_1k_in_1k_out_conc32": {
+          "output_tok_s": 915,
+          "mean_ttft_ms": 2522,
+          "mean_tpot_ms": 26.1
+        },
+        "mi300x_tp1": {
+          "output_tok_s": 438,
+          "mean_ttft_ms": 5719,
+          "mean_tpot_ms": 55.2
+        }
+      },
+      "models.M-dense.vocab_size": 131072,
+      "models.M-dense.weight_quantization": "FP8 E4M3 per-tensor (static activation scale); vision tower, projector, lm_head unquantized",
+      "models.M-frontier.active_params": 104189614848,
+      "models.M-frontier.dynamo_vllm_gb300_disagg_flags": {
+        "prefill": "--tensor-parallel-size 8 --block-size 768 --max-num-seqs 16 --max-num-batched-tokens 16384 --kv-cache-dtype fp8 --kv-transfer-config NixlConnector kv_producer --speculative-config dspark 7",
+        "decode": "--tensor-parallel-size 8 --block-size 1536 --max-num-seqs 128 --max-num-batched-tokens 2048 --kv-cache-dtype fp8 --kv-transfer-config NixlConnector kv_consumer"
+      },
+      "models.M-frontier.kda_conv_state_bytes_per_seq": 15261696,
+      "models.M-frontier.kda_conv_state_shape_per_layer": [
+        36864,
+        3
+      ],
+      "models.M-frontier.kda_fixed_state_bytes_per_seq": 449372160,
+      "models.M-frontier.kda_head_k_dim": 128,
+      "models.M-frontier.kda_head_v_dim": 128,
+      "models.M-frontier.kda_num_heads": 96,
+      "models.M-frontier.kda_recurrent_state_bytes_per_layer": 6291456,
+      "models.M-frontier.kda_recurrent_state_bytes_per_seq": 434110464,
+      "models.M-frontier.kda_recurrent_state_dtype": "float32",
+      "models.M-frontier.kda_recurrent_state_shape_per_layer": [
+        96,
+        128,
+        128
+      ],
+      "models.M-frontier.kda_short_conv_kernel": 4,
+      "models.M-frontier.kv_lora_rank": 512,
+      "models.M-frontier.max_position_embeddings": 1048576,
+      "models.M-frontier.mla_kv_bytes_per_token_bf16": 27648,
+      "models.M-frontier.mla_kv_bytes_per_token_fp8": 13824,
+      "models.M-frontier.mla_kv_bytes_per_token_fp8_ds_mla": 15744,
+      "models.M-frontier.mla_kv_elements_per_token_per_layer": 576,
+      "models.M-frontier.mla_kv_replicated_across_tp": true,
+      "models.M-frontier.model_id": "moonshotai/Kimi-K3",
+      "models.M-frontier.moonshot_physical_block_tokens": "1024-6144",
+      "models.M-frontier.non_expert_bytes": 114404258816,
+      "models.M-frontier.num_attention_heads": 96,
+      "models.M-frontier.num_hidden_layers": 93,
+      "models.M-frontier.num_kda_layers": 69,
+      "models.M-frontier.num_mla_layers": 24,
+      "models.M-frontier.per_request_bytes_bf16_mla": {
+        "2048": 505995264,
+        "8192": 675864576,
+        "32768": 1355341824,
+        "131072": 4073250816,
+        "1048576": 29440401408
+      },
+      "models.M-frontier.per_request_bytes_fp8_mla": {
+        "2048": 477683712,
+        "8192": 562618368,
+        "32768": 902356992,
+        "131072": 2261311488,
+        "1048576": 14944886784
+      },
+      "models.M-frontier.qk_nope_head_dim": 128,
+      "models.M-frontier.qk_rope_head_dim": 64,
+      "models.M-frontier.routed_expert_bytes": 1446456066048,
+      "models.M-frontier.torch_dtype": "bfloat16",
+      "models.M-frontier.trtllm_per_rank_weights_gb": {
+        "DEP16": 210,
+        "TEP8": 213,
+        "TEP16": 115
+      },
+      "models.M-frontier.v_head_dim": 128,
+      "models.examples.glm_5_3.indexer_full_layers": [
+        0,
+        1,
+        2,
+        6,
+        10,
+        14,
+        18,
+        22,
+        26,
+        30,
+        34,
+        38,
+        42,
+        46,
+        50,
+        54,
+        58,
+        62,
+        66,
+        70,
+        74
+      ],
+      "models.examples.glm_5_3.indexer_k_bytes_per_token": 2772,
+      "models.examples.glm_5_3.indexer_k_bytes_per_token_per_layer": 132,
+      "models.examples.glm_5_3.kv_bytes_per_token_bf16_latent": 89856,
+      "models.examples.glm_5_3.kv_bytes_per_token_flashmla_fp8": 51168,
+      "models.examples.glm_5_3.kv_bytes_per_token_layer_flashmla_fp8": 656,
+      "models.examples.glm_5_3.kv_lora_rank": 512,
+      "models.examples.glm_5_3.num_hidden_layers": 78,
+      "models.examples.glm_5_3.qk_rope_head_dim": 64,
+      "software.vllm.block_size_flashmla_tokens": 64,
+      "software.vllm.block_size_tokens": 16,
+      "software.vllm.gpu_memory_utilization": 0.92,
+      "software.vllm.max_num_seqs_h100_b200": 1024
+    }
+  },
+  "conventions": {
+    "k": "1k tokens = 1,024 tokens in context lengths (2k = 2,048 ... 128k = 131,072); 'per 1,000 tokens' is stated where decimal is meant.",
+    "sizes": "value in B; MB_1e6 / GB_1e9 are decimal, MiB_2pow20 / GiB_2pow30 are binary.",
+    "classes": "Model and hardware inputs are class A (constants.json). Leaves marked HYPOTHETICAL use hypothetical.* or extra.sims_s1 values with hypothetical=true (class C).",
+    "serves": [
+      "R-XIII.1",
+      "R-XXII.1",
+      "R-XXII.3"
+    ]
+  },
+  "m_dense": {
+    "model": "mistralai/Mistral-Medium-3.5-128B",
+    "config": {
+      "num_hidden_layers": 88,
+      "hidden_size": 12288,
+      "num_attention_heads": 96,
+      "num_key_value_heads": 8,
+      "head_dim": 128,
+      "intermediate_size": 28672,
+      "vocab_size": 131072,
+      "max_position_embeddings": 262144,
+      "tp": 8
+    },
+    "kv_bytes_per_token": {
+      "bf16": {
+        "formula": "2 × L × H_kv × d_head × bytes_per_element",
+        "terms": {
+          "L": {
+            "value": 88,
+            "unit": "layers",
+            "from": "models.M-dense.num_hidden_layers"
+          },
+          "H_kv": {
+            "value": 8,
+            "unit": "heads",
+            "from": "models.M-dense.num_key_value_heads"
+          },
+          "d_head": {
+            "value": 128,
+            "unit": "dims",
+            "from": "models.M-dense.head_dim"
+          },
+          "bytes_per_element": {
+            "value": 2,
+            "unit": "B",
+            "from": "bfloat16 format definition"
+          }
+        },
+        "value": 360448,
+        "unit": "B/token",
+        "arithmetic": "2 × 88 × 8 × 128 × 2 = 360448",
+        "KiB_per_token": 352,
+        "constant": 360448,
+        "matches_constant": true
+      },
+      "fp8": {
+        "formula": "2 × L × H_kv × d_head × bytes_per_element",
+        "terms": {
+          "L": {
+            "value": 88,
+            "unit": "layers",
+            "from": "models.M-dense.num_hidden_layers"
+          },
+          "H_kv": {
+            "value": 8,
+            "unit": "heads",
+            "from": "models.M-dense.num_key_value_heads"
+          },
+          "d_head": {
+            "value": 128,
+            "unit": "dims",
+            "from": "models.M-dense.head_dim"
+          },
+          "bytes_per_element": {
+            "value": 1,
+            "unit": "B",
+            "from": "fp8 format definition"
+          }
+        },
+        "value": 180224,
+        "unit": "B/token",
+        "arithmetic": "2 × 88 × 8 × 128 × 1 = 180224",
+        "KiB_per_token": 176,
+        "constant": 180224,
+        "matches_constant": true
+      }
+    },
+    "kv_per_1k_tokens": {
+      "bf16": {
+        "per_1000_tokens": {
+          "formula": "1,000 × KV bytes/token",
+          "value": 360448000,
+          "unit": "B",
+          "MB_1e6": 360.448,
+          "GB_1e9": 0.360448,
+          "MiB_2pow20": 343.75,
+          "GiB_2pow30": 0.3356933594
+        },
+        "per_1024_tokens": {
+          "formula": "1,024 × KV bytes/token",
+          "value": 369098752,
+          "unit": "B",
+          "MB_1e6": 369.098752,
+          "GB_1e9": 0.369098752,
+          "MiB_2pow20": 352,
+          "GiB_2pow30": 0.34375
+        }
+      },
+      "fp8": {
+        "per_1000_tokens": {
+          "formula": "1,000 × KV bytes/token",
+          "value": 180224000,
+          "unit": "B",
+          "MB_1e6": 180.224,
+          "GB_1e9": 0.180224,
+          "MiB_2pow20": 171.875,
+          "GiB_2pow30": 0.1678466797
+        },
+        "per_1024_tokens": {
+          "formula": "1,024 × KV bytes/token",
+          "value": 184549376,
+          "unit": "B",
+          "MB_1e6": 184.549376,
+          "GB_1e9": 0.184549376,
+          "MiB_2pow20": 176,
+          "GiB_2pow30": 0.171875
+        }
+      }
+    },
+    "kv_per_context": {
+      "bf16": {
+        "8192": {
+          "formula": "8,192 tokens × 360,448 B/token",
+          "value": 2952790016,
+          "unit": "B",
+          "MB_1e6": 2952.790016,
+          "GB_1e9": 2.952790016,
+          "MiB_2pow20": 2816,
+          "GiB_2pow30": 2.75
+        },
+        "32768": {
+          "formula": "32,768 tokens × 360,448 B/token",
+          "value": 11811160064,
+          "unit": "B",
+          "MB_1e6": 11811.16006,
+          "GB_1e9": 11.81116006,
+          "MiB_2pow20": 11264,
+          "GiB_2pow30": 11
+        },
+        "131072": {
+          "formula": "131,072 tokens × 360,448 B/token",
+          "value": 47244640256,
+          "unit": "B",
+          "MB_1e6": 47244.64026,
+          "GB_1e9": 47.24464026,
+          "MiB_2pow20": 45056,
+          "GiB_2pow30": 44
+        },
+        "262144": {
+          "formula": "262,144 tokens × 360,448 B/token",
+          "value": 94489280512,
+          "unit": "B",
+          "MB_1e6": 94489.28051,
+          "GB_1e9": 94.48928051,
+          "MiB_2pow20": 90112,
+          "GiB_2pow30": 88
+        }
+      },
+      "fp8": {
+        "8192": {
+          "formula": "8,192 tokens × 180,224 B/token",
+          "value": 1476395008,
+          "unit": "B",
+          "MB_1e6": 1476.395008,
+          "GB_1e9": 1.476395008,
+          "MiB_2pow20": 1408,
+          "GiB_2pow30": 1.375
+        },
+        "32768": {
+          "formula": "32,768 tokens × 180,224 B/token",
+          "value": 5905580032,
+          "unit": "B",
+          "MB_1e6": 5905.580032,
+          "GB_1e9": 5.905580032,
+          "MiB_2pow20": 5632,
+          "GiB_2pow30": 5.5
+        },
+        "131072": {
+          "formula": "131,072 tokens × 180,224 B/token",
+          "value": 23622320128,
+          "unit": "B",
+          "MB_1e6": 23622.32013,
+          "GB_1e9": 23.62232013,
+          "MiB_2pow20": 22528,
+          "GiB_2pow30": 22
+        },
+        "262144": {
+          "formula": "262,144 tokens × 180,224 B/token",
+          "value": 47244640256,
+          "unit": "B",
+          "MB_1e6": 47244.64026,
+          "GB_1e9": 47.24464026,
+          "MiB_2pow20": 45056,
+          "GiB_2pow30": 44
+        }
+      }
+    },
+    "tp_sharding": {
+      "tp": {
+        "value": 8,
+        "unit": "GPUs",
+        "from": "models.M-dense.vllm_recipe.tp"
+      },
+      "q_heads_per_gpu": {
+        "formula": "H / TP",
+        "value": 12,
+        "unit": "heads"
+      },
+      "kv_heads_per_gpu": {
+        "formula": "H_kv / TP",
+        "value": 1,
+        "unit": "heads"
+      },
+      "gqa_group_size": {
+        "formula": "H / H_kv",
+        "value": 12,
+        "unit": "query heads per KV head"
+      },
+      "kv_bytes_per_token_per_gpu": {
+        "bf16": {
+          "formula": "2 × L × (H_kv / TP) × d_head × bytes_per_element",
+          "value": 45056,
+          "unit": "B/token/GPU",
+          "arithmetic": "2 × 88 × (8 / 8) × 128 × 2 = 45056"
+        },
+        "fp8": {
+          "formula": "2 × L × (H_kv / TP) × d_head × bytes_per_element",
+          "value": 22528,
+          "unit": "B/token/GPU",
+          "arithmetic": "2 × 88 × (8 / 8) × 128 × 1 = 22528"
+        }
+      },
+      "note": "Each GPU holds the K and V of exactly 1 KV head (shared by its 12 query heads) for every token and every layer. Attention needs no cross-GPU traffic; the o_proj all-reduce combines the heads."
+    },
+    "params": {
+      "linear_tensors_per_layer": {
+        "q_proj": {
+          "shape_in_out": [
+            12288,
+            12288
+          ],
+          "params": 150994944
+        },
+        "k_proj": {
+          "shape_in_out": [
+            12288,
+            1024
+          ],
+          "params": 12582912
+        },
+        "v_proj": {
+          "shape_in_out": [
+            12288,
+            1024
+          ],
+          "params": 12582912
+        },
+        "o_proj": {
+          "shape_in_out": [
+            12288,
+            12288
+          ],
+          "params": 150994944
+        },
+        "gate_proj": {
+          "shape_in_out": [
+            12288,
+            28672
+          ],
+          "params": 352321536
+        },
+        "up_proj": {
+          "shape_in_out": [
+            12288,
+            28672
+          ],
+          "params": 352321536
+        },
+        "down_proj": {
+          "shape_in_out": [
+            28672,
+            12288
+          ],
+          "params": 352321536
+        }
+      },
+      "attention_per_layer": {
+        "formula": "d·(H·d_head) + 2·d·(H_kv·d_head) + (H·d_head)·d",
+        "value": 327155712,
+        "unit": "params"
+      },
+      "mlp_per_layer": {
+        "formula": "3 × d × d_ff (SwiGLU gate, up, down)",
+        "value": 1056964608,
+        "unit": "params"
+      },
+      "norms_per_layer": {
+        "formula": "2 × d",
+        "value": 24576,
+        "unit": "params"
+      },
+      "linear_all_layers": {
+        "formula": "L × (attention + MLP)",
+        "value": 121802588160,
+        "unit": "params"
+      },
+      "embedding": {
+        "formula": "vocab × d",
+        "value": 1610612736,
+        "unit": "params"
+      },
+      "lm_head": {
+        "formula": "vocab × d (untied: tie_word_embeddings false)",
+        "value": 1610612736,
+        "unit": "params"
+      },
+      "final_norm": {
+        "formula": "d",
+        "value": 12288,
+        "unit": "params"
+      },
+      "text_total": {
+        "formula": "linear + L × norms + embedding + lm_head + final norm",
+        "value": 125025988608,
+        "unit": "params",
+        "constant": 125025988608,
+        "matches_constant": true
+      },
+      "vision_params": {
+        "value": 2678221568,
+        "unit": "params",
+        "from": "models.M-dense.vision_params"
+      },
+      "total_params": {
+        "value": 127704210176,
+        "unit": "params",
+        "from": "models.M-dense.total_params"
+      },
+      "matmul_params": {
+        "formula": "linear_all_layers + lm_head",
+        "value": 123413200896,
+        "unit": "params",
+        "note": "Parameters that take part in a matrix multiply per token. The embedding is a table lookup and norms are elementwise, so they add no matmul FLOPs."
+      }
+    },
+    "flops_per_token_matmul": {
+      "formula": "2 × matmul_params",
+      "value": 246826401792,
+      "unit": "FLOP/token",
+      "constant": 246800000000,
+      "relative_difference_vs_constant": 0.0001069764668,
+      "note": "The constant is rounded to 4 significant digits."
+    },
+    "weights": {
+      "FP32": {
+        "formula": "text_params × bytes_per_param",
+        "terms": {
+          "text_params": {
+            "value": 125025988608,
+            "unit": "params",
+            "from": "models.M-dense.text_params"
+          },
+          "bytes_per_param": {
+            "value": 4,
+            "unit": "B/param",
+            "from": "4 B per parameter"
+          }
+        },
+        "value": 500103954432,
+        "unit": "B",
+        "MB_1e6": 500103.9544,
+        "GB_1e9": 500.1039544,
+        "MiB_2pow20": 476936.2969,
+        "GiB_2pow30": 465.7581024,
+        "bits_per_param": 32
+      },
+      "BF16": {
+        "formula": "text_params × bytes_per_param",
+        "terms": {
+          "text_params": {
+            "value": 125025988608,
+            "unit": "params",
+            "from": "models.M-dense.text_params"
+          },
+          "bytes_per_param": {
+            "value": 2,
+            "unit": "B/param",
+            "from": "2 B per parameter"
+          }
+        },
+        "value": 250051977216,
+        "unit": "B",
+        "MB_1e6": 250051.9772,
+        "GB_1e9": 250.0519772,
+        "MiB_2pow20": 238468.1484,
+        "GiB_2pow30": 232.8790512,
+        "bits_per_param": 16
+      },
+      "FP8": {
+        "formula": "text_params × bytes_per_param",
+        "terms": {
+          "text_params": {
+            "value": 125025988608,
+            "unit": "params",
+            "from": "models.M-dense.text_params"
+          },
+          "bytes_per_param": {
+            "value": 1,
+            "unit": "B/param",
+            "from": "1 B per parameter (E4M3; one FP32 scale per tensor, negligible)"
+          }
+        },
+        "value": 125025988608,
+        "unit": "B",
+        "MB_1e6": 125025.9886,
+        "GB_1e9": 125.0259886,
+        "MiB_2pow20": 119234.0742,
+        "GiB_2pow30": 116.4395256,
+        "bits_per_param": 8
+      },
+      "INT8": {
+        "formula": "text_params × bytes_per_param",
+        "terms": {
+          "text_params": {
+            "value": 125025988608,
+            "unit": "params",
+            "from": "models.M-dense.text_params"
+          },
+          "bytes_per_param": {
+            "value": 1,
+            "unit": "B/param",
+            "from": "1 B per parameter (scales negligible)"
+          }
+        },
+        "value": 125025988608,
+        "unit": "B",
+        "MB_1e6": 125025.9886,
+        "GB_1e9": 125.0259886,
+        "MiB_2pow20": 119234.0742,
+        "GiB_2pow30": 116.4395256,
+        "bits_per_param": 8
+      },
+      "INT4_no_scales": {
+        "formula": "text_params × bytes_per_param",
+        "terms": {
+          "text_params": {
+            "value": 125025988608,
+            "unit": "params",
+            "from": "models.M-dense.text_params"
+          },
+          "bytes_per_param": {
+            "value": 0.5,
+            "unit": "B/param",
+            "from": "4 bits = 0.5 B per parameter, scales not counted"
+          }
+        },
+        "value": 62512994304,
+        "unit": "B",
+        "MB_1e6": 62512.9943,
+        "GB_1e9": 62.5129943,
+        "MiB_2pow20": 59617.03711,
+        "GiB_2pow30": 58.2197628,
+        "bits_per_param": 4
+      },
+      "MXFP4": {
+        "formula": "text_params × bytes_per_param",
+        "terms": {
+          "text_params": {
+            "value": 125025988608,
+            "unit": "params",
+            "from": "models.M-dense.text_params"
+          },
+          "bytes_per_param": {
+            "value": 0.53125,
+            "unit": "B/param",
+            "from": "(block 32 × 0.5 B + 1 B E8M0 scale) / 32"
+          }
+        },
+        "value": 66420056448,
+        "unit": "B",
+        "MB_1e6": 66420.05645,
+        "GB_1e9": 66.42005645,
+        "MiB_2pow20": 63343.10193,
+        "GiB_2pow30": 61.85849798,
+        "bits_per_param": 4.25
+      },
+      "NVFP4": {
+        "formula": "text_params × bytes_per_param + 4 B × weight tensors",
+        "terms": {
+          "text_params": {
+            "value": 125025988608,
+            "unit": "params",
+            "from": "models.M-dense.text_params"
+          },
+          "bytes_per_param": {
+            "value": 0.5625,
+            "unit": "B/param",
+            "from": "(block 16 × 0.5 B + 1 B E4M3 scale) / 16, plus one FP32 scale per tensor"
+          }
+        },
+        "value": 70327121056,
+        "unit": "B",
+        "MB_1e6": 70327.12106,
+        "GB_1e9": 70.32712106,
+        "MiB_2pow20": 67069.1691,
+        "GiB_2pow30": 65.49723545,
+        "bits_per_param": 4.5,
+        "per_tensor_scale_bytes": {
+          "formula": "L × 7 linear tensors × 4 B",
+          "value": 2464,
+          "unit": "B",
+          "MB_1e6": 0.002464,
+          "GB_1e9": 2.464e-06,
+          "MiB_2pow20": 0.002349853516,
+          "GiB_2pow30": 2.294778824e-06,
+          "note": "Below display precision; shown for completeness."
+        },
+        "bits_per_value_constant": 4.5
+      },
+      "released_fp8_checkpoint": {
+        "formula": "decoder linears × 1 B (FP8) + (total_params − decoder linears) × 2 B (BF16: embedding, lm_head, norms, vision tower, projector)",
+        "value": 133605832192,
+        "unit": "B",
+        "MB_1e6": 133605.8322,
+        "GB_1e9": 133.6058322,
+        "MiB_2pow20": 127416.4507,
+        "GiB_2pow30": 124.4301276,
+        "constant": 133600000000,
+        "relative_difference_vs_constant": 4.365413174e-05,
+        "note": "FP8 E4M3 per-tensor (static activation scale); vision tower, projector, lm_head unquantized"
+      }
+    }
+  },
+  "m_frontier": {
+    "model": "moonshotai/Kimi-K3",
+    "kda_state": {
+      "recurrent_state_per_layer": {
+        "formula": "kda_num_heads × d_k × d_v × 4 B (float32)",
+        "value": 6291456,
+        "unit": "B",
+        "MB_1e6": 6.291456,
+        "GB_1e9": 0.006291456,
+        "MiB_2pow20": 6,
+        "GiB_2pow30": 0.005859375,
+        "arithmetic": "96 × 128 × 128 × 4 = 6,291,456",
+        "shape": [
+          96,
+          128,
+          128
+        ],
+        "shape_matches_constant": true,
+        "constant": 6291456,
+        "matches_constant": true
+      },
+      "conv_state_per_layer": {
+        "formula": "kda_num_heads × (2·d_k + d_v) channels × (kernel − 1) taps × 2 B (bfloat16)",
+        "value": 221184,
+        "unit": "B",
+        "MB_1e6": 0.221184,
+        "GB_1e9": 0.000221184,
+        "MiB_2pow20": 0.2109375,
+        "GiB_2pow30": 0.0002059936523,
+        "arithmetic": "96 × 384 × 3 × 2 = 221,184",
+        "shape": [
+          36864,
+          3
+        ],
+        "shape_matches_constant": true
+      },
+      "recurrent_state_all_kda_layers": {
+        "formula": "69 KDA layers × recurrent per layer",
+        "value": 434110464,
+        "unit": "B",
+        "MB_1e6": 434.110464,
+        "GB_1e9": 0.434110464,
+        "MiB_2pow20": 414,
+        "GiB_2pow30": 0.404296875,
+        "constant": 434110464,
+        "matches_constant": true
+      },
+      "conv_state_all_kda_layers": {
+        "formula": "69 KDA layers × conv per layer",
+        "value": 15261696,
+        "unit": "B",
+        "MB_1e6": 15.261696,
+        "GB_1e9": 0.015261696,
+        "MiB_2pow20": 14.5546875,
+        "GiB_2pow30": 0.01421356201,
+        "constant": 15261696,
+        "matches_constant": true
+      },
+      "fixed_state_per_sequence": {
+        "formula": "69 KDA layers × (recurrent + conv) per layer",
+        "value": 449372160,
+        "unit": "B",
+        "MB_1e6": 449.37216,
+        "GB_1e9": 0.44937216,
+        "MiB_2pow20": 428.5546875,
+        "GiB_2pow30": 0.418510437,
+        "arithmetic": "434,110,464 + 15,261,696 = 449,372,160",
+        "constant": 449372160,
+        "matches_constant": true,
+        "note": "Independent of context length. TP=1 totals."
+      },
+      "fixed_state_per_tp_rank": {
+        "formula": "fixed state / 8 (TEP8: KDA state is sharded by head across TP ranks)",
+        "value": 56171520,
+        "unit": "B",
+        "MB_1e6": 56.17152,
+        "GB_1e9": 0.05617152,
+        "MiB_2pow20": 53.56933594,
+        "GiB_2pow30": 0.05231380463
+      },
+      "fixed_state_with_bf16_recurrent": {
+        "formula": "recurrent in bfloat16 (selectable in vLLM) + conv",
+        "value": 232316928,
+        "unit": "B",
+        "MB_1e6": 232.316928,
+        "GB_1e9": 0.232316928,
+        "MiB_2pow20": 221.5546875,
+        "GiB_2pow30": 0.2163619995
+      },
+      "dtype_source": {
+        "recurrent": "float32",
+        "conv": "bfloat16"
+      }
+    },
+    "mla_kv_per_token": {
+      "elements_per_token_per_layer": {
+        "formula": "kv_lora_rank + qk_rope_head_dim",
+        "value": 576,
+        "unit": "elements",
+        "arithmetic": "512 + 64 = 576",
+        "constant": 576
+      },
+      "bf16": {
+        "formula": "(kv_lora_rank + qk_rope_head_dim) × num_mla_layers × 2 B",
+        "value": 27648,
+        "unit": "B/token",
+        "arithmetic": "576 × 24 × 2 = 27,648",
+        "constant": 27648,
+        "matches_constant": true
+      },
+      "fp8": {
+        "formula": "(kv_lora_rank + qk_rope_head_dim) × num_mla_layers × 1 B",
+        "value": 13824,
+        "unit": "B/token",
+        "constant": 13824,
+        "matches_constant": true
+      },
+      "fp8_ds_mla": {
+        "formula": "656 B per token per layer (FlashMLA 'FP8 with scale': 512 FP8 latent + 4 FP32 scales + 64 BF16 RoPE dims) × num_mla_layers",
+        "terms": {
+          "bytes_per_token_per_layer": {
+            "value": 656,
+            "unit": "B",
+            "from": "models.examples.glm_5_3.kv_bytes_per_token_layer_flashmla_fp8"
+          }
+        },
+        "value": 15744,
+        "unit": "B/token",
+        "constant": 15744,
+        "matches_constant": true
+      },
+      "replicated_across_tp": true,
+      "note": "MLA has one latent 'head', so tensor parallelism cannot split it: every TP rank stores the full latent KV. KDA state is split by head."
+    },
+    "per_request": {
+      "bf16_mla": {
+        "2048": {
+          "tokens": 2048,
+          "mla_kv": {
+            "formula": "2,048 × 27,648",
+            "value": 56623104,
+            "unit": "B",
+            "MB_1e6": 56.623104,
+            "GB_1e9": 0.056623104,
+            "MiB_2pow20": 54,
+            "GiB_2pow30": 0.052734375
+          },
+          "fixed_state": {
+            "value": 449372160,
+            "unit": "B",
+            "MB_1e6": 449.37216,
+            "GB_1e9": 0.44937216,
+            "MiB_2pow20": 428.5546875,
+            "GiB_2pow30": 0.418510437
+          },
+          "total": {
+            "formula": "fixed_state + T × MLA bytes/token",
+            "value": 505995264,
+            "unit": "B",
+            "MB_1e6": 505.995264,
+            "GB_1e9": 0.505995264,
+            "MiB_2pow20": 482.5546875,
+            "GiB_2pow30": 0.471244812,
+            "constant": 505995264,
+            "matches_constant": true
+          },
+          "fixed_state_share": {
+            "formula": "fixed / total",
+            "value": 0.888095585,
+            "unit": "fraction"
+          }
+        },
+        "8192": {
+          "tokens": 8192,
+          "mla_kv": {
+            "formula": "8,192 × 27,648",
+            "value": 226492416,
+            "unit": "B",
+            "MB_1e6": 226.492416,
+            "GB_1e9": 0.226492416,
+            "MiB_2pow20": 216,
+            "GiB_2pow30": 0.2109375
+          },
+          "fixed_state": {
+            "value": 449372160,
+            "unit": "B",
+            "MB_1e6": 449.37216,
+            "GB_1e9": 0.44937216,
+            "MiB_2pow20": 428.5546875,
+            "GiB_2pow30": 0.418510437
+          },
+          "total": {
+            "formula": "fixed_state + T × MLA bytes/token",
+            "value": 675864576,
+            "unit": "B",
+            "MB_1e6": 675.864576,
+            "GB_1e9": 0.675864576,
+            "MiB_2pow20": 644.5546875,
+            "GiB_2pow30": 0.629447937,
+            "constant": 675864576,
+            "matches_constant": true
+          },
+          "fixed_state_share": {
+            "formula": "fixed / total",
+            "value": 0.6648849133,
+            "unit": "fraction"
+          }
+        },
+        "32768": {
+          "tokens": 32768,
+          "mla_kv": {
+            "formula": "32,768 × 27,648",
+            "value": 905969664,
+            "unit": "B",
+            "MB_1e6": 905.969664,
+            "GB_1e9": 0.905969664,
+            "MiB_2pow20": 864,
+            "GiB_2pow30": 0.84375
+          },
+          "fixed_state": {
+            "value": 449372160,
+            "unit": "B",
+            "MB_1e6": 449.37216,
+            "GB_1e9": 0.44937216,
+            "MiB_2pow20": 428.5546875,
+            "GiB_2pow30": 0.418510437
+          },
+          "total": {
+            "formula": "fixed_state + T × MLA bytes/token",
+            "value": 1355341824,
+            "unit": "B",
+            "MB_1e6": 1355.341824,
+            "GB_1e9": 1.355341824,
+            "MiB_2pow20": 1292.554688,
+            "GiB_2pow30": 1.262260437,
+            "constant": 1355341824,
+            "matches_constant": true
+          },
+          "fixed_state_share": {
+            "formula": "fixed / total",
+            "value": 0.3315563292,
+            "unit": "fraction"
+          }
+        },
+        "131072": {
+          "tokens": 131072,
+          "mla_kv": {
+            "formula": "131,072 × 27,648",
+            "value": 3623878656,
+            "unit": "B",
+            "MB_1e6": 3623.878656,
+            "GB_1e9": 3.623878656,
+            "MiB_2pow20": 3456,
+            "GiB_2pow30": 3.375
+          },
+          "fixed_state": {
+            "value": 449372160,
+            "unit": "B",
+            "MB_1e6": 449.37216,
+            "GB_1e9": 0.44937216,
+            "MiB_2pow20": 428.5546875,
+            "GiB_2pow30": 0.418510437
+          },
+          "total": {
+            "formula": "fixed_state + T × MLA bytes/token",
+            "value": 4073250816,
+            "unit": "B",
+            "MB_1e6": 4073.250816,
+            "GB_1e9": 4.073250816,
+            "MiB_2pow20": 3884.554688,
+            "GiB_2pow30": 3.793510437,
+            "constant": 4073250816,
+            "matches_constant": true
+          },
+          "fixed_state_share": {
+            "formula": "fixed / total",
+            "value": 0.1103227325,
+            "unit": "fraction"
+          }
+        },
+        "1048576": {
+          "tokens": 1048576,
+          "mla_kv": {
+            "formula": "1,048,576 × 27,648",
+            "value": 28991029248,
+            "unit": "B",
+            "MB_1e6": 28991.02925,
+            "GB_1e9": 28.99102925,
+            "MiB_2pow20": 27648,
+            "GiB_2pow30": 27
+          },
+          "fixed_state": {
+            "value": 449372160,
+            "unit": "B",
+            "MB_1e6": 449.37216,
+            "GB_1e9": 0.44937216,
+            "MiB_2pow20": 428.5546875,
+            "GiB_2pow30": 0.418510437
+          },
+          "total": {
+            "formula": "fixed_state + T × MLA bytes/token",
+            "value": 29440401408,
+            "unit": "B",
+            "MB_1e6": 29440.40141,
+            "GB_1e9": 29.44040141,
+            "MiB_2pow20": 28076.55469,
+            "GiB_2pow30": 27.41851044,
+            "constant": 29440401408,
+            "matches_constant": true
+          },
+          "fixed_state_share": {
+            "formula": "fixed / total",
+            "value": 0.01526379188,
+            "unit": "fraction"
+          }
+        }
+      },
+      "fp8_mla": {
+        "2048": {
+          "tokens": 2048,
+          "mla_kv": {
+            "formula": "2,048 × 13,824",
+            "value": 28311552,
+            "unit": "B",
+            "MB_1e6": 28.311552,
+            "GB_1e9": 0.028311552,
+            "MiB_2pow20": 27,
+            "GiB_2pow30": 0.0263671875
+          },
+          "fixed_state": {
+            "value": 449372160,
+            "unit": "B",
+            "MB_1e6": 449.37216,
+            "GB_1e9": 0.44937216,
+            "MiB_2pow20": 428.5546875,
+            "GiB_2pow30": 0.418510437
+          },
+          "total": {
+            "formula": "fixed_state + T × MLA bytes/token",
+            "value": 477683712,
+            "unit": "B",
+            "MB_1e6": 477.683712,
+            "GB_1e9": 0.477683712,
+            "MiB_2pow20": 455.5546875,
+            "GiB_2pow30": 0.4448776245,
+            "constant": 477683712,
+            "matches_constant": true
+          },
+          "fixed_state_share": {
+            "formula": "fixed / total",
+            "value": 0.9407315944,
+            "unit": "fraction"
+          }
+        },
+        "8192": {
+          "tokens": 8192,
+          "mla_kv": {
+            "formula": "8,192 × 13,824",
+            "value": 113246208,
+            "unit": "B",
+            "MB_1e6": 113.246208,
+            "GB_1e9": 0.113246208,
+            "MiB_2pow20": 108,
+            "GiB_2pow30": 0.10546875
+          },
+          "fixed_state": {
+            "value": 449372160,
+            "unit": "B",
+            "MB_1e6": 449.37216,
+            "GB_1e9": 0.44937216,
+            "MiB_2pow20": 428.5546875,
+            "GiB_2pow30": 0.418510437
+          },
+          "total": {
+            "formula": "fixed_state + T × MLA bytes/token",
+            "value": 562618368,
+            "unit": "B",
+            "MB_1e6": 562.618368,
+            "GB_1e9": 0.562618368,
+            "MiB_2pow20": 536.5546875,
+            "GiB_2pow30": 0.523979187,
+            "constant": 562618368,
+            "matches_constant": true
+          },
+          "fixed_state_share": {
+            "formula": "fixed / total",
+            "value": 0.7987157646,
+            "unit": "fraction"
+          }
+        },
+        "32768": {
+          "tokens": 32768,
+          "mla_kv": {
+            "formula": "32,768 × 13,824",
+            "value": 452984832,
+            "unit": "B",
+            "MB_1e6": 452.984832,
+            "GB_1e9": 0.452984832,
+            "MiB_2pow20": 432,
+            "GiB_2pow30": 0.421875
+          },
+          "fixed_state": {
+            "value": 449372160,
+            "unit": "B",
+            "MB_1e6": 449.37216,
+            "GB_1e9": 0.44937216,
+            "MiB_2pow20": 428.5546875,
+            "GiB_2pow30": 0.418510437
+          },
+          "total": {
+            "formula": "fixed_state + T × MLA bytes/token",
+            "value": 902356992,
+            "unit": "B",
+            "MB_1e6": 902.356992,
+            "GB_1e9": 0.902356992,
+            "MiB_2pow20": 860.5546875,
+            "GiB_2pow30": 0.840385437,
+            "constant": 902356992,
+            "matches_constant": true
+          },
+          "fixed_state_share": {
+            "formula": "fixed / total",
+            "value": 0.4979982025,
+            "unit": "fraction"
+          }
+        },
+        "131072": {
+          "tokens": 131072,
+          "mla_kv": {
+            "formula": "131,072 × 13,824",
+            "value": 1811939328,
+            "unit": "B",
+            "MB_1e6": 1811.939328,
+            "GB_1e9": 1.811939328,
+            "MiB_2pow20": 1728,
+            "GiB_2pow30": 1.6875
+          },
+          "fixed_state": {
+            "value": 449372160,
+            "unit": "B",
+            "MB_1e6": 449.37216,
+            "GB_1e9": 0.44937216,
+            "MiB_2pow20": 428.5546875,
+            "GiB_2pow30": 0.418510437
+          },
+          "total": {
+            "formula": "fixed_state + T × MLA bytes/token",
+            "value": 2261311488,
+            "unit": "B",
+            "MB_1e6": 2261.311488,
+            "GB_1e9": 2.261311488,
+            "MiB_2pow20": 2156.554688,
+            "GiB_2pow30": 2.106010437,
+            "constant": 2261311488,
+            "matches_constant": true
+          },
+          "fixed_state_share": {
+            "formula": "fixed / total",
+            "value": 0.1987219197,
+            "unit": "fraction"
+          }
+        },
+        "1048576": {
+          "tokens": 1048576,
+          "mla_kv": {
+            "formula": "1,048,576 × 13,824",
+            "value": 14495514624,
+            "unit": "B",
+            "MB_1e6": 14495.51462,
+            "GB_1e9": 14.49551462,
+            "MiB_2pow20": 13824,
+            "GiB_2pow30": 13.5
+          },
+          "fixed_state": {
+            "value": 449372160,
+            "unit": "B",
+            "MB_1e6": 449.37216,
+            "GB_1e9": 0.44937216,
+            "MiB_2pow20": 428.5546875,
+            "GiB_2pow30": 0.418510437
+          },
+          "total": {
+            "formula": "fixed_state + T × MLA bytes/token",
+            "value": 14944886784,
+            "unit": "B",
+            "MB_1e6": 14944.88678,
+            "GB_1e9": 14.94488678,
+            "MiB_2pow20": 14252.55469,
+            "GiB_2pow30": 13.91851044,
+            "constant": 14944886784,
+            "matches_constant": true
+          },
+          "fixed_state_share": {
+            "formula": "fixed / total",
+            "value": 0.03006862257,
+            "unit": "fraction"
+          }
+        }
+      },
+      "fp8_ds_mla": {
+        "2048": {
+          "tokens": 2048,
+          "mla_kv": {
+            "formula": "2,048 × 15,744",
+            "value": 32243712,
+            "unit": "B",
+            "MB_1e6": 32.243712,
+            "GB_1e9": 0.032243712,
+            "MiB_2pow20": 30.75,
+            "GiB_2pow30": 0.03002929688
+          },
+          "fixed_state": {
+            "value": 449372160,
+            "unit": "B",
+            "MB_1e6": 449.37216,
+            "GB_1e9": 0.44937216,
+            "MiB_2pow20": 428.5546875,
+            "GiB_2pow30": 0.418510437
+          },
+          "total": {
+            "formula": "fixed_state + T × MLA bytes/token",
+            "value": 481615872,
+            "unit": "B",
+            "MB_1e6": 481.615872,
+            "GB_1e9": 0.481615872,
+            "MiB_2pow20": 459.3046875,
+            "GiB_2pow30": 0.4485397339
+          },
+          "fixed_state_share": {
+            "formula": "fixed / total",
+            "value": 0.9330509772,
+            "unit": "fraction"
+          }
+        },
+        "8192": {
+          "tokens": 8192,
+          "mla_kv": {
+            "formula": "8,192 × 15,744",
+            "value": 128974848,
+            "unit": "B",
+            "MB_1e6": 128.974848,
+            "GB_1e9": 0.128974848,
+            "MiB_2pow20": 123,
+            "GiB_2pow30": 0.1201171875
+          },
+          "fixed_state": {
+            "value": 449372160,
+            "unit": "B",
+            "MB_1e6": 449.37216,
+            "GB_1e9": 0.44937216,
+            "MiB_2pow20": 428.5546875,
+            "GiB_2pow30": 0.418510437
+          },
+          "total": {
+            "formula": "fixed_state + T × MLA bytes/token",
+            "value": 578347008,
+            "unit": "B",
+            "MB_1e6": 578.347008,
+            "GB_1e9": 0.578347008,
+            "MiB_2pow20": 551.5546875,
+            "GiB_2pow30": 0.5386276245
+          },
+          "fixed_state_share": {
+            "formula": "fixed / total",
+            "value": 0.7769940084,
+            "unit": "fraction"
+          }
+        },
+        "32768": {
+          "tokens": 32768,
+          "mla_kv": {
+            "formula": "32,768 × 15,744",
+            "value": 515899392,
+            "unit": "B",
+            "MB_1e6": 515.899392,
+            "GB_1e9": 0.515899392,
+            "MiB_2pow20": 492,
+            "GiB_2pow30": 0.48046875
+          },
+          "fixed_state": {
+            "value": 449372160,
+            "unit": "B",
+            "MB_1e6": 449.37216,
+            "GB_1e9": 0.44937216,
+            "MiB_2pow20": 428.5546875,
+            "GiB_2pow30": 0.418510437
+          },
+          "total": {
+            "formula": "fixed_state + T × MLA bytes/token",
+            "value": 965271552,
+            "unit": "B",
+            "MB_1e6": 965.271552,
+            "GB_1e9": 0.965271552,
+            "MiB_2pow20": 920.5546875,
+            "GiB_2pow30": 0.898979187
+          },
+          "fixed_state_share": {
+            "formula": "fixed / total",
+            "value": 0.4655396288,
+            "unit": "fraction"
+          }
+        },
+        "131072": {
+          "tokens": 131072,
+          "mla_kv": {
+            "formula": "131,072 × 15,744",
+            "value": 2063597568,
+            "unit": "B",
+            "MB_1e6": 2063.597568,
+            "GB_1e9": 2.063597568,
+            "MiB_2pow20": 1968,
+            "GiB_2pow30": 1.921875
+          },
+          "fixed_state": {
+            "value": 449372160,
+            "unit": "B",
+            "MB_1e6": 449.37216,
+            "GB_1e9": 0.44937216,
+            "MiB_2pow20": 428.5546875,
+            "GiB_2pow30": 0.418510437
+          },
+          "total": {
+            "formula": "fixed_state + T × MLA bytes/token",
+            "value": 2512969728,
+            "unit": "B",
+            "MB_1e6": 2512.969728,
+            "GB_1e9": 2.512969728,
+            "MiB_2pow20": 2396.554688,
+            "GiB_2pow30": 2.340385437
+          },
+          "fixed_state_share": {
+            "formula": "fixed / total",
+            "value": 0.1788211593,
+            "unit": "fraction"
+          }
+        },
+        "1048576": {
+          "tokens": 1048576,
+          "mla_kv": {
+            "formula": "1,048,576 × 15,744",
+            "value": 16508780544,
+            "unit": "B",
+            "MB_1e6": 16508.78054,
+            "GB_1e9": 16.50878054,
+            "MiB_2pow20": 15744,
+            "GiB_2pow30": 15.375
+          },
+          "fixed_state": {
+            "value": 449372160,
+            "unit": "B",
+            "MB_1e6": 449.37216,
+            "GB_1e9": 0.44937216,
+            "MiB_2pow20": 428.5546875,
+            "GiB_2pow30": 0.418510437
+          },
+          "total": {
+            "formula": "fixed_state + T × MLA bytes/token",
+            "value": 16958152704,
+            "unit": "B",
+            "MB_1e6": 16958.1527,
+            "GB_1e9": 16.9581527,
+            "MiB_2pow20": 16172.55469,
+            "GiB_2pow30": 15.79351044
+          },
+          "fixed_state_share": {
+            "formula": "fixed / total",
+            "value": 0.02649888628,
+            "unit": "fraction"
+          }
+        }
+      }
+    },
+    "crossover_mla_equals_fixed_state": {
+      "bf16": {
+        "formula": "fixed_state / MLA bytes per token",
+        "value": 16253.33333,
+        "unit": "tokens",
+        "arithmetic": "449,372,160 / 27,648 = 16253.33333",
+        "first_token_count_where_mla_exceeds_fixed": 16254,
+        "note": "Below this context the fixed KDA state is the larger part of per-request memory ('state-bound'); above it the MLA KV is ('KV-bound')."
+      },
+      "fp8": {
+        "formula": "fixed_state / MLA bytes per token",
+        "value": 32506.66667,
+        "unit": "tokens",
+        "arithmetic": "449,372,160 / 13,824 = 32506.66667",
+        "first_token_count_where_mla_exceeds_fixed": 32507,
+        "note": "Below this context the fixed KDA state is the larger part of per-request memory ('state-bound'); above it the MLA KV is ('KV-bound')."
+      },
+      "fp8_ds_mla": {
+        "formula": "fixed_state / MLA bytes per token",
+        "value": 28542.43902,
+        "unit": "tokens",
+        "arithmetic": "449,372,160 / 15,744 = 28542.43902",
+        "first_token_count_where_mla_exceeds_fixed": 28543,
+        "note": "Below this context the fixed KDA state is the larger part of per-request memory ('state-bound'); above it the MLA KV is ('KV-bound')."
+      }
+    },
+    "all_mla_comparison": {
+      "bytes_per_token_bf16": {
+        "formula": "(kv_lora_rank + qk_rope_head_dim) × all 93 layers × 2 B",
+        "value": 107136,
+        "unit": "B/token",
+        "arithmetic": "576 × 93 × 2 = 107,136"
+      },
+      "per_context": {
+        "2048": {
+          "all_mla_hypothetical": {
+            "value": 219414528,
+            "unit": "B",
+            "MB_1e6": 219.414528,
+            "GB_1e9": 0.219414528,
+            "MiB_2pow20": 209.25,
+            "GiB_2pow30": 0.2043457031
+          },
+          "k3_actual_bf16": {
+            "value": 505995264,
+            "unit": "B",
+            "MB_1e6": 505.995264,
+            "GB_1e9": 0.505995264,
+            "MiB_2pow20": 482.5546875,
+            "GiB_2pow30": 0.471244812
+          },
+          "k3_over_all_mla": {
+            "formula": "K3 / all-MLA",
+            "value": 2.306115591,
+            "unit": "fraction"
+          }
+        },
+        "8192": {
+          "all_mla_hypothetical": {
+            "value": 877658112,
+            "unit": "B",
+            "MB_1e6": 877.658112,
+            "GB_1e9": 0.877658112,
+            "MiB_2pow20": 837,
+            "GiB_2pow30": 0.8173828125
+          },
+          "k3_actual_bf16": {
+            "value": 675864576,
+            "unit": "B",
+            "MB_1e6": 675.864576,
+            "GB_1e9": 0.675864576,
+            "MiB_2pow20": 644.5546875,
+            "GiB_2pow30": 0.629447937
+          },
+          "k3_over_all_mla": {
+            "formula": "K3 / all-MLA",
+            "value": 0.7700772849,
+            "unit": "fraction"
+          }
+        },
+        "32768": {
+          "all_mla_hypothetical": {
+            "value": 3510632448,
+            "unit": "B",
+            "MB_1e6": 3510.632448,
+            "GB_1e9": 3.510632448,
+            "MiB_2pow20": 3348,
+            "GiB_2pow30": 3.26953125
+          },
+          "k3_actual_bf16": {
+            "value": 1355341824,
+            "unit": "B",
+            "MB_1e6": 1355.341824,
+            "GB_1e9": 1.355341824,
+            "MiB_2pow20": 1292.554688,
+            "GiB_2pow30": 1.262260437
+          },
+          "k3_over_all_mla": {
+            "formula": "K3 / all-MLA",
+            "value": 0.3860677083,
+            "unit": "fraction"
+          }
+        },
+        "131072": {
+          "all_mla_hypothetical": {
+            "value": 14042529792,
+            "unit": "B",
+            "MB_1e6": 14042.52979,
+            "GB_1e9": 14.04252979,
+            "MiB_2pow20": 13392,
+            "GiB_2pow30": 13.078125
+          },
+          "k3_actual_bf16": {
+            "value": 4073250816,
+            "unit": "B",
+            "MB_1e6": 4073.250816,
+            "GB_1e9": 4.073250816,
+            "MiB_2pow20": 3884.554688,
+            "GiB_2pow30": 3.793510437
+          },
+          "k3_over_all_mla": {
+            "formula": "K3 / all-MLA",
+            "value": 0.2900653142,
+            "unit": "fraction"
+          }
+        },
+        "1048576": {
+          "all_mla_hypothetical": {
+            "value": 112340238336,
+            "unit": "B",
+            "MB_1e6": 112340.2383,
+            "GB_1e9": 112.3402383,
+            "MiB_2pow20": 107136,
+            "GiB_2pow30": 104.625
+          },
+          "k3_actual_bf16": {
+            "value": 29440401408,
+            "unit": "B",
+            "MB_1e6": 29440.40141,
+            "GB_1e9": 29.44040141,
+            "MiB_2pow20": 28076.55469,
+            "GiB_2pow30": 27.41851044
+          },
+          "k3_over_all_mla": {
+            "formula": "K3 / all-MLA",
+            "value": 0.2620646159,
+            "unit": "fraction"
+          }
+        }
+      },
+      "note": "HYPOTHETICAL comparison: the same 93 layers if every layer were MLA (no KDA state). At 2,048 tokens K3 needs 2.31× the all-MLA memory (the fixed state); at 1,048,576 tokens it needs 26% of it."
+    }
+  },
+  "attention_comparison": {
+    "contexts_tokens": [
+      2048,
+      8192,
+      32768,
+      131072
+    ],
+    "m_dense_gqa_bf16": {
+      "label": "M-dense GQA (8 KV heads), BF16",
+      "type": "GQA/MHA/MQA",
+      "formula": "2 × L × H_kv × d_head × bytes",
+      "terms": {
+        "L": 88,
+        "H_kv": 8,
+        "d_head": 128,
+        "bytes": 2
+      },
+      "bytes_per_token": 360448,
+      "relative_to_m_dense_gqa_bf16": 1,
+      "per_context": {
+        "2048": {
+          "bytes": {
+            "value": 738197504,
+            "unit": "B",
+            "MB_1e6": 738.197504,
+            "GB_1e9": 0.738197504,
+            "MiB_2pow20": 704,
+            "GiB_2pow30": 0.6875
+          },
+          "avg_bytes_per_token": 360448
+        },
+        "8192": {
+          "bytes": {
+            "value": 2952790016,
+            "unit": "B",
+            "MB_1e6": 2952.790016,
+            "GB_1e9": 2.952790016,
+            "MiB_2pow20": 2816,
+            "GiB_2pow30": 2.75
+          },
+          "avg_bytes_per_token": 360448
+        },
+        "32768": {
+          "bytes": {
+            "value": 11811160064,
+            "unit": "B",
+            "MB_1e6": 11811.16006,
+            "GB_1e9": 11.81116006,
+            "MiB_2pow20": 11264,
+            "GiB_2pow30": 11
+          },
+          "avg_bytes_per_token": 360448
+        },
+        "131072": {
+          "bytes": {
+            "value": 47244640256,
+            "unit": "B",
+            "MB_1e6": 47244.64026,
+            "GB_1e9": 47.24464026,
+            "MiB_2pow20": 45056,
+            "GiB_2pow30": 44
+          },
+          "avg_bytes_per_token": 360448
+        }
+      }
+    },
+    "m_dense_gqa_fp8": {
+      "label": "M-dense GQA (8 KV heads), FP8 KV",
+      "type": "GQA/MHA/MQA",
+      "formula": "2 × L × H_kv × d_head × bytes",
+      "terms": {
+        "L": 88,
+        "H_kv": 8,
+        "d_head": 128,
+        "bytes": 1
+      },
+      "bytes_per_token": 180224,
+      "relative_to_m_dense_gqa_bf16": 0.5,
+      "per_context": {
+        "2048": {
+          "bytes": {
+            "value": 369098752,
+            "unit": "B",
+            "MB_1e6": 369.098752,
+            "GB_1e9": 0.369098752,
+            "MiB_2pow20": 352,
+            "GiB_2pow30": 0.34375
+          },
+          "avg_bytes_per_token": 180224
+        },
+        "8192": {
+          "bytes": {
+            "value": 1476395008,
+            "unit": "B",
+            "MB_1e6": 1476.395008,
+            "GB_1e9": 1.476395008,
+            "MiB_2pow20": 1408,
+            "GiB_2pow30": 1.375
+          },
+          "avg_bytes_per_token": 180224
+        },
+        "32768": {
+          "bytes": {
+            "value": 5905580032,
+            "unit": "B",
+            "MB_1e6": 5905.580032,
+            "GB_1e9": 5.905580032,
+            "MiB_2pow20": 5632,
+            "GiB_2pow30": 5.5
+          },
+          "avg_bytes_per_token": 180224
+        },
+        "131072": {
+          "bytes": {
+            "value": 23622320128,
+            "unit": "B",
+            "MB_1e6": 23622.32013,
+            "GB_1e9": 23.62232013,
+            "MiB_2pow20": 22528,
+            "GiB_2pow30": 22
+          },
+          "avg_bytes_per_token": 180224
+        }
+      }
+    },
+    "m_dense_as_mha_bf16": {
+      "label": "HYPOTHETICAL: M-dense's 88 layers as MHA (96 KV heads), BF16",
+      "type": "GQA/MHA/MQA",
+      "formula": "2 × L × H_kv × d_head × bytes",
+      "terms": {
+        "L": 88,
+        "H_kv": 96,
+        "d_head": 128,
+        "bytes": 2
+      },
+      "bytes_per_token": 4325376,
+      "relative_to_m_dense_gqa_bf16": 12,
+      "per_context": {
+        "2048": {
+          "bytes": {
+            "value": 8858370048,
+            "unit": "B",
+            "MB_1e6": 8858.370048,
+            "GB_1e9": 8.858370048,
+            "MiB_2pow20": 8448,
+            "GiB_2pow30": 8.25
+          },
+          "avg_bytes_per_token": 4325376
+        },
+        "8192": {
+          "bytes": {
+            "value": 35433480192,
+            "unit": "B",
+            "MB_1e6": 35433.48019,
+            "GB_1e9": 35.43348019,
+            "MiB_2pow20": 33792,
+            "GiB_2pow30": 33
+          },
+          "avg_bytes_per_token": 4325376
+        },
+        "32768": {
+          "bytes": {
+            "value": 141733920768,
+            "unit": "B",
+            "MB_1e6": 141733.9208,
+            "GB_1e9": 141.7339208,
+            "MiB_2pow20": 135168,
+            "GiB_2pow30": 132
+          },
+          "avg_bytes_per_token": 4325376
+        },
+        "131072": {
+          "bytes": {
+            "value": 566935683072,
+            "unit": "B",
+            "MB_1e6": 566935.6831,
+            "GB_1e9": 566.9356831,
+            "MiB_2pow20": 540672,
+            "GiB_2pow30": 528
+          },
+          "avg_bytes_per_token": 4325376
+        }
+      }
+    },
+    "m_dense_as_mqa_bf16": {
+      "label": "HYPOTHETICAL: M-dense's 88 layers as MQA (1 KV head), BF16",
+      "type": "GQA/MHA/MQA",
+      "formula": "2 × L × H_kv × d_head × bytes",
+      "terms": {
+        "L": 88,
+        "H_kv": 1,
+        "d_head": 128,
+        "bytes": 2
+      },
+      "bytes_per_token": 45056,
+      "relative_to_m_dense_gqa_bf16": 0.125,
+      "per_context": {
+        "2048": {
+          "bytes": {
+            "value": 92274688,
+            "unit": "B",
+            "MB_1e6": 92.274688,
+            "GB_1e9": 0.092274688,
+            "MiB_2pow20": 88,
+            "GiB_2pow30": 0.0859375
+          },
+          "avg_bytes_per_token": 45056
+        },
+        "8192": {
+          "bytes": {
+            "value": 369098752,
+            "unit": "B",
+            "MB_1e6": 369.098752,
+            "GB_1e9": 0.369098752,
+            "MiB_2pow20": 352,
+            "GiB_2pow30": 0.34375
+          },
+          "avg_bytes_per_token": 45056
+        },
+        "32768": {
+          "bytes": {
+            "value": 1476395008,
+            "unit": "B",
+            "MB_1e6": 1476.395008,
+            "GB_1e9": 1.476395008,
+            "MiB_2pow20": 1408,
+            "GiB_2pow30": 1.375
+          },
+          "avg_bytes_per_token": 45056
+        },
+        "131072": {
+          "bytes": {
+            "value": 5905580032,
+            "unit": "B",
+            "MB_1e6": 5905.580032,
+            "GB_1e9": 5.905580032,
+            "MiB_2pow20": 5632,
+            "GiB_2pow30": 5.5
+          },
+          "avg_bytes_per_token": 45056
+        }
+      }
+    },
+    "k3_hybrid_bf16_mla": {
+      "label": "Kimi K3 hybrid: KDA fixed state + MLA (BF16)",
+      "type": "hybrid linear + MLA",
+      "formula": "fixed_state + T × (kv_lora_rank + qk_rope_head_dim) × num_mla_layers × bytes",
+      "terms": {
+        "fixed_state_B": 449372160,
+        "kv_lora_rank": 512,
+        "qk_rope_head_dim": 64,
+        "num_mla_layers": 24,
+        "bytes": 2
+      },
+      "bytes_per_token_mla_part": 27648,
+      "per_context": {
+        "2048": {
+          "bytes": {
+            "value": 505995264,
+            "unit": "B",
+            "MB_1e6": 505.995264,
+            "GB_1e9": 0.505995264,
+            "MiB_2pow20": 482.5546875,
+            "GiB_2pow30": 0.471244812
+          },
+          "avg_bytes_per_token": 247068
+        },
+        "8192": {
+          "bytes": {
+            "value": 675864576,
+            "unit": "B",
+            "MB_1e6": 675.864576,
+            "GB_1e9": 0.675864576,
+            "MiB_2pow20": 644.5546875,
+            "GiB_2pow30": 0.629447937
+          },
+          "avg_bytes_per_token": 82503
+        },
+        "32768": {
+          "bytes": {
+            "value": 1355341824,
+            "unit": "B",
+            "MB_1e6": 1355.341824,
+            "GB_1e9": 1.355341824,
+            "MiB_2pow20": 1292.554688,
+            "GiB_2pow30": 1.262260437
+          },
+          "avg_bytes_per_token": 41361.75
+        },
+        "131072": {
+          "bytes": {
+            "value": 4073250816,
+            "unit": "B",
+            "MB_1e6": 4073.250816,
+            "GB_1e9": 4.073250816,
+            "MiB_2pow20": 3884.554688,
+            "GiB_2pow30": 3.793510437
+          },
+          "avg_bytes_per_token": 31076.4375
+        }
+      }
+    },
+    "k3_hybrid_fp8_mla": {
+      "label": "Kimi K3 hybrid: KDA fixed state + MLA (FP8)",
+      "type": "hybrid linear + MLA",
+      "formula": "fixed_state + T × (kv_lora_rank + qk_rope_head_dim) × num_mla_layers × bytes",
+      "terms": {
+        "fixed_state_B": 449372160,
+        "kv_lora_rank": 512,
+        "qk_rope_head_dim": 64,
+        "num_mla_layers": 24,
+        "bytes": 1
+      },
+      "bytes_per_token_mla_part": 13824,
+      "per_context": {
+        "2048": {
+          "bytes": {
+            "value": 477683712,
+            "unit": "B",
+            "MB_1e6": 477.683712,
+            "GB_1e9": 0.477683712,
+            "MiB_2pow20": 455.5546875,
+            "GiB_2pow30": 0.4448776245
+          },
+          "avg_bytes_per_token": 233244
+        },
+        "8192": {
+          "bytes": {
+            "value": 562618368,
+            "unit": "B",
+            "MB_1e6": 562.618368,
+            "GB_1e9": 0.562618368,
+            "MiB_2pow20": 536.5546875,
+            "GiB_2pow30": 0.523979187
+          },
+          "avg_bytes_per_token": 68679
+        },
+        "32768": {
+          "bytes": {
+            "value": 902356992,
+            "unit": "B",
+            "MB_1e6": 902.356992,
+            "GB_1e9": 0.902356992,
+            "MiB_2pow20": 860.5546875,
+            "GiB_2pow30": 0.840385437
+          },
+          "avg_bytes_per_token": 27537.75
+        },
+        "131072": {
+          "bytes": {
+            "value": 2261311488,
+            "unit": "B",
+            "MB_1e6": 2261.311488,
+            "GB_1e9": 2.261311488,
+            "MiB_2pow20": 2156.554688,
+            "GiB_2pow30": 2.106010437
+          },
+          "avg_bytes_per_token": 17252.4375
+        }
+      }
+    },
+    "glm_5_3_mla_dsa_bf16": {
+      "label": "GLM-5.3: MLA latent (BF16) + DSA indexer keys",
+      "type": "MLA + sparse-attention indexer",
+      "formula": "L × (kv_lora_rank + qk_rope_head_dim) × bytes  +  indexer_layers × 132 B",
+      "terms": {
+        "L": 78,
+        "latent_elements": 576,
+        "indexer_full_layers": 21,
+        "indexer_k_bytes_per_token_per_layer": 132,
+        "mla_bytes_per_token": 89856,
+        "indexer_bytes_per_token": 2772
+      },
+      "checks": {
+        "mla_bf16_matches_constant": true,
+        "mla_fp8_matches_constant": true,
+        "indexer_matches_constant": true
+      },
+      "bytes_per_token": 92628,
+      "per_context": {
+        "2048": {
+          "bytes": {
+            "value": 189702144,
+            "unit": "B",
+            "MB_1e6": 189.702144,
+            "GB_1e9": 0.189702144,
+            "MiB_2pow20": 180.9140625,
+            "GiB_2pow30": 0.1766738892
+          },
+          "avg_bytes_per_token": 92628
+        },
+        "8192": {
+          "bytes": {
+            "value": 758808576,
+            "unit": "B",
+            "MB_1e6": 758.808576,
+            "GB_1e9": 0.758808576,
+            "MiB_2pow20": 723.65625,
+            "GiB_2pow30": 0.7066955566
+          },
+          "avg_bytes_per_token": 92628
+        },
+        "32768": {
+          "bytes": {
+            "value": 3035234304,
+            "unit": "B",
+            "MB_1e6": 3035.234304,
+            "GB_1e9": 3.035234304,
+            "MiB_2pow20": 2894.625,
+            "GiB_2pow30": 2.826782227
+          },
+          "avg_bytes_per_token": 92628
+        },
+        "131072": {
+          "bytes": {
+            "value": 12140937216,
+            "unit": "B",
+            "MB_1e6": 12140.93722,
+            "GB_1e9": 12.14093722,
+            "MiB_2pow20": 11578.5,
+            "GiB_2pow30": 11.30712891
+          },
+          "avg_bytes_per_token": 92628
+        }
+      },
+      "note": "DSA (top-2048) reads only 2,048 cached tokens per query; it cuts reads and FLOPs, not capacity: every token's latent is stored."
+    },
+    "glm_5_3_mla_dsa_fp8": {
+      "label": "GLM-5.3: MLA latent (FlashMLA FP8) + DSA indexer keys",
+      "type": "MLA + sparse-attention indexer",
+      "formula": "L × (kv_lora_rank + qk_rope_head_dim) × bytes  +  indexer_layers × 132 B",
+      "terms": {
+        "L": 78,
+        "latent_elements": 576,
+        "indexer_full_layers": 21,
+        "indexer_k_bytes_per_token_per_layer": 132,
+        "mla_bytes_per_token": 51168,
+        "indexer_bytes_per_token": 2772
+      },
+      "checks": {
+        "mla_bf16_matches_constant": true,
+        "mla_fp8_matches_constant": true,
+        "indexer_matches_constant": true
+      },
+      "bytes_per_token": 53940,
+      "per_context": {
+        "2048": {
+          "bytes": {
+            "value": 110469120,
+            "unit": "B",
+            "MB_1e6": 110.46912,
+            "GB_1e9": 0.11046912,
+            "MiB_2pow20": 105.3515625,
+            "GiB_2pow30": 0.1028823853
+          },
+          "avg_bytes_per_token": 53940
+        },
+        "8192": {
+          "bytes": {
+            "value": 441876480,
+            "unit": "B",
+            "MB_1e6": 441.87648,
+            "GB_1e9": 0.44187648,
+            "MiB_2pow20": 421.40625,
+            "GiB_2pow30": 0.411529541
+          },
+          "avg_bytes_per_token": 53940
+        },
+        "32768": {
+          "bytes": {
+            "value": 1767505920,
+            "unit": "B",
+            "MB_1e6": 1767.50592,
+            "GB_1e9": 1.76750592,
+            "MiB_2pow20": 1685.625,
+            "GiB_2pow30": 1.646118164
+          },
+          "avg_bytes_per_token": 53940
+        },
+        "131072": {
+          "bytes": {
+            "value": 7070023680,
+            "unit": "B",
+            "MB_1e6": 7070.02368,
+            "GB_1e9": 7.07002368,
+            "MiB_2pow20": 6742.5,
+            "GiB_2pow30": 6.584472656
+          },
+          "avg_bytes_per_token": 53940
+        }
+      },
+      "note": "DSA (top-2048) reads only 2,048 cached tokens per query; it cuts reads and FLOPs, not capacity: every token's latent is stored."
+    },
+    "mimo_v2_6_pro_swa_bf16": {
+      "label": "MiMo-V2.6-Pro: 60 sliding-window layers (window 128) + 10 global layers, BF16",
+      "model": "XiaomiMiMo/MiMo-V2.6-Pro-RL",
+      "type": "sliding window + global GQA",
+      "formula": "[global_layers × T + swa_layers × min(T, W)] × H_kv × (d_k + d_v) × bytes",
+      "terms": {
+        "global_layers": 10,
+        "swa_layers": 60,
+        "W": 128,
+        "H_kv": 8,
+        "d_k": 192,
+        "d_v": 128,
+        "bytes": 2,
+        "bytes_per_token_per_layer": 5120
+      },
+      "layer_count_check": true,
+      "per_context": {
+        "2048": {
+          "bytes": {
+            "value": 144179200,
+            "unit": "B",
+            "MB_1e6": 144.1792,
+            "GB_1e9": 0.1441792,
+            "MiB_2pow20": 137.5,
+            "GiB_2pow30": 0.1342773438
+          },
+          "avg_bytes_per_token": 70400
+        },
+        "8192": {
+          "bytes": {
+            "value": 458752000,
+            "unit": "B",
+            "MB_1e6": 458.752,
+            "GB_1e9": 0.458752,
+            "MiB_2pow20": 437.5,
+            "GiB_2pow30": 0.4272460938
+          },
+          "avg_bytes_per_token": 56000
+        },
+        "32768": {
+          "bytes": {
+            "value": 1717043200,
+            "unit": "B",
+            "MB_1e6": 1717.0432,
+            "GB_1e9": 1.7170432,
+            "MiB_2pow20": 1637.5,
+            "GiB_2pow30": 1.599121094
+          },
+          "avg_bytes_per_token": 52400
+        },
+        "131072": {
+          "bytes": {
+            "value": 6750208000,
+            "unit": "B",
+            "MB_1e6": 6750.208,
+            "GB_1e9": 6.750208,
+            "MiB_2pow20": 6437.5,
+            "GiB_2pow30": 6.286621094
+          },
+          "avg_bytes_per_token": 51500
+        }
+      },
+      "note": "K (192) and V (128) head dims differ, so the factor is H_kv × (d_k + d_v), not 2 × H_kv × d_head. Engines keep at least the window (plus block rounding) per SWA layer; min(T, W) is the floor."
+    }
+  },
+  "capacity_h_teach_m_dense": {
+    "node": "H-teach: 8× H100 SXM, TP=8, one replica of M-dense",
+    "block_size_tokens": 16,
+    "max_num_seqs": 1024,
+    "assumption": "Weights split evenly over the 8 GPUs; activations, CUDA graphs and NCCL buffers are the 4 GiB hypothetical overhead. A real engine measures them at startup.",
+    "engine_default_case": "fp8_weights_bf16_kv",
+    "engine_default_case_note": "The released checkpoint is FP8; KV in the model dtype (bfloat16) unless --kv-cache-dtype fp8 is set.",
+    "cases": {
+      "bf16_weights_bf16_kv": {
+        "steps_per_gpu": {
+          "1_hbm_capacity": {
+            "value": 80000000000,
+            "unit": "B",
+            "MB_1e6": 80000,
+            "GB_1e9": 80,
+            "MiB_2pow20": 76293.94531,
+            "GiB_2pow30": 74.50580597,
+            "from": "hardware.H-teach.h100_sxm_hbm_capacity",
+            "note": "vendor figure, decimal GB"
+          },
+          "2_times_gpu_memory_utilization": {
+            "formula": "HBM × gpu_memory_utilization",
+            "terms": {
+              "gpu_memory_utilization": {
+                "value": 0.92,
+                "unit": "fraction",
+                "from": "software.vllm.gpu_memory_utilization"
+              }
+            },
+            "value": 73600000000,
+            "unit": "B",
+            "MB_1e6": 73600,
+            "GB_1e9": 73.6,
+            "MiB_2pow20": 70190.42969,
+            "GiB_2pow30": 68.54534149
+          },
+          "3_minus_weights_per_gpu": {
+            "formula": "weights / TP (8)",
+            "value": 31926052544,
+            "unit": "B",
+            "MB_1e6": 31926.05254,
+            "GB_1e9": 31.92605254,
+            "MiB_2pow20": 30447.05634,
+            "GiB_2pow30": 29.73345345,
+            "weights_total": {
+              "value": 255408420352,
+              "unit": "B",
+              "MB_1e6": 255408.4204,
+              "GB_1e9": 255.4084204,
+              "MiB_2pow20": 243576.4507,
+              "GiB_2pow30": 237.8676276
+            },
+            "note": "total_params × 2 B (text + vision tower; the engine loads both)"
+          },
+          "4_minus_non_kv_overhead": {
+            "value": 4294967296,
+            "unit": "B",
+            "MB_1e6": 4294.967296,
+            "GB_1e9": 4.294967296,
+            "MiB_2pow20": 4096,
+            "GiB_2pow30": 4,
+            "from": "hypothetical.serving_assumptions.non_kv_overhead_per_gpu_gib",
+            "note": "HYPOTHETICAL (class C): 4 GiB = 4 × 2^30 B"
+          },
+          "5_kv_pool_per_gpu": {
+            "formula": "step2 − step3 − step4",
+            "value": 37378980160,
+            "unit": "B",
+            "MB_1e6": 37378.98016,
+            "GB_1e9": 37.37898016,
+            "MiB_2pow20": 35647.37335,
+            "GiB_2pow30": 34.81188804
+          },
+          "6_kv_bytes_per_token_per_gpu": {
+            "value": 45056,
+            "unit": "B/token/GPU"
+          },
+          "7_tokens_per_replica": {
+            "formula": "floor(pool / KV bytes per token per GPU)",
+            "value": 829611,
+            "unit": "tokens",
+            "note": "Every GPU holds 1/8 of each token's KV, so the replica's token capacity equals one GPU's pool ÷ that GPU's bytes per token."
+          },
+          "8_block_bytes_per_gpu": {
+            "formula": "block_size (16) × KV bytes/token/GPU",
+            "value": 720896,
+            "unit": "B/block"
+          },
+          "9_kv_blocks": {
+            "formula": "floor(pool / block bytes)",
+            "value": 51850,
+            "unit": "blocks"
+          },
+          "10_usable_blocks": {
+            "formula": "kv_blocks − 1 (null block 0)",
+            "value": 51849,
+            "unit": "blocks",
+            "note": "vLLM BlockPool reserves block 0 as a null block (note 03, block_pool.py#L184-L188)."
+          },
+          "11_tokens_in_usable_blocks": {
+            "value": 829584,
+            "unit": "tokens"
+          }
+        },
+        "concurrent_sequences": {
+          "2048": {
+            "context_tokens": 2048,
+            "blocks_per_sequence": {
+              "formula": "ceil(2,048 / 16)",
+              "value": 128,
+              "unit": "blocks"
+            },
+            "sequences_kv_limit": {
+              "formula": "floor(usable_blocks / blocks_per_sequence)",
+              "value": 405,
+              "unit": "sequences",
+              "arithmetic": "floor(51,849 / 128) = 405"
+            },
+            "sequences_after_max_num_seqs_cap": 405,
+            "binding_limit": "KV blocks",
+            "pool_fraction_per_sequence": 0.002468707207,
+            "kv_bytes_per_sequence_per_gpu": {
+              "value": 92274688,
+              "unit": "B",
+              "MB_1e6": 92.274688,
+              "GB_1e9": 0.092274688,
+              "MiB_2pow20": 88,
+              "GiB_2pow30": 0.0859375
+            }
+          },
+          "8192": {
+            "context_tokens": 8192,
+            "blocks_per_sequence": {
+              "formula": "ceil(8,192 / 16)",
+              "value": 512,
+              "unit": "blocks"
+            },
+            "sequences_kv_limit": {
+              "formula": "floor(usable_blocks / blocks_per_sequence)",
+              "value": 101,
+              "unit": "sequences",
+              "arithmetic": "floor(51,849 / 512) = 101"
+            },
+            "sequences_after_max_num_seqs_cap": 101,
+            "binding_limit": "KV blocks",
+            "pool_fraction_per_sequence": 0.00987482883,
+            "kv_bytes_per_sequence_per_gpu": {
+              "value": 369098752,
+              "unit": "B",
+              "MB_1e6": 369.098752,
+              "GB_1e9": 0.369098752,
+              "MiB_2pow20": 352,
+              "GiB_2pow30": 0.34375
+            }
+          },
+          "32768": {
+            "context_tokens": 32768,
+            "blocks_per_sequence": {
+              "formula": "ceil(32,768 / 16)",
+              "value": 2048,
+              "unit": "blocks"
+            },
+            "sequences_kv_limit": {
+              "formula": "floor(usable_blocks / blocks_per_sequence)",
+              "value": 25,
+              "unit": "sequences",
+              "arithmetic": "floor(51,849 / 2,048) = 25"
+            },
+            "sequences_after_max_num_seqs_cap": 25,
+            "binding_limit": "KV blocks",
+            "pool_fraction_per_sequence": 0.03949931532,
+            "kv_bytes_per_sequence_per_gpu": {
+              "value": 1476395008,
+              "unit": "B",
+              "MB_1e6": 1476.395008,
+              "GB_1e9": 1.476395008,
+              "MiB_2pow20": 1408,
+              "GiB_2pow30": 1.375
+            }
+          },
+          "131072": {
+            "context_tokens": 131072,
+            "blocks_per_sequence": {
+              "formula": "ceil(131,072 / 16)",
+              "value": 8192,
+              "unit": "blocks"
+            },
+            "sequences_kv_limit": {
+              "formula": "floor(usable_blocks / blocks_per_sequence)",
+              "value": 6,
+              "unit": "sequences",
+              "arithmetic": "floor(51,849 / 8,192) = 6"
+            },
+            "sequences_after_max_num_seqs_cap": 6,
+            "binding_limit": "KV blocks",
+            "pool_fraction_per_sequence": 0.1579972613,
+            "kv_bytes_per_sequence_per_gpu": {
+              "value": 5905580032,
+              "unit": "B",
+              "MB_1e6": 5905.580032,
+              "GB_1e9": 5.905580032,
+              "MiB_2pow20": 5632,
+              "GiB_2pow30": 5.5
+            }
+          }
+        }
+      },
+      "bf16_weights_fp8_kv": {
+        "steps_per_gpu": {
+          "1_hbm_capacity": {
+            "value": 80000000000,
+            "unit": "B",
+            "MB_1e6": 80000,
+            "GB_1e9": 80,
+            "MiB_2pow20": 76293.94531,
+            "GiB_2pow30": 74.50580597,
+            "from": "hardware.H-teach.h100_sxm_hbm_capacity",
+            "note": "vendor figure, decimal GB"
+          },
+          "2_times_gpu_memory_utilization": {
+            "formula": "HBM × gpu_memory_utilization",
+            "terms": {
+              "gpu_memory_utilization": {
+                "value": 0.92,
+                "unit": "fraction",
+                "from": "software.vllm.gpu_memory_utilization"
+              }
+            },
+            "value": 73600000000,
+            "unit": "B",
+            "MB_1e6": 73600,
+            "GB_1e9": 73.6,
+            "MiB_2pow20": 70190.42969,
+            "GiB_2pow30": 68.54534149
+          },
+          "3_minus_weights_per_gpu": {
+            "formula": "weights / TP (8)",
+            "value": 31926052544,
+            "unit": "B",
+            "MB_1e6": 31926.05254,
+            "GB_1e9": 31.92605254,
+            "MiB_2pow20": 30447.05634,
+            "GiB_2pow30": 29.73345345,
+            "weights_total": {
+              "value": 255408420352,
+              "unit": "B",
+              "MB_1e6": 255408.4204,
+              "GB_1e9": 255.4084204,
+              "MiB_2pow20": 243576.4507,
+              "GiB_2pow30": 237.8676276
+            },
+            "note": "total_params × 2 B (text + vision tower; the engine loads both)"
+          },
+          "4_minus_non_kv_overhead": {
+            "value": 4294967296,
+            "unit": "B",
+            "MB_1e6": 4294.967296,
+            "GB_1e9": 4.294967296,
+            "MiB_2pow20": 4096,
+            "GiB_2pow30": 4,
+            "from": "hypothetical.serving_assumptions.non_kv_overhead_per_gpu_gib",
+            "note": "HYPOTHETICAL (class C): 4 GiB = 4 × 2^30 B"
+          },
+          "5_kv_pool_per_gpu": {
+            "formula": "step2 − step3 − step4",
+            "value": 37378980160,
+            "unit": "B",
+            "MB_1e6": 37378.98016,
+            "GB_1e9": 37.37898016,
+            "MiB_2pow20": 35647.37335,
+            "GiB_2pow30": 34.81188804
+          },
+          "6_kv_bytes_per_token_per_gpu": {
+            "value": 22528,
+            "unit": "B/token/GPU"
+          },
+          "7_tokens_per_replica": {
+            "formula": "floor(pool / KV bytes per token per GPU)",
+            "value": 1659223,
+            "unit": "tokens",
+            "note": "Every GPU holds 1/8 of each token's KV, so the replica's token capacity equals one GPU's pool ÷ that GPU's bytes per token."
+          },
+          "8_block_bytes_per_gpu": {
+            "formula": "block_size (16) × KV bytes/token/GPU",
+            "value": 360448,
+            "unit": "B/block"
+          },
+          "9_kv_blocks": {
+            "formula": "floor(pool / block bytes)",
+            "value": 103701,
+            "unit": "blocks"
+          },
+          "10_usable_blocks": {
+            "formula": "kv_blocks − 1 (null block 0)",
+            "value": 103700,
+            "unit": "blocks",
+            "note": "vLLM BlockPool reserves block 0 as a null block (note 03, block_pool.py#L184-L188)."
+          },
+          "11_tokens_in_usable_blocks": {
+            "value": 1659200,
+            "unit": "tokens"
+          }
+        },
+        "concurrent_sequences": {
+          "2048": {
+            "context_tokens": 2048,
+            "blocks_per_sequence": {
+              "formula": "ceil(2,048 / 16)",
+              "value": 128,
+              "unit": "blocks"
+            },
+            "sequences_kv_limit": {
+              "formula": "floor(usable_blocks / blocks_per_sequence)",
+              "value": 810,
+              "unit": "sequences",
+              "arithmetic": "floor(103,700 / 128) = 810"
+            },
+            "sequences_after_max_num_seqs_cap": 810,
+            "binding_limit": "KV blocks",
+            "pool_fraction_per_sequence": 0.001234329797,
+            "kv_bytes_per_sequence_per_gpu": {
+              "value": 46137344,
+              "unit": "B",
+              "MB_1e6": 46.137344,
+              "GB_1e9": 0.046137344,
+              "MiB_2pow20": 44,
+              "GiB_2pow30": 0.04296875
+            }
+          },
+          "8192": {
+            "context_tokens": 8192,
+            "blocks_per_sequence": {
+              "formula": "ceil(8,192 / 16)",
+              "value": 512,
+              "unit": "blocks"
+            },
+            "sequences_kv_limit": {
+              "formula": "floor(usable_blocks / blocks_per_sequence)",
+              "value": 202,
+              "unit": "sequences",
+              "arithmetic": "floor(103,700 / 512) = 202"
+            },
+            "sequences_after_max_num_seqs_cap": 202,
+            "binding_limit": "KV blocks",
+            "pool_fraction_per_sequence": 0.00493731919,
+            "kv_bytes_per_sequence_per_gpu": {
+              "value": 184549376,
+              "unit": "B",
+              "MB_1e6": 184.549376,
+              "GB_1e9": 0.184549376,
+              "MiB_2pow20": 176,
+              "GiB_2pow30": 0.171875
+            }
+          },
+          "32768": {
+            "context_tokens": 32768,
+            "blocks_per_sequence": {
+              "formula": "ceil(32,768 / 16)",
+              "value": 2048,
+              "unit": "blocks"
+            },
+            "sequences_kv_limit": {
+              "formula": "floor(usable_blocks / blocks_per_sequence)",
+              "value": 50,
+              "unit": "sequences",
+              "arithmetic": "floor(103,700 / 2,048) = 50"
+            },
+            "sequences_after_max_num_seqs_cap": 50,
+            "binding_limit": "KV blocks",
+            "pool_fraction_per_sequence": 0.01974927676,
+            "kv_bytes_per_sequence_per_gpu": {
+              "value": 738197504,
+              "unit": "B",
+              "MB_1e6": 738.197504,
+              "GB_1e9": 0.738197504,
+              "MiB_2pow20": 704,
+              "GiB_2pow30": 0.6875
+            }
+          },
+          "131072": {
+            "context_tokens": 131072,
+            "blocks_per_sequence": {
+              "formula": "ceil(131,072 / 16)",
+              "value": 8192,
+              "unit": "blocks"
+            },
+            "sequences_kv_limit": {
+              "formula": "floor(usable_blocks / blocks_per_sequence)",
+              "value": 12,
+              "unit": "sequences",
+              "arithmetic": "floor(103,700 / 8,192) = 12"
+            },
+            "sequences_after_max_num_seqs_cap": 12,
+            "binding_limit": "KV blocks",
+            "pool_fraction_per_sequence": 0.07899710704,
+            "kv_bytes_per_sequence_per_gpu": {
+              "value": 2952790016,
+              "unit": "B",
+              "MB_1e6": 2952.790016,
+              "GB_1e9": 2.952790016,
+              "MiB_2pow20": 2816,
+              "GiB_2pow30": 2.75
+            }
+          }
+        }
+      },
+      "fp8_weights_bf16_kv": {
+        "steps_per_gpu": {
+          "1_hbm_capacity": {
+            "value": 80000000000,
+            "unit": "B",
+            "MB_1e6": 80000,
+            "GB_1e9": 80,
+            "MiB_2pow20": 76293.94531,
+            "GiB_2pow30": 74.50580597,
+            "from": "hardware.H-teach.h100_sxm_hbm_capacity",
+            "note": "vendor figure, decimal GB"
+          },
+          "2_times_gpu_memory_utilization": {
+            "formula": "HBM × gpu_memory_utilization",
+            "terms": {
+              "gpu_memory_utilization": {
+                "value": 0.92,
+                "unit": "fraction",
+                "from": "software.vllm.gpu_memory_utilization"
+              }
+            },
+            "value": 73600000000,
+            "unit": "B",
+            "MB_1e6": 73600,
+            "GB_1e9": 73.6,
+            "MiB_2pow20": 70190.42969,
+            "GiB_2pow30": 68.54534149
+          },
+          "3_minus_weights_per_gpu": {
+            "formula": "weights / TP (8)",
+            "value": 16700729024,
+            "unit": "B",
+            "MB_1e6": 16700.72902,
+            "GB_1e9": 16.70072902,
+            "MiB_2pow20": 15927.05634,
+            "GiB_2pow30": 15.55376595,
+            "weights_total": {
+              "value": 133605832192,
+              "unit": "B",
+              "MB_1e6": 133605.8322,
+              "GB_1e9": 133.6058322,
+              "MiB_2pow20": 127416.4507,
+              "GiB_2pow30": 124.4301276
+            },
+            "note": "released FP8 checkpoint (decoder linears FP8, rest BF16)"
+          },
+          "4_minus_non_kv_overhead": {
+            "value": 4294967296,
+            "unit": "B",
+            "MB_1e6": 4294.967296,
+            "GB_1e9": 4.294967296,
+            "MiB_2pow20": 4096,
+            "GiB_2pow30": 4,
+            "from": "hypothetical.serving_assumptions.non_kv_overhead_per_gpu_gib",
+            "note": "HYPOTHETICAL (class C): 4 GiB = 4 × 2^30 B"
+          },
+          "5_kv_pool_per_gpu": {
+            "formula": "step2 − step3 − step4",
+            "value": 52604303680,
+            "unit": "B",
+            "MB_1e6": 52604.30368,
+            "GB_1e9": 52.60430368,
+            "MiB_2pow20": 50167.37335,
+            "GiB_2pow30": 48.99157554
+          },
+          "6_kv_bytes_per_token_per_gpu": {
+            "value": 45056,
+            "unit": "B/token/GPU"
+          },
+          "7_tokens_per_replica": {
+            "formula": "floor(pool / KV bytes per token per GPU)",
+            "value": 1167531,
+            "unit": "tokens",
+            "note": "Every GPU holds 1/8 of each token's KV, so the replica's token capacity equals one GPU's pool ÷ that GPU's bytes per token."
+          },
+          "8_block_bytes_per_gpu": {
+            "formula": "block_size (16) × KV bytes/token/GPU",
+            "value": 720896,
+            "unit": "B/block"
+          },
+          "9_kv_blocks": {
+            "formula": "floor(pool / block bytes)",
+            "value": 72970,
+            "unit": "blocks"
+          },
+          "10_usable_blocks": {
+            "formula": "kv_blocks − 1 (null block 0)",
+            "value": 72969,
+            "unit": "blocks",
+            "note": "vLLM BlockPool reserves block 0 as a null block (note 03, block_pool.py#L184-L188)."
+          },
+          "11_tokens_in_usable_blocks": {
+            "value": 1167504,
+            "unit": "tokens"
+          }
+        },
+        "concurrent_sequences": {
+          "2048": {
+            "context_tokens": 2048,
+            "blocks_per_sequence": {
+              "formula": "ceil(2,048 / 16)",
+              "value": 128,
+              "unit": "blocks"
+            },
+            "sequences_kv_limit": {
+              "formula": "floor(usable_blocks / blocks_per_sequence)",
+              "value": 570,
+              "unit": "sequences",
+              "arithmetic": "floor(72,969 / 128) = 570"
+            },
+            "sequences_after_max_num_seqs_cap": 570,
+            "binding_limit": "KV blocks",
+            "pool_fraction_per_sequence": 0.001754169579,
+            "kv_bytes_per_sequence_per_gpu": {
+              "value": 92274688,
+              "unit": "B",
+              "MB_1e6": 92.274688,
+              "GB_1e9": 0.092274688,
+              "MiB_2pow20": 88,
+              "GiB_2pow30": 0.0859375
+            }
+          },
+          "8192": {
+            "context_tokens": 8192,
+            "blocks_per_sequence": {
+              "formula": "ceil(8,192 / 16)",
+              "value": 512,
+              "unit": "blocks"
+            },
+            "sequences_kv_limit": {
+              "formula": "floor(usable_blocks / blocks_per_sequence)",
+              "value": 142,
+              "unit": "sequences",
+              "arithmetic": "floor(72,969 / 512) = 142"
+            },
+            "sequences_after_max_num_seqs_cap": 142,
+            "binding_limit": "KV blocks",
+            "pool_fraction_per_sequence": 0.007016678315,
+            "kv_bytes_per_sequence_per_gpu": {
+              "value": 369098752,
+              "unit": "B",
+              "MB_1e6": 369.098752,
+              "GB_1e9": 0.369098752,
+              "MiB_2pow20": 352,
+              "GiB_2pow30": 0.34375
+            }
+          },
+          "32768": {
+            "context_tokens": 32768,
+            "blocks_per_sequence": {
+              "formula": "ceil(32,768 / 16)",
+              "value": 2048,
+              "unit": "blocks"
+            },
+            "sequences_kv_limit": {
+              "formula": "floor(usable_blocks / blocks_per_sequence)",
+              "value": 35,
+              "unit": "sequences",
+              "arithmetic": "floor(72,969 / 2,048) = 35"
+            },
+            "sequences_after_max_num_seqs_cap": 35,
+            "binding_limit": "KV blocks",
+            "pool_fraction_per_sequence": 0.02806671326,
+            "kv_bytes_per_sequence_per_gpu": {
+              "value": 1476395008,
+              "unit": "B",
+              "MB_1e6": 1476.395008,
+              "GB_1e9": 1.476395008,
+              "MiB_2pow20": 1408,
+              "GiB_2pow30": 1.375
+            }
+          },
+          "131072": {
+            "context_tokens": 131072,
+            "blocks_per_sequence": {
+              "formula": "ceil(131,072 / 16)",
+              "value": 8192,
+              "unit": "blocks"
+            },
+            "sequences_kv_limit": {
+              "formula": "floor(usable_blocks / blocks_per_sequence)",
+              "value": 8,
+              "unit": "sequences",
+              "arithmetic": "floor(72,969 / 8,192) = 8"
+            },
+            "sequences_after_max_num_seqs_cap": 8,
+            "binding_limit": "KV blocks",
+            "pool_fraction_per_sequence": 0.112266853,
+            "kv_bytes_per_sequence_per_gpu": {
+              "value": 5905580032,
+              "unit": "B",
+              "MB_1e6": 5905.580032,
+              "GB_1e9": 5.905580032,
+              "MiB_2pow20": 5632,
+              "GiB_2pow30": 5.5
+            }
+          }
+        }
+      },
+      "fp8_weights_fp8_kv": {
+        "steps_per_gpu": {
+          "1_hbm_capacity": {
+            "value": 80000000000,
+            "unit": "B",
+            "MB_1e6": 80000,
+            "GB_1e9": 80,
+            "MiB_2pow20": 76293.94531,
+            "GiB_2pow30": 74.50580597,
+            "from": "hardware.H-teach.h100_sxm_hbm_capacity",
+            "note": "vendor figure, decimal GB"
+          },
+          "2_times_gpu_memory_utilization": {
+            "formula": "HBM × gpu_memory_utilization",
+            "terms": {
+              "gpu_memory_utilization": {
+                "value": 0.92,
+                "unit": "fraction",
+                "from": "software.vllm.gpu_memory_utilization"
+              }
+            },
+            "value": 73600000000,
+            "unit": "B",
+            "MB_1e6": 73600,
+            "GB_1e9": 73.6,
+            "MiB_2pow20": 70190.42969,
+            "GiB_2pow30": 68.54534149
+          },
+          "3_minus_weights_per_gpu": {
+            "formula": "weights / TP (8)",
+            "value": 16700729024,
+            "unit": "B",
+            "MB_1e6": 16700.72902,
+            "GB_1e9": 16.70072902,
+            "MiB_2pow20": 15927.05634,
+            "GiB_2pow30": 15.55376595,
+            "weights_total": {
+              "value": 133605832192,
+              "unit": "B",
+              "MB_1e6": 133605.8322,
+              "GB_1e9": 133.6058322,
+              "MiB_2pow20": 127416.4507,
+              "GiB_2pow30": 124.4301276
+            },
+            "note": "released FP8 checkpoint (decoder linears FP8, rest BF16)"
+          },
+          "4_minus_non_kv_overhead": {
+            "value": 4294967296,
+            "unit": "B",
+            "MB_1e6": 4294.967296,
+            "GB_1e9": 4.294967296,
+            "MiB_2pow20": 4096,
+            "GiB_2pow30": 4,
+            "from": "hypothetical.serving_assumptions.non_kv_overhead_per_gpu_gib",
+            "note": "HYPOTHETICAL (class C): 4 GiB = 4 × 2^30 B"
+          },
+          "5_kv_pool_per_gpu": {
+            "formula": "step2 − step3 − step4",
+            "value": 52604303680,
+            "unit": "B",
+            "MB_1e6": 52604.30368,
+            "GB_1e9": 52.60430368,
+            "MiB_2pow20": 50167.37335,
+            "GiB_2pow30": 48.99157554
+          },
+          "6_kv_bytes_per_token_per_gpu": {
+            "value": 22528,
+            "unit": "B/token/GPU"
+          },
+          "7_tokens_per_replica": {
+            "formula": "floor(pool / KV bytes per token per GPU)",
+            "value": 2335063,
+            "unit": "tokens",
+            "note": "Every GPU holds 1/8 of each token's KV, so the replica's token capacity equals one GPU's pool ÷ that GPU's bytes per token."
+          },
+          "8_block_bytes_per_gpu": {
+            "formula": "block_size (16) × KV bytes/token/GPU",
+            "value": 360448,
+            "unit": "B/block"
+          },
+          "9_kv_blocks": {
+            "formula": "floor(pool / block bytes)",
+            "value": 145941,
+            "unit": "blocks"
+          },
+          "10_usable_blocks": {
+            "formula": "kv_blocks − 1 (null block 0)",
+            "value": 145940,
+            "unit": "blocks",
+            "note": "vLLM BlockPool reserves block 0 as a null block (note 03, block_pool.py#L184-L188)."
+          },
+          "11_tokens_in_usable_blocks": {
+            "value": 2335040,
+            "unit": "tokens"
+          }
+        },
+        "concurrent_sequences": {
+          "2048": {
+            "context_tokens": 2048,
+            "blocks_per_sequence": {
+              "formula": "ceil(2,048 / 16)",
+              "value": 128,
+              "unit": "blocks"
+            },
+            "sequences_kv_limit": {
+              "formula": "floor(usable_blocks / blocks_per_sequence)",
+              "value": 1140,
+              "unit": "sequences",
+              "arithmetic": "floor(145,940 / 128) = 1,140"
+            },
+            "sequences_after_max_num_seqs_cap": 1024,
+            "binding_limit": "max_num_seqs",
+            "pool_fraction_per_sequence": 0.0008770727696,
+            "kv_bytes_per_sequence_per_gpu": {
+              "value": 46137344,
+              "unit": "B",
+              "MB_1e6": 46.137344,
+              "GB_1e9": 0.046137344,
+              "MiB_2pow20": 44,
+              "GiB_2pow30": 0.04296875
+            }
+          },
+          "8192": {
+            "context_tokens": 8192,
+            "blocks_per_sequence": {
+              "formula": "ceil(8,192 / 16)",
+              "value": 512,
+              "unit": "blocks"
+            },
+            "sequences_kv_limit": {
+              "formula": "floor(usable_blocks / blocks_per_sequence)",
+              "value": 285,
+              "unit": "sequences",
+              "arithmetic": "floor(145,940 / 512) = 285"
+            },
+            "sequences_after_max_num_seqs_cap": 285,
+            "binding_limit": "KV blocks",
+            "pool_fraction_per_sequence": 0.003508291079,
+            "kv_bytes_per_sequence_per_gpu": {
+              "value": 184549376,
+              "unit": "B",
+              "MB_1e6": 184.549376,
+              "GB_1e9": 0.184549376,
+              "MiB_2pow20": 176,
+              "GiB_2pow30": 0.171875
+            }
+          },
+          "32768": {
+            "context_tokens": 32768,
+            "blocks_per_sequence": {
+              "formula": "ceil(32,768 / 16)",
+              "value": 2048,
+              "unit": "blocks"
+            },
+            "sequences_kv_limit": {
+              "formula": "floor(usable_blocks / blocks_per_sequence)",
+              "value": 71,
+              "unit": "sequences",
+              "arithmetic": "floor(145,940 / 2,048) = 71"
+            },
+            "sequences_after_max_num_seqs_cap": 71,
+            "binding_limit": "KV blocks",
+            "pool_fraction_per_sequence": 0.01403316431,
+            "kv_bytes_per_sequence_per_gpu": {
+              "value": 738197504,
+              "unit": "B",
+              "MB_1e6": 738.197504,
+              "GB_1e9": 0.738197504,
+              "MiB_2pow20": 704,
+              "GiB_2pow30": 0.6875
+            }
+          },
+          "131072": {
+            "context_tokens": 131072,
+            "blocks_per_sequence": {
+              "formula": "ceil(131,072 / 16)",
+              "value": 8192,
+              "unit": "blocks"
+            },
+            "sequences_kv_limit": {
+              "formula": "floor(usable_blocks / blocks_per_sequence)",
+              "value": 17,
+              "unit": "sequences",
+              "arithmetic": "floor(145,940 / 8,192) = 17"
+            },
+            "sequences_after_max_num_seqs_cap": 17,
+            "binding_limit": "KV blocks",
+            "pool_fraction_per_sequence": 0.05613265726,
+            "kv_bytes_per_sequence_per_gpu": {
+              "value": 2952790016,
+              "unit": "B",
+              "MB_1e6": 2952.790016,
+              "GB_1e9": 2.952790016,
+              "MiB_2pow20": 2816,
+              "GiB_2pow30": 2.75
+            }
+          }
+        }
+      }
+    }
+  },
+  "capacity_h_frontier_k3_dep16": {
+    "worker": "DEP16 decode worker on GB300 (attention data-parallel: each rank keeps its own sequences' full MLA KV for all 24 MLA layers and their full KDA state)",
+    "ranks_per_worker": 16,
+    "steps_per_rank": {
+      "1_hbm_capacity": {
+        "value": 288000000000,
+        "unit": "B",
+        "MB_1e6": 288000,
+        "GB_1e9": 288,
+        "MiB_2pow20": 274658.2031,
+        "GiB_2pow30": 268.2209015,
+        "from": "hardware.H-frontier.gb300_gpu_hbm",
+        "note": "vendor figure, decimal GB"
+      },
+      "2_times_gpu_memory_utilization": {
+        "formula": "HBM × gpu_memory_utilization (vLLM default)",
+        "value": 264960000000,
+        "unit": "B",
+        "MB_1e6": 264960,
+        "GB_1e9": 264.96,
+        "MiB_2pow20": 252685.5469,
+        "GiB_2pow30": 246.7632294
+      },
+      "3_minus_weights_per_rank": {
+        "value": 210000000000,
+        "unit": "B",
+        "MB_1e6": 210000,
+        "GB_1e9": 210,
+        "MiB_2pow20": 200271.6064,
+        "GiB_2pow30": 195.5777407,
+        "from": "models.M-frontier.trtllm_per_rank_weights_gb.DEP16",
+        "derived_check": {
+          "formula": "non_expert_bytes (replicated) + routed_expert_bytes / 16",
+          "value": 204807762944,
+          "unit": "B",
+          "MB_1e6": 204807.7629,
+          "GB_1e9": 204.8077629,
+          "MiB_2pow20": 195319.9033,
+          "GiB_2pow30": 190.7420931,
+          "note": "The guide's figure is 5.2 GB above this sum; the guide does not itemise the rest."
+        },
+        "note": "TensorRT-LLM K3 guide: DEP16 per-rank weights"
+      },
+      "4_minus_non_kv_overhead": {
+        "value": 4294967296,
+        "unit": "B",
+        "MB_1e6": 4294.967296,
+        "GB_1e9": 4.294967296,
+        "MiB_2pow20": 4096,
+        "GiB_2pow30": 4,
+        "note": "HYPOTHETICAL (class C)"
+      },
+      "5_pool_per_rank": {
+        "formula": "step2 − step3 − step4",
+        "value": 50665032704,
+        "unit": "B",
+        "MB_1e6": 50665.0327,
+        "GB_1e9": 50.6650327,
+        "MiB_2pow20": 48317.94043,
+        "GiB_2pow30": 47.1854887
+      }
+    },
+    "block_size_tokens": 64,
+    "block_note": "FlashMLA block of 64 tokens. Hybrid engines use larger unified pages (Dynamo's vLLM GB300 decode flags: '--tensor-parallel-size 8 --block-size 1536 --max-num-seqs 128 --max-num-batched-tokens 2048 --kv-cache-dtype fp8 --kv-transfer-config NixlConnector kv_consumer'; Moonshot: 1024-6144 tokens), which add rounding waste not modelled here.",
+    "concurrent_sequences": {
+      "bf16_mla": {
+        "2048": {
+          "context_tokens": 2048,
+          "bytes_per_sequence": {
+            "formula": "fixed KDA state + ceil(T/64) × 64 × MLA bytes/token",
+            "value": 505995264,
+            "unit": "B",
+            "MB_1e6": 505.995264,
+            "GB_1e9": 0.505995264,
+            "MiB_2pow20": 482.5546875,
+            "GiB_2pow30": 0.471244812,
+            "fixed_state_share": 0.888095585
+          },
+          "sequences_per_rank": {
+            "formula": "floor(pool / bytes_per_sequence)",
+            "value": 100,
+            "unit": "sequences",
+            "arithmetic": "floor(50,665,032,704 / 505,995,264) = 100"
+          },
+          "sequences_per_worker": {
+            "formula": "sequences_per_rank × 16",
+            "value": 1600,
+            "unit": "sequences"
+          },
+          "sequences_per_rank_if_no_fixed_state": {
+            "value": 894,
+            "unit": "sequences",
+            "note": "Counterfactual: MLA KV only. Shows what the fixed state costs at short contexts."
+          }
+        },
+        "8192": {
+          "context_tokens": 8192,
+          "bytes_per_sequence": {
+            "formula": "fixed KDA state + ceil(T/64) × 64 × MLA bytes/token",
+            "value": 675864576,
+            "unit": "B",
+            "MB_1e6": 675.864576,
+            "GB_1e9": 0.675864576,
+            "MiB_2pow20": 644.5546875,
+            "GiB_2pow30": 0.629447937,
+            "fixed_state_share": 0.6648849133
+          },
+          "sequences_per_rank": {
+            "formula": "floor(pool / bytes_per_sequence)",
+            "value": 74,
+            "unit": "sequences",
+            "arithmetic": "floor(50,665,032,704 / 675,864,576) = 74"
+          },
+          "sequences_per_worker": {
+            "formula": "sequences_per_rank × 16",
+            "value": 1184,
+            "unit": "sequences"
+          },
+          "sequences_per_rank_if_no_fixed_state": {
+            "value": 223,
+            "unit": "sequences",
+            "note": "Counterfactual: MLA KV only. Shows what the fixed state costs at short contexts."
+          }
+        },
+        "32768": {
+          "context_tokens": 32768,
+          "bytes_per_sequence": {
+            "formula": "fixed KDA state + ceil(T/64) × 64 × MLA bytes/token",
+            "value": 1355341824,
+            "unit": "B",
+            "MB_1e6": 1355.341824,
+            "GB_1e9": 1.355341824,
+            "MiB_2pow20": 1292.554688,
+            "GiB_2pow30": 1.262260437,
+            "fixed_state_share": 0.3315563292
+          },
+          "sequences_per_rank": {
+            "formula": "floor(pool / bytes_per_sequence)",
+            "value": 37,
+            "unit": "sequences",
+            "arithmetic": "floor(50,665,032,704 / 1,355,341,824) = 37"
+          },
+          "sequences_per_worker": {
+            "formula": "sequences_per_rank × 16",
+            "value": 592,
+            "unit": "sequences"
+          },
+          "sequences_per_rank_if_no_fixed_state": {
+            "value": 55,
+            "unit": "sequences",
+            "note": "Counterfactual: MLA KV only. Shows what the fixed state costs at short contexts."
+          }
+        },
+        "131072": {
+          "context_tokens": 131072,
+          "bytes_per_sequence": {
+            "formula": "fixed KDA state + ceil(T/64) × 64 × MLA bytes/token",
+            "value": 4073250816,
+            "unit": "B",
+            "MB_1e6": 4073.250816,
+            "GB_1e9": 4.073250816,
+            "MiB_2pow20": 3884.554688,
+            "GiB_2pow30": 3.793510437,
+            "fixed_state_share": 0.1103227325
+          },
+          "sequences_per_rank": {
+            "formula": "floor(pool / bytes_per_sequence)",
+            "value": 12,
+            "unit": "sequences",
+            "arithmetic": "floor(50,665,032,704 / 4,073,250,816) = 12"
+          },
+          "sequences_per_worker": {
+            "formula": "sequences_per_rank × 16",
+            "value": 192,
+            "unit": "sequences"
+          },
+          "sequences_per_rank_if_no_fixed_state": {
+            "value": 13,
+            "unit": "sequences",
+            "note": "Counterfactual: MLA KV only. Shows what the fixed state costs at short contexts."
+          }
+        }
+      },
+      "fp8_mla": {
+        "2048": {
+          "context_tokens": 2048,
+          "bytes_per_sequence": {
+            "formula": "fixed KDA state + ceil(T/64) × 64 × MLA bytes/token",
+            "value": 477683712,
+            "unit": "B",
+            "MB_1e6": 477.683712,
+            "GB_1e9": 0.477683712,
+            "MiB_2pow20": 455.5546875,
+            "GiB_2pow30": 0.4448776245,
+            "fixed_state_share": 0.9407315944
+          },
+          "sequences_per_rank": {
+            "formula": "floor(pool / bytes_per_sequence)",
+            "value": 106,
+            "unit": "sequences",
+            "arithmetic": "floor(50,665,032,704 / 477,683,712) = 106"
+          },
+          "sequences_per_worker": {
+            "formula": "sequences_per_rank × 16",
+            "value": 1696,
+            "unit": "sequences"
+          },
+          "sequences_per_rank_if_no_fixed_state": {
+            "value": 1789,
+            "unit": "sequences",
+            "note": "Counterfactual: MLA KV only. Shows what the fixed state costs at short contexts."
+          }
+        },
+        "8192": {
+          "context_tokens": 8192,
+          "bytes_per_sequence": {
+            "formula": "fixed KDA state + ceil(T/64) × 64 × MLA bytes/token",
+            "value": 562618368,
+            "unit": "B",
+            "MB_1e6": 562.618368,
+            "GB_1e9": 0.562618368,
+            "MiB_2pow20": 536.5546875,
+            "GiB_2pow30": 0.523979187,
+            "fixed_state_share": 0.7987157646
+          },
+          "sequences_per_rank": {
+            "formula": "floor(pool / bytes_per_sequence)",
+            "value": 90,
+            "unit": "sequences",
+            "arithmetic": "floor(50,665,032,704 / 562,618,368) = 90"
+          },
+          "sequences_per_worker": {
+            "formula": "sequences_per_rank × 16",
+            "value": 1440,
+            "unit": "sequences"
+          },
+          "sequences_per_rank_if_no_fixed_state": {
+            "value": 447,
+            "unit": "sequences",
+            "note": "Counterfactual: MLA KV only. Shows what the fixed state costs at short contexts."
+          }
+        },
+        "32768": {
+          "context_tokens": 32768,
+          "bytes_per_sequence": {
+            "formula": "fixed KDA state + ceil(T/64) × 64 × MLA bytes/token",
+            "value": 902356992,
+            "unit": "B",
+            "MB_1e6": 902.356992,
+            "GB_1e9": 0.902356992,
+            "MiB_2pow20": 860.5546875,
+            "GiB_2pow30": 0.840385437,
+            "fixed_state_share": 0.4979982025
+          },
+          "sequences_per_rank": {
+            "formula": "floor(pool / bytes_per_sequence)",
+            "value": 56,
+            "unit": "sequences",
+            "arithmetic": "floor(50,665,032,704 / 902,356,992) = 56"
+          },
+          "sequences_per_worker": {
+            "formula": "sequences_per_rank × 16",
+            "value": 896,
+            "unit": "sequences"
+          },
+          "sequences_per_rank_if_no_fixed_state": {
+            "value": 111,
+            "unit": "sequences",
+            "note": "Counterfactual: MLA KV only. Shows what the fixed state costs at short contexts."
+          }
+        },
+        "131072": {
+          "context_tokens": 131072,
+          "bytes_per_sequence": {
+            "formula": "fixed KDA state + ceil(T/64) × 64 × MLA bytes/token",
+            "value": 2261311488,
+            "unit": "B",
+            "MB_1e6": 2261.311488,
+            "GB_1e9": 2.261311488,
+            "MiB_2pow20": 2156.554688,
+            "GiB_2pow30": 2.106010437,
+            "fixed_state_share": 0.1987219197
+          },
+          "sequences_per_rank": {
+            "formula": "floor(pool / bytes_per_sequence)",
+            "value": 22,
+            "unit": "sequences",
+            "arithmetic": "floor(50,665,032,704 / 2,261,311,488) = 22"
+          },
+          "sequences_per_worker": {
+            "formula": "sequences_per_rank × 16",
+            "value": 352,
+            "unit": "sequences"
+          },
+          "sequences_per_rank_if_no_fixed_state": {
+            "value": 27,
+            "unit": "sequences",
+            "note": "Counterfactual: MLA KV only. Shows what the fixed state costs at short contexts."
+          }
+        }
+      }
+    },
+    "note": "At 2,048 tokens the fixed 449.4 MB KDA state is 89% of each sequence's memory, so FP8 MLA raises sequences per rank only from 100 to 106; at 131,072 tokens the MLA KV dominates and FP8 MLA raises it from 12 to 22."
+  },
+  "design_consequences": {
+    "N_concurrent_8k_sequences": {
+      "value": 1000,
+      "unit": "sequences",
+      "from": "hypothetical.serving_assumptions.concurrent_sequences_example (HYPOTHETICAL)"
+    },
+    "m_dense_h_teach": {
+      "bf16_weights_bf16_kv": {
+        "max_batch_at_8k_per_node": 101,
+        "binding_limit": "KV blocks",
+        "nodes_for_N": {
+          "formula": "ceil(N / 101)",
+          "value": 10,
+          "unit": "8-GPU nodes"
+        },
+        "gpus_for_N": {
+          "formula": "nodes × 8",
+          "value": 80,
+          "unit": "GPUs"
+        },
+        "blocks_per_128k_sequence_share_of_pool": 0.1579972613
+      },
+      "bf16_weights_fp8_kv": {
+        "max_batch_at_8k_per_node": 202,
+        "binding_limit": "KV blocks",
+        "nodes_for_N": {
+          "formula": "ceil(N / 202)",
+          "value": 5,
+          "unit": "8-GPU nodes"
+        },
+        "gpus_for_N": {
+          "formula": "nodes × 8",
+          "value": 40,
+          "unit": "GPUs"
+        },
+        "blocks_per_128k_sequence_share_of_pool": 0.07899710704
+      },
+      "fp8_weights_bf16_kv": {
+        "max_batch_at_8k_per_node": 142,
+        "binding_limit": "KV blocks",
+        "nodes_for_N": {
+          "formula": "ceil(N / 142)",
+          "value": 8,
+          "unit": "8-GPU nodes"
+        },
+        "gpus_for_N": {
+          "formula": "nodes × 8",
+          "value": 64,
+          "unit": "GPUs"
+        },
+        "blocks_per_128k_sequence_share_of_pool": 0.112266853
+      },
+      "fp8_weights_fp8_kv": {
+        "max_batch_at_8k_per_node": 285,
+        "binding_limit": "KV blocks",
+        "nodes_for_N": {
+          "formula": "ceil(N / 285)",
+          "value": 4,
+          "unit": "8-GPU nodes"
+        },
+        "gpus_for_N": {
+          "formula": "nodes × 8",
+          "value": 32,
+          "unit": "GPUs"
+        },
+        "blocks_per_128k_sequence_share_of_pool": 0.05613265726
+      }
+    },
+    "m_frontier_gb300_dep16": {
+      "bf16_mla": {
+        "max_batch_at_8k_per_rank": 74,
+        "max_batch_at_8k_per_dep16_worker": 1184,
+        "dep16_workers_for_N": {
+          "formula": "ceil(N / 1184)",
+          "value": 1,
+          "unit": "workers"
+        },
+        "gpus_for_N": {
+          "value": 16,
+          "unit": "GPUs",
+          "note": "Decode-side memory only; prefill GPUs are extra."
+        }
+      },
+      "fp8_mla": {
+        "max_batch_at_8k_per_rank": 90,
+        "max_batch_at_8k_per_dep16_worker": 1440,
+        "dep16_workers_for_N": {
+          "formula": "ceil(N / 1440)",
+          "value": 1,
+          "unit": "workers"
+        },
+        "gpus_for_N": {
+          "value": 16,
+          "unit": "GPUs",
+          "note": "Decode-side memory only; prefill GPUs are extra."
+        }
+      }
+    },
+    "consequences": {
+      "max_batch": "The KV pool, not compute, caps the batch at long context: one 8-GPU node of M-dense (BF16 weights, BF16 KV) holds 101 sequences at 8,192 tokens but 6 at 131,072 tokens.",
+      "admission_policy": "One 131,072-token sequence takes 11.2% of the KV pool in the engine-default case (fp8_weights_bf16_kv). Admission must check free blocks, or the engine preempts running sequences when an allocation fails.",
+      "routing": "KV use per request scales with context: a 131,072-token request uses 64× the blocks of a 2,048-token one. Routing by request count ignores this; KV-aware routing (free blocks, cached prefix) does not.",
+      "gpu_count": "GPUs for N concurrent 8k sequences = ceil(N / sequences per node) × 8: 80 H100 with BF16 weights and KV, 32 with FP8 weights and KV.",
+      "fp8_kv_effect": "FP8 KV halves KV bytes per token; with FP8 weights it raises 8k sequences per node from 142 to 285.",
+      "k3_state_bound": "For K3 on a DEP16 rank, FP8 MLA raises 2,048-token sequences per rank from 100 to 106 only: short requests are bound by the fixed KDA state, not by KV."
+    }
+  }
+}

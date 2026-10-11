@@ -1,0 +1,1332 @@
+{
+  "meta": {
+    "script": "sim/tensor_shapes.py",
+    "generated_at": "2026-10-09T17:39:36+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T12:31:14+00:00",
+      "sha256": "7760cf964886"
+    },
+    "constants_used": {
+      "extra.sims_w10.fa3_sm90_hdim128_causal_block_m": 128,
+      "extra.sims_w10.fa3_sm90_hdim128_causal_block_n": 128,
+      "hardware.H-teach.h100_l2_cache": 50,
+      "hardware.H-teach.h100_max_shared_per_sm": 228,
+      "hardware.H-teach.h100_sxm_bf16_dense": 989.5,
+      "hardware.H-teach.h100_sxm_hbm_bandwidth": 3.35,
+      "models.M-dense.flops_per_token_matmul": 246800000000.0,
+      "models.M-dense.head_dim": 128,
+      "models.M-dense.hidden_size": 12288,
+      "models.M-dense.intermediate_size": 28672,
+      "models.M-dense.max_position_embeddings": 262144,
+      "models.M-dense.num_attention_heads": 96,
+      "models.M-dense.num_hidden_layers": 88,
+      "models.M-dense.num_key_value_heads": 8,
+      "models.M-dense.text_params": 125025988608,
+      "models.M-dense.tie_word_embeddings": false,
+      "models.M-dense.torch_dtype": "bfloat16",
+      "models.M-dense.total_params": 127704210176,
+      "models.M-dense.vision_params": 2678221568,
+      "models.M-dense.vllm_recipe": {
+        "recommended_hw": "8x H200 (alt 4x B200, 2-8x MI300X)",
+        "tp": 8,
+        "eagle_num_speculative_tokens": 3,
+        "mi300x_tp8_1k_in_1k_out_conc32": {
+          "output_tok_s": 915,
+          "mean_ttft_ms": 2522,
+          "mean_tpot_ms": 26.1
+        },
+        "mi300x_tp1": {
+          "output_tok_s": 438,
+          "mean_ttft_ms": 5719,
+          "mean_tpot_ms": 55.2
+        }
+      },
+      "models.M-dense.vocab_size": 131072,
+      "models.M-frontier.active_params": 104189614848,
+      "models.M-frontier.first_k_dense_replace": 1,
+      "models.M-frontier.hidden_size": 7168,
+      "models.M-frontier.kv_lora_rank": 512,
+      "models.M-frontier.model_id": "moonshotai/Kimi-K3",
+      "models.M-frontier.moe_intermediate_size": 3072,
+      "models.M-frontier.num_attention_heads": 96,
+      "models.M-frontier.num_experts": 896,
+      "models.M-frontier.num_experts_per_token": 16,
+      "models.M-frontier.num_hidden_layers": 93,
+      "models.M-frontier.num_shared_experts": 2,
+      "models.M-frontier.q_lora_rank": 1536,
+      "models.M-frontier.qk_nope_head_dim": 128,
+      "models.M-frontier.qk_rope_head_dim": 64,
+      "models.M-frontier.routed_expert_hidden_size": 3584,
+      "models.M-frontier.routed_expert_params": 2722740830208,
+      "models.M-frontier.total_params": 2779931837184,
+      "models.M-frontier.v_head_dim": 128
+    }
+  },
+  "label": "Real M-dense config (class A). The sequence length L is your request's pass-1 prompt length from data/context_budget.json, counted on M-frontier's tokenizer (the reference request runs on M-frontier); Part 10 uses it as the length of an M-dense forward pass.",
+  "serves": {
+    "requirements": [
+      "R-X.1",
+      "R-X.2",
+      "R-X.4",
+      "R-X.6",
+      "R-X.7",
+      "R-X.8",
+      "R-X.9"
+    ],
+    "manuscript": "Part 10 (10.1, 10.2, 10.4, 10.6, 10.7, 10.8, 10.9); Part 11 reads it"
+  },
+  "config": {
+    "num_hidden_layers": 88,
+    "hidden_size": 12288,
+    "num_attention_heads": 96,
+    "num_key_value_heads": 8,
+    "head_dim": 128,
+    "intermediate_size": 28672,
+    "vocab_size": 131072,
+    "tie_word_embeddings": false,
+    "tp": 8
+  },
+  "config_checks": {
+    "heads_times_head_dim": 12288,
+    "equals_hidden_size": true,
+    "gqa_group": 12,
+    "mlp_expansion": 2.3333333333333335,
+    "mlp_expansion_formula": "28,672 / 12,288"
+  },
+  "reference_lengths": {
+    "source": "data/context_budget.json passes.<p>.prompt_tokens (K3 tokens)",
+    "p1": 23322,
+    "p2": 29816,
+    "p3": 30395
+  },
+  "input_ids": {
+    "shape": "[1, 23,322]",
+    "dtype": "int64 in PyTorch (int32 in many kernels)",
+    "B": 1,
+    "L": 23322
+  },
+  "embedding": {
+    "table_shape": "[131,072, 12,288]",
+    "table": {
+      "formula": "131,072 × 12,288 × 2 B (BF16)",
+      "value": 3221225472,
+      "unit": "B",
+      "MB_1e6": 3221.225472,
+      "GB_1e9": 3.221225472,
+      "MiB_2pow20": 3072,
+      "GiB_2pow30": 3
+    },
+    "row": {
+      "formula": "12,288 × 2 B",
+      "value": 24576,
+      "unit": "B",
+      "MB_1e6": 0.024576,
+      "GB_1e9": 2.4576e-05,
+      "MiB_2pow20": 0.0234375,
+      "GiB_2pow30": 2.288818359e-05
+    },
+    "out_shape": "[1, 23,322, 12,288]",
+    "out": {
+      "formula": "1 × 23,322 × 12,288 × 2 B",
+      "value": 573161472,
+      "unit": "B",
+      "MB_1e6": 573.161472,
+      "GB_1e9": 0.573161472,
+      "MiB_2pow20": 546.609375,
+      "GiB_2pow30": 0.5337982178
+    },
+    "tied_to_lm_head": false
+  },
+  "params": {
+    "per_layer": {
+      "formula": "attention + MLP + 2 norms",
+      "value": 1384144896,
+      "unit": "params"
+    },
+    "attention_per_layer": 327155712,
+    "mlp_per_layer": 1056964608,
+    "norms_per_layer": 24576,
+    "attention_share_of_layer": 0.23635943964063139,
+    "mlp_share_of_layer": 0.7636228049928091,
+    "per_layer_bytes_fp8": {
+      "value": 1384120320,
+      "unit": "B",
+      "MB_1e6": 1384.12032,
+      "GB_1e9": 1.38412032,
+      "MiB_2pow20": 1320,
+      "GiB_2pow30": 1.2890625,
+      "note": "released checkpoint: linear weights in FP8 E4M3"
+    },
+    "per_layer_bytes_bf16": {
+      "value": 2768240640,
+      "unit": "B",
+      "MB_1e6": 2768.24064,
+      "GB_1e9": 2.76824064,
+      "MiB_2pow20": 2640,
+      "GiB_2pow30": 2.578125
+    },
+    "components": {
+      "embedding": 1610612736,
+      "attention_all_layers": 28789702656,
+      "mlp_all_layers": 93012885504,
+      "norms_all_layers": 2162688,
+      "final_norm": 12288,
+      "lm_head": 1610612736
+    },
+    "text_total": {
+      "value": 125025988608,
+      "unit": "params",
+      "constant": 125025988608,
+      "matches_constant": true
+    },
+    "vision_params": 2678221568,
+    "with_vision": {
+      "value": 127704210176,
+      "unit": "params",
+      "constant": 127704210176,
+      "matches_constant": true,
+      "billions": 127.7042102
+    },
+    "text_billions": 125.025988608
+  },
+  "tp8_weight_shapes": {
+    "q_proj": {
+      "full": "[12,288, 12,288]",
+      "per_gpu": "[12,288, 1,536]",
+      "split": "output columns"
+    },
+    "k_proj": {
+      "full": "[12,288, 1,024]",
+      "per_gpu": "[12,288, 128]",
+      "split": "output columns"
+    },
+    "v_proj": {
+      "full": "[12,288, 1,024]",
+      "per_gpu": "[12,288, 128]",
+      "split": "output columns"
+    },
+    "o_proj": {
+      "full": "[12,288, 12,288]",
+      "per_gpu": "[1,536, 12,288]",
+      "split": "input rows"
+    },
+    "gate_proj": {
+      "full": "[12,288, 28,672]",
+      "per_gpu": "[12,288, 3,584]",
+      "split": "output columns"
+    },
+    "up_proj": {
+      "full": "[12,288, 28,672]",
+      "per_gpu": "[12,288, 3,584]",
+      "split": "output columns"
+    },
+    "down_proj": {
+      "full": "[28,672, 12,288]",
+      "per_gpu": "[3,584, 12,288]",
+      "split": "input rows"
+    }
+  },
+  "layer_decode": {
+    "B": 1,
+    "L": 1,
+    "context": 23323,
+    "tokens": 1,
+    "steps": [
+      {
+        "step": "input",
+        "op": "hidden state from the previous layer (or the embedding)",
+        "out": "[1, 1, 12,288]",
+        "out_bytes_bf16": 24576
+      },
+      {
+        "step": "rmsnorm_1",
+        "op": "RMSNorm over d (elementwise; weight γ of d values)",
+        "in": "[1, 1, 12,288]",
+        "out": "[1, 1, 12,288]",
+        "params": 12288
+      },
+      {
+        "step": "q_proj",
+        "op": "Q = N·W_q",
+        "in": "[1, 1, 12,288]",
+        "weight_shape": "[12,288, 12,288]",
+        "params": 150994944,
+        "flops": 301989888,
+        "flops_formula": "2 × 1 tokens × 12,288 × 12,288",
+        "weight_bytes_bf16": 301989888,
+        "weight_bytes_fp8": 150994944,
+        "out": "[1, 1, 12,288]",
+        "out_heads": "[1, 96, 1, 128]",
+        "out_bytes_bf16": 24576
+      },
+      {
+        "step": "k_proj",
+        "op": "K = N·W_k",
+        "in": "[1, 1, 12,288]",
+        "weight_shape": "[12,288, 1,024]",
+        "params": 12582912,
+        "flops": 25165824,
+        "flops_formula": "2 × 1 tokens × 12,288 × 1,024",
+        "weight_bytes_bf16": 25165824,
+        "weight_bytes_fp8": 12582912,
+        "out": "[1, 1, 1,024]",
+        "out_heads": "[1, 8, 1, 128]",
+        "out_bytes_bf16": 2048
+      },
+      {
+        "step": "v_proj",
+        "op": "V = N·W_v",
+        "in": "[1, 1, 12,288]",
+        "weight_shape": "[12,288, 1,024]",
+        "params": 12582912,
+        "flops": 25165824,
+        "flops_formula": "2 × 1 tokens × 12,288 × 1,024",
+        "weight_bytes_bf16": 25165824,
+        "weight_bytes_fp8": 12582912,
+        "out": "[1, 1, 1,024]",
+        "out_heads": "[1, 8, 1, 128]",
+        "out_bytes_bf16": 2048
+      },
+      {
+        "step": "rope",
+        "op": "rotate Q and K by position (elementwise; V is not rotated)",
+        "in": "[1, 96, 1, 128] and [1, 8, 1, 128]",
+        "out": "same shapes"
+      },
+      {
+        "step": "kv_write",
+        "op": "append K and V of the new tokens to the KV cache",
+        "out": "[1, 8, 128] × 2",
+        "out_bytes_bf16": 4096
+      },
+      {
+        "step": "attention",
+        "op": "softmax(Q·Kᵀ/√d_head + mask)·V per head; each KV head serves 12 query heads",
+        "scores_shape": "[1, 96, 1, 23,323]",
+        "pairs": 23323,
+        "pairs_formula": "1 × 1 × 23,323",
+        "flops": 1146372096,
+        "flops_formula": "4 × 96 heads × 128 × pairs",
+        "out": "[1, 1, 12,288]"
+      },
+      {
+        "step": "o_proj",
+        "op": "attention output · W_o",
+        "in": "[1, 1, 12,288]",
+        "weight_shape": "[12,288, 12,288]",
+        "params": 150994944,
+        "flops": 301989888,
+        "flops_formula": "2 × 1 tokens × 12,288 × 12,288",
+        "weight_bytes_bf16": 301989888,
+        "weight_bytes_fp8": 150994944,
+        "out": "[1, 1, 12,288]"
+      },
+      {
+        "step": "residual_1",
+        "op": "H = X + attention output (elementwise add)",
+        "out": "[1, 1, 12,288]"
+      },
+      {
+        "step": "rmsnorm_2",
+        "op": "RMSNorm over d",
+        "in": "[1, 1, 12,288]",
+        "out": "[1, 1, 12,288]",
+        "params": 12288
+      },
+      {
+        "step": "gate_proj",
+        "op": "a = N·W_gate",
+        "in": "[1, 1, 12,288]",
+        "weight_shape": "[12,288, 28,672]",
+        "params": 352321536,
+        "flops": 704643072,
+        "flops_formula": "2 × 1 tokens × 12,288 × 28,672",
+        "weight_bytes_bf16": 704643072,
+        "weight_bytes_fp8": 352321536,
+        "out": "[1, 1, 28,672]",
+        "out_bytes_bf16": 57344
+      },
+      {
+        "step": "up_proj",
+        "op": "b = N·W_up",
+        "in": "[1, 1, 12,288]",
+        "weight_shape": "[12,288, 28,672]",
+        "params": 352321536,
+        "flops": 704643072,
+        "flops_formula": "2 × 1 tokens × 12,288 × 28,672",
+        "weight_bytes_bf16": 704643072,
+        "weight_bytes_fp8": 352321536,
+        "out": "[1, 1, 28,672]",
+        "out_bytes_bf16": 57344
+      },
+      {
+        "step": "silu_mul",
+        "op": "h = SiLU(a) ⊙ b (elementwise)",
+        "in": "[1, 1, 28,672]",
+        "out": "[1, 1, 28,672]"
+      },
+      {
+        "step": "down_proj",
+        "op": "out = h·W_down",
+        "in": "[1, 1, 28,672]",
+        "weight_shape": "[28,672, 12,288]",
+        "params": 352321536,
+        "flops": 704643072,
+        "flops_formula": "2 × 1 tokens × 28,672 × 12,288",
+        "weight_bytes_bf16": 704643072,
+        "weight_bytes_fp8": 352321536,
+        "out": "[1, 1, 12,288]"
+      },
+      {
+        "step": "residual_2",
+        "op": "X' = H + MLP output (elementwise add)",
+        "out": "[1, 1, 12,288]"
+      }
+    ],
+    "by_step": {
+      "input": {
+        "step": "input",
+        "op": "hidden state from the previous layer (or the embedding)",
+        "out": "[1, 1, 12,288]",
+        "out_bytes_bf16": 24576
+      },
+      "rmsnorm_1": {
+        "step": "rmsnorm_1",
+        "op": "RMSNorm over d (elementwise; weight γ of d values)",
+        "in": "[1, 1, 12,288]",
+        "out": "[1, 1, 12,288]",
+        "params": 12288
+      },
+      "q_proj": {
+        "step": "q_proj",
+        "op": "Q = N·W_q",
+        "in": "[1, 1, 12,288]",
+        "weight_shape": "[12,288, 12,288]",
+        "params": 150994944,
+        "flops": 301989888,
+        "flops_formula": "2 × 1 tokens × 12,288 × 12,288",
+        "weight_bytes_bf16": 301989888,
+        "weight_bytes_fp8": 150994944,
+        "out": "[1, 1, 12,288]",
+        "out_heads": "[1, 96, 1, 128]",
+        "out_bytes_bf16": 24576
+      },
+      "k_proj": {
+        "step": "k_proj",
+        "op": "K = N·W_k",
+        "in": "[1, 1, 12,288]",
+        "weight_shape": "[12,288, 1,024]",
+        "params": 12582912,
+        "flops": 25165824,
+        "flops_formula": "2 × 1 tokens × 12,288 × 1,024",
+        "weight_bytes_bf16": 25165824,
+        "weight_bytes_fp8": 12582912,
+        "out": "[1, 1, 1,024]",
+        "out_heads": "[1, 8, 1, 128]",
+        "out_bytes_bf16": 2048
+      },
+      "v_proj": {
+        "step": "v_proj",
+        "op": "V = N·W_v",
+        "in": "[1, 1, 12,288]",
+        "weight_shape": "[12,288, 1,024]",
+        "params": 12582912,
+        "flops": 25165824,
+        "flops_formula": "2 × 1 tokens × 12,288 × 1,024",
+        "weight_bytes_bf16": 25165824,
+        "weight_bytes_fp8": 12582912,
+        "out": "[1, 1, 1,024]",
+        "out_heads": "[1, 8, 1, 128]",
+        "out_bytes_bf16": 2048
+      },
+      "rope": {
+        "step": "rope",
+        "op": "rotate Q and K by position (elementwise; V is not rotated)",
+        "in": "[1, 96, 1, 128] and [1, 8, 1, 128]",
+        "out": "same shapes"
+      },
+      "kv_write": {
+        "step": "kv_write",
+        "op": "append K and V of the new tokens to the KV cache",
+        "out": "[1, 8, 128] × 2",
+        "out_bytes_bf16": 4096
+      },
+      "attention": {
+        "step": "attention",
+        "op": "softmax(Q·Kᵀ/√d_head + mask)·V per head; each KV head serves 12 query heads",
+        "scores_shape": "[1, 96, 1, 23,323]",
+        "pairs": 23323,
+        "pairs_formula": "1 × 1 × 23,323",
+        "flops": 1146372096,
+        "flops_formula": "4 × 96 heads × 128 × pairs",
+        "out": "[1, 1, 12,288]"
+      },
+      "o_proj": {
+        "step": "o_proj",
+        "op": "attention output · W_o",
+        "in": "[1, 1, 12,288]",
+        "weight_shape": "[12,288, 12,288]",
+        "params": 150994944,
+        "flops": 301989888,
+        "flops_formula": "2 × 1 tokens × 12,288 × 12,288",
+        "weight_bytes_bf16": 301989888,
+        "weight_bytes_fp8": 150994944,
+        "out": "[1, 1, 12,288]"
+      },
+      "residual_1": {
+        "step": "residual_1",
+        "op": "H = X + attention output (elementwise add)",
+        "out": "[1, 1, 12,288]"
+      },
+      "rmsnorm_2": {
+        "step": "rmsnorm_2",
+        "op": "RMSNorm over d",
+        "in": "[1, 1, 12,288]",
+        "out": "[1, 1, 12,288]",
+        "params": 12288
+      },
+      "gate_proj": {
+        "step": "gate_proj",
+        "op": "a = N·W_gate",
+        "in": "[1, 1, 12,288]",
+        "weight_shape": "[12,288, 28,672]",
+        "params": 352321536,
+        "flops": 704643072,
+        "flops_formula": "2 × 1 tokens × 12,288 × 28,672",
+        "weight_bytes_bf16": 704643072,
+        "weight_bytes_fp8": 352321536,
+        "out": "[1, 1, 28,672]",
+        "out_bytes_bf16": 57344
+      },
+      "up_proj": {
+        "step": "up_proj",
+        "op": "b = N·W_up",
+        "in": "[1, 1, 12,288]",
+        "weight_shape": "[12,288, 28,672]",
+        "params": 352321536,
+        "flops": 704643072,
+        "flops_formula": "2 × 1 tokens × 12,288 × 28,672",
+        "weight_bytes_bf16": 704643072,
+        "weight_bytes_fp8": 352321536,
+        "out": "[1, 1, 28,672]",
+        "out_bytes_bf16": 57344
+      },
+      "silu_mul": {
+        "step": "silu_mul",
+        "op": "h = SiLU(a) ⊙ b (elementwise)",
+        "in": "[1, 1, 28,672]",
+        "out": "[1, 1, 28,672]"
+      },
+      "down_proj": {
+        "step": "down_proj",
+        "op": "out = h·W_down",
+        "in": "[1, 1, 28,672]",
+        "weight_shape": "[28,672, 12,288]",
+        "params": 352321536,
+        "flops": 704643072,
+        "flops_formula": "2 × 1 tokens × 28,672 × 12,288",
+        "weight_bytes_bf16": 704643072,
+        "weight_bytes_fp8": 352321536,
+        "out": "[1, 1, 12,288]"
+      },
+      "residual_2": {
+        "step": "residual_2",
+        "op": "X' = H + MLP output (elementwise add)",
+        "out": "[1, 1, 12,288]"
+      }
+    },
+    "flops": {
+      "attention_projections": 654311424,
+      "attention_core": 1146372096,
+      "mlp": 2113929216,
+      "linear": 2768240640,
+      "total": 3914612736,
+      "attention_core_share": 0.2928443177680399
+    }
+  },
+  "layer_prefill_p1": {
+    "B": 1,
+    "L": 23322,
+    "context": 23322,
+    "tokens": 23322,
+    "steps": [
+      {
+        "step": "input",
+        "op": "hidden state from the previous layer (or the embedding)",
+        "out": "[1, 23,322, 12,288]",
+        "out_bytes_bf16": 573161472
+      },
+      {
+        "step": "rmsnorm_1",
+        "op": "RMSNorm over d (elementwise; weight γ of d values)",
+        "in": "[1, 23,322, 12,288]",
+        "out": "[1, 23,322, 12,288]",
+        "params": 12288
+      },
+      {
+        "step": "q_proj",
+        "op": "Q = N·W_q",
+        "in": "[1, 23,322, 12,288]",
+        "weight_shape": "[12,288, 12,288]",
+        "params": 150994944,
+        "flops": 7043008167936,
+        "flops_formula": "2 × 23,322 tokens × 12,288 × 12,288",
+        "weight_bytes_bf16": 301989888,
+        "weight_bytes_fp8": 150994944,
+        "out": "[1, 23,322, 12,288]",
+        "out_heads": "[1, 96, 23,322, 128]",
+        "out_bytes_bf16": 573161472
+      },
+      {
+        "step": "k_proj",
+        "op": "K = N·W_k",
+        "in": "[1, 23,322, 12,288]",
+        "weight_shape": "[12,288, 1,024]",
+        "params": 12582912,
+        "flops": 586917347328,
+        "flops_formula": "2 × 23,322 tokens × 12,288 × 1,024",
+        "weight_bytes_bf16": 25165824,
+        "weight_bytes_fp8": 12582912,
+        "out": "[1, 23,322, 1,024]",
+        "out_heads": "[1, 8, 23,322, 128]",
+        "out_bytes_bf16": 47763456
+      },
+      {
+        "step": "v_proj",
+        "op": "V = N·W_v",
+        "in": "[1, 23,322, 12,288]",
+        "weight_shape": "[12,288, 1,024]",
+        "params": 12582912,
+        "flops": 586917347328,
+        "flops_formula": "2 × 23,322 tokens × 12,288 × 1,024",
+        "weight_bytes_bf16": 25165824,
+        "weight_bytes_fp8": 12582912,
+        "out": "[1, 23,322, 1,024]",
+        "out_heads": "[1, 8, 23,322, 128]",
+        "out_bytes_bf16": 47763456
+      },
+      {
+        "step": "rope",
+        "op": "rotate Q and K by position (elementwise; V is not rotated)",
+        "in": "[1, 96, 23,322, 128] and [1, 8, 23,322, 128]",
+        "out": "same shapes"
+      },
+      {
+        "step": "kv_write",
+        "op": "append K and V of the new tokens to the KV cache",
+        "out": "[23,322, 8, 128] × 2",
+        "out_bytes_bf16": 95526912
+      },
+      {
+        "step": "attention",
+        "op": "softmax(Q·Kᵀ/√d_head + mask)·V per head; each KV head serves 12 query heads",
+        "scores_shape": "[1, 96, 23,322, 23,322]",
+        "pairs": 271969503,
+        "pairs_formula": "1 × 23,322 × (23,322 + 1) / 2",
+        "flops": 13367845011456,
+        "flops_formula": "4 × 96 heads × 128 × pairs",
+        "out": "[1, 23,322, 12,288]"
+      },
+      {
+        "step": "o_proj",
+        "op": "attention output · W_o",
+        "in": "[1, 23,322, 12,288]",
+        "weight_shape": "[12,288, 12,288]",
+        "params": 150994944,
+        "flops": 7043008167936,
+        "flops_formula": "2 × 23,322 tokens × 12,288 × 12,288",
+        "weight_bytes_bf16": 301989888,
+        "weight_bytes_fp8": 150994944,
+        "out": "[1, 23,322, 12,288]"
+      },
+      {
+        "step": "residual_1",
+        "op": "H = X + attention output (elementwise add)",
+        "out": "[1, 23,322, 12,288]"
+      },
+      {
+        "step": "rmsnorm_2",
+        "op": "RMSNorm over d",
+        "in": "[1, 23,322, 12,288]",
+        "out": "[1, 23,322, 12,288]",
+        "params": 12288
+      },
+      {
+        "step": "gate_proj",
+        "op": "a = N·W_gate",
+        "in": "[1, 23,322, 12,288]",
+        "weight_shape": "[12,288, 28,672]",
+        "params": 352321536,
+        "flops": 16433685725184,
+        "flops_formula": "2 × 23,322 tokens × 12,288 × 28,672",
+        "weight_bytes_bf16": 704643072,
+        "weight_bytes_fp8": 352321536,
+        "out": "[1, 23,322, 28,672]",
+        "out_bytes_bf16": 1337376768
+      },
+      {
+        "step": "up_proj",
+        "op": "b = N·W_up",
+        "in": "[1, 23,322, 12,288]",
+        "weight_shape": "[12,288, 28,672]",
+        "params": 352321536,
+        "flops": 16433685725184,
+        "flops_formula": "2 × 23,322 tokens × 12,288 × 28,672",
+        "weight_bytes_bf16": 704643072,
+        "weight_bytes_fp8": 352321536,
+        "out": "[1, 23,322, 28,672]",
+        "out_bytes_bf16": 1337376768
+      },
+      {
+        "step": "silu_mul",
+        "op": "h = SiLU(a) ⊙ b (elementwise)",
+        "in": "[1, 23,322, 28,672]",
+        "out": "[1, 23,322, 28,672]"
+      },
+      {
+        "step": "down_proj",
+        "op": "out = h·W_down",
+        "in": "[1, 23,322, 28,672]",
+        "weight_shape": "[28,672, 12,288]",
+        "params": 352321536,
+        "flops": 16433685725184,
+        "flops_formula": "2 × 23,322 tokens × 28,672 × 12,288",
+        "weight_bytes_bf16": 704643072,
+        "weight_bytes_fp8": 352321536,
+        "out": "[1, 23,322, 12,288]"
+      },
+      {
+        "step": "residual_2",
+        "op": "X' = H + MLP output (elementwise add)",
+        "out": "[1, 23,322, 12,288]"
+      }
+    ],
+    "by_step": {
+      "input": {
+        "step": "input",
+        "op": "hidden state from the previous layer (or the embedding)",
+        "out": "[1, 23,322, 12,288]",
+        "out_bytes_bf16": 573161472
+      },
+      "rmsnorm_1": {
+        "step": "rmsnorm_1",
+        "op": "RMSNorm over d (elementwise; weight γ of d values)",
+        "in": "[1, 23,322, 12,288]",
+        "out": "[1, 23,322, 12,288]",
+        "params": 12288
+      },
+      "q_proj": {
+        "step": "q_proj",
+        "op": "Q = N·W_q",
+        "in": "[1, 23,322, 12,288]",
+        "weight_shape": "[12,288, 12,288]",
+        "params": 150994944,
+        "flops": 7043008167936,
+        "flops_formula": "2 × 23,322 tokens × 12,288 × 12,288",
+        "weight_bytes_bf16": 301989888,
+        "weight_bytes_fp8": 150994944,
+        "out": "[1, 23,322, 12,288]",
+        "out_heads": "[1, 96, 23,322, 128]",
+        "out_bytes_bf16": 573161472
+      },
+      "k_proj": {
+        "step": "k_proj",
+        "op": "K = N·W_k",
+        "in": "[1, 23,322, 12,288]",
+        "weight_shape": "[12,288, 1,024]",
+        "params": 12582912,
+        "flops": 586917347328,
+        "flops_formula": "2 × 23,322 tokens × 12,288 × 1,024",
+        "weight_bytes_bf16": 25165824,
+        "weight_bytes_fp8": 12582912,
+        "out": "[1, 23,322, 1,024]",
+        "out_heads": "[1, 8, 23,322, 128]",
+        "out_bytes_bf16": 47763456
+      },
+      "v_proj": {
+        "step": "v_proj",
+        "op": "V = N·W_v",
+        "in": "[1, 23,322, 12,288]",
+        "weight_shape": "[12,288, 1,024]",
+        "params": 12582912,
+        "flops": 586917347328,
+        "flops_formula": "2 × 23,322 tokens × 12,288 × 1,024",
+        "weight_bytes_bf16": 25165824,
+        "weight_bytes_fp8": 12582912,
+        "out": "[1, 23,322, 1,024]",
+        "out_heads": "[1, 8, 23,322, 128]",
+        "out_bytes_bf16": 47763456
+      },
+      "rope": {
+        "step": "rope",
+        "op": "rotate Q and K by position (elementwise; V is not rotated)",
+        "in": "[1, 96, 23,322, 128] and [1, 8, 23,322, 128]",
+        "out": "same shapes"
+      },
+      "kv_write": {
+        "step": "kv_write",
+        "op": "append K and V of the new tokens to the KV cache",
+        "out": "[23,322, 8, 128] × 2",
+        "out_bytes_bf16": 95526912
+      },
+      "attention": {
+        "step": "attention",
+        "op": "softmax(Q·Kᵀ/√d_head + mask)·V per head; each KV head serves 12 query heads",
+        "scores_shape": "[1, 96, 23,322, 23,322]",
+        "pairs": 271969503,
+        "pairs_formula": "1 × 23,322 × (23,322 + 1) / 2",
+        "flops": 13367845011456,
+        "flops_formula": "4 × 96 heads × 128 × pairs",
+        "out": "[1, 23,322, 12,288]"
+      },
+      "o_proj": {
+        "step": "o_proj",
+        "op": "attention output · W_o",
+        "in": "[1, 23,322, 12,288]",
+        "weight_shape": "[12,288, 12,288]",
+        "params": 150994944,
+        "flops": 7043008167936,
+        "flops_formula": "2 × 23,322 tokens × 12,288 × 12,288",
+        "weight_bytes_bf16": 301989888,
+        "weight_bytes_fp8": 150994944,
+        "out": "[1, 23,322, 12,288]"
+      },
+      "residual_1": {
+        "step": "residual_1",
+        "op": "H = X + attention output (elementwise add)",
+        "out": "[1, 23,322, 12,288]"
+      },
+      "rmsnorm_2": {
+        "step": "rmsnorm_2",
+        "op": "RMSNorm over d",
+        "in": "[1, 23,322, 12,288]",
+        "out": "[1, 23,322, 12,288]",
+        "params": 12288
+      },
+      "gate_proj": {
+        "step": "gate_proj",
+        "op": "a = N·W_gate",
+        "in": "[1, 23,322, 12,288]",
+        "weight_shape": "[12,288, 28,672]",
+        "params": 352321536,
+        "flops": 16433685725184,
+        "flops_formula": "2 × 23,322 tokens × 12,288 × 28,672",
+        "weight_bytes_bf16": 704643072,
+        "weight_bytes_fp8": 352321536,
+        "out": "[1, 23,322, 28,672]",
+        "out_bytes_bf16": 1337376768
+      },
+      "up_proj": {
+        "step": "up_proj",
+        "op": "b = N·W_up",
+        "in": "[1, 23,322, 12,288]",
+        "weight_shape": "[12,288, 28,672]",
+        "params": 352321536,
+        "flops": 16433685725184,
+        "flops_formula": "2 × 23,322 tokens × 12,288 × 28,672",
+        "weight_bytes_bf16": 704643072,
+        "weight_bytes_fp8": 352321536,
+        "out": "[1, 23,322, 28,672]",
+        "out_bytes_bf16": 1337376768
+      },
+      "silu_mul": {
+        "step": "silu_mul",
+        "op": "h = SiLU(a) ⊙ b (elementwise)",
+        "in": "[1, 23,322, 28,672]",
+        "out": "[1, 23,322, 28,672]"
+      },
+      "down_proj": {
+        "step": "down_proj",
+        "op": "out = h·W_down",
+        "in": "[1, 23,322, 28,672]",
+        "weight_shape": "[28,672, 12,288]",
+        "params": 352321536,
+        "flops": 16433685725184,
+        "flops_formula": "2 × 23,322 tokens × 28,672 × 12,288",
+        "weight_bytes_bf16": 704643072,
+        "weight_bytes_fp8": 352321536,
+        "out": "[1, 23,322, 12,288]"
+      },
+      "residual_2": {
+        "step": "residual_2",
+        "op": "X' = H + MLP output (elementwise add)",
+        "out": "[1, 23,322, 12,288]"
+      }
+    },
+    "flops": {
+      "attention_projections": 15259851030528,
+      "attention_core": 13367845011456,
+      "mlp": 49301057175552,
+      "linear": 64560908206080,
+      "total": 77928753217536,
+      "attention_core_share": 0.1715393158432809
+    }
+  },
+  "forward_decode_after_p1": {
+    "label": "first decode step after pass 1: 1 new token, context = pass-1 prompt + itself",
+    "L": 1,
+    "context": 23323,
+    "embedding": {
+      "op": "row lookup E[token_id]",
+      "in": "[1, 1]",
+      "table": "[131,072, 12,288]",
+      "out": "[1, 1, 12,288]",
+      "out_bytes_bf16": 24576,
+      "flops": 0
+    },
+    "layers": {
+      "count": 88,
+      "flops_per_layer": 3914612736,
+      "linear_flops_all_layers": 243605176320,
+      "attention_flops_all_layers": 100880744448,
+      "flops_all_layers": 344485920768
+    },
+    "final_norm": {
+      "in": "[1, 1, 12,288]",
+      "out": "[1, 1, 12,288]"
+    },
+    "lm_head": {
+      "op": "logits = h_last · W_vocab (last position only)",
+      "in": "[1, 1, 12,288]",
+      "weight_shape": "[12,288, 131,072]",
+      "out": "[1, 1, 131,072]",
+      "flops": 3221225472,
+      "logits_bytes_fp32": 524288
+    },
+    "total_flops": 347707146240,
+    "attention_share": 0.29013135202682455,
+    "total_flops_formula": "88 × (2,768,240,640 + 1,146,372,096) + 3,221,225,472",
+    "matmul_flops_check": {
+      "value": 246826401792,
+      "constant": 246800000000.0,
+      "relative_difference": 0.00010697646677471084
+    }
+  },
+  "forward_prefill_p1": {
+    "label": "prefill of the whole pass-1 prompt, no prefix-cache hit",
+    "L": 23322,
+    "context": 23322,
+    "embedding": {
+      "op": "row lookup E[token_id]",
+      "in": "[1, 23,322]",
+      "table": "[131,072, 12,288]",
+      "out": "[1, 23,322, 12,288]",
+      "out_bytes_bf16": 573161472,
+      "flops": 0
+    },
+    "layers": {
+      "count": 88,
+      "flops_per_layer": 77928753217536,
+      "linear_flops_all_layers": 5681359922135040,
+      "attention_flops_all_layers": 1176370361008128,
+      "flops_all_layers": 6857730283143168
+    },
+    "final_norm": {
+      "in": "[1, 23,322, 12,288]",
+      "out": "[1, 23,322, 12,288]"
+    },
+    "lm_head": {
+      "op": "logits = h_last · W_vocab (last position only)",
+      "in": "[1, 1, 12,288]",
+      "weight_shape": "[12,288, 131,072]",
+      "out": "[1, 1, 131,072]",
+      "flops": 3221225472,
+      "logits_bytes_fp32": 524288
+    },
+    "total_flops": 6857733504368640,
+    "attention_share": 0.17153923526756104,
+    "total_flops_formula": "88 × (64,560,908,206,080 + 13,367,845,011,456) + 3,221,225,472"
+  },
+  "flash_attention": {
+    "per_gpu_tp8": {
+      "scope": "one GPU at TP=8 (12 query heads, 1 KV head)",
+      "L": 23322,
+      "heads": 12,
+      "kv_heads": 1,
+      "head_dim": 128,
+      "bytes_per_element": 2,
+      "block_rows_q": 128,
+      "block_rows_kv": 128,
+      "query_blocks": 183,
+      "q_bytes": {
+        "formula": "heads × L × d_head × 2 B",
+        "value": 71645184,
+        "unit": "B",
+        "MB_1e6": 71.645184,
+        "GB_1e9": 0.071645184,
+        "MiB_2pow20": 68.32617188,
+        "GiB_2pow30": 0.06672477722
+      },
+      "kv_bytes": {
+        "formula": "2 × kv_heads × L × d_head × 2 B",
+        "value": 11940864,
+        "unit": "B",
+        "MB_1e6": 11.940864,
+        "GB_1e9": 0.011940864,
+        "MiB_2pow20": 11.38769531,
+        "GiB_2pow30": 0.0111207962
+      },
+      "score_matrix": {
+        "formula": "heads × L × L × 2 B = 12 × 23,322 × 23,322 × 2",
+        "value": 13053976416,
+        "unit": "B",
+        "MB_1e6": 13053.97642,
+        "GB_1e9": 13.05397642,
+        "MiB_2pow20": 12449.24203,
+        "GiB_2pow30": 12.15746292,
+        "shape": "[12, 23,322, 23,322]"
+      },
+      "naive": {
+        "formula": "Q + K + V + O + 4 × S (write S, read S, write P, read P)",
+        "value": 52371136896,
+        "unit": "B",
+        "MB_1e6": 52371.1369,
+        "GB_1e9": 52.3711369,
+        "MiB_2pow20": 49945.00818,
+        "GiB_2pow30": 48.77442205
+      },
+      "naive_time_at_hbm": {
+        "formula": "naive bytes ÷ 3.35 TB/s",
+        "value": 15.63317519,
+        "unit": "ms"
+      },
+      "tiled_upper": {
+        "formula": "Q + O + heads × Σ_blocks visible keys × d_head × 2 (K, V) × 2 B",
+        "value": 13383032832,
+        "unit": "B",
+        "MB_1e6": 13383.03283,
+        "GB_1e9": 13.38303283,
+        "MiB_2pow20": 12763.05469,
+        "GiB_2pow30": 12.46392059,
+        "visible_key_rows_per_head": 2154906
+      },
+      "tiled_upper_time_at_hbm": {
+        "value": 3.994935174,
+        "unit": "ms"
+      },
+      "tiled_lower": {
+        "formula": "Q + K + V + O, each once",
+        "value": 155231232,
+        "unit": "B",
+        "MB_1e6": 155.231232,
+        "GB_1e9": 0.155231232,
+        "MiB_2pow20": 148.0400391,
+        "GiB_2pow30": 0.1445703506
+      },
+      "tiled_lower_time_at_hbm": {
+        "value": 0.04633768119,
+        "unit": "ms"
+      },
+      "naive_over_tiled_upper": 3.913248779512521,
+      "naive_over_tiled_lower": 337.375,
+      "kv_of_one_kv_head": {
+        "formula": "2 × L × d_head × 2 B",
+        "value": 11940864,
+        "unit": "B",
+        "MB_1e6": 11.940864,
+        "GB_1e9": 0.011940864,
+        "MiB_2pow20": 11.38769531,
+        "GiB_2pow30": 0.0111207962
+      },
+      "kv_of_one_kv_head_fits_l2": true,
+      "l2_bytes": 50000000.0,
+      "on_chip_tile_bytes": {
+        "formula": "(B_r + 2·B_c) × d_head × 2 B: one Q block, one K and one V block",
+        "value": 98304,
+        "unit": "B",
+        "MB_1e6": 0.098304,
+        "GB_1e9": 9.8304e-05,
+        "MiB_2pow20": 0.09375,
+        "GiB_2pow30": 9.155273438e-05
+      },
+      "on_chip_tile_fits_shared_memory": true,
+      "flops_causal": {
+        "formula": "2 × heads × d_head × L × (L + 1)",
+        "value": 1670980626432,
+        "unit": "FLOP"
+      },
+      "flops_naive_full_matrix": {
+        "formula": "4 × heads × d_head × L²",
+        "value": 3341817962496,
+        "unit": "FLOP"
+      },
+      "compute_time_at_peak": {
+        "formula": "causal FLOPs ÷ 989.5 TFLOPS",
+        "value": 1.688712104,
+        "unit": "ms"
+      },
+      "naive_time_over_compute_time": 9.25745434065363
+    },
+    "whole_layer": {
+      "scope": "whole layer (96 query heads, 8 KV heads)",
+      "L": 23322,
+      "heads": 96,
+      "kv_heads": 8,
+      "head_dim": 128,
+      "bytes_per_element": 2,
+      "block_rows_q": 128,
+      "block_rows_kv": 128,
+      "query_blocks": 183,
+      "q_bytes": {
+        "formula": "heads × L × d_head × 2 B",
+        "value": 573161472,
+        "unit": "B",
+        "MB_1e6": 573.161472,
+        "GB_1e9": 0.573161472,
+        "MiB_2pow20": 546.609375,
+        "GiB_2pow30": 0.5337982178
+      },
+      "kv_bytes": {
+        "formula": "2 × kv_heads × L × d_head × 2 B",
+        "value": 95526912,
+        "unit": "B",
+        "MB_1e6": 95.526912,
+        "GB_1e9": 0.095526912,
+        "MiB_2pow20": 91.1015625,
+        "GiB_2pow30": 0.08896636963
+      },
+      "score_matrix": {
+        "formula": "heads × L × L × 2 B = 96 × 23,322 × 23,322 × 2",
+        "value": 104431811328,
+        "unit": "B",
+        "MB_1e6": 104431.8113,
+        "GB_1e9": 104.4318113,
+        "MiB_2pow20": 99593.93628,
+        "GiB_2pow30": 97.2597034,
+        "shape": "[96, 23,322, 23,322]"
+      },
+      "naive": {
+        "formula": "Q + K + V + O + 4 × S (write S, read S, write P, read P)",
+        "value": 418969095168,
+        "unit": "B",
+        "MB_1e6": 418969.0952,
+        "GB_1e9": 418.9690952,
+        "MiB_2pow20": 399560.0654,
+        "GiB_2pow30": 390.1953764
+      },
+      "naive_time_at_hbm": {
+        "formula": "naive bytes ÷ 3.35 TB/s",
+        "value": 125.0654015,
+        "unit": "ms"
+      },
+      "tiled_upper": {
+        "formula": "Q + O + heads × Σ_blocks visible keys × d_head × 2 (K, V) × 2 B",
+        "value": 107064262656,
+        "unit": "B",
+        "MB_1e6": 107064.2627,
+        "GB_1e9": 107.0642627,
+        "MiB_2pow20": 102104.4375,
+        "GiB_2pow30": 99.71136475,
+        "visible_key_rows_per_head": 2154906
+      },
+      "tiled_upper_time_at_hbm": {
+        "value": 31.95948139,
+        "unit": "ms"
+      },
+      "tiled_lower": {
+        "formula": "Q + K + V + O, each once",
+        "value": 1241849856,
+        "unit": "B",
+        "MB_1e6": 1241.849856,
+        "GB_1e9": 1.241849856,
+        "MiB_2pow20": 1184.320312,
+        "GiB_2pow30": 1.156562805
+      },
+      "tiled_lower_time_at_hbm": {
+        "value": 0.3707014496,
+        "unit": "ms"
+      },
+      "naive_over_tiled_upper": 3.913248779512521,
+      "naive_over_tiled_lower": 337.375,
+      "kv_of_one_kv_head": {
+        "formula": "2 × L × d_head × 2 B",
+        "value": 11940864,
+        "unit": "B",
+        "MB_1e6": 11.940864,
+        "GB_1e9": 0.011940864,
+        "MiB_2pow20": 11.38769531,
+        "GiB_2pow30": 0.0111207962
+      },
+      "kv_of_one_kv_head_fits_l2": true,
+      "l2_bytes": 50000000.0,
+      "on_chip_tile_bytes": {
+        "formula": "(B_r + 2·B_c) × d_head × 2 B: one Q block, one K and one V block",
+        "value": 98304,
+        "unit": "B",
+        "MB_1e6": 0.098304,
+        "GB_1e9": 9.8304e-05,
+        "MiB_2pow20": 0.09375,
+        "GiB_2pow30": 9.155273438e-05
+      },
+      "on_chip_tile_fits_shared_memory": true,
+      "flops_causal": {
+        "formula": "2 × heads × d_head × L × (L + 1)",
+        "value": 13367845011456,
+        "unit": "FLOP"
+      },
+      "flops_naive_full_matrix": {
+        "formula": "4 × heads × d_head × L²",
+        "value": 26734543699968,
+        "unit": "FLOP"
+      },
+      "compute_time_at_peak": {
+        "formula": "causal FLOPs ÷ 989.5 TFLOPS",
+        "value": 13.50969683,
+        "unit": "ms"
+      },
+      "naive_time_over_compute_time": 9.25745434065363
+    },
+    "decode_per_gpu_tp8": {
+      "context": 23323,
+      "kv_read": {
+        "formula": "2 × kv_heads × context × d_head × 2 B",
+        "value": 11941376,
+        "unit": "B",
+        "MB_1e6": 11.941376,
+        "GB_1e9": 0.011941376,
+        "MiB_2pow20": 11.38818359,
+        "GiB_2pow30": 0.01112127304
+      },
+      "score_row": {
+        "formula": "heads × context × 2 B",
+        "value": 559752,
+        "unit": "B",
+        "MB_1e6": 0.559752,
+        "GB_1e9": 0.000559752,
+        "MiB_2pow20": 0.533821106,
+        "GiB_2pow30": 0.0005213096738
+      },
+      "kv_read_time_at_hbm": {
+        "value": 0.003564589851,
+        "unit": "ms"
+      },
+      "note": "At decode the score matrix is one row per head, so tiling saves little; the KV read dominates. Split-KV kernels spread one sequence's keys over several SMs (part 10.12)."
+    },
+    "sources": {
+      "naive": "SRC-054 (FlashAttention, Algorithm 0 and Theorem 2)",
+      "tile_size": "flash-attention@94e22c9:hopper/tile_size.h#L30-L33"
+    }
+  },
+  "logits": {
+    "shape_decode_batch": "[B, 131,072]",
+    "per_sequence_fp32": {
+      "value": 524288,
+      "unit": "B",
+      "MB_1e6": 0.524288,
+      "GB_1e9": 0.000524288,
+      "MiB_2pow20": 0.5,
+      "GiB_2pow30": 0.00048828125
+    },
+    "per_sequence_bf16": {
+      "value": 262144,
+      "unit": "B",
+      "MB_1e6": 0.262144,
+      "GB_1e9": 0.000262144,
+      "MiB_2pow20": 0.25,
+      "GiB_2pow30": 0.000244140625
+    }
+  },
+  "sampling_transfer": {
+    "label": "illustrative batch of 256 sequences and k = 50 candidates",
+    "batch": 256,
+    "top_k": 50,
+    "cpu_sampling": {
+      "formula": "256 × 131,072 logits × 4 B (FP32)",
+      "value": 134217728,
+      "unit": "B",
+      "MB_1e6": 134.217728,
+      "GB_1e9": 0.134217728,
+      "MiB_2pow20": 128,
+      "GiB_2pow30": 0.125
+    },
+    "mixed": {
+      "formula": "256 × 50 × (4 B ID + 4 B probability)",
+      "value": 102400,
+      "unit": "B",
+      "MB_1e6": 0.1024,
+      "GB_1e9": 0.0001024,
+      "MiB_2pow20": 0.09765625,
+      "GiB_2pow30": 9.536743164e-05
+    },
+    "gpu_sampling": {
+      "formula": "256 × 8 B (int64 token ID)",
+      "value": 2048,
+      "unit": "B",
+      "MB_1e6": 0.002048,
+      "GB_1e9": 2.048e-06,
+      "MiB_2pow20": 0.001953125,
+      "GiB_2pow30": 1.907348633e-06
+    },
+    "cpu_over_gpu": 65536.0
+  },
+  "k3_contrast": {
+    "model": "moonshotai/Kimi-K3",
+    "mla_steps": [
+      {
+        "step": "q_down",
+        "weight_shape": "[7,168, 1,536]",
+        "out": "[1, 1,536]",
+        "note": "then RMSNorm → c_q"
+      },
+      {
+        "step": "q_up",
+        "weight_shape": "[1,536, 18,432]",
+        "out": "[1, 96, 192]",
+        "note": "128 + 64 dims per head; no rotation (NoPE)"
+      },
+      {
+        "step": "kv_down",
+        "weight_shape": "[7,168, 576]",
+        "out": "[1, 576]",
+        "note": "512 latent (RMSNorm) + 64 shared key dims: the only per-token tensor the cache stores"
+      },
+      {
+        "step": "kv_up",
+        "weight_shape": "[512, 24,576]",
+        "out": "[1, 96, 256]",
+        "note": "per-head keys and values rebuilt from the latent (or absorbed into W_q and W_o at decode)"
+      },
+      {
+        "step": "o_proj",
+        "weight_shape": "[12,288, 7,168]",
+        "out": "[1, 7,168]",
+        "note": "after a sigmoid output gate"
+      }
+    ],
+    "mla_cached_values_per_token_per_layer": 576,
+    "mla_cached_formula": "512 + 64",
+    "moe": {
+      "experts": 896,
+      "active_routed": 16,
+      "shared": 2,
+      "latent_dim": 3584,
+      "intermediate": 3072,
+      "moe_layers": 92,
+      "router": "sigmoid(W_r x), W_r [7,168, 896]; top-16 of 896",
+      "down_to_latent": "[7,168, 3,584]",
+      "up_from_latent": "[3,584, 7,168]",
+      "routed_expert_params_each": {
+        "formula": "3 × 3,584 × 3,072",
+        "value": 33030144,
+        "unit": "params"
+      },
+      "routed_params_all": {
+        "formula": "33,030,144 × 896 × 92",
+        "value": 2722740830208,
+        "unit": "params",
+        "constant": 2722740830208,
+        "matches_constant": true
+      },
+      "active_routed_params_per_layer": {
+        "formula": "16 × 33,030,144",
+        "value": 528482304,
+        "unit": "params"
+      },
+      "active_routed_fraction": 0.017857142857142856
+    },
+    "active_params": 104189614848,
+    "total_params": 2779931837184,
+    "active_fraction": 0.03747919767469602
+  }
+}

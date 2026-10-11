@@ -1,0 +1,1592 @@
+{
+  "meta": {
+    "script": "sim/speculative_demo.py",
+    "generated_at": "2026-10-09T06:48:52+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T06:45:24+00:00",
+      "sha256": "36e36e01982d"
+    },
+    "constants_used": {
+      "models.M-draft.dense_vllm_num_speculative_tokens": 3
+    }
+  },
+  "label": "Illustrative toy inputs chosen so every step can be checked by hand with a calculator. They are not real model weights, activations or logits.",
+  "serves": {
+    "requirements": [
+      "R-XI.10"
+    ],
+    "manuscript": "Part 11.10 (speculative decoding)"
+  },
+  "display_decimals": 4,
+  "context": {
+    "text": "The scheduler frees",
+    "note": "illustrative prompt"
+  },
+  "vocab": [
+    " the",
+    " KV",
+    " cache",
+    " blocks",
+    "."
+  ],
+  "gamma": 4,
+  "rule": {
+    "accept": "accept draft token x with probability min(1, p(x)/q(x)): draw u ~ U(0,1), accept if u < min(1, p/q)",
+    "on_first_rejection": "draw the replacement from norm(max(0, p - q)); discard every later draft token",
+    "all_accepted": "draw one bonus token from p at position gamma + 1",
+    "p_and_q": "p and q are the target and draft distributions after the same temperature/top-k/top-p",
+    "vllm": "vLLM Model Runner V2 tests p(x) > u * q(x) in log space; in greedy mode it accepts iff the target's argmax equals the draft token",
+    "sources": [
+      "research/notes/05-papers-architecture.md §2.E E1 [S46 §2.3, S47]",
+      "research/notes/03-engines.md §2.19 (rejection_sampler_utils.py: 'p(x) > u * q(x)' in log space)"
+    ]
+  },
+  "distributions": {
+    "q": {
+      "value": [
+        [
+          0.7,
+          0.1,
+          0.05,
+          0.1,
+          0.05
+        ],
+        [
+          0.05,
+          0.8,
+          0.05,
+          0.05,
+          0.05
+        ],
+        [
+          0.05,
+          0.05,
+          0.6,
+          0.2,
+          0.1
+        ],
+        [
+          0.05,
+          0.05,
+          0.05,
+          0.8,
+          0.05
+        ]
+      ],
+      "display": [
+        [
+          "0.7",
+          "0.1",
+          "0.05",
+          "0.1",
+          "0.05"
+        ],
+        [
+          "0.05",
+          "0.8",
+          "0.05",
+          "0.05",
+          "0.05"
+        ],
+        [
+          "0.05",
+          "0.05",
+          "0.6",
+          "0.2",
+          "0.1"
+        ],
+        [
+          "0.05",
+          "0.05",
+          "0.05",
+          "0.8",
+          "0.05"
+        ]
+      ]
+    },
+    "p": {
+      "value": [
+        [
+          0.8,
+          0.1,
+          0.03,
+          0.05,
+          0.02
+        ],
+        [
+          0.05,
+          0.6,
+          0.2,
+          0.1,
+          0.05
+        ],
+        [
+          0.05,
+          0.05,
+          0.3,
+          0.4,
+          0.2
+        ],
+        [
+          0.05,
+          0.05,
+          0.1,
+          0.7,
+          0.1
+        ]
+      ],
+      "display": [
+        [
+          "0.8",
+          "0.1",
+          "0.03",
+          "0.05",
+          "0.02"
+        ],
+        [
+          "0.05",
+          "0.6",
+          "0.2",
+          "0.1",
+          "0.05"
+        ],
+        [
+          "0.05",
+          "0.05",
+          "0.3",
+          "0.4",
+          "0.2"
+        ],
+        [
+          "0.05",
+          "0.05",
+          "0.1",
+          "0.7",
+          "0.1"
+        ]
+      ]
+    },
+    "p_bonus": {
+      "value": [
+        0.1,
+        0.05,
+        0.05,
+        0.1,
+        0.7
+      ],
+      "display": [
+        "0.1",
+        "0.05",
+        "0.05",
+        "0.1",
+        "0.7"
+      ]
+    },
+    "note": "toy distributions; in a real system p and q at position i+1 depend on the token drafted at position i"
+  },
+  "example": {
+    "seed": 20,
+    "rng": "numpy default_rng([seed, 0]) for the draft's draws, default_rng([seed, 1]) for verification (acceptance draws, then the residual or bonus draw)",
+    "drafted": [
+      {
+        "position": 1,
+        "q": {
+          "value": [
+            0.7,
+            0.1,
+            0.05,
+            0.1,
+            0.05
+          ],
+          "display": [
+            "0.7",
+            "0.1",
+            "0.05",
+            "0.1",
+            "0.05"
+          ]
+        },
+        "u_draft": {
+          "value": 0.2800759626301593,
+          "display": "0.2801"
+        },
+        "cumulative_q": {
+          "value": [
+            0.7,
+            0.7999999999999999,
+            0.85,
+            0.95,
+            1.0
+          ],
+          "display": [
+            "0.7000",
+            "0.8000",
+            "0.8500",
+            "0.9500",
+            "1.0000"
+          ]
+        },
+        "token": " the",
+        "id": 0
+      },
+      {
+        "position": 2,
+        "q": {
+          "value": [
+            0.05,
+            0.8,
+            0.05,
+            0.05,
+            0.05
+          ],
+          "display": [
+            "0.05",
+            "0.8",
+            "0.05",
+            "0.05",
+            "0.05"
+          ]
+        },
+        "u_draft": {
+          "value": 0.46114670980294215,
+          "display": "0.4611"
+        },
+        "cumulative_q": {
+          "value": [
+            0.05,
+            0.8500000000000001,
+            0.9000000000000001,
+            0.9500000000000002,
+            1.0000000000000002
+          ],
+          "display": [
+            "0.0500",
+            "0.8500",
+            "0.9000",
+            "0.9500",
+            "1.0000"
+          ]
+        },
+        "token": " KV",
+        "id": 1
+      },
+      {
+        "position": 3,
+        "q": {
+          "value": [
+            0.05,
+            0.05,
+            0.6,
+            0.2,
+            0.1
+          ],
+          "display": [
+            "0.05",
+            "0.05",
+            "0.6",
+            "0.2",
+            "0.1"
+          ]
+        },
+        "u_draft": {
+          "value": 0.12171969257644188,
+          "display": "0.1217"
+        },
+        "cumulative_q": {
+          "value": [
+            0.05,
+            0.1,
+            0.7,
+            0.8999999999999999,
+            0.9999999999999999
+          ],
+          "display": [
+            "0.0500",
+            "0.1000",
+            "0.7000",
+            "0.9000",
+            "1.0000"
+          ]
+        },
+        "token": " cache",
+        "id": 2
+      },
+      {
+        "position": 4,
+        "q": {
+          "value": [
+            0.05,
+            0.05,
+            0.05,
+            0.8,
+            0.05
+          ],
+          "display": [
+            "0.05",
+            "0.05",
+            "0.05",
+            "0.8",
+            "0.05"
+          ]
+        },
+        "u_draft": {
+          "value": 0.5226083517189325,
+          "display": "0.5226"
+        },
+        "cumulative_q": {
+          "value": [
+            0.05,
+            0.1,
+            0.15000000000000002,
+            0.9500000000000001,
+            1.0
+          ],
+          "display": [
+            "0.0500",
+            "0.1000",
+            "0.1500",
+            "0.9500",
+            "1.0000"
+          ]
+        },
+        "token": " blocks",
+        "id": 3
+      }
+    ],
+    "verification": [
+      {
+        "position": 1,
+        "draft_token": " the",
+        "id": 0,
+        "q": {
+          "value": [
+            0.7,
+            0.1,
+            0.05,
+            0.1,
+            0.05
+          ],
+          "display": [
+            "0.7",
+            "0.1",
+            "0.05",
+            "0.1",
+            "0.05"
+          ]
+        },
+        "p": {
+          "value": [
+            0.8,
+            0.1,
+            0.03,
+            0.05,
+            0.02
+          ],
+          "display": [
+            "0.8",
+            "0.1",
+            "0.03",
+            "0.05",
+            "0.02"
+          ]
+        },
+        "q_x": {
+          "value": 0.7,
+          "display": "0.7"
+        },
+        "p_x": {
+          "value": 0.8,
+          "display": "0.8"
+        },
+        "ratio": {
+          "value": 1.142857142857143,
+          "display": "1.1429",
+          "text": "p(x)/q(x) = 0.8 / 0.7 = 1.1429"
+        },
+        "accept_prob": {
+          "value": 1.0,
+          "display": "1.0000",
+          "text": "min(1, 1.1429) = 1.0000"
+        },
+        "u": {
+          "value": 0.39977706855710016,
+          "display": "0.3998"
+        },
+        "accepted": true,
+        "test_text": "u = 0.3998 < 1.0000 -> accept",
+        "position_acceptance_rate": {
+          "value": 0.9,
+          "display": "0.9000",
+          "text": "beta = sum over tokens of min(p, q): chance this position accepts, averaged over what the draft could propose"
+        }
+      },
+      {
+        "position": 2,
+        "draft_token": " KV",
+        "id": 1,
+        "q": {
+          "value": [
+            0.05,
+            0.8,
+            0.05,
+            0.05,
+            0.05
+          ],
+          "display": [
+            "0.05",
+            "0.8",
+            "0.05",
+            "0.05",
+            "0.05"
+          ]
+        },
+        "p": {
+          "value": [
+            0.05,
+            0.6,
+            0.2,
+            0.1,
+            0.05
+          ],
+          "display": [
+            "0.05",
+            "0.6",
+            "0.2",
+            "0.1",
+            "0.05"
+          ]
+        },
+        "q_x": {
+          "value": 0.8,
+          "display": "0.8"
+        },
+        "p_x": {
+          "value": 0.6,
+          "display": "0.6"
+        },
+        "ratio": {
+          "value": 0.7499999999999999,
+          "display": "0.7500",
+          "text": "p(x)/q(x) = 0.6 / 0.8 = 0.7500"
+        },
+        "accept_prob": {
+          "value": 0.7499999999999999,
+          "display": "0.7500",
+          "text": "min(1, 0.7500) = 0.7500"
+        },
+        "u": {
+          "value": 0.7058946868266824,
+          "display": "0.7059"
+        },
+        "accepted": true,
+        "test_text": "u = 0.7059 < 0.7500 -> accept",
+        "position_acceptance_rate": {
+          "value": 0.8000000000000002,
+          "display": "0.8000",
+          "text": "beta = sum over tokens of min(p, q): chance this position accepts, averaged over what the draft could propose"
+        }
+      },
+      {
+        "position": 3,
+        "draft_token": " cache",
+        "id": 2,
+        "q": {
+          "value": [
+            0.05,
+            0.05,
+            0.6,
+            0.2,
+            0.1
+          ],
+          "display": [
+            "0.05",
+            "0.05",
+            "0.6",
+            "0.2",
+            "0.1"
+          ]
+        },
+        "p": {
+          "value": [
+            0.05,
+            0.05,
+            0.3,
+            0.4,
+            0.2
+          ],
+          "display": [
+            "0.05",
+            "0.05",
+            "0.3",
+            "0.4",
+            "0.2"
+          ]
+        },
+        "q_x": {
+          "value": 0.6,
+          "display": "0.6"
+        },
+        "p_x": {
+          "value": 0.3,
+          "display": "0.3"
+        },
+        "ratio": {
+          "value": 0.5,
+          "display": "0.5000",
+          "text": "p(x)/q(x) = 0.3 / 0.6 = 0.5000"
+        },
+        "accept_prob": {
+          "value": 0.5,
+          "display": "0.5000",
+          "text": "min(1, 0.5000) = 0.5000"
+        },
+        "u": {
+          "value": 0.9858087634742914,
+          "display": "0.9858"
+        },
+        "accepted": false,
+        "test_text": "u = 0.9858 >= 0.5000 -> reject",
+        "position_acceptance_rate": {
+          "value": 0.7000000000000001,
+          "display": "0.7000",
+          "text": "beta = sum over tokens of min(p, q): chance this position accepts, averaged over what the draft could propose"
+        },
+        "residual": {
+          "p_minus_q": {
+            "value": [
+              0.0,
+              0.0,
+              -0.3,
+              0.2,
+              0.1
+            ],
+            "display": [
+              "0.0000",
+              "0.0000",
+              "-0.3000",
+              "0.2000",
+              "0.1000"
+            ]
+          },
+          "max0": {
+            "value": [
+              0.0,
+              0.0,
+              0.0,
+              0.2,
+              0.1
+            ],
+            "display": [
+              "0.0000",
+              "0.0000",
+              "0.0000",
+              "0.2000",
+              "0.1000"
+            ],
+            "text": "max(0, p - q) per token"
+          },
+          "sum": {
+            "value": 0.30000000000000004,
+            "display": "0.3000",
+            "text": "equals 1 - beta = 1 - sum(min(p, q))"
+          },
+          "normalized": {
+            "value": [
+              0.0,
+              0.0,
+              0.0,
+              0.6666666666666666,
+              0.3333333333333333
+            ],
+            "display": [
+              "0.0000",
+              "0.0000",
+              "0.0000",
+              "0.6667",
+              "0.3333"
+            ],
+            "text": "max(0, p - q) / 0.3000"
+          },
+          "u": {
+            "value": 0.011522742767387073,
+            "display": "0.0115"
+          },
+          "cumulative": {
+            "value": [
+              0.0,
+              0.0,
+              0.0,
+              0.6666666666666666,
+              1.0
+            ],
+            "display": [
+              "0.0000",
+              "0.0000",
+              "0.0000",
+              "0.6667",
+              "1.0000"
+            ]
+          },
+          "corrected_token": " blocks",
+          "corrected_id": 3,
+          "why_this_distribution": "the draft already produced tokens where q > p too often; the residual adds back exactly the probability mass p has above q, so the final output follows p"
+        }
+      }
+    ],
+    "pattern": [
+      "accept",
+      "accept",
+      "reject",
+      "not checked (discarded)"
+    ],
+    "rejected_at_position": 3,
+    "discarded_drafts": [
+      " blocks"
+    ],
+    "bonus": null,
+    "output_tokens": [
+      {
+        "token": " the",
+        "from": "draft (accepted at position 1)"
+      },
+      {
+        "token": " KV",
+        "from": "draft (accepted at position 2)"
+      },
+      {
+        "token": " blocks",
+        "from": "residual at position 3 (corrected)"
+      }
+    ],
+    "tokens_this_step": 3,
+    "text_after_step": "The scheduler frees the KV blocks",
+    "seed_note": "seed chosen as the smallest seed whose draws give the drafted sentence above and the pattern accept, accept, reject, so the example shows both outcomes and a discarded draft"
+  },
+  "example_all_accepted": {
+    "seed": 6,
+    "rng": "numpy default_rng([seed, 0]) for the draft's draws, default_rng([seed, 1]) for verification (acceptance draws, then the residual or bonus draw)",
+    "drafted": [
+      {
+        "position": 1,
+        "q": {
+          "value": [
+            0.7,
+            0.1,
+            0.05,
+            0.1,
+            0.05
+          ],
+          "display": [
+            "0.7",
+            "0.1",
+            "0.05",
+            "0.1",
+            "0.05"
+          ]
+        },
+        "u_draft": {
+          "value": 0.5381643514719432,
+          "display": "0.5382"
+        },
+        "cumulative_q": {
+          "value": [
+            0.7,
+            0.7999999999999999,
+            0.85,
+            0.95,
+            1.0
+          ],
+          "display": [
+            "0.7000",
+            "0.8000",
+            "0.8500",
+            "0.9500",
+            "1.0000"
+          ]
+        },
+        "token": " the",
+        "id": 0
+      },
+      {
+        "position": 2,
+        "q": {
+          "value": [
+            0.05,
+            0.8,
+            0.05,
+            0.05,
+            0.05
+          ],
+          "display": [
+            "0.05",
+            "0.8",
+            "0.05",
+            "0.05",
+            "0.05"
+          ]
+        },
+        "u_draft": {
+          "value": 0.34327086981333843,
+          "display": "0.3433"
+        },
+        "cumulative_q": {
+          "value": [
+            0.05,
+            0.8500000000000001,
+            0.9000000000000001,
+            0.9500000000000002,
+            1.0000000000000002
+          ],
+          "display": [
+            "0.0500",
+            "0.8500",
+            "0.9000",
+            "0.9500",
+            "1.0000"
+          ]
+        },
+        "token": " KV",
+        "id": 1
+      },
+      {
+        "position": 3,
+        "q": {
+          "value": [
+            0.05,
+            0.05,
+            0.6,
+            0.2,
+            0.1
+          ],
+          "display": [
+            "0.05",
+            "0.05",
+            "0.6",
+            "0.2",
+            "0.1"
+          ]
+        },
+        "u_draft": {
+          "value": 0.36906723979537825,
+          "display": "0.3691"
+        },
+        "cumulative_q": {
+          "value": [
+            0.05,
+            0.1,
+            0.7,
+            0.8999999999999999,
+            0.9999999999999999
+          ],
+          "display": [
+            "0.0500",
+            "0.1000",
+            "0.7000",
+            "0.9000",
+            "1.0000"
+          ]
+        },
+        "token": " cache",
+        "id": 2
+      },
+      {
+        "position": 4,
+        "q": {
+          "value": [
+            0.05,
+            0.05,
+            0.05,
+            0.8,
+            0.05
+          ],
+          "display": [
+            "0.05",
+            "0.05",
+            "0.05",
+            "0.8",
+            "0.05"
+          ]
+        },
+        "u_draft": {
+          "value": 0.37449676558788236,
+          "display": "0.3745"
+        },
+        "cumulative_q": {
+          "value": [
+            0.05,
+            0.1,
+            0.15000000000000002,
+            0.9500000000000001,
+            1.0
+          ],
+          "display": [
+            "0.0500",
+            "0.1000",
+            "0.1500",
+            "0.9500",
+            "1.0000"
+          ]
+        },
+        "token": " blocks",
+        "id": 3
+      }
+    ],
+    "verification": [
+      {
+        "position": 1,
+        "draft_token": " the",
+        "id": 0,
+        "q": {
+          "value": [
+            0.7,
+            0.1,
+            0.05,
+            0.1,
+            0.05
+          ],
+          "display": [
+            "0.7",
+            "0.1",
+            "0.05",
+            "0.1",
+            "0.05"
+          ]
+        },
+        "p": {
+          "value": [
+            0.8,
+            0.1,
+            0.03,
+            0.05,
+            0.02
+          ],
+          "display": [
+            "0.8",
+            "0.1",
+            "0.03",
+            "0.05",
+            "0.02"
+          ]
+        },
+        "q_x": {
+          "value": 0.7,
+          "display": "0.7"
+        },
+        "p_x": {
+          "value": 0.8,
+          "display": "0.8"
+        },
+        "ratio": {
+          "value": 1.142857142857143,
+          "display": "1.1429",
+          "text": "p(x)/q(x) = 0.8 / 0.7 = 1.1429"
+        },
+        "accept_prob": {
+          "value": 1.0,
+          "display": "1.0000",
+          "text": "min(1, 1.1429) = 1.0000"
+        },
+        "u": {
+          "value": 0.5681517310613201,
+          "display": "0.5682"
+        },
+        "accepted": true,
+        "test_text": "u = 0.5682 < 1.0000 -> accept",
+        "position_acceptance_rate": {
+          "value": 0.9,
+          "display": "0.9000",
+          "text": "beta = sum over tokens of min(p, q): chance this position accepts, averaged over what the draft could propose"
+        }
+      },
+      {
+        "position": 2,
+        "draft_token": " KV",
+        "id": 1,
+        "q": {
+          "value": [
+            0.05,
+            0.8,
+            0.05,
+            0.05,
+            0.05
+          ],
+          "display": [
+            "0.05",
+            "0.8",
+            "0.05",
+            "0.05",
+            "0.05"
+          ]
+        },
+        "p": {
+          "value": [
+            0.05,
+            0.6,
+            0.2,
+            0.1,
+            0.05
+          ],
+          "display": [
+            "0.05",
+            "0.6",
+            "0.2",
+            "0.1",
+            "0.05"
+          ]
+        },
+        "q_x": {
+          "value": 0.8,
+          "display": "0.8"
+        },
+        "p_x": {
+          "value": 0.6,
+          "display": "0.6"
+        },
+        "ratio": {
+          "value": 0.7499999999999999,
+          "display": "0.7500",
+          "text": "p(x)/q(x) = 0.6 / 0.8 = 0.7500"
+        },
+        "accept_prob": {
+          "value": 0.7499999999999999,
+          "display": "0.7500",
+          "text": "min(1, 0.7500) = 0.7500"
+        },
+        "u": {
+          "value": 0.6301714575146824,
+          "display": "0.6302"
+        },
+        "accepted": true,
+        "test_text": "u = 0.6302 < 0.7500 -> accept",
+        "position_acceptance_rate": {
+          "value": 0.8000000000000002,
+          "display": "0.8000",
+          "text": "beta = sum over tokens of min(p, q): chance this position accepts, averaged over what the draft could propose"
+        }
+      },
+      {
+        "position": 3,
+        "draft_token": " cache",
+        "id": 2,
+        "q": {
+          "value": [
+            0.05,
+            0.05,
+            0.6,
+            0.2,
+            0.1
+          ],
+          "display": [
+            "0.05",
+            "0.05",
+            "0.6",
+            "0.2",
+            "0.1"
+          ]
+        },
+        "p": {
+          "value": [
+            0.05,
+            0.05,
+            0.3,
+            0.4,
+            0.2
+          ],
+          "display": [
+            "0.05",
+            "0.05",
+            "0.3",
+            "0.4",
+            "0.2"
+          ]
+        },
+        "q_x": {
+          "value": 0.6,
+          "display": "0.6"
+        },
+        "p_x": {
+          "value": 0.3,
+          "display": "0.3"
+        },
+        "ratio": {
+          "value": 0.5,
+          "display": "0.5000",
+          "text": "p(x)/q(x) = 0.3 / 0.6 = 0.5000"
+        },
+        "accept_prob": {
+          "value": 0.5,
+          "display": "0.5000",
+          "text": "min(1, 0.5000) = 0.5000"
+        },
+        "u": {
+          "value": 0.30377701607274765,
+          "display": "0.3038"
+        },
+        "accepted": true,
+        "test_text": "u = 0.3038 < 0.5000 -> accept",
+        "position_acceptance_rate": {
+          "value": 0.7000000000000001,
+          "display": "0.7000",
+          "text": "beta = sum over tokens of min(p, q): chance this position accepts, averaged over what the draft could propose"
+        }
+      },
+      {
+        "position": 4,
+        "draft_token": " blocks",
+        "id": 3,
+        "q": {
+          "value": [
+            0.05,
+            0.05,
+            0.05,
+            0.8,
+            0.05
+          ],
+          "display": [
+            "0.05",
+            "0.05",
+            "0.05",
+            "0.8",
+            "0.05"
+          ]
+        },
+        "p": {
+          "value": [
+            0.05,
+            0.05,
+            0.1,
+            0.7,
+            0.1
+          ],
+          "display": [
+            "0.05",
+            "0.05",
+            "0.1",
+            "0.7",
+            "0.1"
+          ]
+        },
+        "q_x": {
+          "value": 0.8,
+          "display": "0.8"
+        },
+        "p_x": {
+          "value": 0.7,
+          "display": "0.7"
+        },
+        "ratio": {
+          "value": 0.8749999999999999,
+          "display": "0.8750",
+          "text": "p(x)/q(x) = 0.7 / 0.8 = 0.8750"
+        },
+        "accept_prob": {
+          "value": 0.8749999999999999,
+          "display": "0.8750",
+          "text": "min(1, 0.8750) = 0.8750"
+        },
+        "u": {
+          "value": 0.6016938867913837,
+          "display": "0.6017"
+        },
+        "accepted": true,
+        "test_text": "u = 0.6017 < 0.8750 -> accept",
+        "position_acceptance_rate": {
+          "value": 0.9,
+          "display": "0.9000",
+          "text": "beta = sum over tokens of min(p, q): chance this position accepts, averaged over what the draft could propose"
+        }
+      }
+    ],
+    "pattern": [
+      "accept",
+      "accept",
+      "accept",
+      "accept"
+    ],
+    "rejected_at_position": null,
+    "discarded_drafts": [],
+    "bonus": {
+      "position": 5,
+      "p": {
+        "value": [
+          0.1,
+          0.05,
+          0.05,
+          0.1,
+          0.7
+        ],
+        "display": [
+          "0.1",
+          "0.05",
+          "0.05",
+          "0.1",
+          "0.7"
+        ]
+      },
+      "u": {
+        "value": 0.44501528020570824,
+        "display": "0.4450"
+      },
+      "cumulative": {
+        "value": [
+          0.1,
+          0.15000000000000002,
+          0.2,
+          0.30000000000000004,
+          1.0
+        ],
+        "display": [
+          "0.1000",
+          "0.1500",
+          "0.2000",
+          "0.3000",
+          "1.0000"
+        ]
+      },
+      "token": ".",
+      "id": 4,
+      "why": "the same target pass already computed p at position 5, so one more token is free"
+    },
+    "output_tokens": [
+      {
+        "token": " the",
+        "from": "draft (accepted at position 1)"
+      },
+      {
+        "token": " KV",
+        "from": "draft (accepted at position 2)"
+      },
+      {
+        "token": " cache",
+        "from": "draft (accepted at position 3)"
+      },
+      {
+        "token": " blocks",
+        "from": "draft (accepted at position 4)"
+      },
+      {
+        "token": ".",
+        "from": "bonus from p at position 5"
+      }
+    ],
+    "tokens_this_step": 5,
+    "text_after_step": "The scheduler frees the KV cache blocks.",
+    "seed_note": "smallest seed with the same drafted tokens where all 4 are accepted, to show the bonus token"
+  },
+  "expected_tokens": {
+    "formula": "E = (1 - alpha^(gamma+1)) / (1 - alpha) = 1 + alpha + alpha^2 + ... + alpha^gamma",
+    "assumption": "each draft token is accepted independently with the same probability alpha",
+    "alphas": [
+      0.5,
+      0.6,
+      0.7,
+      0.8,
+      0.9
+    ],
+    "gammas": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "table": [
+      {
+        "alpha": 0.5,
+        "E": [
+          1.5,
+          1.75,
+          1.875,
+          1.9375,
+          1.96875,
+          1.984375,
+          1.9921875,
+          1.99609375
+        ],
+        "display": [
+          "1.500",
+          "1.750",
+          "1.875",
+          "1.938",
+          "1.969",
+          "1.984",
+          "1.992",
+          "1.996"
+        ]
+      },
+      {
+        "alpha": 0.6,
+        "E": [
+          1.5999999999999999,
+          1.96,
+          2.176,
+          2.3056,
+          2.3833599999999997,
+          2.430016,
+          2.4580096,
+          2.4748057599999997
+        ],
+        "display": [
+          "1.600",
+          "1.960",
+          "2.176",
+          "2.306",
+          "2.383",
+          "2.430",
+          "2.458",
+          "2.475"
+        ]
+      },
+      {
+        "alpha": 0.7,
+        "E": [
+          1.6999999999999997,
+          2.19,
+          2.5329999999999995,
+          2.7731,
+          2.9411699999999996,
+          3.0588189999999997,
+          3.1411732999999997,
+          3.1988213099999996
+        ],
+        "display": [
+          "1.700",
+          "2.190",
+          "2.533",
+          "2.773",
+          "2.941",
+          "3.059",
+          "3.141",
+          "3.199"
+        ]
+      },
+      {
+        "alpha": 0.8,
+        "E": [
+          1.7999999999999998,
+          2.44,
+          2.9520000000000004,
+          3.3616,
+          3.68928,
+          3.9514240000000003,
+          4.161139200000001,
+          4.32891136
+        ],
+        "display": [
+          "1.800",
+          "2.440",
+          "2.952",
+          "3.362",
+          "3.689",
+          "3.951",
+          "4.161",
+          "4.329"
+        ]
+      },
+      {
+        "alpha": 0.9,
+        "E": [
+          1.9,
+          2.7099999999999995,
+          3.4390000000000005,
+          4.0951,
+          4.68559,
+          5.2170309999999995,
+          5.6953279000000006,
+          6.12579511
+        ],
+        "display": [
+          "1.900",
+          "2.710",
+          "3.439",
+          "4.095",
+          "4.686",
+          "5.217",
+          "5.695",
+          "6.126"
+        ]
+      }
+    ],
+    "worked": {
+      "alpha": 0.8,
+      "gamma": 3,
+      "terms": {
+        "value": [
+          1.0,
+          0.8,
+          0.6400000000000001,
+          0.5120000000000001
+        ],
+        "display": [
+          "1.000",
+          "0.800",
+          "0.640",
+          "0.512"
+        ]
+      },
+      "text": "1.000 + 0.800 + 0.640 + 0.512 = 2.952",
+      "closed_form": "(1 - 0.8^4) / (1 - 0.8) = 2.952"
+    },
+    "m_dense_recipe": {
+      "gamma": 3,
+      "constant": "models.M-draft.dense_vllm_num_speculative_tokens",
+      "E_by_alpha": {
+        "0.5": {
+          "value": 1.875,
+          "display": "1.875"
+        },
+        "0.6": {
+          "value": 2.176,
+          "display": "2.176"
+        },
+        "0.7": {
+          "value": 2.5329999999999995,
+          "display": "2.533"
+        },
+        "0.8": {
+          "value": 2.9520000000000004,
+          "display": "2.952"
+        },
+        "0.9": {
+          "value": 3.4390000000000005,
+          "display": "3.439"
+        }
+      },
+      "note": "M-dense's vLLM recipe drafts 3 tokens with its EAGLE head: at most 4 tokens per target forward pass"
+    },
+    "monte_carlo": {
+      "alpha": 0.7,
+      "gamma": 4,
+      "trials": 200000,
+      "seed": 20261010,
+      "mean_tokens": 2.77047,
+      "formula": 2.7731,
+      "model": "each draft accepted independently with probability alpha; stop at the first rejection; +1 token from the target (replacement or bonus)"
+    },
+    "source": "research/notes/05-papers-architecture.md §2.E E1 [S46 eq. 1]"
+  },
+  "speedup": {
+    "formula": "speed-up = (1 - alpha^(gamma+1)) / ((1 - alpha)(gamma c + 1)), c = cost of one draft step / cost of one target step",
+    "c": 0.05,
+    "c_note": "illustrative choice; [S46] reports c < 0.05 in its setups",
+    "table": [
+      {
+        "alpha": 0.5,
+        "speedup": [
+          1.4285714285714286,
+          1.5909090909090908,
+          1.6304347826086958,
+          1.6145833333333335,
+          1.575,
+          1.5264423076923077,
+          1.4756944444444444,
+          1.42578125
+        ],
+        "display": [
+          "1.43",
+          "1.59",
+          "1.63",
+          "1.61",
+          "1.57",
+          "1.53",
+          "1.48",
+          "1.43"
+        ]
+      },
+      {
+        "alpha": 0.6,
+        "speedup": [
+          1.5238095238095237,
+          1.7818181818181817,
+          1.8921739130434785,
+          1.9213333333333336,
+          1.9066879999999997,
+          1.869243076923077,
+          1.8207478518518518,
+          1.7677184
+        ],
+        "display": [
+          "1.52",
+          "1.78",
+          "1.89",
+          "1.92",
+          "1.91",
+          "1.87",
+          "1.82",
+          "1.77"
+        ]
+      },
+      {
+        "alpha": 0.7,
+        "speedup": [
+          1.6190476190476186,
+          1.9909090909090907,
+          2.2026086956521738,
+          2.3109166666666665,
+          2.3529359999999997,
+          2.352937692307692,
+          2.3267950370370367,
+          2.284872364285714
+        ],
+        "display": [
+          "1.62",
+          "1.99",
+          "2.20",
+          "2.31",
+          "2.35",
+          "2.35",
+          "2.33",
+          "2.28"
+        ]
+      },
+      {
+        "alpha": 0.8,
+        "speedup": [
+          1.714285714285714,
+          2.218181818181818,
+          2.566956521739131,
+          2.8013333333333335,
+          2.9514240000000003,
+          3.039556923076923,
+          3.082325333333334,
+          3.0920795428571433
+        ],
+        "display": [
+          "1.71",
+          "2.22",
+          "2.57",
+          "2.80",
+          "2.95",
+          "3.04",
+          "3.08",
+          "3.09"
+        ]
+      },
+      {
+        "alpha": 0.9,
+        "speedup": [
+          1.8095238095238093,
+          2.463636363636363,
+          2.990434782608696,
+          3.412583333333334,
+          3.7484720000000005,
+          4.0131007692307685,
+          4.218761407407407,
+          4.375567935714286
+        ],
+        "display": [
+          "1.81",
+          "2.46",
+          "2.99",
+          "3.41",
+          "3.75",
+          "4.01",
+          "4.22",
+          "4.38"
+        ]
+      }
+    ],
+    "low_acceptance": {
+      "alpha": 0.2,
+      "gamma": 5,
+      "c": 0.05,
+      "E": {
+        "value": 1.24992,
+        "display": "1.250"
+      },
+      "speedup": {
+        "value": 0.9999359999999999,
+        "display": "1.000"
+      },
+      "note": "at low acceptance each step still pays gamma draft steps and a wider target pass, so the gain falls to break-even or below"
+    },
+    "batch_effect": "gains shrink as the batch grows because speculation spends spare compute: EAGLE-3 in SGLang 0.4.4 on H100 (Llama-3.1-8B-Instruct, MT-bench, chain length 3) gave 1.81x throughput at batch 2 and 1.38x at batch 64",
+    "sources": [
+      "research/notes/05-papers-architecture.md §2.E E1 [S46 Theorem 3.8]",
+      "research/notes/05-papers-architecture.md §2.E E1 [S48 EAGLE-3 Table 3, SGLang, H100]"
+    ]
+  },
+  "monte_carlo_distribution": {
+    "position": 3,
+    "trials": 200000,
+    "seed": 20261009,
+    "q": {
+      "value": [
+        0.05,
+        0.05,
+        0.6,
+        0.2,
+        0.1
+      ],
+      "display": [
+        "0.05",
+        "0.05",
+        "0.6",
+        "0.2",
+        "0.1"
+      ]
+    },
+    "p": {
+      "value": [
+        0.05,
+        0.05,
+        0.3,
+        0.4,
+        0.2
+      ],
+      "display": [
+        "0.05",
+        "0.05",
+        "0.3",
+        "0.4",
+        "0.2"
+      ]
+    },
+    "output_frequencies": {
+      "value": [
+        0.04941,
+        0.04979,
+        0.299855,
+        0.400885,
+        0.20006
+      ],
+      "display": [
+        "0.0494",
+        "0.0498",
+        "0.2999",
+        "0.4009",
+        "0.2001"
+      ]
+    },
+    "max_abs_deviation_from_p": 0.0008849999999999691,
+    "standard_error_bound": 0.001118033988749895,
+    "draft_only_frequencies": {
+      "value": [
+        0.04941,
+        0.04979,
+        0.599315,
+        0.20107,
+        0.100415
+      ],
+      "display": [
+        "0.0494",
+        "0.0498",
+        "0.5993",
+        "0.2011",
+        "0.1004"
+      ]
+    },
+    "draft_only_max_abs_deviation_from_p": 0.29931500000000005,
+    "acceptance_rate": {
+      "measured": 0.70054,
+      "beta": 0.7000000000000001
+    },
+    "conclusion": "After accept/reject plus the residual draw, every token appears with its target probability p (max deviation 0.0009 over 200,000 trials, sampling noise). Using the draft's tokens without verification would follow q instead.",
+    "proof": "P(output = x) = q(x) min(1, p(x)/q(x)) + (1 - beta) norm(max(0, p - q))(x) = min(p(x), q(x)) + max(0, p(x) - q(x)) = p(x), with beta = sum_y min(p(y), q(y)).",
+    "proof_source": "research/notes/05-papers-architecture.md §2.E E1 [S46 Appendix A.1, Theorem 3.5]"
+  }
+}

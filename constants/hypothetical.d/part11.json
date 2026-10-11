@@ -1,0 +1,30 @@
+{
+  "_about": "Part 11 (GPU execution and batching) class C values. Every value is HYPOTHETICAL, chosen to agree with RA-35, RA-36, RA-43, RA-45. Author w11, 2026-10-09.",
+  "gpu_step_model": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Kernel efficiency assumptions of the roofline step-time model (sim/gpu_step_lib.py). Compute efficiency reuses hypothetical.serving_assumptions.prefill_mfu.",
+    "hbm_bandwidth_efficiency": {"value": 0.8, "unit": "fraction of peak HBM bandwidth", "note": "Share of the datasheet HBM bandwidth that large streaming reads (weights, KV) reach in a well-tuned kernel. Assumption; a real deployment measures it."},
+    "per_layer_overhead_us": {"value": 40, "unit": "us per layer per step", "note": "Time per decoder layer that neither FLOPs nor bytes explain: kernel tails and gaps between about 14 kernels, and the latency of the two tensor-parallel all-reduces (Part 12). Assumption."},
+    "per_step_overhead_ms": {"value": 0.5, "unit": "ms per step", "note": "Per scheduler iteration: embedding lookup, sampling, copying token IDs to the CPU, graph replay launch. Assumption; async scheduling hides the CPU scheduler itself (RA-35)."}
+  },
+  "batching_ref": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Inputs of the Part 11 batching simulations (sim/continuous_batching_sim.py, sim/chunked_prefill_sim.py, sim/roofline.py).",
+    "roofline_batch_sizes": {"value": [1, 8, 64, 256], "unit": "decode sequences", "note": "Batch sizes placed on the roofline (R-XI.4 asks for several)."},
+    "decode_batch_example": {"value": 64, "unit": "decode sequences", "note": "The R-XI.8 example: 64 decode sequences, one new token each."},
+    "static_batch_size": {"value": 64, "unit": "sequences", "note": "Batch size of the static-batching baseline, equal to the R-XI.8 batch."},
+    "length_lognormal_sigma": {"value": 1.0, "unit": "sigma of ln(tokens)", "note": "Shape of the prompt and output length distributions; means come from hypothetical.traffic."},
+    "max_output_tokens": {"value": 4096, "unit": "tokens", "note": "max_tokens of every simulated request."},
+    "num_requests": {"value": 1200, "unit": "requests", "note": "Requests per simulation run."},
+    "comparison_arrival_rate_rps": {"value": 1.2, "unit": "requests/s per replica", "note": "Poisson arrival rate of the static-versus-continuous comparison; chosen below the static baseline's saturation so that both policies keep up."},
+    "load_sweep_rates_rps": {"value": [0.25, 1, 2, 4, 6, 8, 10, 12, 14, 16], "unit": "requests/s per replica", "note": "Poisson arrival rates of the utilization-versus-goodput sweep (R-XI.12), from light load to overload of one M-dense replica."},
+    "token_budget_example_decodes": {"value": [1, 1], "unit": "tokens", "note": "R-XI.6 example: A and B each decode 1 token."},
+    "token_budget_example_prefills": {"value": [4000, 4190], "unit": "tokens", "note": "R-XI.6 example: C and D prefill 4,000 and 4,190 tokens; with A and B the step holds exactly 8,192 tokens."},
+    "long_prompt_tokens": {"value": 100000, "unit": "tokens", "note": "R-XI.7 example: one 100,000-token prompt with no prefix-cache hit."},
+    "long_prompt_running_decodes": {"value": 64, "unit": "decode sequences", "note": "Decodes already running on the replica when the long prompt arrives (the R-XI.8 batch)."},
+    "chunk_budgets": {"value": [512, 1024, 2048, 4096, 8192, 16384], "unit": "tokens per step", "note": "Token budgets compared in the chunked-prefill sweep; 8,192 is the RA-36 default."},
+    "spec_acceptance_rate": {"value": 0.7, "unit": "fraction", "note": "Per-token acceptance rate used for M-draft (EAGLE) in the batch-size study; no acceptance figure for M-draft is published (research/notes/01-models.md §2.1.3)."}
+  }
+}

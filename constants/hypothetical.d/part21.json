@@ -1,0 +1,63 @@
+{
+  "_about": "Part 21 (the super trace and system state) class C values. Every value is HYPOTHETICAL and chosen to agree with RA-07, RA-14, RA-15, RA-18, RA-20, RA-27, RA-56, RA-69, RA-73. Author w21, 2026-10-09. All longer times come from earlier data files; these are only the short steps that no earlier part timed, the side work, and the follow-up turn.",
+  "super_trace_ref": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Short steps of the reference request that no earlier part timed (Part 21.1).",
+    "client_handler_ms": {
+      "value": 3,
+      "unit": "ms",
+      "note": "From the key press to the request leaving the browser: OS input event to the renderer, the click handler (optimistic render into the store, IDs, JSON), and fetch() handing the request to the network stack on the open HTTP/3 connection (Part 2.1). One short event-loop task."
+    },
+    "model_router_ms": {
+      "value": 1,
+      "unit": "ms",
+      "note": "Model router per pass: evaluate the rule table (RA-56) and run one Redis Lua call for the TPM reservation (RA-10, RA-73) inside the region."
+    },
+    "tool_dispatch_ms": {
+      "value": 2,
+      "unit": "ms",
+      "note": "Orchestrator per tool call: parse the call, validate it against the schema, check the policy (RA-14, RA-65), and append the result to the context. Not counted inside the tool step times of Parts 07 and 08."
+    }
+  },
+  "async_work_ref": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Side work after or beside the critical path (Part 21.4). Used only to show what the request would wait for if the work were synchronous.",
+    "event_append_ms": {
+      "value": 5,
+      "unit": "ms",
+      "note": "One acknowledged append to the in-region event log with acks=all and min.insync.replicas 2 (RA-20): one network round trip to the leader plus the follower fetch."
+    },
+    "memory_extraction_s": {
+      "value": 3,
+      "unit": "s",
+      "note": "Memory worker per turn (RA-27, Part 5.5): one extraction prompt on a small model at low priority, a dedupe search and the record writes."
+    },
+    "turn_index_s": {
+      "value": 0.3,
+      "unit": "s",
+      "note": "Conversation indexing per turn: embed the new user message and answer on the retrieval pool's background band and insert the vectors (RA-68)."
+    }
+  },
+  "second_turn_ref": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "The follow-up turn of Part 21.6.",
+    "follow_up_text": {
+      "value": "Redo the chart with Cedar Systems' price 10% lower.",
+      "unit": "text",
+      "note": "Generic, original follow-up; it needs run_python again on the same files."
+    },
+    "price_cut_fraction": {
+      "value": 0.1,
+      "unit": "fraction",
+      "note": "The price reduction that the follow-up turn asks for (Part 21.6); the same number as in follow_up_text, kept numeric so that text can use a placeholder."
+    },
+    "history_keeps": {
+      "value": "user message with its attachments, and the final answer text with its citations",
+      "unit": "text",
+      "note": "What turn 4 becomes in the history of turn 5. The raw reasoning (RA-72) and the tool results stay in the stored message metadata and do not enter later contexts."
+    }
+  }
+}

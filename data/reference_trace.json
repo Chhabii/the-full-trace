@@ -1,0 +1,490 @@
+{
+  "meta": {
+    "script": "sim/reference_trace.py",
+    "generated_at": "2026-10-09T19:20:32+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T19:17:10+00:00",
+      "sha256": "4091418cecc1"
+    },
+    "constants_used": {
+      "extra.sims_w19.openmetrics_exemplar_max_label_chars": 128,
+      "extra.sims_w19.vllm_ttft_buckets_s": [
+        0.001,
+        0.005,
+        0.01,
+        0.02,
+        0.04,
+        0.06,
+        0.08,
+        0.1,
+        0.25,
+        0.5,
+        0.75,
+        1.0,
+        2.5,
+        5.0,
+        7.5,
+        10.0,
+        20.0,
+        40.0,
+        80.0,
+        160.0,
+        640.0,
+        2560.0
+      ],
+      "hypothetical.observability_ref.auth_verify_ms": 2,
+      "hypothetical.observability_ref.conversation_read_ms": 6,
+      "hypothetical.observability_ref.edge_proxy_ms": 1,
+      "hypothetical.observability_ref.rag_chunk_fetch_ms": 5,
+      "hypothetical.observability_ref.rag_index_search_ms": 25,
+      "hypothetical.observability_ref.span_bytes": 400,
+      "hypothetical.observability_ref.trace_baseline_sample_fraction": 0.01,
+      "hypothetical.pool_queueing.engine_wait_s": 0.15,
+      "hypothetical.pool_queueing.gateway_queue_wait_s": 0.02,
+      "hypothetical.reference_request.rag_chunks_selected": 6,
+      "hypothetical.reference_request.web_queries": 3,
+      "hypothetical.tool_loop.pass1_reasoning_tokens": 300
+    }
+  },
+  "label": "Illustrative IDs; durations from earlier parts' data plus HYPOTHETICAL short service times",
+  "trace_id": "4dca626b27c05b19c53fef0a9e2ce74b",
+  "headers": {
+    "traceparent_from_edge": "00-4dca626b27c05b19c53fef0a9e2ce74b-0faccebd8b22948c-01",
+    "traceparent_unsampled_example": "00-4dca626b27c05b19c53fef0a9e2ce74b-0faccebd8b22948c-00",
+    "baggage_inside": "tenant.tier=enterprise,request.priority=interactive",
+    "baggage_to_tools": "(header removed)",
+    "field_lengths_hex": [
+      2,
+      32,
+      16,
+      2
+    ]
+  },
+  "spans": [
+    {
+      "index": 0,
+      "name": "edge.receive",
+      "kind": "server",
+      "service": "edge proxy",
+      "span_id": "0faccebd8b22948c",
+      "parent_span_id": null,
+      "start_s": 0.0,
+      "duration_s": 85.87344905385025,
+      "end_s": 85.87344905385025,
+      "duration_ms": 85873.44905385026,
+      "attributes": {
+        "cloud.region": "PoP (user metro)"
+      }
+    },
+    {
+      "index": 1,
+      "name": "auth.verify",
+      "kind": "internal",
+      "service": "API gateway",
+      "span_id": "81fe90520c4a3c86",
+      "parent_span_id": "0faccebd8b22948c",
+      "start_s": 0.02323938841,
+      "duration_s": 0.002,
+      "end_s": 0.02523938841,
+      "duration_ms": 2.0,
+      "attributes": {}
+    },
+    {
+      "index": 2,
+      "name": "orchestrator.turn",
+      "kind": "server",
+      "service": "orchestrator",
+      "span_id": "66fa17341788b9b3",
+      "parent_span_id": "0faccebd8b22948c",
+      "start_s": 0.02523938841,
+      "duration_s": 85.82447027703026,
+      "end_s": 85.84970966544026,
+      "duration_ms": 85824.47027703025,
+      "attributes": {
+        "note": "parent of the turn's work; not one of the nine named stages"
+      }
+    },
+    {
+      "index": 3,
+      "name": "conversation.read",
+      "kind": "client",
+      "service": "orchestrator -> conversation DB",
+      "span_id": "5a83e21eff217a8e",
+      "parent_span_id": "66fa17341788b9b3",
+      "start_s": 0.02523938841,
+      "duration_s": 0.006,
+      "end_s": 0.03123938841,
+      "duration_ms": 6.0,
+      "attributes": {
+        "parallel_with": "rag.retrieve (Part 3.8)"
+      }
+    },
+    {
+      "index": 4,
+      "name": "rag.retrieve",
+      "kind": "client",
+      "service": "orchestrator -> retrieval service",
+      "span_id": "6635e5f2f0579254",
+      "parent_span_id": "66fa17341788b9b3",
+      "start_s": 0.02523938841,
+      "duration_s": 0.18082,
+      "end_s": 0.20605938841000002,
+      "duration_ms": 180.82000000000002,
+      "attributes": {
+        "parts_ms": {
+          "query_embed": 4.52,
+          "index_search": 25,
+          "chunk_fetch": 5,
+          "rerank": 146.3
+        },
+        "chunks_selected": 6,
+        "parallel_with": "conversation.read (Part 3.8)"
+      }
+    },
+    {
+      "index": 5,
+      "name": "inference.queue",
+      "kind": "internal",
+      "service": "inference gateway + engine",
+      "span_id": "37ee46bbdfd6d2be",
+      "parent_span_id": "66fa17341788b9b3",
+      "start_s": 0.20605938841000002,
+      "duration_s": 0.16999999999999998,
+      "end_s": 0.37605938841,
+      "duration_ms": 169.99999999999997,
+      "attributes": {
+        "pass": 1
+      }
+    },
+    {
+      "index": 6,
+      "name": "inference.prefill",
+      "kind": "internal",
+      "service": "prefill worker (TEP8)",
+      "span_id": "9508d48ce408a7e2",
+      "parent_span_id": "66fa17341788b9b3",
+      "start_s": 0.37605938841,
+      "duration_s": 0.5306537581083648,
+      "end_s": 0.9067131465183648,
+      "duration_ms": 530.6537581083647,
+      "attributes": {
+        "pass": 1,
+        "new_tokens": 20250,
+        "cached_tokens": 3072
+      }
+    },
+    {
+      "index": 7,
+      "name": "inference.decode",
+      "kind": "internal",
+      "service": "decode worker (DEP16)",
+      "span_id": "d437bfa8068d38a3",
+      "parent_span_id": "66fa17341788b9b3",
+      "start_s": 0.9067131465183648,
+      "duration_s": 20.028912000000002,
+      "end_s": 20.935625146518365,
+      "duration_ms": 20028.912,
+      "attributes": {
+        "pass": 1,
+        "output_tokens": 424,
+        "decode_steps": 424,
+        "mean_step_ms": 47.238
+      }
+    },
+    {
+      "index": 8,
+      "name": "web.search",
+      "kind": "client",
+      "service": "orchestrator -> web search tool",
+      "span_id": "19c8c7ec19b684ea",
+      "parent_span_id": "66fa17341788b9b3",
+      "start_s": 20.935625146518365,
+      "duration_s": 1.6053,
+      "end_s": 22.540925146518365,
+      "duration_ms": 1605.3,
+      "attributes": {
+        "queries": 3,
+        "baggage": "dropped (trust boundary, RA-52)"
+      }
+    },
+    {
+      "index": 9,
+      "name": "inference.queue",
+      "kind": "internal",
+      "service": "inference gateway + engine",
+      "span_id": "2743aa1604f3efb8",
+      "parent_span_id": "66fa17341788b9b3",
+      "start_s": 22.540925146518365,
+      "duration_s": 0.16999999999999998,
+      "end_s": 22.710925146518367,
+      "duration_ms": 169.99999999999997,
+      "attributes": {
+        "pass": 2
+      }
+    },
+    {
+      "index": 10,
+      "name": "inference.prefill",
+      "kind": "internal",
+      "service": "prefill worker (TEP8)",
+      "span_id": "129d5a0aa42dcd73",
+      "parent_span_id": "66fa17341788b9b3",
+      "start_s": 22.710925146518367,
+      "duration_s": 0.1551762717364224,
+      "end_s": 22.86610141825479,
+      "duration_ms": 155.1762717364224,
+      "attributes": {
+        "pass": 2,
+        "new_tokens": 6264,
+        "cached_tokens": 23552
+      }
+    },
+    {
+      "index": 11,
+      "name": "inference.decode",
+      "kind": "internal",
+      "service": "decode worker (DEP16)",
+      "span_id": "19ddbf2178ee2565",
+      "parent_span_id": "66fa17341788b9b3",
+      "start_s": 22.86610141825479,
+      "duration_s": 20.78472,
+      "end_s": 43.65082141825479,
+      "duration_ms": 20784.72,
+      "attributes": {
+        "pass": 2,
+        "output_tokens": 440,
+        "decode_steps": 440,
+        "mean_step_ms": 47.238
+      }
+    },
+    {
+      "index": 12,
+      "name": "tool.run_python",
+      "kind": "client",
+      "service": "orchestrator -> code executor",
+      "span_id": "25ec5a8f73f0ed30",
+      "parent_span_id": "66fa17341788b9b3",
+      "start_s": 43.65082141825479,
+      "duration_s": 1.305,
+      "end_s": 44.95582141825479,
+      "duration_ms": 1305.0,
+      "attributes": {
+        "baggage": "dropped (trust boundary, RA-52)",
+        "note": "not one of the nine named stages"
+      }
+    },
+    {
+      "index": 13,
+      "name": "inference.queue",
+      "kind": "internal",
+      "service": "inference gateway + engine",
+      "span_id": "12b3bcb02dd37512",
+      "parent_span_id": "66fa17341788b9b3",
+      "start_s": 44.95582141825479,
+      "duration_s": 0.16999999999999998,
+      "end_s": 45.125821418254795,
+      "duration_ms": 169.99999999999997,
+      "attributes": {
+        "pass": 3
+      }
+    },
+    {
+      "index": 14,
+      "name": "inference.prefill",
+      "kind": "internal",
+      "service": "prefill worker (TEP8)",
+      "span_id": "a5b4f063652baa44",
+      "parent_span_id": "66fa17341788b9b3",
+      "start_s": 45.125821418254795,
+      "duration_s": 0.0047322471854592,
+      "end_s": 45.13055366544025,
+      "duration_ms": 4.7322471854592,
+      "attributes": {
+        "pass": 3,
+        "new_tokens": 187,
+        "cached_tokens": 30208
+      }
+    },
+    {
+      "index": 15,
+      "name": "inference.decode",
+      "kind": "internal",
+      "service": "decode worker (DEP16)",
+      "span_id": "263e50616def63e1",
+      "parent_span_id": "66fa17341788b9b3",
+      "start_s": 45.13055366544025,
+      "duration_s": 40.719156000000005,
+      "end_s": 85.84970966544026,
+      "duration_ms": 40719.156,
+      "attributes": {
+        "pass": 3,
+        "output_tokens": 863,
+        "decode_steps": 862,
+        "mean_step_ms": 47.238
+      }
+    },
+    {
+      "index": 16,
+      "name": "stream.flush",
+      "kind": "internal",
+      "service": "edge proxy",
+      "span_id": "1bca805804d5126e",
+      "parent_span_id": "0faccebd8b22948c",
+      "start_s": 0.04897877682,
+      "duration_s": 85.82447027703026,
+      "end_s": 85.87344905385025,
+      "duration_ms": 85824.47027703025,
+      "attributes": {
+        "events": [
+          "message.start",
+          "reasoning.status",
+          "output_text.delta",
+          "tool.status",
+          "citation",
+          "artifact",
+          "message.done"
+        ]
+      }
+    }
+  ],
+  "span_count": 17,
+  "named_stages": [
+    "edge.receive",
+    "auth.verify",
+    "conversation.read",
+    "rag.retrieve",
+    "web.search",
+    "inference.queue",
+    "inference.prefill",
+    "inference.decode",
+    "stream.flush"
+  ],
+  "times": {
+    "edge_proxy_s": 0.001,
+    "pop_to_region_one_way_s": 0.022239388409999998,
+    "auth_s": 0.002,
+    "conversation_read_s": 0.006,
+    "rag_s": 0.18082,
+    "rag_parts_ms": {
+      "query_embed": 4.52,
+      "index_search": 25,
+      "chunk_fetch": 5,
+      "rerank": 146.3
+    },
+    "history_and_retrieval_s": 0.18082,
+    "history_and_retrieval": {
+      "formula": "max(conversation read, retrieval): the two run in parallel (Part 3.8)",
+      "arithmetic": "max(6 ms, 180.82 ms) = 180.82 ms",
+      "slower": "rag.retrieve"
+    },
+    "queue_per_pass_s": 0.16999999999999998,
+    "web_search_s": 1.6053,
+    "web_search_source": "web_search_budget:latency.monte_carlo.tool_step_ms.p50 (Part 7.2)",
+    "run_python_s": 1.305,
+    "engine_to_edge_s": 0.02373938841,
+    "first_preamble_token_at_edge_s": 15.149090534928366,
+    "clock_zero": "first byte of the request at the edge PoP (super_trace, Part 21, starts at the key press)",
+    "last_token_at_engine_s": 85.84970966544026,
+    "trace_end_s": 85.87344905385025
+  },
+  "passes": [
+    {
+      "pass": 1,
+      "queue_s": 0.16999999999999998,
+      "prefill_s": 0.5306537581083648,
+      "decode_s": 20.028912000000002,
+      "decode_steps": 424,
+      "step_ms": 47.238,
+      "disaggregated": true,
+      "kv_transfer_s": 0.00321572352,
+      "first_decode_step_s": 0.047238,
+      "server_ttft_s": 0.7511074816283647,
+      "server_ttft_formula": "queue + prefill + KV transfer + one decode step (disaggregated pass, RA-38)",
+      "server_ttft_arithmetic": "170 + 531 + 3.2 + 47.2 = 751 ms"
+    },
+    {
+      "pass": 2,
+      "queue_s": 0.16999999999999998,
+      "prefill_s": 0.1551762717364224,
+      "decode_s": 20.78472,
+      "decode_steps": 440,
+      "step_ms": 47.238,
+      "disaggregated": true,
+      "kv_transfer_s": 0.00269170176,
+      "first_decode_step_s": 0.047238,
+      "server_ttft_s": 0.3751059734964224,
+      "server_ttft_formula": "queue + prefill + KV transfer + one decode step (disaggregated pass, RA-38)",
+      "server_ttft_arithmetic": "170 + 155 + 2.7 + 47.2 = 375 ms"
+    },
+    {
+      "pass": 3,
+      "queue_s": 0.16999999999999998,
+      "prefill_s": 0.0047322471854592,
+      "decode_s": 40.719156000000005,
+      "decode_steps": 862,
+      "step_ms": 47.238,
+      "disaggregated": false,
+      "kv_transfer_s": 0.0,
+      "first_decode_step_s": 0.0,
+      "server_ttft_s": 0.17473224718545918,
+      "server_ttft_formula": "queue + prefill (local prefill: the prefill step samples token 1)",
+      "server_ttft_arithmetic": "170 + 4.7 = 175 ms"
+    }
+  ],
+  "events": [
+    {
+      "name": "first preamble token reaches the edge (held back until its check, Part 18.3)",
+      "t_s": 15.149090534928366
+    }
+  ],
+  "totals_by_stage_s": {
+    "auth.verify": 0.002,
+    "conversation.read": 0.006,
+    "rag.retrieve": 0.18082,
+    "inference.queue": 0.51,
+    "inference.prefill": 0.6905622770302464,
+    "inference.decode": 81.53278800000001,
+    "web.search": 1.6053,
+    "tool.run_python": 1.305,
+    "stream.flush": 85.82447027703026
+  },
+  "decode_share_of_trace": 0.949452815722724,
+  "before_first_pass_s": 0.20605938841000002,
+  "exemplar": {
+    "histogram_bounds": "vLLM TTFT buckets (extra.sims_w19.vllm_ttft_buckets_s)",
+    "pass1_server_ttft_s": 0.7511074816283647,
+    "bucket_le": 1.0,
+    "line": "router_ttft_seconds_bucket{le=\"1.0\"} <count> # {trace_id=\"4dca626b27c05b19c53fef0a9e2ce74b\"} 0.751",
+    "label_chars": 40,
+    "label_limit": 128,
+    "within_limit": true
+  },
+  "fleet": {
+    "region": "ap_south",
+    "peak_rps": 11741.247281165715,
+    "spans_per_trace": 17,
+    "spans_per_s": {
+      "value": 199601.20377981715,
+      "unit": "spans/s",
+      "arithmetic": "11,741 requests/s × 17 spans ≈ 199,600 spans/s",
+      "note": "rounded to hundreds, because the peak rate is not a whole number"
+    },
+    "bytes_per_s_all": {
+      "value": 79840481.51192686,
+      "unit": "B/s",
+      "MB_per_s": 79.84048151192685
+    },
+    "kept_baseline_traces_per_s": {
+      "value": 117.41247281165715,
+      "unit": "traces/s",
+      "note": "plus every trace with an error or an SLO miss (tail-based sampling)"
+    },
+    "kept_baseline_bytes_per_s": {
+      "value": 798404.8151192686,
+      "unit": "B/s",
+      "MB_per_s": 0.7984048151192686
+    },
+    "label": "HYPOTHETICAL span size and sampling (hypothetical.observability_ref)"
+  }
+}

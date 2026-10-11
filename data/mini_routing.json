@@ -1,0 +1,456 @@
+{
+  "meta": {
+    "script": "sim/mini/run.py",
+    "generated_at": "2026-10-09T12:58:34+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T12:31:14+00:00",
+      "sha256": "7760cf964886"
+    },
+    "constants_used": {
+      "extra.sims_w09.dynamo_decode_active_request_weight": 0.0,
+      "extra.sims_w09.llmd_approx_prefix_block_tokens": 64,
+      "hardware.H-teach.h100_sxm_bf16_dense": 989.5,
+      "hardware.H-teach.h100_sxm_fp8_dense": 1979,
+      "hardware.H-teach.h100_sxm_hbm_bandwidth": 3.35,
+      "hypothetical.async_work_ref.event_append_ms": 5,
+      "hypothetical.backend.default_max_tokens": 4096,
+      "hypothetical.backend.transaction_ms": 5,
+      "hypothetical.context_budget_ref.prompt_budget_tokens": 131072,
+      "hypothetical.epp_calibration.peak_prefill_tokens_per_s": 16000,
+      "hypothetical.gpu_step_model.hbm_bandwidth_efficiency": 0.8,
+      "hypothetical.gpu_step_model.per_layer_overhead_us": 40,
+      "hypothetical.gpu_step_model.per_step_overhead_ms": 0.5,
+      "hypothetical.memory_ref.record_texts": [
+        "Reports figures in EUR.",
+        "Prefers results as a table."
+      ],
+      "hypothetical.observability_ref.auth_verify_ms": 2,
+      "hypothetical.observability_ref.conversation_read_ms": 6,
+      "hypothetical.observability_ref.rag_chunk_fetch_ms": 5,
+      "hypothetical.observability_ref.rag_index_search_ms": 25,
+      "hypothetical.reference_request.user_text": "Here is our Q3 report and a photo of last week's whiteboard plan. Using our pricing policy, check the current list prices of our three main competitors, compute our gross margin at each of their price points, and plot it. Cite your sources.",
+      "hypothetical.reference_request.web_pages_fetched": 3,
+      "hypothetical.retrieval_ref.hnsw_ef_search": 100,
+      "hypothetical.routing_endpoints_ref.active_decode_blocks": [
+        5150,
+        4980,
+        5060
+      ],
+      "hypothetical.routing_endpoints_ref.active_prefill_tokens": [
+        2048,
+        0,
+        4096
+      ],
+      "hypothetical.routing_endpoints_ref.g1_overlap_blocks": [
+        368,
+        24,
+        0
+      ],
+      "hypothetical.routing_endpoints_ref.g2_overlap_blocks": [
+        0,
+        0,
+        0
+      ],
+      "hypothetical.routing_endpoints_ref.g3_overlap_blocks": [
+        0,
+        0,
+        0
+      ],
+      "hypothetical.routing_endpoints_ref.in_flight_requests": [
+        63,
+        52,
+        57
+      ],
+      "hypothetical.routing_endpoints_ref.names": [
+        "E1",
+        "E2",
+        "E3"
+      ],
+      "hypothetical.routing_endpoints_ref.running_sequences": [
+        60,
+        52,
+        56
+      ],
+      "hypothetical.routing_endpoints_ref.waiting_requests": [
+        1,
+        0,
+        0
+      ],
+      "hypothetical.serving_assumptions.prefill_mfu": 0.5,
+      "hypothetical.slo.top_level_deadline_s": 120,
+      "hypothetical.storage_ref.in_region_commit_ms": 2,
+      "hypothetical.super_trace_ref.model_router_ms": 1,
+      "hypothetical.super_trace_ref.tool_dispatch_ms": 2,
+      "hypothetical.timeout_budget_ref.conversation_read_cap_s": 1.0,
+      "hypothetical.timeout_budget_ref.final_pass_cap_s": 60,
+      "hypothetical.timeout_budget_ref.final_write_reserve_s": 2.0,
+      "hypothetical.timeout_budget_ref.memory_read_cap_s": 0.5,
+      "hypothetical.timeout_budget_ref.memory_read_expected_s": 0.02,
+      "hypothetical.timeout_budget_ref.retrieval_cap_s": 3.0,
+      "hypothetical.timeout_budget_ref.tool_pass_cap_s": 40,
+      "hypothetical.tool_call_story.competitor_names": [
+        "AlderSoft",
+        "Birchline",
+        "Cedar Systems"
+      ],
+      "hypothetical.tool_call_story.competitor_prices_eur": [
+        42.0,
+        55.0,
+        38.0
+      ],
+      "hypothetical.tool_call_story.pass1_preamble": "I will check the current list prices first.",
+      "hypothetical.tool_call_story.recency_days": 90,
+      "hypothetical.tool_call_story.search_queries": [
+        "AlderSoft list price per seat 2026",
+        "Birchline pricing plans list price per user",
+        "Cedar Systems pricing per seat per month"
+      ],
+      "hypothetical.tool_call_story.unit_cost_eur": 17.6,
+      "hypothetical.tool_exec_limits.max_parallel_calls_per_pass": 4,
+      "hypothetical.tool_exec_limits.run_python_deadline_margin_s": 5,
+      "hypothetical.tool_exec_limits.tool_calls_per_user_per_minute": 60,
+      "hypothetical.tool_exec_limits.web_search_deadline_s": 20,
+      "hypothetical.tool_loop.max_tool_iterations": 8,
+      "models.M-dense.head_dim": 128,
+      "models.M-dense.hidden_size": 12288,
+      "models.M-dense.intermediate_size": 28672,
+      "models.M-dense.max_position_embeddings": 262144,
+      "models.M-dense.num_attention_heads": 96,
+      "models.M-dense.num_hidden_layers": 88,
+      "models.M-dense.num_key_value_heads": 8,
+      "models.M-dense.text_params": 125025988608,
+      "models.M-dense.tie_word_embeddings": false,
+      "models.M-dense.torch_dtype": "bfloat16",
+      "models.M-dense.total_params": 127704210176,
+      "models.M-dense.vision_params": 2678221568,
+      "models.M-dense.vllm_recipe": {
+        "recommended_hw": "8x H200 (alt 4x B200, 2-8x MI300X)",
+        "tp": 8,
+        "eagle_num_speculative_tokens": 3,
+        "mi300x_tp8_1k_in_1k_out_conc32": {
+          "output_tok_s": 915,
+          "mean_ttft_ms": 2522,
+          "mean_tpot_ms": 26.1
+        },
+        "mi300x_tp1": {
+          "output_tok_s": 438,
+          "mean_ttft_ms": 5719,
+          "mean_tpot_ms": 55.2
+        }
+      },
+      "models.M-dense.vocab_size": 131072,
+      "models.M-vision.image_mean": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "models.M-vision.image_std": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "models.M-vision.in_patch_limit": 65536,
+      "models.M-vision.merge_kernel_size": 2,
+      "models.M-vision.patch_limit_on_one_side": 512,
+      "models.M-vision.patch_size": 14,
+      "models.M-vision.resize_rule": "scale = min(1, sqrt(65536/((W//14)*(H//14))), 7168/W, 7168/H); bicubic; zero-pad right/bottom to multiple of 28; tokens = (H'/28)*(W'/28)",
+      "retrieval_and_data.bm25_b": 0.75,
+      "retrieval_and_data.bm25_k1": 1.2,
+      "retrieval_and_data.rrf_k": 60,
+      "routing.dynamo.disk_hit_credit": 0.25,
+      "routing.dynamo.host_hit_credit": 0.75,
+      "routing.dynamo.overlap_score_credit_gpu": 1.0,
+      "routing.dynamo.prefill_load_scale": 1.0,
+      "routing.llm_d.prefix_affinity_max_ttft_penalty_ms": 18000,
+      "routing.llm_d.prefix_affinity_threshold": 0.8,
+      "routing.llm_d.token_load_queue_threshold_tokens": 4194304,
+      "software.vllm.block_size_tokens": 16
+    }
+  },
+  "part09_reproduction": {
+    "inputs": "hypothetical.routing_endpoints_ref (constants) and routing_score.story (pass token totals)",
+    "dynamo_pass2": {
+      "costs": [
+        5745.875,
+        5887.875,
+        6055.875
+      ],
+      "winner": "E1",
+      "credit_blocks": {
+        "E1": 368.0,
+        "E2": 24.0,
+        "E3": 0.0
+      }
+    },
+    "llmd_pass2": {
+      "winner": "E1",
+      "sticky": [],
+      "filter": "no endpoint reaches the threshold: keep all",
+      "match_ratio": {
+        "E1": 0.7896995708154506,
+        "E2": 0.05150214592274678,
+        "E3": 0.0
+      }
+    },
+    "llmd_pass3": {
+      "winner": "E1",
+      "sticky": [
+        "E1"
+      ],
+      "filter": "keep only the sticky endpoints",
+      "match_ratio": {
+        "E1": 0.9936842105263158,
+        "E2": 0.05052631578947368,
+        "E3": 0.0
+      }
+    },
+    "part09": {
+      "dynamo_costs": [
+        5745.875,
+        5887.875,
+        6055.875
+      ],
+      "dynamo_winner": "E1",
+      "llmd_pass2_winner": "E1",
+      "llmd_pass3_winner": "E1",
+      "llmd_pass3_sticky": [
+        "E1"
+      ]
+    },
+    "matches_part09": true,
+    "margin_blocks": 142.0
+  },
+  "live": [
+    {
+      "label": "pass 1",
+      "policy": "llmd",
+      "isl_tokens": 906,
+      "winner": "r1",
+      "match_blocks": {
+        "r1": 0,
+        "r2": 0,
+        "r3": 0
+      },
+      "load": {
+        "r1": {
+          "waiting_requests": 0,
+          "running_sequences": 9,
+          "active_prefill_tokens": 0,
+          "active_decode_blocks": 294
+        },
+        "r2": {
+          "waiting_requests": 0,
+          "running_sequences": 4,
+          "active_prefill_tokens": 0,
+          "active_decode_blocks": 107
+        },
+        "r3": {
+          "waiting_requests": 0,
+          "running_sequences": 4,
+          "active_prefill_tokens": 0,
+          "active_decode_blocks": 93
+        }
+      },
+      "filter": "no endpoint reaches the threshold: keep all",
+      "sticky": [],
+      "ties": [
+        "r1",
+        "r2",
+        "r3"
+      ],
+      "match_ratio": {
+        "r1": 0.0,
+        "r2": 0.0,
+        "r3": 0.0
+      },
+      "score": {
+        "r1": 0.9997825622558594,
+        "r2": 0.9997825622558594,
+        "r3": 0.9997825622558594
+      }
+    },
+    {
+      "label": "pass 2",
+      "policy": "llmd",
+      "isl_tokens": 1186,
+      "winner": "r1",
+      "match_blocks": {
+        "r1": 62,
+        "r2": 0,
+        "r3": 0
+      },
+      "load": {
+        "r1": {
+          "waiting_requests": 0,
+          "running_sequences": 8,
+          "active_prefill_tokens": 0,
+          "active_decode_blocks": 250
+        },
+        "r2": {
+          "waiting_requests": 0,
+          "running_sequences": 2,
+          "active_prefill_tokens": 0,
+          "active_decode_blocks": 47
+        },
+        "r3": {
+          "waiting_requests": 0,
+          "running_sequences": 1,
+          "active_prefill_tokens": 0,
+          "active_decode_blocks": 35
+        }
+      },
+      "filter": "keep only the sticky endpoints",
+      "sticky": [
+        "r1"
+      ],
+      "ties": [
+        "r1"
+      ],
+      "match_ratio": {
+        "r1": 0.8266666666666667,
+        "r2": 0.0,
+        "r3": 0.0
+      },
+      "score": {
+        "r1": 0.9999504089355469,
+        "r2": 0.9997138977050781,
+        "r3": 0.9997138977050781
+      }
+    },
+    {
+      "label": "pass 3",
+      "policy": "llmd",
+      "isl_tokens": 1593,
+      "winner": "r1",
+      "match_blocks": {
+        "r1": 91,
+        "r2": 0,
+        "r3": 0
+      },
+      "load": {
+        "r1": {
+          "waiting_requests": 0,
+          "running_sequences": 6,
+          "active_prefill_tokens": 0,
+          "active_decode_blocks": 169
+        },
+        "r2": {
+          "waiting_requests": 0,
+          "running_sequences": 2,
+          "active_prefill_tokens": 0,
+          "active_decode_blocks": 66
+        },
+        "r3": {
+          "waiting_requests": 0,
+          "running_sequences": 1,
+          "active_prefill_tokens": 0,
+          "active_decode_blocks": 37
+        }
+      },
+      "filter": "keep only the sticky endpoints",
+      "sticky": [
+        "r1"
+      ],
+      "ties": [
+        "r1"
+      ],
+      "match_ratio": {
+        "r1": 0.91,
+        "r2": 0.0,
+        "r3": 0.0
+      },
+      "score": {
+        "r1": 0.9999656677246094,
+        "r2": 0.9996185302734375,
+        "r3": 0.9996185302734375
+      }
+    }
+  ],
+  "policies": {
+    "stage1_one_replica": {
+      "replicas": [
+        "r1",
+        "r1",
+        "r1"
+      ],
+      "cached_tokens": [
+        0,
+        656,
+        0
+      ],
+      "ttft_ms": [
+        40.723,
+        40.651,
+        85.359
+      ],
+      "total_ms": 9059.662,
+      "replicas_text": "r1 / r1 / r1",
+      "cached_text": "0 / 656 / 0",
+      "ttft_text": "40.7 / 40.7 / 85.4"
+    },
+    "stage2_round_robin": {
+      "replicas": [
+        "r1",
+        "r2",
+        "r3"
+      ],
+      "cached_tokens": [
+        0,
+        0,
+        0
+      ],
+      "ttft_ms": [
+        45.065,
+        52.294,
+        71.986
+      ],
+      "total_ms": 8645.57,
+      "replicas_text": "r1 / r2 / r3",
+      "cached_text": "0 / 0 / 0",
+      "ttft_text": "45.1 / 52.3 / 72.0"
+    },
+    "stage2_llmd": {
+      "replicas": [
+        "r1",
+        "r1",
+        "r1"
+      ],
+      "cached_tokens": [
+        0,
+        992,
+        1456
+      ],
+      "ttft_ms": [
+        45.065,
+        16.002,
+        12.832
+      ],
+      "total_ms": 8678.3,
+      "replicas_text": "r1 / r1 / r1",
+      "cached_text": "0 / 992 / 1,456",
+      "ttft_text": "45.1 / 16.0 / 12.8"
+    },
+    "stage2_dynamo": {
+      "replicas": [
+        "r3",
+        "r3",
+        "r3"
+      ],
+      "cached_tokens": [
+        0,
+        992,
+        1456
+      ],
+      "ttft_ms": [
+        42.767,
+        15.144,
+        14.523
+      ],
+      "total_ms": 8447.225,
+      "replicas_text": "r3 / r3 / r3",
+      "cached_text": "0 / 992 / 1,456",
+      "ttft_text": "42.8 / 15.1 / 14.5"
+    }
+  }
+}

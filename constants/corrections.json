@@ -1,0 +1,50 @@
+{
+  "_about": "Verified corrections applied on top of the research-note constants by build_constants.py. Source of each fix: research/notes/08-verification.md (round 1, 2026-10-09). Keys are dotted paths into constants.json. 'do_not_show': true means the value is unverifiable at a primary source and must never appear on screen or in narration.",
+  "hardware.other_accelerators.trainium3_hbm": {
+    "value": 144,
+    "unit": "GiB",
+    "source": "https://aws.amazon.com/ec2/instance-types/trn3/",
+    "note": "Per chip, DERIVED: AWS prints UltraServer totals (Gen2, 144 chips: 20,736 GiB HBM, 705.6 TB/s, 362,448 TFLOPS dense MXFP8); divided by 144 gives 144 GiB, 4.9 TB/s, 2.52 PFLOPS per chip. (08-verification item 2)"
+  },
+  "hardware.other_accelerators.mi355x_hbm": {
+    "note": "HBM3E 288 GB, 8 TB/s, 1400 W. AMD brochure dense peaks: BF16 2.5166 PFLOP/s, FP8 5.0332 PFLOP/s, MXFP4 10.0663 PFLOP/s; peak clock 2.4 GHz. (08-verification item 3)"
+  },
+  "hardware.memory_tiers.nvme_gen5_seq_read": {
+    "value": 14,
+    "unit": "GB/s",
+    "source": "https://semiconductor.samsung.com/ssd/enterprise-ssd/pm1743/",
+    "note": "Samsung PM1743, 'up to 14,000 MB/s' on the current Samsung page; PCIe Gen5 x4 link limit 15.76 GB/s. (08-verification item 6)"
+  },
+  "hardware.memory_tiers.ddr5_6400_12ch_socket": {
+    "source": "https://www.amd.com/en/products/processors/server/epyc/9005-series/amd-epyc-9755.html",
+    "note": "AMD EPYC 9005: 12 channels DDR5 up to 6400 MT/s, 614 GB/s per socket peak theoretical. (08-verification item 7)"
+  },
+  "hardware.interconnect.pcie_gen6_x16_per_direction": {
+    "source": "https://web.archive.org/web/2022/https://pcisig.com/pci-sig-releases-pcie-60-specification-delivering-64-gts-data-rate",
+    "note": "PCI-SIG release: 64 GT/s; x16 ≈ 128 GB/s per direction, 256 GB/s both directions (raw). (08-verification item 8)"
+  },
+  "hardware.H-teach.h100_sxm_bf16_dense": {
+    "note": "Derived: NVIDIA product page prints 1,979 TFLOPS with sparsity; dense = 1979 / 2 = 989.5. Cross-check: the preliminary Hopper whitepaper (https://www.ece.lsu.edu/koppel/gp/refs/gtc22-whitepaper-hopper.pdf) lists BF16 1000 | 2000 TFLOPS dense | sparse. (08-verification item 4)"
+  },
+  "hardware.H-teach.h100_boost_clock": {
+    "do_not_show": true,
+    "note": "Unverifiable at an NVIDIA primary source (08-verification item 9)."
+  },
+  "hardware.interconnect.quantum_x800_port_latency": {
+    "do_not_show": true,
+    "note": "Only a third-party datasheet states sub-100 ns; NVIDIA's page gives no latency (08-verification item 9)."
+  },
+  "hardware.power.gb200_nvl72_rack_power_nominal": {
+    "do_not_show": true,
+    "note": "HPE collateral page unreachable; figure seen only in a search summary (08-verification item 9)."
+  },
+  "models.M-embed.mteb_multilingual_mean_task": {
+    "note": "Publisher card 70.58; recomputed from mteb/results data (2026-10-08) 70.18. The card's 'No.1' claim dates from June 2025 and is stale: microsoft/harrier-oss-v1-27b (MIT, 27B) scores 74.3. Kept as the Apache-2.0 choice in the 8B class for cost on the TTFT path. (08-verification items 10-11)"
+  },
+  "models.M-rerank": {
+    "_note": "No reranker leaderboard exists; label all M-rerank scores 'publisher-reported' (08-verification item 12)."
+  },
+  "models.M-vision.max_visual_tokens_per_image": {
+    "note": "NOT the true maximum: the K3 processor reaches 16,817 visual tokens for a 1861×7041 input (data/image_patches.json, Part 04 author). Show the maximum from image_patches data, not this value."
+  }
+}

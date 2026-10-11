@@ -1,0 +1,1001 @@
+{
+  "meta": {
+    "script": "sim/roofline.py",
+    "generated_at": "2026-10-09T17:39:35+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T12:31:14+00:00",
+      "sha256": "7760cf964886"
+    },
+    "constants_used": {
+      "extra.sims_w11.cuda_graph_blog_per_kernel_graph_us": 3.4,
+      "extra.sims_w11.cuda_graph_blog_per_kernel_overlap_us": 3.8,
+      "extra.sims_w11.cuda_graph_blog_per_kernel_sync_us": 9.6,
+      "hardware.H-frontier.gb300_gpu_bf16_dense": 2.5,
+      "hardware.H-frontier.gb300_gpu_fp8_dense": 5,
+      "hardware.H-frontier.gb300_gpu_hbm_bandwidth": 8,
+      "hardware.H-frontier.gb300_gpu_nvfp4_dense": 15,
+      "hardware.H-teach.h100_roofline_ridge_bf16": 295,
+      "hardware.H-teach.h100_sm_count": 132,
+      "hardware.H-teach.h100_sxm_bf16_dense": 989.5,
+      "hardware.H-teach.h100_sxm_fp8_dense": 1979,
+      "hardware.H-teach.h100_sxm_hbm_bandwidth": 3.35,
+      "hypothetical.batching_ref.decode_batch_example": 64,
+      "hypothetical.batching_ref.roofline_batch_sizes": [
+        1,
+        8,
+        64,
+        256
+      ],
+      "hypothetical.batching_ref.spec_acceptance_rate": 0.7,
+      "hypothetical.gpu_step_model.hbm_bandwidth_efficiency": 0.8,
+      "hypothetical.gpu_step_model.per_layer_overhead_us": 40,
+      "hypothetical.gpu_step_model.per_step_overhead_ms": 0.5,
+      "hypothetical.serving_assumptions.prefill_mfu": 0.5,
+      "hypothetical.slo.p95_tpot_ms": 60,
+      "hypothetical.traffic.mean_output_tokens": 400,
+      "hypothetical.traffic.mean_prompt_tokens": 3000,
+      "models.M-dense.head_dim": 128,
+      "models.M-dense.hidden_size": 12288,
+      "models.M-dense.intermediate_size": 28672,
+      "models.M-dense.max_position_embeddings": 262144,
+      "models.M-dense.num_attention_heads": 96,
+      "models.M-dense.num_hidden_layers": 88,
+      "models.M-dense.num_key_value_heads": 8,
+      "models.M-dense.text_params": 125025988608,
+      "models.M-dense.tie_word_embeddings": false,
+      "models.M-dense.torch_dtype": "bfloat16",
+      "models.M-dense.total_params": 127704210176,
+      "models.M-dense.vision_params": 2678221568,
+      "models.M-dense.vllm_recipe": {
+        "recommended_hw": "8x H200 (alt 4x B200, 2-8x MI300X)",
+        "tp": 8,
+        "eagle_num_speculative_tokens": 3,
+        "mi300x_tp8_1k_in_1k_out_conc32": {
+          "output_tok_s": 915,
+          "mean_ttft_ms": 2522,
+          "mean_tpot_ms": 26.1
+        },
+        "mi300x_tp1": {
+          "output_tok_s": 438,
+          "mean_ttft_ms": 5719,
+          "mean_tpot_ms": 55.2
+        }
+      },
+      "models.M-dense.vocab_size": 131072,
+      "models.M-draft.dense_eagle_file_bytes": 3070358348,
+      "models.M-draft.dense_eagle_params": 3070291998,
+      "models.M-draft.dense_vllm_num_speculative_tokens": 3,
+      "models.M-frontier.active_params": 104189614848,
+      "models.M-frontier.kda_conv_state_shape_per_layer": [
+        36864,
+        3
+      ],
+      "models.M-frontier.kda_head_k_dim": 128,
+      "models.M-frontier.kda_head_v_dim": 128,
+      "models.M-frontier.kda_num_heads": 96,
+      "models.M-frontier.kda_recurrent_state_dtype": "float32",
+      "models.M-frontier.kda_recurrent_state_shape_per_layer": [
+        96,
+        128,
+        128
+      ],
+      "models.M-frontier.kda_short_conv_kernel": 4,
+      "models.M-frontier.kv_lora_rank": 512,
+      "models.M-frontier.max_position_embeddings": 1048576,
+      "models.M-frontier.num_attention_heads": 96,
+      "models.M-frontier.num_hidden_layers": 93,
+      "models.M-frontier.num_kda_layers": 69,
+      "models.M-frontier.num_mla_layers": 24,
+      "models.M-frontier.qk_nope_head_dim": 128,
+      "models.M-frontier.qk_rope_head_dim": 64,
+      "models.M-frontier.torch_dtype": "bfloat16",
+      "models.M-frontier.v_head_dim": 128,
+      "software.vllm.block_size_tokens": 16,
+      "software.vllm.max_cudagraph_capture_size": 512,
+      "software.vllm.max_num_batched_tokens_h100": 8192,
+      "software.vllm.max_num_seqs_h100_b200": 1024
+    }
+  },
+  "conventions": {
+    "model": "M-dense, FP8 E4M3 linear weights, BF16 lm_head, BF16 KV, TP=8 on H-teach (one GPU shown)",
+    "flops": "2 per multiply-accumulate",
+    "bytes": "B; TB = 1e12",
+    "class": "Hardware and model inputs are class A; efficiencies, overheads and request lengths are HYPOTHETICAL (class C). Times are a roofline model, not measurements.",
+    "serves": [
+      "R-XI.1",
+      "R-XI.2",
+      "R-XI.3",
+      "R-XI.4",
+      "R-XI.8",
+      "R-XI.10",
+      "R-XI.11",
+      "R-XI.12"
+    ]
+  },
+  "model_params": {
+    "hbm_bandwidth_efficiency": 0.8,
+    "compute_efficiency": 0.5,
+    "per_layer_overhead_us": 40.0,
+    "per_step_overhead_ms": 0.5,
+    "fixed_ms_per_step": 4.02,
+    "weight_bytes_per_gpu": 15627976704.0,
+    "kv_bytes_per_token_per_gpu": 45056
+  },
+  "hardware": {
+    "h100": {
+      "hbm_bandwidth_TBps": 3.35,
+      "ridge": {
+        "bf16": {
+          "formula": "peak FLOP/s ÷ HBM bytes/s",
+          "peak_TFLOPS": 989.5,
+          "value": 295.4,
+          "unit": "FLOP/byte",
+          "arithmetic": "989.5 TFLOP/s ÷ 3.35 TB/s = 295.4 FLOP/byte"
+        },
+        "fp8": {
+          "formula": "peak FLOP/s ÷ HBM bytes/s",
+          "peak_TFLOPS": 1979,
+          "value": 590.7,
+          "unit": "FLOP/byte",
+          "arithmetic": "1979 TFLOP/s ÷ 3.35 TB/s = 590.7 FLOP/byte"
+        }
+      },
+      "ridge_bf16_matches_constant": true
+    },
+    "gb300": {
+      "hbm_bandwidth_TBps": 8.0,
+      "ridge": {
+        "bf16": {
+          "formula": "peak FLOP/s ÷ HBM bytes/s",
+          "peak_TFLOPS": 2500,
+          "value": 312.5,
+          "unit": "FLOP/byte",
+          "arithmetic": "2500 TFLOP/s ÷ 8 TB/s = 312.5 FLOP/byte"
+        },
+        "fp8": {
+          "formula": "peak FLOP/s ÷ HBM bytes/s",
+          "peak_TFLOPS": 5000,
+          "value": 625,
+          "unit": "FLOP/byte",
+          "arithmetic": "5000 TFLOP/s ÷ 8 TB/s = 625.0 FLOP/byte"
+        },
+        "nvfp4": {
+          "formula": "peak FLOP/s ÷ HBM bytes/s",
+          "peak_TFLOPS": 15000,
+          "value": 1875,
+          "unit": "FLOP/byte",
+          "arithmetic": "15000 TFLOP/s ÷ 8 TB/s = 1875.0 FLOP/byte"
+        }
+      }
+    }
+  },
+  "one_matmul": {
+    "what": "QKV projection of one M-dense layer, FP8 E4M3 weights and inputs, FP32 accumulation, BF16 output",
+    "batch": 64,
+    "n_qkv_formula": "(H + 2 × H_kv) × d_head",
+    "whole_model": {
+      "N": 14336,
+      "W_shape": [
+        12288,
+        14336
+      ]
+    },
+    "per_gpu_tp8": {
+      "N": 1792,
+      "N_formula": "(12 + 2 × 1) × 128",
+      "q_cols": 1536,
+      "k_cols": 128,
+      "v_cols": 128
+    },
+    "decode": {
+      "shape": {
+        "X": [
+          64,
+          12288
+        ],
+        "W": [
+          12288,
+          1792
+        ],
+        "Y": [
+          64,
+          1792
+        ]
+      },
+      "macs": 1409286144,
+      "flops": 2818572288,
+      "flops_formula": "2 × M × K × N",
+      "bytes": {
+        "weights": 22020096,
+        "input": 786432,
+        "output": 229376,
+        "total": 23035904,
+        "weights_share": 0.9559
+      },
+      "arithmetic_intensity": 122.36,
+      "time_at_peak_compute_us": 1.424,
+      "time_at_peak_bandwidth_us": 6.876,
+      "bound": "memory",
+      "time_lower_bound_us": 6.876,
+      "tiles": {
+        "tile": [
+          128,
+          128
+        ],
+        "count": 14,
+        "waves_on_sms": 0.106,
+        "sms": 132,
+        "macs_per_tile": 201326592,
+        "label": "ILLUSTRATIVE tile size; real kernels pick the tile per shape"
+      }
+    },
+    "prefill_chunk": {
+      "shape": {
+        "X": [
+          8192,
+          12288
+        ],
+        "W": [
+          12288,
+          1792
+        ],
+        "Y": [
+          8192,
+          1792
+        ]
+      },
+      "macs": 180388626432,
+      "flops": 360777252864,
+      "flops_formula": "2 × M × K × N",
+      "bytes": {
+        "weights": 22020096,
+        "input": 100663296,
+        "output": 29360128,
+        "total": 152043520,
+        "weights_share": 0.1448
+      },
+      "arithmetic_intensity": 2372.86,
+      "time_at_peak_compute_us": 182.303,
+      "time_at_peak_bandwidth_us": 45.386,
+      "bound": "compute",
+      "time_lower_bound_us": 182.303,
+      "tiles": {
+        "tile": [
+          128,
+          128
+        ],
+        "count": 896,
+        "waves_on_sms": 6.788,
+        "sms": 132,
+        "macs_per_tile": 201326592,
+        "label": "ILLUSTRATIVE tile size; real kernels pick the tile per shape"
+      }
+    },
+    "note": "Times use datasheet peaks (no efficiency factor): they are lower bounds for one kernel."
+  },
+  "roofline": {
+    "decode_context_tokens": 3200,
+    "points": {
+      "1": {
+        "gemm_ai": 2,
+        "gemm_attainable_TFLOPS": 6.7,
+        "step_ai": 2.06,
+        "step_attainable_TFLOPS": 6.9
+      },
+      "8": {
+        "gemm_ai": 15.91,
+        "gemm_attainable_TFLOPS": 53.3,
+        "step_ai": 15.45,
+        "step_attainable_TFLOPS": 51.8
+      },
+      "64": {
+        "gemm_ai": 122.36,
+        "gemm_attainable_TFLOPS": 409.9,
+        "step_ai": 81.55,
+        "step_attainable_TFLOPS": 273.2
+      },
+      "256": {
+        "gemm_ai": 432.24,
+        "gemm_attainable_TFLOPS": 1448,
+        "step_ai": 150.55,
+        "step_attainable_TFLOPS": 504.3
+      }
+    },
+    "prefill_gemm": {
+      "M": 8192,
+      "ai": 2372.86,
+      "attainable_TFLOPS": 1979
+    },
+    "ridge_fp8": 590.7,
+    "decode_gemm_crossover_batch": {
+      "formula": "solve 2BKN / (KN + BK + 2BN) = ridge (FP8 weights and inputs, 1 B per element; BF16 output, 2 B)",
+      "value": 375.3,
+      "rounded_up": 376
+    },
+    "ai_rule": "for B ≪ K, N with 1-byte weights: AI ≈ 2B FLOP/byte"
+  },
+  "layer_walk_64": {
+    "batch": 64,
+    "context_tokens": 3200,
+    "context_formula": "mean_prompt_tokens + mean_output_tokens / 2 (hypothetical.traffic)",
+    "ops": [
+      {
+        "op": "input RMSNorm",
+        "kind": "elementwise",
+        "in": [
+          64,
+          12288
+        ],
+        "out": [
+          64,
+          12288
+        ],
+        "flops": 3145728,
+        "weight_bytes": 0,
+        "kv_bytes": 0,
+        "note": ""
+      },
+      {
+        "op": "QKV projection",
+        "kind": "GEMM FP8",
+        "in": [
+          64,
+          12288
+        ],
+        "out": [
+          64,
+          1792
+        ],
+        "flops": 2818572288,
+        "weight_bytes": 22020096,
+        "kv_bytes": 0,
+        "note": "W [12288, 1792]"
+      },
+      {
+        "op": "split + RoPE",
+        "kind": "elementwise",
+        "in": [
+          64,
+          1792
+        ],
+        "out": {
+          "q": [
+            64,
+            12,
+            128
+          ],
+          "k": [
+            64,
+            1,
+            128
+          ],
+          "v": [
+            64,
+            1,
+            128
+          ]
+        },
+        "flops": 0,
+        "weight_bytes": 0,
+        "kv_bytes": 0,
+        "note": ""
+      },
+      {
+        "op": "write new K, V to KV cache (slot_mapping)",
+        "kind": "memory",
+        "in": {
+          "k": [
+            64,
+            1,
+            128
+          ],
+          "v": [
+            64,
+            1,
+            128
+          ]
+        },
+        "out": "KV blocks",
+        "flops": 0,
+        "weight_bytes": 0,
+        "kv_bytes": 32768,
+        "note": ""
+      },
+      {
+        "op": "decode attention (FlashAttention, block table)",
+        "kind": "attention",
+        "in": {
+          "q": [
+            64,
+            12,
+            128
+          ],
+          "K, V per sequence": [
+            3200,
+            1,
+            128
+          ]
+        },
+        "out": [
+          64,
+          1536
+        ],
+        "flops": 1258291200,
+        "weight_bytes": 0,
+        "kv_bytes": 104857600,
+        "note": "each sequence reads only its own KV"
+      },
+      {
+        "op": "output projection",
+        "kind": "GEMM FP8",
+        "in": [
+          64,
+          1536
+        ],
+        "out": [
+          64,
+          12288
+        ],
+        "flops": 2415919104,
+        "weight_bytes": 18874368,
+        "kv_bytes": 0,
+        "note": "partial sums; all-reduce over 8 GPUs follows (part 12)"
+      },
+      {
+        "op": "all-reduce + residual add",
+        "kind": "communication",
+        "in": [
+          64,
+          12288
+        ],
+        "out": [
+          64,
+          12288
+        ],
+        "flops": 0,
+        "weight_bytes": 0,
+        "kv_bytes": 0,
+        "note": ""
+      },
+      {
+        "op": "post-attention RMSNorm",
+        "kind": "elementwise",
+        "in": [
+          64,
+          12288
+        ],
+        "out": [
+          64,
+          12288
+        ],
+        "flops": 3145728,
+        "weight_bytes": 0,
+        "kv_bytes": 0,
+        "note": ""
+      },
+      {
+        "op": "gate and up projections",
+        "kind": "GEMM FP8",
+        "in": [
+          64,
+          12288
+        ],
+        "out": [
+          64,
+          7168
+        ],
+        "flops": 11274289152,
+        "weight_bytes": 88080384,
+        "kv_bytes": 0,
+        "note": "W [12288, 7168]"
+      },
+      {
+        "op": "SiLU(gate) × up",
+        "kind": "elementwise",
+        "in": [
+          64,
+          7168
+        ],
+        "out": [
+          64,
+          3584
+        ],
+        "flops": 458752,
+        "weight_bytes": 0,
+        "kv_bytes": 0,
+        "note": ""
+      },
+      {
+        "op": "down projection",
+        "kind": "GEMM FP8",
+        "in": [
+          64,
+          3584
+        ],
+        "out": [
+          64,
+          12288
+        ],
+        "flops": 5637144576,
+        "weight_bytes": 44040192,
+        "kv_bytes": 0,
+        "note": "partial sums; all-reduce follows"
+      },
+      {
+        "op": "all-reduce + residual add",
+        "kind": "communication",
+        "in": [
+          64,
+          12288
+        ],
+        "out": [
+          64,
+          12288
+        ],
+        "flops": 0,
+        "weight_bytes": 0,
+        "kv_bytes": 0,
+        "note": ""
+      }
+    ],
+    "kernels_per_layer_unfused": 12,
+    "per_layer": {
+      "weight_bytes": 173015040,
+      "kv_bytes": 104890368,
+      "flops": 23410966528,
+      "kv_bytes_per_sequence": 1638400,
+      "weight_share": 0.6226,
+      "time_at_peak_bandwidth_us": 82.96,
+      "weight_bytes_per_sequence": 2703360
+    },
+    "per_step": {
+      "t": 13.562,
+      "t_linear": 6.098,
+      "t_linear_compute": 2.022,
+      "t_linear_memory": 6.098,
+      "t_decode_attention": 3.444,
+      "t_prefill_attention": 0,
+      "t_fixed": 4.02,
+      "rows": 64,
+      "flops": 2085340839936.0,
+      "bytes": 25572671488.0,
+      "linear_bound": "memory"
+    },
+    "per_step_batch1_ms": 9.909,
+    "tokens_per_s_per_sequence": 73.7,
+    "tokens_per_s_replica": 4719,
+    "tokens_per_s_batch1": 100.9,
+    "throughput_gain_vs_batch1": 46.76,
+    "latency_cost_vs_batch1": 1.369,
+    "weights_bytes_per_step_gpu": 15627976704.0
+  },
+  "batch_sweep": {
+    "context_tokens": 3200,
+    "end_context_tokens": 3400,
+    "blocks_per_sequence": 213,
+    "kv_capacity_sequences": {
+      "bf16": 342,
+      "fp8": 685
+    },
+    "tpot_slo_ms": 60,
+    "rows": [
+      {
+        "batch": 1,
+        "bf16_kv": {
+          "step_ms": 9.909,
+          "tokens_per_s_per_sequence": 100.9,
+          "throughput_tokens_per_s": 101,
+          "mfu": 0.0017,
+          "fits_kv": true,
+          "meets_tpot_slo": true
+        },
+        "fp8_kv": {
+          "step_ms": 9.882,
+          "tokens_per_s_per_sequence": 101.2,
+          "throughput_tokens_per_s": 101,
+          "mfu": 0.0017,
+          "fits_kv": true,
+          "meets_tpot_slo": true
+        }
+      },
+      {
+        "batch": 2,
+        "bf16_kv": {
+          "step_ms": 9.967,
+          "tokens_per_s_per_sequence": 100.3,
+          "throughput_tokens_per_s": 201,
+          "mfu": 0.0033,
+          "fits_kv": true,
+          "meets_tpot_slo": true
+        },
+        "fp8_kv": {
+          "step_ms": 9.913,
+          "tokens_per_s_per_sequence": 100.9,
+          "throughput_tokens_per_s": 202,
+          "mfu": 0.0033,
+          "fits_kv": true,
+          "meets_tpot_slo": true
+        }
+      },
+      {
+        "batch": 4,
+        "bf16_kv": {
+          "step_ms": 10.083,
+          "tokens_per_s_per_sequence": 99.2,
+          "throughput_tokens_per_s": 397,
+          "mfu": 0.0065,
+          "fits_kv": true,
+          "meets_tpot_slo": true
+        },
+        "fp8_kv": {
+          "step_ms": 9.976,
+          "tokens_per_s_per_sequence": 100.2,
+          "throughput_tokens_per_s": 401,
+          "mfu": 0.0066,
+          "fits_kv": true,
+          "meets_tpot_slo": true
+        }
+      },
+      {
+        "batch": 8,
+        "bf16_kv": {
+          "step_ms": 10.315,
+          "tokens_per_s_per_sequence": 96.9,
+          "throughput_tokens_per_s": 776,
+          "mfu": 0.0128,
+          "fits_kv": true,
+          "meets_tpot_slo": true
+        },
+        "fp8_kv": {
+          "step_ms": 10.1,
+          "tokens_per_s_per_sequence": 99,
+          "throughput_tokens_per_s": 792,
+          "mfu": 0.013,
+          "fits_kv": true,
+          "meets_tpot_slo": true
+        }
+      },
+      {
+        "batch": 16,
+        "bf16_kv": {
+          "step_ms": 10.779,
+          "tokens_per_s_per_sequence": 92.8,
+          "throughput_tokens_per_s": 1484,
+          "mfu": 0.0244,
+          "fits_kv": true,
+          "meets_tpot_slo": true
+        },
+        "fp8_kv": {
+          "step_ms": 10.348,
+          "tokens_per_s_per_sequence": 96.6,
+          "throughput_tokens_per_s": 1546,
+          "mfu": 0.0255,
+          "fits_kv": true,
+          "meets_tpot_slo": true
+        }
+      },
+      {
+        "batch": 32,
+        "bf16_kv": {
+          "step_ms": 11.707,
+          "tokens_per_s_per_sequence": 85.4,
+          "throughput_tokens_per_s": 2733,
+          "mfu": 0.045,
+          "fits_kv": true,
+          "meets_tpot_slo": true
+        },
+        "fp8_kv": {
+          "step_ms": 10.846,
+          "tokens_per_s_per_sequence": 92.2,
+          "throughput_tokens_per_s": 2950,
+          "mfu": 0.0486,
+          "fits_kv": true,
+          "meets_tpot_slo": true
+        }
+      },
+      {
+        "batch": 64,
+        "bf16_kv": {
+          "step_ms": 13.562,
+          "tokens_per_s_per_sequence": 73.7,
+          "throughput_tokens_per_s": 4719,
+          "mfu": 0.0777,
+          "fits_kv": true,
+          "meets_tpot_slo": true
+        },
+        "fp8_kv": {
+          "step_ms": 11.84,
+          "tokens_per_s_per_sequence": 84.5,
+          "throughput_tokens_per_s": 5405,
+          "mfu": 0.089,
+          "fits_kv": true,
+          "meets_tpot_slo": true
+        }
+      },
+      {
+        "batch": 128,
+        "bf16_kv": {
+          "step_ms": 17.273,
+          "tokens_per_s_per_sequence": 57.9,
+          "throughput_tokens_per_s": 7411,
+          "mfu": 0.122,
+          "fits_kv": true,
+          "meets_tpot_slo": true
+        },
+        "fp8_kv": {
+          "step_ms": 13.829,
+          "tokens_per_s_per_sequence": 72.3,
+          "throughput_tokens_per_s": 9256,
+          "mfu": 0.1524,
+          "fits_kv": true,
+          "meets_tpot_slo": true
+        }
+      },
+      {
+        "batch": 256,
+        "bf16_kv": {
+          "step_ms": 25.883,
+          "tokens_per_s_per_sequence": 38.6,
+          "throughput_tokens_per_s": 9891,
+          "mfu": 0.1628,
+          "fits_kv": true,
+          "meets_tpot_slo": true
+        },
+        "fp8_kv": {
+          "step_ms": 18.995,
+          "tokens_per_s_per_sequence": 52.6,
+          "throughput_tokens_per_s": 13477,
+          "mfu": 0.2219,
+          "fits_kv": true,
+          "meets_tpot_slo": true
+        }
+      },
+      {
+        "batch": 342,
+        "bf16_kv": {
+          "step_ms": 33.228,
+          "tokens_per_s_per_sequence": 30.1,
+          "throughput_tokens_per_s": 10293,
+          "mfu": 0.1695,
+          "fits_kv": true,
+          "meets_tpot_slo": true
+        },
+        "fp8_kv": {
+          "step_ms": 24.025,
+          "tokens_per_s_per_sequence": 41.6,
+          "throughput_tokens_per_s": 14235,
+          "mfu": 0.2344,
+          "fits_kv": true,
+          "meets_tpot_slo": true
+        }
+      },
+      {
+        "batch": 512,
+        "bf16_kv": {
+          "step_ms": 47.746,
+          "tokens_per_s_per_sequence": 20.9,
+          "throughput_tokens_per_s": 10723,
+          "mfu": 0.1766,
+          "fits_kv": false,
+          "meets_tpot_slo": true
+        },
+        "fp8_kv": {
+          "step_ms": 33.97,
+          "tokens_per_s_per_sequence": 29.4,
+          "throughput_tokens_per_s": 15072,
+          "mfu": 0.2482,
+          "fits_kv": true,
+          "meets_tpot_slo": true
+        }
+      },
+      {
+        "batch": 685,
+        "bf16_kv": {
+          "step_ms": 62.521,
+          "tokens_per_s_per_sequence": 16,
+          "throughput_tokens_per_s": 10956,
+          "mfu": 0.1804,
+          "fits_kv": false,
+          "meets_tpot_slo": false
+        },
+        "fp8_kv": {
+          "step_ms": 44.089,
+          "tokens_per_s_per_sequence": 22.7,
+          "throughput_tokens_per_s": 15537,
+          "mfu": 0.2558,
+          "fits_kv": true,
+          "meets_tpot_slo": true
+        }
+      },
+      {
+        "batch": 1024,
+        "bf16_kv": {
+          "step_ms": 91.472,
+          "tokens_per_s_per_sequence": 10.9,
+          "throughput_tokens_per_s": 11195,
+          "mfu": 0.1843,
+          "fits_kv": false,
+          "meets_tpot_slo": false
+        },
+        "fp8_kv": {
+          "step_ms": 63.919,
+          "tokens_per_s_per_sequence": 15.6,
+          "throughput_tokens_per_s": 16020,
+          "mfu": 0.2638,
+          "fits_kv": false,
+          "meets_tpot_slo": false
+        }
+      }
+    ],
+    "max_batch_meeting_both": {
+      "bf16_kv": 342,
+      "fp8_kv": 685
+    },
+    "max_batch_meeting_tpot_fp8_kv": 957,
+    "step_at_bf16_capacity_ms": 33.23,
+    "step_at_fp8_capacity_ms": 44.09,
+    "throughput_at_bf16_capacity": 10293,
+    "throughput_at_fp8_capacity": 15537
+  },
+  "reference_request": {
+    "source": "data/context_budget.json passes.p1 (K3 token counts reused for M-dense)",
+    "prompt_tokens": 23322,
+    "prefix_hit_tokens": 3200,
+    "new_tokens": 20122,
+    "output_tokens": 424,
+    "prefill_steps": [
+      {
+        "chunk_tokens": 8192,
+        "prior_tokens": 3200,
+        "step_ms": 321.44,
+        "linear_bound": "compute"
+      },
+      {
+        "chunk_tokens": 8192,
+        "prior_tokens": 11392,
+        "step_ms": 394.78,
+        "linear_bound": "compute"
+      },
+      {
+        "chunk_tokens": 3738,
+        "prior_tokens": 19584,
+        "step_ms": 206.69,
+        "linear_bound": "compute"
+      }
+    ],
+    "prefill_ms": 922.9,
+    "prefill_first_chunk_ai": 2616.8,
+    "prefill_first_chunk_bound": "compute",
+    "decode_batch": 64,
+    "decode_first_step_ms": 13.9,
+    "decode_alone_step_ms": 10.25,
+    "decode_first_step_ai": 79.2,
+    "decode_ai_alone": 2.6,
+    "decode_total_ms": 5881,
+    "decode_mean_step_ms": 13.9,
+    "own_kv_bytes_per_gpu_at_end": 1069899776,
+    "k3_tep8_prefill_lower_bound_ms": 452,
+    "k3_prefill_tokens": 20250
+  },
+  "cuda_graphs": {
+    "capture_sizes": [
+      1,
+      2,
+      4,
+      8,
+      16,
+      24,
+      32,
+      40,
+      48,
+      56,
+      64,
+      72,
+      80,
+      88,
+      96,
+      104,
+      112,
+      120,
+      128,
+      136,
+      144,
+      152,
+      160,
+      168,
+      176,
+      184,
+      192,
+      200,
+      208,
+      216,
+      224,
+      232,
+      240,
+      248,
+      256,
+      272,
+      288,
+      304,
+      320,
+      336,
+      352,
+      368,
+      384,
+      400,
+      416,
+      432,
+      448,
+      464,
+      480,
+      496,
+      512
+    ],
+    "count": 51,
+    "max": 512,
+    "rule": "[1, 2, 4] + range(8, 256, 8) + range(256, max + 1, 16)",
+    "padding_examples": {
+      "1": 1,
+      "3": 4,
+      "64": 64,
+      "70": 72,
+      "300": 304,
+      "600": null
+    },
+    "launches_per_step_unfused": 1056,
+    "kernels_per_layer_unfused": 12,
+    "cpu_launch_ms_overlapped": 4.01,
+    "cpu_launch_ms_synced": 10.14,
+    "per_kernel_us": {
+      "sync": 9.6,
+      "overlap": 3.8,
+      "graph": 3.4
+    },
+    "model_step_batch1_ms": 9.909,
+    "launch_over_step_overlapped": 0.405,
+    "note": "Per-kernel costs are the 2019 V100 blog figures (SRC-089): an order of magnitude only."
+  },
+  "speculative_m_dense": {
+    "gamma": 3,
+    "alpha": 0.7,
+    "expected_tokens_per_step": 2.533,
+    "context_tokens": 3200,
+    "rows": {
+      "1": {
+        "base_step_ms": 9.909,
+        "verify_step_ms": 10.083,
+        "draft_step_ms": 0.375,
+        "c": 0.0378,
+        "verify_over_base": 1.018,
+        "speedup": 2.24
+      },
+      "8": {
+        "base_step_ms": 10.315,
+        "verify_step_ms": 11.707,
+        "draft_step_ms": 0.383,
+        "c": 0.0372,
+        "verify_over_base": 1.135,
+        "speedup": 2.032
+      },
+      "64": {
+        "base_step_ms": 13.562,
+        "verify_step_ms": 25.89,
+        "draft_step_ms": 0.452,
+        "c": 0.0333,
+        "verify_over_base": 1.909,
+        "speedup": 1.261
+      },
+      "256": {
+        "base_step_ms": 25.883,
+        "verify_step_ms": 91.498,
+        "draft_step_ms": 0.686,
+        "c": 0.0265,
+        "verify_over_base": 3.535,
+        "speedup": 0.701
+      }
+    },
+    "model": "speed-up = E[tokens] × t_base / (t_verify(B × (1 + γ) rows) + γ × t_draft)",
+    "note": "The draft reuses the target's embedding and lm_head (SRC-331); acceptance is a class C assumption."
+  }
+}

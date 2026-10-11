@@ -1,0 +1,756 @@
+{
+  "meta": {
+    "script": "sim/safety_privacy.py",
+    "generated_at": "2026-10-09T19:20:30+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T19:17:10+00:00",
+      "sha256": "4091418cecc1"
+    },
+    "constants_used": {
+      "extra.sims_w18.azure_async_filter_signal_chars": 1000,
+      "extra.sims_w18.llama_guard_3_1b_params": 1123000000,
+      "hardware.H-teach.h100_sxm_bf16_dense": 989.5,
+      "hypothetical.log_privacy_ref.debug_sample_fraction": 0.001,
+      "hypothetical.log_privacy_ref.mean_record_bytes": 350,
+      "hypothetical.log_privacy_ref.records_per_component": {
+        "edge": 1,
+        "api_gateway": 1,
+        "orchestrator": 4,
+        "retrieval": 1,
+        "model_router": 3,
+        "tool_executor": 2,
+        "egress_service": 3,
+        "sandbox_host": 1
+      },
+      "hypothetical.log_privacy_ref.retention_days": {
+        "application_logs": 30,
+        "debug_samples": 7,
+        "traces": 14,
+        "security_logs": 90,
+        "audit_events": 400
+      },
+      "hypothetical.reference_request.output_tokens_visible": 450,
+      "hypothetical.reference_request.serving_region": "ap_south",
+      "hypothetical.reference_request.user_text": "Here is our Q3 report and a photo of last week's whiteboard plan. Using our pricing policy, check the current list prices of our three main competitors, compute our gross margin at each of their price points, and plot it. Cite your sources.",
+      "hypothetical.residency_ref.bound_tenant_pin": "IN",
+      "hypothetical.residency_ref.bound_tenant_retry_after_s": 30,
+      "hypothetical.residency_ref.reference_tenant_pin": "none",
+      "hypothetical.residency_ref.region_jurisdiction": {
+        "us_east": "US",
+        "eu_west": "EU",
+        "ap_south": "IN",
+        "ap_northeast": "JP"
+      },
+      "hypothetical.serving_assumptions.prefill_mfu": 0.5,
+      "hypothetical.serving_assumptions.stream_rate_example_tokens_per_s": 100,
+      "hypothetical.slo.p95_ttft_ms": 1500,
+      "hypothetical.storage_ref.bytes_per_token_text": 4,
+      "hypothetical.stream_safety_ref.check_latency_ms": 20,
+      "hypothetical.stream_safety_ref.check_window_tokens": 16,
+      "hypothetical.stream_safety_ref.context_overlap_tokens": 8,
+      "hypothetical.stream_safety_ref.policy_stop_reason": "content_policy",
+      "hypothetical.stream_safety_ref.policy_stop_status": "interrupted",
+      "hypothetical.stream_safety_ref.window_options_tokens": [
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "hypothetical.traffic.mean_output_tokens": 400,
+      "hypothetical.traffic.mean_prompt_tokens": 3000,
+      "models.M-frontier.active_params": 104189614848,
+      "models.M-frontier.checkpoint_bytes": 1560936091448
+    }
+  },
+  "label": "HYPOTHETICAL policy and traffic values (class C); ILLUSTRATIVE log record",
+  "serves": [
+    "R-XVIII.2",
+    "R-XVIII.3",
+    "R-XVIII.4",
+    "R-XVIII.5"
+  ],
+  "tenancy": {
+    "request_context_tokens": {
+      "value": 31258,
+      "unit": "tokens",
+      "note": "context at the end of pass 3 (context_budget:passes.p3.context_end)"
+    },
+    "mla_bytes": {
+      "formula": "context tokens × MLA bytes per token (BF16)",
+      "value": 864221184,
+      "unit": "B",
+      "arithmetic": "31,258 × 27,648 = 864,221,184",
+      "GB_1e9": 0.864221184
+    },
+    "kda_fixed_bytes": {
+      "value": 449372160,
+      "unit": "B",
+      "GB_1e9": 0.44937216,
+      "note": "kv_math:m_frontier.kda_state.fixed_state_per_sequence"
+    },
+    "request_state_bytes": {
+      "formula": "MLA bytes + fixed KDA state",
+      "value": 1313593344,
+      "unit": "B",
+      "arithmetic": "864,221,184 + 449,372,160 = 1,313,593,344",
+      "GB_1e9": 1.313593344
+    },
+    "weights_bytes": {
+      "value": 1560936091448,
+      "unit": "B",
+      "GB_1e9": 1560.936091,
+      "note": "models.M-frontier.checkpoint_bytes; read-only, shared by all tenants"
+    },
+    "weights_over_request_state": {
+      "formula": "weights bytes ÷ request state bytes",
+      "value": 1188.294763,
+      "unit": "ratio"
+    }
+  },
+  "stream_safety": {
+    "inputs": {
+      "rate_tokens_per_s": 21.17,
+      "tpot_ms": 47.238,
+      "visible_tokens": 450,
+      "window_ref": 16,
+      "overlap_tokens": 8,
+      "check_latency_ms": 20,
+      "tokens_during_check": 0,
+      "slo_p95_ttft_ms": 1500,
+      "tpot_source": "capacity_math:fleet.million.m_frontier_h_frontier.step.step_ms (Part 14.2 decode step of the reference request)",
+      "rate_source": "capacity_math:fleet.million.m_frontier_h_frontier.step.tokens_per_s_per_sequence"
+    },
+    "illustrative_rate_example": {
+      "label": "ILLUSTRATIVE: the SSE framing example rate (hypothetical.serving_assumptions.stream_rate_example_tokens_per_s); not the reference request's decode rate",
+      "rate_tokens_per_s": 100,
+      "tpot_ms": {
+        "formula": "1000 ÷ rate",
+        "value": 10,
+        "unit": "ms",
+        "arithmetic": "1000 ÷ 100 = 10"
+      },
+      "reference_window_delay_ms": {
+        "formula": "(W − 1) × TPOT + check latency",
+        "value": 170,
+        "unit": "ms",
+        "arithmetic": "(16 − 1) × 10 + 20 = 170"
+      }
+    },
+    "windows": [
+      {
+        "window_tokens": 8,
+        "first_visible_delay_ms": {
+          "formula": "(W − 1) × TPOT + check latency",
+          "value": 350.666,
+          "unit": "ms",
+          "arithmetic": "(8 − 1) × 47.238 + 20 = 350.666"
+        },
+        "delay_share_of_slo_ttft": {
+          "formula": "delay ÷ p95 TTFT SLO",
+          "value": 0.2337773333,
+          "unit": "fraction"
+        },
+        "checks_per_answer": {
+          "formula": "ceil(visible tokens ÷ W)",
+          "value": 57,
+          "unit": "checks",
+          "arithmetic": "ceil(450 ÷ 8) = 57"
+        },
+        "classifier_tokens_per_answer": {
+          "formula": "Σ (new tokens + overlap read again)",
+          "value": 898,
+          "unit": "tokens"
+        },
+        "classifier_read_overhead": {
+          "formula": "classifier tokens ÷ visible tokens − 1",
+          "value": 0.9955555556,
+          "unit": "fraction"
+        },
+        "stream_first_exposed_tokens": {
+          "formula": "W + floor(check latency ÷ TPOT)",
+          "value": 8,
+          "unit": "tokens",
+          "arithmetic": "8 + floor(20 ÷ 47.238) = 8",
+          "note": "worst case: the violating token opens a window; tokens shown before the stop arrives"
+        },
+        "hold_back_exposed_tokens": {
+          "value": 0,
+          "unit": "tokens",
+          "note": "a failing window is never released"
+        }
+      },
+      {
+        "window_tokens": 16,
+        "first_visible_delay_ms": {
+          "formula": "(W − 1) × TPOT + check latency",
+          "value": 728.57,
+          "unit": "ms",
+          "arithmetic": "(16 − 1) × 47.238 + 20 = 728.57"
+        },
+        "delay_share_of_slo_ttft": {
+          "formula": "delay ÷ p95 TTFT SLO",
+          "value": 0.4857133333,
+          "unit": "fraction"
+        },
+        "checks_per_answer": {
+          "formula": "ceil(visible tokens ÷ W)",
+          "value": 29,
+          "unit": "checks",
+          "arithmetic": "ceil(450 ÷ 16) = 29"
+        },
+        "classifier_tokens_per_answer": {
+          "formula": "Σ (new tokens + overlap read again)",
+          "value": 674,
+          "unit": "tokens"
+        },
+        "classifier_read_overhead": {
+          "formula": "classifier tokens ÷ visible tokens − 1",
+          "value": 0.4977777778,
+          "unit": "fraction"
+        },
+        "stream_first_exposed_tokens": {
+          "formula": "W + floor(check latency ÷ TPOT)",
+          "value": 16,
+          "unit": "tokens",
+          "arithmetic": "16 + floor(20 ÷ 47.238) = 16",
+          "note": "worst case: the violating token opens a window; tokens shown before the stop arrives"
+        },
+        "hold_back_exposed_tokens": {
+          "value": 0,
+          "unit": "tokens",
+          "note": "a failing window is never released"
+        }
+      },
+      {
+        "window_tokens": 32,
+        "first_visible_delay_ms": {
+          "formula": "(W − 1) × TPOT + check latency",
+          "value": 1484.378,
+          "unit": "ms",
+          "arithmetic": "(32 − 1) × 47.238 + 20 = 1,484.378"
+        },
+        "delay_share_of_slo_ttft": {
+          "formula": "delay ÷ p95 TTFT SLO",
+          "value": 0.9895853333,
+          "unit": "fraction"
+        },
+        "checks_per_answer": {
+          "formula": "ceil(visible tokens ÷ W)",
+          "value": 15,
+          "unit": "checks",
+          "arithmetic": "ceil(450 ÷ 32) = 15"
+        },
+        "classifier_tokens_per_answer": {
+          "formula": "Σ (new tokens + overlap read again)",
+          "value": 562,
+          "unit": "tokens"
+        },
+        "classifier_read_overhead": {
+          "formula": "classifier tokens ÷ visible tokens − 1",
+          "value": 0.2488888889,
+          "unit": "fraction"
+        },
+        "stream_first_exposed_tokens": {
+          "formula": "W + floor(check latency ÷ TPOT)",
+          "value": 32,
+          "unit": "tokens",
+          "arithmetic": "32 + floor(20 ÷ 47.238) = 32",
+          "note": "worst case: the violating token opens a window; tokens shown before the stop arrives"
+        },
+        "hold_back_exposed_tokens": {
+          "value": 0,
+          "unit": "tokens",
+          "note": "a failing window is never released"
+        }
+      },
+      {
+        "window_tokens": 64,
+        "first_visible_delay_ms": {
+          "formula": "(W − 1) × TPOT + check latency",
+          "value": 2995.994,
+          "unit": "ms",
+          "arithmetic": "(64 − 1) × 47.238 + 20 = 2,995.994"
+        },
+        "delay_share_of_slo_ttft": {
+          "formula": "delay ÷ p95 TTFT SLO",
+          "value": 1.997329333,
+          "unit": "fraction"
+        },
+        "checks_per_answer": {
+          "formula": "ceil(visible tokens ÷ W)",
+          "value": 8,
+          "unit": "checks",
+          "arithmetic": "ceil(450 ÷ 64) = 8"
+        },
+        "classifier_tokens_per_answer": {
+          "formula": "Σ (new tokens + overlap read again)",
+          "value": 506,
+          "unit": "tokens"
+        },
+        "classifier_read_overhead": {
+          "formula": "classifier tokens ÷ visible tokens − 1",
+          "value": 0.1244444444,
+          "unit": "fraction"
+        },
+        "stream_first_exposed_tokens": {
+          "formula": "W + floor(check latency ÷ TPOT)",
+          "value": 64,
+          "unit": "tokens",
+          "arithmetic": "64 + floor(20 ÷ 47.238) = 64",
+          "note": "worst case: the violating token opens a window; tokens shown before the stop arrives"
+        },
+        "hold_back_exposed_tokens": {
+          "value": 0,
+          "unit": "tokens",
+          "note": "a failing window is never released"
+        }
+      },
+      {
+        "window_tokens": 128,
+        "first_visible_delay_ms": {
+          "formula": "(W − 1) × TPOT + check latency",
+          "value": 6019.226,
+          "unit": "ms",
+          "arithmetic": "(128 − 1) × 47.238 + 20 = 6,019.226"
+        },
+        "delay_share_of_slo_ttft": {
+          "formula": "delay ÷ p95 TTFT SLO",
+          "value": 4.012817333,
+          "unit": "fraction"
+        },
+        "checks_per_answer": {
+          "formula": "ceil(visible tokens ÷ W)",
+          "value": 4,
+          "unit": "checks",
+          "arithmetic": "ceil(450 ÷ 128) = 4"
+        },
+        "classifier_tokens_per_answer": {
+          "formula": "Σ (new tokens + overlap read again)",
+          "value": 474,
+          "unit": "tokens"
+        },
+        "classifier_read_overhead": {
+          "formula": "classifier tokens ÷ visible tokens − 1",
+          "value": 0.05333333333,
+          "unit": "fraction"
+        },
+        "stream_first_exposed_tokens": {
+          "formula": "W + floor(check latency ÷ TPOT)",
+          "value": 128,
+          "unit": "tokens",
+          "arithmetic": "128 + floor(20 ÷ 47.238) = 128",
+          "note": "worst case: the violating token opens a window; tokens shown before the stop arrives"
+        },
+        "hold_back_exposed_tokens": {
+          "value": 0,
+          "unit": "tokens",
+          "note": "a failing window is never released"
+        }
+      },
+      {
+        "window_tokens": 256,
+        "first_visible_delay_ms": {
+          "formula": "(W − 1) × TPOT + check latency",
+          "value": 12065.69,
+          "unit": "ms",
+          "arithmetic": "(256 − 1) × 47.238 + 20 = 12,065.69"
+        },
+        "delay_share_of_slo_ttft": {
+          "formula": "delay ÷ p95 TTFT SLO",
+          "value": 8.043793333,
+          "unit": "fraction"
+        },
+        "checks_per_answer": {
+          "formula": "ceil(visible tokens ÷ W)",
+          "value": 2,
+          "unit": "checks",
+          "arithmetic": "ceil(450 ÷ 256) = 2"
+        },
+        "classifier_tokens_per_answer": {
+          "formula": "Σ (new tokens + overlap read again)",
+          "value": 458,
+          "unit": "tokens"
+        },
+        "classifier_read_overhead": {
+          "formula": "classifier tokens ÷ visible tokens − 1",
+          "value": 0.01777777778,
+          "unit": "fraction"
+        },
+        "stream_first_exposed_tokens": {
+          "formula": "W + floor(check latency ÷ TPOT)",
+          "value": 256,
+          "unit": "tokens",
+          "arithmetic": "256 + floor(20 ÷ 47.238) = 256",
+          "note": "worst case: the violating token opens a window; tokens shown before the stop arrives"
+        },
+        "hold_back_exposed_tokens": {
+          "value": 0,
+          "unit": "tokens",
+          "note": "a failing window is never released"
+        }
+      }
+    ],
+    "reference_window": {
+      "window_tokens": 16,
+      "first_visible_delay_ms": {
+        "formula": "(W − 1) × TPOT + check latency",
+        "value": 728.57,
+        "unit": "ms",
+        "arithmetic": "(16 − 1) × 47.238 + 20 = 728.57"
+      },
+      "delay_share_of_slo_ttft": {
+        "formula": "delay ÷ p95 TTFT SLO",
+        "value": 0.4857133333,
+        "unit": "fraction"
+      },
+      "checks_per_answer": {
+        "formula": "ceil(visible tokens ÷ W)",
+        "value": 29,
+        "unit": "checks",
+        "arithmetic": "ceil(450 ÷ 16) = 29"
+      },
+      "classifier_tokens_per_answer": {
+        "formula": "Σ (new tokens + overlap read again)",
+        "value": 674,
+        "unit": "tokens"
+      },
+      "classifier_read_overhead": {
+        "formula": "classifier tokens ÷ visible tokens − 1",
+        "value": 0.4977777778,
+        "unit": "fraction"
+      },
+      "stream_first_exposed_tokens": {
+        "formula": "W + floor(check latency ÷ TPOT)",
+        "value": 16,
+        "unit": "tokens",
+        "arithmetic": "16 + floor(20 ÷ 47.238) = 16",
+        "note": "worst case: the violating token opens a window; tokens shown before the stop arrives"
+      },
+      "hold_back_exposed_tokens": {
+        "value": 0,
+        "unit": "tokens",
+        "note": "a failing window is never released"
+      }
+    },
+    "preamble": {
+      "tokens": {
+        "value": 9,
+        "unit": "tokens",
+        "note": "tool_call_demo:holdback.tokens_with_client_text"
+      },
+      "delay_ms": {
+        "formula": "preamble tokens × TPOT + check latency",
+        "value": 445.142,
+        "unit": "ms",
+        "arithmetic": "9 × 47.238 + 20 = 445.142",
+        "note": "the segment ends when the call marker starts, so its window closes before W tokens"
+      }
+    },
+    "stop_example": {
+      "label": "ILLUSTRATIVE: window 7 of the reference answer fails its output check",
+      "failing_window": 7,
+      "failing_window_tokens": [
+        97,
+        112
+      ],
+      "released_tokens": {
+        "formula": "(k − 1) × W",
+        "value": 96,
+        "unit": "tokens",
+        "arithmetic": "(7 − 1) × 16 = 96"
+      },
+      "generated_at_verdict": {
+        "formula": "k × W + floor(check latency ÷ TPOT)",
+        "value": 112,
+        "unit": "tokens",
+        "arithmetic": "7 × 16 + 0 = 112"
+      },
+      "discarded_tokens": {
+        "formula": "generated − released",
+        "value": 16,
+        "unit": "tokens",
+        "arithmetic": "112 − 96 = 16"
+      },
+      "stop_time_ms": {
+        "formula": "(k × W − 1) × TPOT + check latency, after the first answer token",
+        "value": 5263.418,
+        "unit": "ms",
+        "arithmetic": "(7 × 16 − 1) × 47.238 + 20 = 5,263.418"
+      },
+      "tokens_not_generated": {
+        "formula": "visible tokens − generated",
+        "value": 338,
+        "unit": "tokens",
+        "arithmetic": "450 − 112 = 338"
+      },
+      "stream_first_retract_tokens": {
+        "value": 16,
+        "unit": "tokens",
+        "note": "with stream-first, these tokens already reached the screen and the client must remove them"
+      },
+      "persisted_status": "interrupted",
+      "persisted_reason": "content_policy"
+    },
+    "fleet": {
+      "streamed_tokens_per_s": {
+        "value": 20000000,
+        "unit": "tokens/s",
+        "note": "capacity_math:fleet.million.token_rate (upper bound: it counts all output tokens)"
+      },
+      "checks_per_s": {
+        "formula": "tokens/s ÷ W",
+        "value": 1250000,
+        "unit": "checks/s",
+        "arithmetic": "20,000,000 ÷ 16 = 1,250,000"
+      },
+      "classifier_tokens_per_s": {
+        "formula": "tokens/s × (W + overlap) ÷ W",
+        "value": 30000000,
+        "unit": "tokens/s",
+        "arithmetic": "20,000,000 × (16 + 8) ÷ 16 = 30,000,000"
+      },
+      "classifier_params": {
+        "value": 1123000000,
+        "unit": "parameters",
+        "note": "extra.sims_w18.llama_guard_3_1b_params (SRC-703)"
+      },
+      "classifier_flops_per_s": {
+        "formula": "2 × parameters × classifier tokens/s",
+        "value": 6.738e+16,
+        "unit": "FLOP/s",
+        "arithmetic": "2 × 1,123,000,000 × 30,000,000 = 6.738e+16"
+      },
+      "h100_equivalents": {
+        "formula": "FLOP/s ÷ (BF16 dense peak × MFU)",
+        "value": 136.1899949,
+        "unit": "GPUs",
+        "arithmetic": "6.738e+16 ÷ (9.8950e+14 × 0.5) = 136.2"
+      },
+      "flops_share_of_generation": {
+        "formula": "2 × classifier params × (W + overlap) ÷ W ÷ (2 × K3 active params)",
+        "value": 0.01616763823,
+        "unit": "fraction",
+        "note": "classifier FLOPs per streamed token relative to K3 decode FLOPs per token"
+      }
+    },
+    "azure_async_window_tokens": {
+      "formula": "1,000 characters ÷ 4 B per token (ASCII text: 1 character = 1 B)",
+      "value": 250,
+      "unit": "tokens",
+      "note": "rough size of Azure's ~1,000-character async signal window in tokens"
+    },
+    "azure_async_window_ms": {
+      "formula": "window tokens × TPOT",
+      "value": 11809.5,
+      "unit": "ms"
+    }
+  },
+  "log_privacy": {
+    "redaction": {
+      "label": "ILLUSTRATIVE record and secrets (test card number, example.com address, fake key); not real data",
+      "before": {
+        "ts": "2026-10-09T09:41:07.412Z",
+        "level": "WARN",
+        "service": "orchestrator",
+        "trace_id": "4bf92f3577b34da6a3ce929d0e0e4736",
+        "request_id": "req_7Hq2Lm9Xv4Bn",
+        "tenant_id": "tenant_acme",
+        "user_id": "u_93",
+        "client_ip": "203.0.113.37",
+        "event": "tool_call_rejected",
+        "user_text": "Here is our Q3 report and a photo of last week's whiteboard plan. Using our pricing policy, check the current list prices of our three main competitors, compute our gross margin at each of their price points, and plot it. Cite your sources.",
+        "error": "send_email not allowed; model asked to mail the table to amina.otieno@example.com (+254 700 000 001); upstream header Authorization: Bearer eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJ1XzkzIn0.c2lnbmF0dXJlLWV4YW1wbGU; card 4111 1111 1111 1111; order 4111 1111 1111 1112; key sk_live_51HcQpZx7Lm2Vt9RbW4",
+        "duration_ms": 412
+      },
+      "before_json": "{\n \"ts\": \"2026-10-09T09:41:07.412Z\",\n \"level\": \"WARN\",\n \"service\": \"orchestrator\",\n \"trace_id\": \"4bf92f3577b34da6a3ce929d0e0e4736\",\n \"request_id\": \"req_7Hq2Lm9Xv4Bn\",\n \"tenant_id\": \"tenant_acme\",\n \"user_id\": \"u_93\",\n \"client_ip\": \"203.0.113.37\",\n \"event\": \"tool_call_rejected\",\n \"user_text\": \"Here is our Q3 report and a photo of last week's whiteboard plan. Using our pricing policy, check the current list prices of our three main competitors, compute our gross margin at each of their price points, and plot it. Cite your sources.\",\n \"error\": \"send_email not allowed; model asked to mail the table to amina.otieno@example.com (+254 700 000 001); upstream header Authorization: Bearer eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJ1XzkzIn0.c2lnbmF0dXJlLWV4YW1wbGU; card 4111 1111 1111 1111; order 4111 1111 1111 1112; key sk_live_51HcQpZx7Lm2Vt9RbW4\",\n \"duration_ms\": 412\n}",
+      "after": {
+        "ts": "2026-10-09T09:41:07.412Z",
+        "level": "WARN",
+        "service": "orchestrator",
+        "trace_id": "4bf92f3577b34da6a3ce929d0e0e4736",
+        "request_id": "req_7Hq2Lm9Xv4Bn",
+        "tenant_id": "tenant_acme",
+        "event": "tool_call_rejected",
+        "duration_ms": 412,
+        "user": "p_39aec10bd8a40ef6",
+        "client_net": "203.0.113.0/24",
+        "user_text_chars": 240,
+        "error": "send_email not allowed; model asked to mail the table to [REDACTED:email] ([REDACTED:phone]); upstream header Authorization: [REDACTED:bearer_token]; card [REDACTED:card_number]; order 4111 1111 1111 1112; key [REDACTED:secret_key]"
+      },
+      "after_json": "{\n \"ts\": \"2026-10-09T09:41:07.412Z\",\n \"level\": \"WARN\",\n \"service\": \"orchestrator\",\n \"trace_id\": \"4bf92f3577b34da6a3ce929d0e0e4736\",\n \"request_id\": \"req_7Hq2Lm9Xv4Bn\",\n \"tenant_id\": \"tenant_acme\",\n \"event\": \"tool_call_rejected\",\n \"duration_ms\": 412,\n \"user\": \"p_39aec10bd8a40ef6\",\n \"client_net\": \"203.0.113.0/24\",\n \"user_text_chars\": 240,\n \"error\": \"send_email not allowed; model asked to mail the table to [REDACTED:email] ([REDACTED:phone]); upstream header Authorization: [REDACTED:bearer_token]; card [REDACTED:card_number]; order 4111 1111 1111 1112; key [REDACTED:secret_key]\"\n}",
+      "error_after": "send_email not allowed; model asked to mail the table to [REDACTED:email] ([REDACTED:phone]); upstream header Authorization: [REDACTED:bearer_token]; card [REDACTED:card_number]; order 4111 1111 1111 1112; key [REDACTED:secret_key]",
+      "counts": {
+        "bearer_token": 1,
+        "jwt": 0,
+        "secret_key": 1,
+        "email": 1,
+        "card_number": 1,
+        "phone": 1
+      },
+      "redactions_total": 5,
+      "kept_matches": [
+        {
+          "rule": "card_number",
+          "text": "4111 1111 1111 1112",
+          "reason": "fails the Luhn check, so not a card number"
+        }
+      ],
+      "dropped_fields": [
+        "user_id",
+        "client_ip",
+        "user_text"
+      ],
+      "transformed_fields": {
+        "user_id": "user (HMAC pseudonym)",
+        "client_ip": "client_net (/24)",
+        "user_text": "user_text_chars (length only)",
+        "error": "error (pattern scrub)"
+      },
+      "bytes_before": 847,
+      "bytes_after": 569,
+      "rules": [
+        "bearer_token",
+        "jwt",
+        "secret_key",
+        "email",
+        "card_number",
+        "phone"
+      ]
+    },
+    "volume": {
+      "records_per_request": {
+        "formula": "Σ records per component",
+        "value": 16,
+        "unit": "records",
+        "arithmetic": "1 + 1 + 4 + 1 + 3 + 2 + 3 + 1 = 16"
+      },
+      "structured_bytes_per_request": {
+        "formula": "records × mean record bytes",
+        "value": 5600,
+        "unit": "B",
+        "arithmetic": "16 × 350 = 5,600"
+      },
+      "requests_per_day": {
+        "value": 3000000000,
+        "unit": "requests/day",
+        "note": "usage_accounting:db.requests_per_day"
+      },
+      "structured_bytes_per_day": {
+        "formula": "bytes per request × requests per day",
+        "value": 16800000000000,
+        "unit": "B/day",
+        "arithmetic": "5,600 × 3,000,000,000 = 1.680e+13",
+        "TB_1e12": 16.8
+      },
+      "text_bytes_per_request": {
+        "formula": "(mean prompt + mean output tokens) × B per token",
+        "value": 13600,
+        "unit": "B",
+        "arithmetic": "(3,000 + 400) × 4 = 13,600"
+      },
+      "text_bytes_per_day": {
+        "formula": "text bytes per request × requests per day",
+        "value": 40800000000000,
+        "unit": "B/day",
+        "arithmetic": "13,600 × 3,000,000,000 = 4.080e+13",
+        "TB_1e12": 40.8
+      },
+      "text_over_structured": {
+        "value": 2.428571429,
+        "unit": "ratio"
+      },
+      "application_logs_stored": {
+        "formula": "structured bytes per day × retention days",
+        "value": 504000000000000,
+        "unit": "B",
+        "PB_1e15": 0.504,
+        "TB_1e12": 504
+      },
+      "text_logs_stored_same_retention": {
+        "value": 1224000000000000,
+        "unit": "B",
+        "PB_1e15": 1.224
+      },
+      "reference_request_prompt_tokens_3_passes": {
+        "formula": "Σ prompt tokens of passes 1–3",
+        "value": 83533,
+        "unit": "tokens"
+      },
+      "reference_request_prompt_bytes": {
+        "formula": "prompt tokens × B per token",
+        "value": 334132,
+        "unit": "B",
+        "arithmetic": "83,533 × 4 = 334,132"
+      },
+      "reference_prompt_over_structured": {
+        "value": 59.66642857,
+        "unit": "ratio"
+      },
+      "debug_sampled_requests_per_day": {
+        "formula": "requests per day × debug fraction",
+        "value": 3000000,
+        "unit": "requests/day",
+        "arithmetic": "3,000,000,000 × 0.001 = 3,000,000"
+      }
+    },
+    "retention_days": {
+      "application_logs": 30,
+      "debug_samples": 7,
+      "traces": 14,
+      "security_logs": 90,
+      "audit_events": 400
+    },
+    "records_per_component": {
+      "edge": 1,
+      "api_gateway": 1,
+      "orchestrator": 4,
+      "retrieval": 1,
+      "model_router": 3,
+      "tool_executor": 2,
+      "egress_service": 3,
+      "sandbox_host": 1
+    }
+  },
+  "residency": {
+    "ranking_from_user": [
+      "ap_south",
+      "eu_west",
+      "ap_northeast",
+      "us_east"
+    ],
+    "home_region": "ap_south",
+    "tenants": {
+      "reference": {
+        "pin": "none",
+        "allowed_regions": [
+          "ap_south",
+          "eu_west",
+          "ap_northeast",
+          "us_east"
+        ],
+        "fallback_order": [
+          "eu_west",
+          "ap_northeast",
+          "us_east"
+        ],
+        "fallback_region": "eu_west",
+        "penalty_ms": 26.63725035,
+        "home_round_trip_ms": 74.45937574,
+        "action": "serve in the fallback region; the conversation store stays in the home region"
+      },
+      "bound": {
+        "pin": "IN",
+        "allowed_regions": [
+          "ap_south"
+        ],
+        "fallback_order": [],
+        "fallback_region": null,
+        "action": "fail closed: 503 with Retry-After 30 s",
+        "retry_after_s": 30
+      }
+    }
+  }
+}

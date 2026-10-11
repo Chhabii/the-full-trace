@@ -1,0 +1,294 @@
+{
+  "meta": {
+    "script": "sim/preemption_costs.py",
+    "generated_at": "2026-10-09T06:46:40+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T06:45:24+00:00",
+      "sha256": "36e36e01982d"
+    },
+    "constants_used": {
+      "extra.sims_s1.dgx_h100_data_nvme_drives_per_node": 8,
+      "extra.sims_s1.h_teach_gpus_per_node": 8,
+      "hardware.H-teach.h100_sxm_bf16_dense": 989.5,
+      "hardware.interconnect.pcie_gen5_x16_per_direction": 63,
+      "hardware.memory_tiers.nvme_gen5_seq_read": 14,
+      "hypothetical.serving_assumptions.prefill_mfu": 0.5,
+      "hypothetical.traffic.mean_output_tokens": 400,
+      "hypothetical.traffic.per_request_decode_speed": 20,
+      "models.M-dense.head_dim": 128,
+      "models.M-dense.hidden_size": 12288,
+      "models.M-dense.intermediate_size": 28672,
+      "models.M-dense.max_position_embeddings": 262144,
+      "models.M-dense.num_attention_heads": 96,
+      "models.M-dense.num_hidden_layers": 88,
+      "models.M-dense.num_key_value_heads": 8,
+      "models.M-dense.text_params": 125025988608,
+      "models.M-dense.tie_word_embeddings": false,
+      "models.M-dense.torch_dtype": "bfloat16",
+      "models.M-dense.total_params": 127704210176,
+      "models.M-dense.vision_params": 2678221568,
+      "models.M-dense.vllm_recipe": {
+        "recommended_hw": "8x H200 (alt 4x B200, 2-8x MI300X)",
+        "tp": 8,
+        "eagle_num_speculative_tokens": 3,
+        "mi300x_tp8_1k_in_1k_out_conc32": {
+          "output_tok_s": 915,
+          "mean_ttft_ms": 2522,
+          "mean_tpot_ms": 26.1
+        },
+        "mi300x_tp1": {
+          "output_tok_s": 438,
+          "mean_ttft_ms": 5719,
+          "mean_tpot_ms": 55.2
+        }
+      },
+      "models.M-dense.vocab_size": 131072,
+      "software.vllm.block_size_tokens": 16
+    }
+  },
+  "conventions": {
+    "model": "M-dense, BF16 KV, TP=8 on H-teach",
+    "serves": [
+      "R-XIII.8"
+    ]
+  },
+  "sequence": {
+    "context_tokens": 8192,
+    "kv_bytes_node": {
+      "formula": "8,192 × 360,448 B/token",
+      "value": 2952790016,
+      "unit": "B",
+      "MB_1e6": 2952.790016,
+      "GB_1e9": 2.952790016,
+      "MiB_2pow20": 2816,
+      "GiB_2pow30": 2.75
+    },
+    "kv_bytes_per_gpu": {
+      "formula": "total / 8",
+      "value": 369098752,
+      "unit": "B",
+      "MB_1e6": 369.098752,
+      "GB_1e9": 0.369098752,
+      "MiB_2pow20": 352,
+      "GiB_2pow30": 0.34375
+    },
+    "blocks": {
+      "formula": "8,192 / 16",
+      "value": 512,
+      "unit": "blocks per GPU"
+    }
+  },
+  "strategies": {
+    "1_delay_new_requests": {
+      "what": "Do not admit waiting requests until running sequences free blocks.",
+      "gpu_cost": {
+        "value": 0,
+        "unit": "GPU-s"
+      },
+      "bytes_moved": {
+        "value": 0,
+        "unit": "B",
+        "MB_1e6": 0,
+        "GB_1e9": 0,
+        "MiB_2pow20": 0,
+        "GiB_2pow30": 0
+      },
+      "user_cost": "Queue time for the waiting request (adds to its TTFT). Running sequences are unaffected.",
+      "queue_time_bound_example": {
+        "formula": "mean_output_tokens / per_request_decode_speed",
+        "terms": {
+          "mean_output_tokens": {
+            "value": 400,
+            "unit": "tokens",
+            "from": "hypothetical.traffic.mean_output_tokens"
+          },
+          "per_request_decode_speed": {
+            "value": 20,
+            "unit": "tokens/s",
+            "from": "hypothetical.traffic.per_request_decode_speed"
+          }
+        },
+        "value": 20000,
+        "unit": "ms",
+        "s": 20,
+        "note": "HYPOTHETICAL scale: how long one typical running request holds its blocks from start to finish. The real wait is set by whichever running sequence ends first."
+      },
+      "engine": "vLLM admits no WAITING request in a step that preempted, and an optional watermark keeps a fraction of blocks free at admission (note 03)."
+    },
+    "2_preempt_and_recompute": {
+      "what": "Free the sequence's blocks now; later rerun prefill over prompt + generated tokens.",
+      "blocks_freed": {
+        "formula": "8,192 / 16",
+        "value": 512,
+        "unit": "blocks"
+      },
+      "bytes_freed_per_gpu": {
+        "value": 369098752,
+        "unit": "B",
+        "MB_1e6": 369.098752,
+        "GB_1e9": 0.369098752,
+        "MiB_2pow20": 352,
+        "GiB_2pow30": 0.34375
+      },
+      "bytes_freed_node": {
+        "value": 2952790016,
+        "unit": "B",
+        "MB_1e6": 2952.790016,
+        "GB_1e9": 2.952790016,
+        "MiB_2pow20": 2816,
+        "GiB_2pow30": 2.75
+      },
+      "bytes_moved": {
+        "value": 0,
+        "unit": "B",
+        "MB_1e6": 0,
+        "GB_1e9": 0,
+        "MiB_2pow20": 0,
+        "GiB_2pow30": 0
+      },
+      "recompute_flops": {
+        "formula": "2 × N_matmul × T + 2 × H × d_head × L × T × (T + 1)",
+        "value": 2167155135086592,
+        "unit": "FLOP",
+        "matmul": 2022001883480064,
+        "attention": 145153251606528
+      },
+      "recompute_time": {
+        "formula": "FLOPs / (8 × H100 BF16 dense × prefill_mfu)",
+        "value": 547.5379321,
+        "unit": "ms",
+        "s": 0.5475379321
+      },
+      "gpu_cost": {
+        "formula": "recompute_time × 8 GPUs",
+        "value": 4.380303456,
+        "unit": "GPU-s"
+      },
+      "user_cost": "The preempted request waits at the front of the queue, then pays the recompute time before its next token.",
+      "engine": "vLLM V1's only preemption mode: the victim (last admitted, or lowest priority) loses its blocks, num_computed_tokens resets to 0 and it is prepended to WAITING. On resume the prefix cache can still hit its old blocks if they were not evicted, which cuts the recompute (note 03, scheduler.py#L777-L833, #L1571-L1614)."
+    },
+    "3_swap_to_cpu_and_back": {
+      "what": "Copy the sequence's KV to pinned host DRAM, free the GPU blocks, copy it back later.",
+      "bytes_per_gpu_each_way": {
+        "value": 369098752,
+        "unit": "B",
+        "MB_1e6": 369.098752,
+        "GB_1e9": 0.369098752,
+        "MiB_2pow20": 352,
+        "GiB_2pow30": 0.34375
+      },
+      "host_dram_needed": {
+        "value": 2952790016,
+        "unit": "B",
+        "MB_1e6": 2952.790016,
+        "GB_1e9": 2.952790016,
+        "MiB_2pow20": 2816,
+        "GiB_2pow30": 2.75,
+        "note": "whole node, all 8 GPUs' shares"
+      },
+      "link": {
+        "value": 63000000000,
+        "unit": "B/s",
+        "GB_per_s": 63,
+        "direction": "per direction, per GPU",
+        "from": "hardware.interconnect.pcie_gen5_x16_per_direction"
+      },
+      "time_out": {
+        "formula": "bytes_per_gpu / PCIe per direction",
+        "value": 5.858710349,
+        "unit": "ms",
+        "s": 0.005858710349
+      },
+      "time_back": {
+        "value": 5.858710349,
+        "unit": "ms",
+        "s": 0.005858710349
+      },
+      "time_round_trip": {
+        "formula": "2 × one way",
+        "value": 11.7174207,
+        "unit": "ms",
+        "s": 0.0117174207
+      },
+      "gpu_cost": {
+        "value": 0,
+        "unit": "GPU-s",
+        "note": "DMA copy engines move the data; the SMs keep computing, but PCIe is busy."
+      },
+      "engine": "Not in vLLM V1 (no CPU swap; note 03). Host offload exists as tiered KV-cache features: LMCache and vLLM's OffloadingConnector / kv_offloading_size, TensorRT-LLM host offload (note 03 recommendation 4)."
+    },
+    "4_offload_to_nvme": {
+      "what": "Write the KV to local NVMe, free the GPU blocks, read it back later.",
+      "bytes_per_gpu_each_way": {
+        "value": 369098752,
+        "unit": "B",
+        "MB_1e6": 369.098752,
+        "GB_1e9": 0.369098752,
+        "MiB_2pow20": 352,
+        "GiB_2pow30": 0.34375
+      },
+      "link": {
+        "value": 14000000000,
+        "unit": "B/s",
+        "GB_per_s": 14,
+        "from": "hardware.memory_tiers.nvme_gen5_seq_read",
+        "note": "One Gen5 drive per GPU (class C reference choice), sequential read rate."
+      },
+      "time_read_back": {
+        "formula": "bytes_per_gpu / NVMe sequential read",
+        "value": 26.36419657,
+        "unit": "ms",
+        "s": 0.02636419657
+      },
+      "time_write_lower_bound": {
+        "value": 26.36419657,
+        "unit": "ms",
+        "s": 0.02636419657,
+        "note": "constants.json has no NVMe write bandwidth; the read rate is used, so this is a lower bound on the write time."
+      },
+      "time_round_trip_lower_bound": {
+        "value": 52.72839314,
+        "unit": "ms",
+        "s": 0.05272839314
+      },
+      "gpu_cost": {
+        "value": 0,
+        "unit": "GPU-s"
+      },
+      "engine": "A tiered-cache feature (Dynamo KVBM G3, LMCache local disk), not an engine preemption mode."
+    },
+    "5_reject": {
+      "what": "Refuse the new request (HTTP 429) instead of admitting it.",
+      "gpu_cost": {
+        "value": 0,
+        "unit": "GPU-s"
+      },
+      "bytes_moved": {
+        "value": 0,
+        "unit": "B",
+        "MB_1e6": 0,
+        "GB_1e9": 0,
+        "MiB_2pow20": 0,
+        "GiB_2pow30": 0
+      },
+      "user_cost": "The client retries later or elsewhere; a failed request if it does not.",
+      "engine": "Mooncake rejects early when predicted TTFT or TBT would miss the SLO (HTTP 429); the reference system's gateway returns 429 on overload (RA-41)."
+    }
+  },
+  "comparison": {
+    "time_to_get_the_sequence_running_again_ms": {
+      "2_preempt_and_recompute": 547.5379321,
+      "3_swap_to_cpu_and_back": 11.7174207,
+      "4_offload_to_nvme": 52.72839314
+    },
+    "recompute_over_swap": 46.72853746,
+    "recompute_over_nvme": 10.38411944,
+    "note": "Swap and offload cost link time and host or disk capacity; recompute costs the whole node's compute. vLLM V1 implements only recompute, so it needs no host buffers; if the preempted sequence's blocks are still in the prefix cache when it resumes, only the rest is recomputed."
+  },
+  "vllm_v1": {
+    "preemption_mode": "recompute",
+    "cpu_swap": false,
+    "source": "research/notes/03-engines.md (scheduler.py#L1571-L1614: 'There is no CPU swap in V1')"
+  }
+}

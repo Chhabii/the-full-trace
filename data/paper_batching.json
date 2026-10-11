@@ -1,0 +1,1023 @@
+{
+  "meta": {
+    "script": "sim/paper_batching.py",
+    "generated_at": "2026-10-09T12:14:30+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T11:46:20+00:00",
+      "sha256": "7f6ef022590a"
+    },
+    "constants_used": {
+      "software.vllm.block_size_tokens": 16
+    }
+  },
+  "label": "ILLUSTRATIVE paper simulation: six small requests, a 64-token budget, 4 sequences, 16 KV blocks; the scheduler is Part 11's vLLM V1-style code (sim/batching_lib.py)",
+  "serves": [
+    "R-XXII.8"
+  ],
+  "limits": {
+    "iterations": 10,
+    "token_budget": 64,
+    "max_num_seqs": 4,
+    "kv_pool_blocks": 12,
+    "block_size_tokens": 16,
+    "kv_pool_tokens": 192,
+    "static_batch": 4
+  },
+  "requests": [
+    {
+      "id": "A",
+      "arrival_iteration": 0,
+      "prompt_tokens": 40,
+      "output_tokens": 3,
+      "blocks_for_prompt": 3,
+      "blocks_at_end": 3
+    },
+    {
+      "id": "B",
+      "arrival_iteration": 0,
+      "prompt_tokens": 30,
+      "output_tokens": 6,
+      "blocks_for_prompt": 2,
+      "blocks_at_end": 3
+    },
+    {
+      "id": "C",
+      "arrival_iteration": 1,
+      "prompt_tokens": 100,
+      "output_tokens": 2,
+      "blocks_for_prompt": 7,
+      "blocks_at_end": 7
+    },
+    {
+      "id": "D",
+      "arrival_iteration": 2,
+      "prompt_tokens": 20,
+      "output_tokens": 4,
+      "blocks_for_prompt": 2,
+      "blocks_at_end": 2
+    },
+    {
+      "id": "E",
+      "arrival_iteration": 3,
+      "prompt_tokens": 50,
+      "output_tokens": 3,
+      "blocks_for_prompt": 4,
+      "blocks_at_end": 4
+    },
+    {
+      "id": "F",
+      "arrival_iteration": 5,
+      "prompt_tokens": 16,
+      "output_tokens": 2,
+      "blocks_for_prompt": 1,
+      "blocks_at_end": 2
+    }
+  ],
+  "continuous": {
+    "rows": [
+      {
+        "iteration": 0,
+        "arrived": [
+          "A",
+          "B"
+        ],
+        "queue": [
+          "A",
+          "B"
+        ],
+        "admitted": [
+          "A",
+          "B"
+        ],
+        "preempted": [],
+        "prefill": [
+          {
+            "id": "A",
+            "tokens": 40,
+            "from_token": 0,
+            "last_chunk": true
+          },
+          {
+            "id": "B",
+            "tokens": 24,
+            "from_token": 0,
+            "last_chunk": false
+          }
+        ],
+        "prefill_tokens": 64,
+        "decode_batch": [],
+        "decode_tokens": 0,
+        "tokens": 64,
+        "budget_left": 0,
+        "tokens_emitted": [
+          "A"
+        ],
+        "completions": [],
+        "freed_blocks": 0,
+        "blocks_in_use": 5,
+        "free_blocks": 7,
+        "running_after": [
+          "A",
+          "B"
+        ],
+        "waiting_after": [],
+        "text": {
+          "arrived": "A, B",
+          "queue": "A, B",
+          "prefill": "A 40, B 24",
+          "decode": "–",
+          "emitted": "A",
+          "completions": "–",
+          "waiting_after": "–",
+          "padding": "–"
+        }
+      },
+      {
+        "iteration": 1,
+        "arrived": [
+          "C"
+        ],
+        "queue": [
+          "C"
+        ],
+        "admitted": [
+          "C"
+        ],
+        "preempted": [],
+        "prefill": [
+          {
+            "id": "B",
+            "tokens": 6,
+            "from_token": 24,
+            "last_chunk": true
+          },
+          {
+            "id": "C",
+            "tokens": 57,
+            "from_token": 0,
+            "last_chunk": false
+          }
+        ],
+        "prefill_tokens": 63,
+        "decode_batch": [
+          "A"
+        ],
+        "decode_tokens": 1,
+        "tokens": 64,
+        "budget_left": 0,
+        "tokens_emitted": [
+          "A",
+          "B"
+        ],
+        "completions": [],
+        "freed_blocks": 0,
+        "blocks_in_use": 12,
+        "free_blocks": 0,
+        "running_after": [
+          "A",
+          "B",
+          "C"
+        ],
+        "waiting_after": [],
+        "text": {
+          "arrived": "C",
+          "queue": "C",
+          "prefill": "B 6, C 57",
+          "decode": "A",
+          "emitted": "A, B",
+          "completions": "–",
+          "waiting_after": "–",
+          "padding": "–"
+        }
+      },
+      {
+        "iteration": 2,
+        "arrived": [
+          "D"
+        ],
+        "queue": [
+          "D"
+        ],
+        "admitted": [],
+        "preempted": [],
+        "prefill": [
+          {
+            "id": "C",
+            "tokens": 43,
+            "from_token": 57,
+            "last_chunk": true
+          }
+        ],
+        "prefill_tokens": 43,
+        "decode_batch": [
+          "A",
+          "B"
+        ],
+        "decode_tokens": 2,
+        "tokens": 45,
+        "budget_left": 19,
+        "tokens_emitted": [
+          "A",
+          "B",
+          "C"
+        ],
+        "completions": [
+          "A"
+        ],
+        "freed_blocks": 3,
+        "blocks_in_use": 9,
+        "free_blocks": 3,
+        "running_after": [
+          "B",
+          "C"
+        ],
+        "waiting_after": [
+          "D"
+        ],
+        "text": {
+          "arrived": "D",
+          "queue": "D",
+          "prefill": "C 43",
+          "decode": "A, B",
+          "emitted": "A, B, C",
+          "completions": "A",
+          "waiting_after": "D",
+          "padding": "–"
+        }
+      },
+      {
+        "iteration": 3,
+        "arrived": [
+          "E"
+        ],
+        "queue": [
+          "D",
+          "E"
+        ],
+        "admitted": [
+          "D"
+        ],
+        "preempted": [],
+        "prefill": [
+          {
+            "id": "D",
+            "tokens": 20,
+            "from_token": 0,
+            "last_chunk": true
+          }
+        ],
+        "prefill_tokens": 20,
+        "decode_batch": [
+          "B",
+          "C"
+        ],
+        "decode_tokens": 2,
+        "tokens": 22,
+        "budget_left": 42,
+        "tokens_emitted": [
+          "B",
+          "C",
+          "D"
+        ],
+        "completions": [
+          "C"
+        ],
+        "freed_blocks": 7,
+        "blocks_in_use": 4,
+        "free_blocks": 8,
+        "running_after": [
+          "B",
+          "D"
+        ],
+        "waiting_after": [
+          "E"
+        ],
+        "text": {
+          "arrived": "E",
+          "queue": "D, E",
+          "prefill": "D 20",
+          "decode": "B, C",
+          "emitted": "B, C, D",
+          "completions": "C",
+          "waiting_after": "E",
+          "padding": "–"
+        }
+      },
+      {
+        "iteration": 4,
+        "arrived": [],
+        "queue": [
+          "E"
+        ],
+        "admitted": [
+          "E"
+        ],
+        "preempted": [],
+        "prefill": [
+          {
+            "id": "E",
+            "tokens": 50,
+            "from_token": 0,
+            "last_chunk": true
+          }
+        ],
+        "prefill_tokens": 50,
+        "decode_batch": [
+          "B",
+          "D"
+        ],
+        "decode_tokens": 2,
+        "tokens": 52,
+        "budget_left": 12,
+        "tokens_emitted": [
+          "B",
+          "D",
+          "E"
+        ],
+        "completions": [],
+        "freed_blocks": 0,
+        "blocks_in_use": 9,
+        "free_blocks": 3,
+        "running_after": [
+          "B",
+          "D",
+          "E"
+        ],
+        "waiting_after": [],
+        "text": {
+          "arrived": "–",
+          "queue": "E",
+          "prefill": "E 50",
+          "decode": "B, D",
+          "emitted": "B, D, E",
+          "completions": "–",
+          "waiting_after": "–",
+          "padding": "–"
+        }
+      },
+      {
+        "iteration": 5,
+        "arrived": [
+          "F"
+        ],
+        "queue": [
+          "F"
+        ],
+        "admitted": [
+          "F"
+        ],
+        "preempted": [],
+        "prefill": [
+          {
+            "id": "F",
+            "tokens": 16,
+            "from_token": 0,
+            "last_chunk": true
+          }
+        ],
+        "prefill_tokens": 16,
+        "decode_batch": [
+          "B",
+          "D",
+          "E"
+        ],
+        "decode_tokens": 3,
+        "tokens": 19,
+        "budget_left": 45,
+        "tokens_emitted": [
+          "B",
+          "D",
+          "E",
+          "F"
+        ],
+        "completions": [],
+        "freed_blocks": 0,
+        "blocks_in_use": 10,
+        "free_blocks": 2,
+        "running_after": [
+          "B",
+          "D",
+          "E",
+          "F"
+        ],
+        "waiting_after": [],
+        "text": {
+          "arrived": "F",
+          "queue": "F",
+          "prefill": "F 16",
+          "decode": "B, D, E",
+          "emitted": "B, D, E, F",
+          "completions": "–",
+          "waiting_after": "–",
+          "padding": "–"
+        }
+      },
+      {
+        "iteration": 6,
+        "arrived": [],
+        "queue": [],
+        "admitted": [],
+        "preempted": [],
+        "prefill": [],
+        "prefill_tokens": 0,
+        "decode_batch": [
+          "B",
+          "D",
+          "E",
+          "F"
+        ],
+        "decode_tokens": 4,
+        "tokens": 4,
+        "budget_left": 60,
+        "tokens_emitted": [
+          "B",
+          "D",
+          "E",
+          "F"
+        ],
+        "completions": [
+          "B",
+          "D",
+          "E",
+          "F"
+        ],
+        "freed_blocks": 11,
+        "blocks_in_use": 0,
+        "free_blocks": 12,
+        "running_after": [],
+        "waiting_after": [],
+        "text": {
+          "arrived": "–",
+          "queue": "–",
+          "prefill": "–",
+          "decode": "B, D, E, F",
+          "emitted": "B, D, E, F",
+          "completions": "B, D, E, F",
+          "waiting_after": "–",
+          "padding": "–"
+        }
+      },
+      {
+        "iteration": 7,
+        "arrived": [],
+        "queue": [],
+        "admitted": [],
+        "preempted": [],
+        "prefill": [],
+        "prefill_tokens": 0,
+        "decode_batch": [],
+        "decode_tokens": 0,
+        "tokens": 0,
+        "budget_left": 64,
+        "tokens_emitted": [],
+        "completions": [],
+        "freed_blocks": 0,
+        "blocks_in_use": 0,
+        "free_blocks": 12,
+        "running_after": [],
+        "waiting_after": [],
+        "text": {
+          "arrived": "–",
+          "queue": "–",
+          "prefill": "–",
+          "decode": "–",
+          "emitted": "–",
+          "completions": "–",
+          "waiting_after": "–",
+          "padding": "–"
+        }
+      },
+      {
+        "iteration": 8,
+        "arrived": [],
+        "queue": [],
+        "admitted": [],
+        "preempted": [],
+        "prefill": [],
+        "prefill_tokens": 0,
+        "decode_batch": [],
+        "decode_tokens": 0,
+        "tokens": 0,
+        "budget_left": 64,
+        "tokens_emitted": [],
+        "completions": [],
+        "freed_blocks": 0,
+        "blocks_in_use": 0,
+        "free_blocks": 12,
+        "running_after": [],
+        "waiting_after": [],
+        "text": {
+          "arrived": "–",
+          "queue": "–",
+          "prefill": "–",
+          "decode": "–",
+          "emitted": "–",
+          "completions": "–",
+          "waiting_after": "–",
+          "padding": "–"
+        }
+      },
+      {
+        "iteration": 9,
+        "arrived": [],
+        "queue": [],
+        "admitted": [],
+        "preempted": [],
+        "prefill": [],
+        "prefill_tokens": 0,
+        "decode_batch": [],
+        "decode_tokens": 0,
+        "tokens": 0,
+        "budget_left": 64,
+        "tokens_emitted": [],
+        "completions": [],
+        "freed_blocks": 0,
+        "blocks_in_use": 0,
+        "free_blocks": 12,
+        "running_after": [],
+        "waiting_after": [],
+        "text": {
+          "arrived": "–",
+          "queue": "–",
+          "prefill": "–",
+          "decode": "–",
+          "emitted": "–",
+          "completions": "–",
+          "waiting_after": "–",
+          "padding": "–"
+        }
+      }
+    ],
+    "first_token_iteration": {
+      "A": 0,
+      "B": 1,
+      "C": 2,
+      "D": 3,
+      "E": 4,
+      "F": 5
+    },
+    "finished_iteration": {
+      "A": 2,
+      "C": 3,
+      "B": 6,
+      "D": 6,
+      "E": 6,
+      "F": 6
+    },
+    "unfinished": [],
+    "summary": {
+      "ttft_iterations": {
+        "A": 0,
+        "B": 1,
+        "C": 1,
+        "D": 1,
+        "E": 1,
+        "F": 0
+      },
+      "mean_ttft_iterations": 0.6666666666666666,
+      "finished": 6,
+      "unfinished": [],
+      "tokens_emitted": 20
+    }
+  },
+  "static": {
+    "rows": [
+      {
+        "iteration": 0,
+        "arrived": [
+          "A",
+          "B"
+        ],
+        "queue": [
+          "A",
+          "B"
+        ],
+        "prefill": [
+          {
+            "id": "A",
+            "tokens": 40,
+            "from_token": 0,
+            "last_chunk": true
+          },
+          {
+            "id": "B",
+            "tokens": 30,
+            "from_token": 0,
+            "last_chunk": true
+          }
+        ],
+        "prefill_tokens": 70,
+        "decode_batch": [],
+        "padding_rows": [],
+        "tokens_emitted": [
+          "A",
+          "B"
+        ],
+        "completions": [],
+        "freed_blocks": 0,
+        "blocks_in_use": 6,
+        "waiting_after": [],
+        "text": {
+          "arrived": "A, B",
+          "queue": "A, B",
+          "prefill": "A 40, B 30",
+          "decode": "–",
+          "emitted": "A, B",
+          "completions": "–",
+          "waiting_after": "–",
+          "padding": "–"
+        }
+      },
+      {
+        "iteration": 1,
+        "arrived": [
+          "C"
+        ],
+        "queue": [
+          "C"
+        ],
+        "prefill": [],
+        "prefill_tokens": 0,
+        "decode_batch": [
+          "A",
+          "B"
+        ],
+        "padding_rows": [],
+        "tokens_emitted": [
+          "A",
+          "B"
+        ],
+        "completions": [],
+        "freed_blocks": 0,
+        "blocks_in_use": 6,
+        "waiting_after": [
+          "C"
+        ],
+        "text": {
+          "arrived": "C",
+          "queue": "C",
+          "prefill": "–",
+          "decode": "A, B",
+          "emitted": "A, B",
+          "completions": "–",
+          "waiting_after": "C",
+          "padding": "–"
+        }
+      },
+      {
+        "iteration": 2,
+        "arrived": [
+          "D"
+        ],
+        "queue": [
+          "C",
+          "D"
+        ],
+        "prefill": [],
+        "prefill_tokens": 0,
+        "decode_batch": [
+          "A",
+          "B"
+        ],
+        "padding_rows": [],
+        "tokens_emitted": [
+          "A",
+          "B"
+        ],
+        "completions": [
+          "A"
+        ],
+        "freed_blocks": 0,
+        "blocks_in_use": 6,
+        "waiting_after": [
+          "C",
+          "D"
+        ],
+        "text": {
+          "arrived": "D",
+          "queue": "C, D",
+          "prefill": "–",
+          "decode": "A, B",
+          "emitted": "A, B",
+          "completions": "A",
+          "waiting_after": "C, D",
+          "padding": "–"
+        }
+      },
+      {
+        "iteration": 3,
+        "arrived": [
+          "E"
+        ],
+        "queue": [
+          "C",
+          "D",
+          "E"
+        ],
+        "prefill": [],
+        "prefill_tokens": 0,
+        "decode_batch": [
+          "B"
+        ],
+        "padding_rows": [
+          "A"
+        ],
+        "tokens_emitted": [
+          "B"
+        ],
+        "completions": [],
+        "freed_blocks": 0,
+        "blocks_in_use": 6,
+        "waiting_after": [
+          "C",
+          "D",
+          "E"
+        ],
+        "text": {
+          "arrived": "E",
+          "queue": "C, D, E",
+          "prefill": "–",
+          "decode": "B",
+          "emitted": "B",
+          "completions": "–",
+          "waiting_after": "C, D, E",
+          "padding": "A"
+        }
+      },
+      {
+        "iteration": 4,
+        "arrived": [],
+        "queue": [
+          "C",
+          "D",
+          "E"
+        ],
+        "prefill": [],
+        "prefill_tokens": 0,
+        "decode_batch": [
+          "B"
+        ],
+        "padding_rows": [
+          "A"
+        ],
+        "tokens_emitted": [
+          "B"
+        ],
+        "completions": [],
+        "freed_blocks": 0,
+        "blocks_in_use": 6,
+        "waiting_after": [
+          "C",
+          "D",
+          "E"
+        ],
+        "text": {
+          "arrived": "–",
+          "queue": "C, D, E",
+          "prefill": "–",
+          "decode": "B",
+          "emitted": "B",
+          "completions": "–",
+          "waiting_after": "C, D, E",
+          "padding": "A"
+        }
+      },
+      {
+        "iteration": 5,
+        "arrived": [
+          "F"
+        ],
+        "queue": [
+          "C",
+          "D",
+          "E",
+          "F"
+        ],
+        "prefill": [],
+        "prefill_tokens": 0,
+        "decode_batch": [
+          "B"
+        ],
+        "padding_rows": [
+          "A"
+        ],
+        "tokens_emitted": [
+          "B"
+        ],
+        "completions": [
+          "B"
+        ],
+        "freed_blocks": 6,
+        "blocks_in_use": 0,
+        "waiting_after": [
+          "C",
+          "D",
+          "E",
+          "F"
+        ],
+        "text": {
+          "arrived": "F",
+          "queue": "C, D, E, F",
+          "prefill": "–",
+          "decode": "B",
+          "emitted": "B",
+          "completions": "B",
+          "waiting_after": "C, D, E, F",
+          "padding": "A"
+        }
+      },
+      {
+        "iteration": 6,
+        "arrived": [],
+        "queue": [
+          "C",
+          "D",
+          "E",
+          "F"
+        ],
+        "prefill": [
+          {
+            "id": "C",
+            "tokens": 100,
+            "from_token": 0,
+            "last_chunk": true
+          },
+          {
+            "id": "D",
+            "tokens": 20,
+            "from_token": 0,
+            "last_chunk": true
+          }
+        ],
+        "prefill_tokens": 120,
+        "decode_batch": [],
+        "padding_rows": [],
+        "tokens_emitted": [
+          "C",
+          "D"
+        ],
+        "completions": [],
+        "freed_blocks": 0,
+        "blocks_in_use": 9,
+        "waiting_after": [
+          "E",
+          "F"
+        ],
+        "text": {
+          "arrived": "–",
+          "queue": "C, D, E, F",
+          "prefill": "C 100, D 20",
+          "decode": "–",
+          "emitted": "C, D",
+          "completions": "–",
+          "waiting_after": "E, F",
+          "padding": "–"
+        }
+      },
+      {
+        "iteration": 7,
+        "arrived": [],
+        "queue": [
+          "E",
+          "F"
+        ],
+        "prefill": [],
+        "prefill_tokens": 0,
+        "decode_batch": [
+          "C",
+          "D"
+        ],
+        "padding_rows": [],
+        "tokens_emitted": [
+          "C",
+          "D"
+        ],
+        "completions": [
+          "C"
+        ],
+        "freed_blocks": 0,
+        "blocks_in_use": 9,
+        "waiting_after": [
+          "E",
+          "F"
+        ],
+        "text": {
+          "arrived": "–",
+          "queue": "E, F",
+          "prefill": "–",
+          "decode": "C, D",
+          "emitted": "C, D",
+          "completions": "C",
+          "waiting_after": "E, F",
+          "padding": "–"
+        }
+      },
+      {
+        "iteration": 8,
+        "arrived": [],
+        "queue": [
+          "E",
+          "F"
+        ],
+        "prefill": [],
+        "prefill_tokens": 0,
+        "decode_batch": [
+          "D"
+        ],
+        "padding_rows": [
+          "C"
+        ],
+        "tokens_emitted": [
+          "D"
+        ],
+        "completions": [],
+        "freed_blocks": 0,
+        "blocks_in_use": 9,
+        "waiting_after": [
+          "E",
+          "F"
+        ],
+        "text": {
+          "arrived": "–",
+          "queue": "E, F",
+          "prefill": "–",
+          "decode": "D",
+          "emitted": "D",
+          "completions": "–",
+          "waiting_after": "E, F",
+          "padding": "C"
+        }
+      },
+      {
+        "iteration": 9,
+        "arrived": [],
+        "queue": [
+          "E",
+          "F"
+        ],
+        "prefill": [],
+        "prefill_tokens": 0,
+        "decode_batch": [
+          "D"
+        ],
+        "padding_rows": [
+          "C"
+        ],
+        "tokens_emitted": [
+          "D"
+        ],
+        "completions": [
+          "D"
+        ],
+        "freed_blocks": 9,
+        "blocks_in_use": 0,
+        "waiting_after": [
+          "E",
+          "F"
+        ],
+        "text": {
+          "arrived": "–",
+          "queue": "E, F",
+          "prefill": "–",
+          "decode": "D",
+          "emitted": "D",
+          "completions": "D",
+          "waiting_after": "E, F",
+          "padding": "C"
+        }
+      }
+    ],
+    "first_token_iteration": {
+      "A": 0,
+      "B": 0,
+      "C": 6,
+      "D": 6
+    },
+    "finished_iteration": {
+      "A": 2,
+      "B": 5,
+      "C": 7,
+      "D": 9
+    },
+    "unfinished": [
+      "E",
+      "F"
+    ],
+    "summary": {
+      "ttft_iterations": {
+        "A": 0,
+        "B": 0,
+        "C": 5,
+        "D": 4
+      },
+      "mean_ttft_iterations": 2.25,
+      "finished": 4,
+      "unfinished": [
+        "E",
+        "F"
+      ],
+      "tokens_emitted": 15
+    }
+  }
+}

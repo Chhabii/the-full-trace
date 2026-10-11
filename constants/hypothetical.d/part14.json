@@ -1,0 +1,120 @@
+{
+  "_about": "Part 14 (concurrency and capacity at huge scale) class C values. Every value is HYPOTHETICAL and chosen to agree with RA-05, RA-06, RA-12, RA-36, RA-38, RA-41, RA-42, RA-55, RA-57, RA-71. Author w14, 2026-10-09.",
+  "fleet_scenarios": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Scale scenarios for the population funnel (R-XIV.1). Every other ratio (requests per user, peak-to-average, connected share, output length, decode speed) stays at hypothetical.traffic.",
+    "daily_active_users": {
+      "value": [1000000, 10000000, 250000000, 1000000000],
+      "unit": "users",
+      "note": "A small product, a mid-size product, the reference system (equals hypothetical.traffic.daily_active_users) and four times the reference."
+    }
+  },
+  "capacity_targets": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Planning targets and facility values for fleet sizing (R-XIV.2, R-XIV.3, R-XIV.6).",
+    "prefill_utilization_target": {
+      "value": 0.6,
+      "unit": "fraction of modelled prefill capacity",
+      "note": "Prefill time adds directly to TTFT, and queue wait grows as 1/(1 − ρ) (part 9.5), so prefill pools run well below saturation."
+    },
+    "decode_kv_fill_target": {
+      "value": 0.85,
+      "unit": "fraction of the KV-limited batch",
+      "note": "Decode workers are planned to hold 85% of the sequences their KV pool fits; the rest absorbs length variance without preemption (part 13.8)."
+    },
+    "h100_nodes_per_rack": {
+      "value": 4,
+      "unit": "8-GPU nodes per rack",
+      "note": "Air-cooled H-teach racks with four 8-GPU nodes (about 41 kW at the DGX H100 maximum system power)."
+    },
+    "gb300_rack_power_kw": {
+      "value": 140,
+      "unit": "kW per GB300 NVL72 rack",
+      "note": "NVIDIA publishes no rack power for GB300 NVL72. HPE gives 132 kW nominal for GB200 NVL72 (SRC-033); OEM listings for GB300 range from about 132 to 142 kW. 140 kW is a planning value, not a datasheet figure."
+    },
+    "headroom_over_peak": {
+      "value": 0.15,
+      "unit": "fraction above the regional peak",
+      "note": "Capacity above the forecast regional peak for forecast error and bursts shorter than the autoscaler reaction time (RA-42)."
+    }
+  },
+  "request_cost_cases": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "The three text-only requests of R-XIV.4 (the fourth is the reference request). Values copied from the spec; all three run on M-frontier with no prefix-cache hit.",
+    "prompt_tokens": {
+      "value": [20, 100000, 1000],
+      "unit": "tokens",
+      "note": "R-XIV.4 cases 1 to 3: short chat, long document, long generation."
+    },
+    "output_tokens": {
+      "value": [30, 30, 5000],
+      "unit": "tokens",
+      "note": "R-XIV.4 cases 1 to 3."
+    }
+  },
+  "workload_profiles": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "The three planning workloads of R-XIV.6 on M-frontier: A short support chat, B long PDF reasoning (prompt and output from hypothetical.backend.long_document_*), C an agent that runs several web searches.",
+    "a_prompt_tokens": {"value": 1800, "unit": "tokens", "note": "System prompt (1,200, hypothetical.tool_loop) + a short history + the customer's question."},
+    "a_output_tokens": {"value": 150, "unit": "tokens", "note": "A short support answer, no reasoning."},
+    "a_prefix_hit_fraction": {"value": 0.67, "unit": "fraction of prompt tokens", "note": "The 1,200-token system prompt hits the tenant's prefix cache (RA-40)."},
+    "a_ttft_target_s": {"value": 1.0, "unit": "s", "note": "Support chat is interactive and short, so the first token must come fast."},
+    "b_prefix_hit_fraction": {"value": 0.5, "unit": "fraction of prompt tokens", "note": "Mean over a session: the first question pays the whole document, follow-ups reuse it."},
+    "b_ttft_target_s": {"value": 6.0, "unit": "s", "note": "Users accept a longer wait for a long document; a progress event shows during prefill."},
+    "c_passes": {"value": 6, "unit": "inference passes", "note": "Five tool passes (search, fetch, search, fetch, check) and one final answer; below max_tool_iterations 8."},
+    "c_first_prompt_tokens": {"value": 4000, "unit": "tokens", "note": "System prompt, tool schemas, history and the task."},
+    "c_tokens_added_per_pass": {"value": 2500, "unit": "tokens", "note": "Search snippets or fetched page text plus the previous pass's output, under fetched_page_tokens_cap."},
+    "c_output_tokens_per_tool_pass": {"value": 300, "unit": "tokens", "note": "Reasoning plus one tool call."},
+    "c_final_output_tokens": {"value": 900, "unit": "tokens", "note": "Reasoning plus the visible report."},
+    "c_ttft_target_s": {"value": 2.0, "unit": "s per pass", "note": "Each pass sits on the critical path of a long task; status events show progress."},
+    "planning_rate_rps": {"value": 1000, "unit": "requests/s", "note": "The same arrival rate for all three workloads, to show that one requests/s number does not size a fleet."}
+  },
+  "region_demand": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Per-region demand for the daily curve (R-XIV.8) over the four regions of RA-05. Shares combine hypothetical.traffic.regional_split, pool_queueing.ap_south_share_of_asia_pacific and the rest-of-world assignment below.",
+    "regions": {"value": ["us_east", "eu_west", "ap_south", "ap_northeast"], "unit": "region ids", "note": "RA-05."},
+    "home_split_of_continent": {
+      "value": {"north_america": {"us_east": 1.0}, "europe": {"eu_west": 1.0}, "asia_pacific": {"ap_south": 0.5, "ap_northeast": 0.5}, "rest_of_world": {"us_east": 0.2, "eu_west": 0.4, "ap_south": 0.4}},
+      "unit": "fraction of the continent's requests",
+      "note": "Asia-Pacific split from pool_queueing.ap_south_share_of_asia_pacific. Rest of world: Latin America to us_east, west and north Africa to eu_west, east Africa, the Middle East and South Asia to ap_south (the Nairobi user is in this group)."
+    },
+    "utc_offset_hours": {
+      "value": {"us_east": -4, "eu_west": 1, "ap_south": 5.5, "ap_northeast": 9},
+      "unit": "hours",
+      "note": "Local time of each region's users on 2026-10-09 (daylight time in Virginia and Dublin)."
+    },
+    "local_peak_hour": {"value": 15, "unit": "local hour", "note": "Work and study use dominates; the curve is lowest 12 hours later, at 03:00 local."},
+    "regional_peak_to_trough": {"value": 4, "unit": "ratio", "note": "Each region's busiest quarter hour over its quietest one. a flatter curve (was about 29×, solved from the global peak-to-average); real regions keep a floor of overnight use, API and agent work, and users who are awake at that local hour somewhere else."},
+    "shape": {"value": "exp(κ × cos(2π (h_local − 15) / 24)) / I0(κ)", "unit": "formula", "note": "A von Mises daily shape with mean 1; the concentration κ follows from regional_peak_to_trough: κ = ln(peak-to-trough) / 2. The global peak-to-average then follows from the four offset regions (about 1.24); the planning peak hypothetical.traffic.peak_arrival_rate keeps a margin above that curve for the busiest weekday and event surges."},
+    "failover_partner": {
+      "value": {"us_east": "eu_west", "eu_west": "us_east", "ap_south": "ap_northeast", "ap_northeast": "ap_south"},
+      "unit": "region id",
+      "note": "Next-nearest healthy region that receives a failed region's M-frontier traffic before any smaller model (RA-57)."
+    }
+  },
+  "background_work": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Daily preemptible work that fills the troughs (R-XIV.8), as a fraction of the interactive GPU-hours of the same day. It runs in the 'batch' admission band (hypothetical.admission_ref).",
+    "batch_api_fraction": {"value": 0.18, "unit": "of interactive GPU-hours per day", "note": "Batch API and flex-tier requests with a 24-hour completion window."},
+    "embedding_backfill_fraction": {"value": 0.04, "unit": "of interactive GPU-hours per day", "note": "Re-embedding of workspace documents after an M-embed upgrade, and ingestion backlogs (runs on the retrieval pool's share)."},
+    "offline_eval_fraction": {"value": 0.05, "unit": "of interactive GPU-hours per day", "note": "Regression and quality evaluations of new model and prompt versions."}
+  },
+  "herd_ref": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Inputs of the thundering-herd examples (R-XIV.7).",
+    "region": {"value": "ap_south", "unit": "region id", "note": "The reference request's region."},
+    "outage_s": {"value": 60, "unit": "s", "note": "The region's API is unreachable for one minute; clients that tried to send wait to retry."},
+    "retry_window_s": {"value": 30, "unit": "s", "note": "Full-jitter clients spread their first retry uniformly over [0, 30 s] after recovery (cap of the RA-12 backoff)."},
+    "seed": {"value": 14, "unit": "seed", "note": "RNG seed of the jittered retry draw."},
+    "capacity_over_mean": {"value": 1.3, "unit": "ratio", "note": "Admitted capacity of the region over its mean arrival rate at that hour: the 15% headroom plus warm spares."},
+    "news_search_fraction": {"value": 0.5, "unit": "fraction of requests", "note": "During a breaking event, half of all requests trigger web search (normal: hypothetical.traffic.web_search_fraction)."},
+    "news_query_cache_hit_fraction": {"value": 0.8, "unit": "fraction of queries", "note": "Most users ask about the same event, so normalized queries repeat inside the search-result TTL (RA-19)."}
+  }
+}

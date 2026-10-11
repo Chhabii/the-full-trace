@@ -1,0 +1,1623 @@
+{
+  "meta": {
+    "script": "sim/routing_score.py",
+    "generated_at": "2026-10-09T12:31:37+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T12:31:14+00:00",
+      "sha256": "7760cf964886"
+    },
+    "constants_used": {
+      "extra.sims_w09.dynamo_decode_active_request_weight": 0.0,
+      "extra.sims_w09.llmd_approx_prefix_block_tokens": 64,
+      "extra.sims_w09.llmd_band_max_requests": 5000,
+      "extra.sims_w09.llmd_trtllm_mix_kv_weight": 2,
+      "extra.sims_w09.llmd_trtllm_mix_nohit_lru_weight": 2,
+      "extra.sims_w09.llmd_trtllm_mix_prefix_weight": 3,
+      "extra.sims_w09.llmd_trtllm_mix_queue_weight": 2,
+      "hypothetical.admission_ref.band_names": [
+        "interactive",
+        "standard",
+        "batch"
+      ],
+      "hypothetical.admission_ref.band_priorities": [
+        10,
+        0,
+        -10
+      ],
+      "hypothetical.admission_ref.batch_band_usage_ceiling": 0.8,
+      "hypothetical.epp_calibration.peak_prefill_tokens_per_s": 16000,
+      "hypothetical.hot_prefix_sim.conversation_rate_per_s": 3.0,
+      "hypothetical.hot_prefix_sim.hot_fraction": 0.6,
+      "hypothetical.hot_prefix_sim.hot_suffix_median_tokens": 500,
+      "hypothetical.hot_prefix_sim.low_gate_ms": 2000,
+      "hypothetical.routing_endpoints_burst.active_decode_blocks": [
+        6100,
+        5900,
+        6000
+      ],
+      "hypothetical.routing_endpoints_burst.in_flight_requests": [
+        79,
+        75,
+        77
+      ],
+      "hypothetical.routing_endpoints_burst.running_sequences": [
+        72,
+        70,
+        71
+      ],
+      "hypothetical.routing_endpoints_burst.waiting_requests": [
+        7,
+        5,
+        6
+      ],
+      "hypothetical.routing_endpoints_overloaded.e1_active_decode_blocks": 6400,
+      "hypothetical.routing_endpoints_overloaded.e1_active_prefill_tokens": 40000,
+      "hypothetical.routing_endpoints_ref.active_decode_blocks": [
+        5150,
+        4980,
+        5060
+      ],
+      "hypothetical.routing_endpoints_ref.active_prefill_tokens": [
+        2048,
+        0,
+        4096
+      ],
+      "hypothetical.routing_endpoints_ref.g1_overlap_blocks": [
+        368,
+        24,
+        0
+      ],
+      "hypothetical.routing_endpoints_ref.g2_overlap_blocks": [
+        0,
+        0,
+        0
+      ],
+      "hypothetical.routing_endpoints_ref.g3_overlap_blocks": [
+        0,
+        0,
+        0
+      ],
+      "hypothetical.routing_endpoints_ref.in_flight_requests": [
+        63,
+        52,
+        57
+      ],
+      "hypothetical.routing_endpoints_ref.names": [
+        "E1",
+        "E2",
+        "E3"
+      ],
+      "hypothetical.routing_endpoints_ref.running_sequences": [
+        60,
+        52,
+        56
+      ],
+      "hypothetical.routing_endpoints_ref.waiting_requests": [
+        1,
+        0,
+        0
+      ],
+      "hypothetical.routing_sim.conversation_rate_per_s": 4.0,
+      "hypothetical.routing_sim.duration_s": 600,
+      "hypothetical.routing_sim.endpoints": 8,
+      "hypothetical.routing_sim.first_prompt_median_tokens": 2000,
+      "hypothetical.routing_sim.first_prompt_sigma": 1.3,
+      "hypothetical.routing_sim.followup_new_tokens_median": 150,
+      "hypothetical.routing_sim.followup_new_tokens_sigma": 1.0,
+      "hypothetical.routing_sim.kv_block_tokens": 64,
+      "hypothetical.routing_sim.kv_capacity_tokens": 600000,
+      "hypothetical.routing_sim.max_running": 64,
+      "hypothetical.routing_sim.mean_think_time_s": 15,
+      "hypothetical.routing_sim.mean_turns_per_conversation": 3,
+      "hypothetical.routing_sim.output_max_tokens": 5000,
+      "hypothetical.routing_sim.output_median_tokens": 250,
+      "hypothetical.routing_sim.output_min_tokens": 20,
+      "hypothetical.routing_sim.output_sigma": 1.0,
+      "hypothetical.routing_sim.prompt_max_tokens": 100000,
+      "hypothetical.routing_sim.prompt_min_tokens": 20,
+      "hypothetical.routing_sim.seed": 9,
+      "hypothetical.routing_sim.step_s": 0.05,
+      "hypothetical.routing_sim.tpot_base_ms": 20,
+      "hypothetical.routing_sim.tpot_per_running_ms": 0.3,
+      "hypothetical.routing_sim.warmup_s": 60,
+      "hypothetical.serving_assumptions.reference_shared_prefix_tokens": 8000,
+      "models.M-frontier.kda_fixed_state_bytes_per_seq": 449372160,
+      "models.M-frontier.mla_kv_bytes_per_token_bf16": 27648,
+      "routing.dynamo.conditional_disagg_max_effective_isl": 2048,
+      "routing.dynamo.conditional_disagg_ratio": 0.7,
+      "routing.dynamo.disk_hit_credit": 0.25,
+      "routing.dynamo.host_hit_credit": 0.75,
+      "routing.dynamo.overlap_score_credit_gpu": 1.0,
+      "routing.dynamo.prefill_load_scale": 1.0,
+      "routing.llm_d.flow_control_request_ttl_s": 60,
+      "routing.llm_d.prefix_affinity_max_ttft_penalty_ms": 18000,
+      "routing.llm_d.prefix_affinity_threshold": 0.8,
+      "routing.llm_d.saturation_kv_util_threshold": 0.8,
+      "routing.llm_d.saturation_queue_depth_threshold": 5,
+      "routing.llm_d.token_load_queue_threshold_tokens": 4194304
+    }
+  },
+  "label": "Endpoint states are HYPOTHETICAL (hypothetical.routing_endpoints_*); formulas are Dynamo's and llm-d's code",
+  "story": {
+    "p1_prompt": 23322,
+    "p1_hit": 3072,
+    "p2_prompt": 29816,
+    "p2_hit": 23552,
+    "p3_prompt": 30395,
+    "p3_hit": 30208,
+    "stable_hit": 1536,
+    "from": "data/context_budget.json passes.* (Part 5.6)"
+  },
+  "pass1": {
+    "best_hit_ratio": 0.13172112168767688,
+    "arithmetic": "3,072 / 23,322 = 0.132",
+    "below_threshold": true
+  },
+  "pass2_dynamo": {
+    "isl_tokens": 29816,
+    "block_size_tokens": 64,
+    "request_blocks": 466,
+    "request_blocks_formula": "ceil(29,816 / 64) = 466",
+    "isl_blocks": 465.875,
+    "rows": {
+      "E1": {
+        "endpoint": "E1",
+        "raw_prefill_tokens": {
+          "value": 31864,
+          "unit": "tokens",
+          "formula": "active_prefill_tokens + ISL",
+          "arithmetic": "2,048 + 29,816 = 31,864"
+        },
+        "raw_prefill_blocks": {
+          "value": 497.875,
+          "unit": "blocks",
+          "formula": "raw_prefill_tokens / block_size",
+          "arithmetic": "31,864 / 64 = 497.88"
+        },
+        "overlap_credit_blocks": {
+          "value": 368.0,
+          "unit": "blocks",
+          "formula": "1.0 × G1 blocks + 0.75 × G2 blocks + 0.25 × G3 blocks",
+          "arithmetic": "1.0 × 368 + 0.75 × 0 + 0.25 × 0 = 368"
+        },
+        "adjusted_prefill_blocks": {
+          "value": 129.875,
+          "unit": "blocks",
+          "formula": "max(0, raw − credit)",
+          "arithmetic": "max(0, 497.88 − 368) = 129.88"
+        },
+        "prefill_term": {
+          "value": 129.875,
+          "unit": "blocks",
+          "arithmetic": "1.0 × 129.88 = 129.88"
+        },
+        "decode_term": {
+          "value": 5616,
+          "unit": "blocks",
+          "formula": "active_decode_blocks + request blocks",
+          "arithmetic": "5,150 + 466 = 5,616"
+        },
+        "active_request_term": {
+          "value": 0.0,
+          "unit": "blocks",
+          "arithmetic": "0.0 × 63 = 0"
+        },
+        "cost": {
+          "value": 5745.875,
+          "unit": "blocks",
+          "arithmetic": "129.88 + 5,616 + 0 = 5745.88"
+        }
+      },
+      "E2": {
+        "endpoint": "E2",
+        "raw_prefill_tokens": {
+          "value": 29816,
+          "unit": "tokens",
+          "formula": "active_prefill_tokens + ISL",
+          "arithmetic": "0 + 29,816 = 29,816"
+        },
+        "raw_prefill_blocks": {
+          "value": 465.875,
+          "unit": "blocks",
+          "formula": "raw_prefill_tokens / block_size",
+          "arithmetic": "29,816 / 64 = 465.88"
+        },
+        "overlap_credit_blocks": {
+          "value": 24.0,
+          "unit": "blocks",
+          "formula": "1.0 × G1 blocks + 0.75 × G2 blocks + 0.25 × G3 blocks",
+          "arithmetic": "1.0 × 24 + 0.75 × 0 + 0.25 × 0 = 24"
+        },
+        "adjusted_prefill_blocks": {
+          "value": 441.875,
+          "unit": "blocks",
+          "formula": "max(0, raw − credit)",
+          "arithmetic": "max(0, 465.88 − 24) = 441.88"
+        },
+        "prefill_term": {
+          "value": 441.875,
+          "unit": "blocks",
+          "arithmetic": "1.0 × 441.88 = 441.88"
+        },
+        "decode_term": {
+          "value": 5446,
+          "unit": "blocks",
+          "formula": "active_decode_blocks + request blocks",
+          "arithmetic": "4,980 + 466 = 5,446"
+        },
+        "active_request_term": {
+          "value": 0.0,
+          "unit": "blocks",
+          "arithmetic": "0.0 × 52 = 0"
+        },
+        "cost": {
+          "value": 5887.875,
+          "unit": "blocks",
+          "arithmetic": "441.88 + 5,446 + 0 = 5887.88"
+        }
+      },
+      "E3": {
+        "endpoint": "E3",
+        "raw_prefill_tokens": {
+          "value": 33912,
+          "unit": "tokens",
+          "formula": "active_prefill_tokens + ISL",
+          "arithmetic": "4,096 + 29,816 = 33,912"
+        },
+        "raw_prefill_blocks": {
+          "value": 529.875,
+          "unit": "blocks",
+          "formula": "raw_prefill_tokens / block_size",
+          "arithmetic": "33,912 / 64 = 529.88"
+        },
+        "overlap_credit_blocks": {
+          "value": 0.0,
+          "unit": "blocks",
+          "formula": "1.0 × G1 blocks + 0.75 × G2 blocks + 0.25 × G3 blocks",
+          "arithmetic": "1.0 × 0 + 0.75 × 0 + 0.25 × 0 = 0"
+        },
+        "adjusted_prefill_blocks": {
+          "value": 529.875,
+          "unit": "blocks",
+          "formula": "max(0, raw − credit)",
+          "arithmetic": "max(0, 529.88 − 0) = 529.88"
+        },
+        "prefill_term": {
+          "value": 529.875,
+          "unit": "blocks",
+          "arithmetic": "1.0 × 529.88 = 529.88"
+        },
+        "decode_term": {
+          "value": 5526,
+          "unit": "blocks",
+          "formula": "active_decode_blocks + request blocks",
+          "arithmetic": "5,060 + 466 = 5,526"
+        },
+        "active_request_term": {
+          "value": 0.0,
+          "unit": "blocks",
+          "arithmetic": "0.0 × 57 = 0"
+        },
+        "cost": {
+          "value": 6055.875,
+          "unit": "blocks",
+          "arithmetic": "529.88 + 5,526 + 0 = 6055.88"
+        }
+      }
+    },
+    "costs": [
+      5745.875,
+      5887.875,
+      6055.875
+    ],
+    "winner": "E1",
+    "margin_to_second": 142.0,
+    "rule": "lowest cost wins (router_temperature = 0: argmin, ties broken at random)"
+  },
+  "tier_variants": {
+    "e1_blocks_in_g2": {
+      "isl_tokens": 29816,
+      "block_size_tokens": 64,
+      "request_blocks": 466,
+      "request_blocks_formula": "ceil(29,816 / 64) = 466",
+      "isl_blocks": 465.875,
+      "rows": {
+        "E1": {
+          "endpoint": "E1",
+          "raw_prefill_tokens": {
+            "value": 31864,
+            "unit": "tokens",
+            "formula": "active_prefill_tokens + ISL",
+            "arithmetic": "2,048 + 29,816 = 31,864"
+          },
+          "raw_prefill_blocks": {
+            "value": 497.875,
+            "unit": "blocks",
+            "formula": "raw_prefill_tokens / block_size",
+            "arithmetic": "31,864 / 64 = 497.88"
+          },
+          "overlap_credit_blocks": {
+            "value": 276.0,
+            "unit": "blocks",
+            "formula": "1.0 × G1 blocks + 0.75 × G2 blocks + 0.25 × G3 blocks",
+            "arithmetic": "1.0 × 0 + 0.75 × 368 + 0.25 × 0 = 276"
+          },
+          "adjusted_prefill_blocks": {
+            "value": 221.875,
+            "unit": "blocks",
+            "formula": "max(0, raw − credit)",
+            "arithmetic": "max(0, 497.88 − 276) = 221.88"
+          },
+          "prefill_term": {
+            "value": 221.875,
+            "unit": "blocks",
+            "arithmetic": "1.0 × 221.88 = 221.88"
+          },
+          "decode_term": {
+            "value": 5616,
+            "unit": "blocks",
+            "formula": "active_decode_blocks + request blocks",
+            "arithmetic": "5,150 + 466 = 5,616"
+          },
+          "active_request_term": {
+            "value": 0.0,
+            "unit": "blocks",
+            "arithmetic": "0.0 × 63 = 0"
+          },
+          "cost": {
+            "value": 5837.875,
+            "unit": "blocks",
+            "arithmetic": "221.88 + 5,616 + 0 = 5837.88"
+          }
+        },
+        "E2": {
+          "endpoint": "E2",
+          "raw_prefill_tokens": {
+            "value": 29816,
+            "unit": "tokens",
+            "formula": "active_prefill_tokens + ISL",
+            "arithmetic": "0 + 29,816 = 29,816"
+          },
+          "raw_prefill_blocks": {
+            "value": 465.875,
+            "unit": "blocks",
+            "formula": "raw_prefill_tokens / block_size",
+            "arithmetic": "29,816 / 64 = 465.88"
+          },
+          "overlap_credit_blocks": {
+            "value": 24.0,
+            "unit": "blocks",
+            "formula": "1.0 × G1 blocks + 0.75 × G2 blocks + 0.25 × G3 blocks",
+            "arithmetic": "1.0 × 24 + 0.75 × 0 + 0.25 × 0 = 24"
+          },
+          "adjusted_prefill_blocks": {
+            "value": 441.875,
+            "unit": "blocks",
+            "formula": "max(0, raw − credit)",
+            "arithmetic": "max(0, 465.88 − 24) = 441.88"
+          },
+          "prefill_term": {
+            "value": 441.875,
+            "unit": "blocks",
+            "arithmetic": "1.0 × 441.88 = 441.88"
+          },
+          "decode_term": {
+            "value": 5446,
+            "unit": "blocks",
+            "formula": "active_decode_blocks + request blocks",
+            "arithmetic": "4,980 + 466 = 5,446"
+          },
+          "active_request_term": {
+            "value": 0.0,
+            "unit": "blocks",
+            "arithmetic": "0.0 × 52 = 0"
+          },
+          "cost": {
+            "value": 5887.875,
+            "unit": "blocks",
+            "arithmetic": "441.88 + 5,446 + 0 = 5887.88"
+          }
+        },
+        "E3": {
+          "endpoint": "E3",
+          "raw_prefill_tokens": {
+            "value": 33912,
+            "unit": "tokens",
+            "formula": "active_prefill_tokens + ISL",
+            "arithmetic": "4,096 + 29,816 = 33,912"
+          },
+          "raw_prefill_blocks": {
+            "value": 529.875,
+            "unit": "blocks",
+            "formula": "raw_prefill_tokens / block_size",
+            "arithmetic": "33,912 / 64 = 529.88"
+          },
+          "overlap_credit_blocks": {
+            "value": 0.0,
+            "unit": "blocks",
+            "formula": "1.0 × G1 blocks + 0.75 × G2 blocks + 0.25 × G3 blocks",
+            "arithmetic": "1.0 × 0 + 0.75 × 0 + 0.25 × 0 = 0"
+          },
+          "adjusted_prefill_blocks": {
+            "value": 529.875,
+            "unit": "blocks",
+            "formula": "max(0, raw − credit)",
+            "arithmetic": "max(0, 529.88 − 0) = 529.88"
+          },
+          "prefill_term": {
+            "value": 529.875,
+            "unit": "blocks",
+            "arithmetic": "1.0 × 529.88 = 529.88"
+          },
+          "decode_term": {
+            "value": 5526,
+            "unit": "blocks",
+            "formula": "active_decode_blocks + request blocks",
+            "arithmetic": "5,060 + 466 = 5,526"
+          },
+          "active_request_term": {
+            "value": 0.0,
+            "unit": "blocks",
+            "arithmetic": "0.0 × 57 = 0"
+          },
+          "cost": {
+            "value": 6055.875,
+            "unit": "blocks",
+            "arithmetic": "529.88 + 5,526 + 0 = 6055.88"
+          }
+        }
+      },
+      "costs": [
+        5837.875,
+        5887.875,
+        6055.875
+      ],
+      "winner": "E1",
+      "margin_to_second": 50.0,
+      "rule": "lowest cost wins (router_temperature = 0: argmin, ties broken at random)"
+    },
+    "e1_blocks_in_g3": {
+      "isl_tokens": 29816,
+      "block_size_tokens": 64,
+      "request_blocks": 466,
+      "request_blocks_formula": "ceil(29,816 / 64) = 466",
+      "isl_blocks": 465.875,
+      "rows": {
+        "E1": {
+          "endpoint": "E1",
+          "raw_prefill_tokens": {
+            "value": 31864,
+            "unit": "tokens",
+            "formula": "active_prefill_tokens + ISL",
+            "arithmetic": "2,048 + 29,816 = 31,864"
+          },
+          "raw_prefill_blocks": {
+            "value": 497.875,
+            "unit": "blocks",
+            "formula": "raw_prefill_tokens / block_size",
+            "arithmetic": "31,864 / 64 = 497.88"
+          },
+          "overlap_credit_blocks": {
+            "value": 92.0,
+            "unit": "blocks",
+            "formula": "1.0 × G1 blocks + 0.75 × G2 blocks + 0.25 × G3 blocks",
+            "arithmetic": "1.0 × 0 + 0.75 × 0 + 0.25 × 368 = 92"
+          },
+          "adjusted_prefill_blocks": {
+            "value": 405.875,
+            "unit": "blocks",
+            "formula": "max(0, raw − credit)",
+            "arithmetic": "max(0, 497.88 − 92) = 405.88"
+          },
+          "prefill_term": {
+            "value": 405.875,
+            "unit": "blocks",
+            "arithmetic": "1.0 × 405.88 = 405.88"
+          },
+          "decode_term": {
+            "value": 5616,
+            "unit": "blocks",
+            "formula": "active_decode_blocks + request blocks",
+            "arithmetic": "5,150 + 466 = 5,616"
+          },
+          "active_request_term": {
+            "value": 0.0,
+            "unit": "blocks",
+            "arithmetic": "0.0 × 63 = 0"
+          },
+          "cost": {
+            "value": 6021.875,
+            "unit": "blocks",
+            "arithmetic": "405.88 + 5,616 + 0 = 6021.88"
+          }
+        },
+        "E2": {
+          "endpoint": "E2",
+          "raw_prefill_tokens": {
+            "value": 29816,
+            "unit": "tokens",
+            "formula": "active_prefill_tokens + ISL",
+            "arithmetic": "0 + 29,816 = 29,816"
+          },
+          "raw_prefill_blocks": {
+            "value": 465.875,
+            "unit": "blocks",
+            "formula": "raw_prefill_tokens / block_size",
+            "arithmetic": "29,816 / 64 = 465.88"
+          },
+          "overlap_credit_blocks": {
+            "value": 24.0,
+            "unit": "blocks",
+            "formula": "1.0 × G1 blocks + 0.75 × G2 blocks + 0.25 × G3 blocks",
+            "arithmetic": "1.0 × 24 + 0.75 × 0 + 0.25 × 0 = 24"
+          },
+          "adjusted_prefill_blocks": {
+            "value": 441.875,
+            "unit": "blocks",
+            "formula": "max(0, raw − credit)",
+            "arithmetic": "max(0, 465.88 − 24) = 441.88"
+          },
+          "prefill_term": {
+            "value": 441.875,
+            "unit": "blocks",
+            "arithmetic": "1.0 × 441.88 = 441.88"
+          },
+          "decode_term": {
+            "value": 5446,
+            "unit": "blocks",
+            "formula": "active_decode_blocks + request blocks",
+            "arithmetic": "4,980 + 466 = 5,446"
+          },
+          "active_request_term": {
+            "value": 0.0,
+            "unit": "blocks",
+            "arithmetic": "0.0 × 52 = 0"
+          },
+          "cost": {
+            "value": 5887.875,
+            "unit": "blocks",
+            "arithmetic": "441.88 + 5,446 + 0 = 5887.88"
+          }
+        },
+        "E3": {
+          "endpoint": "E3",
+          "raw_prefill_tokens": {
+            "value": 33912,
+            "unit": "tokens",
+            "formula": "active_prefill_tokens + ISL",
+            "arithmetic": "4,096 + 29,816 = 33,912"
+          },
+          "raw_prefill_blocks": {
+            "value": 529.875,
+            "unit": "blocks",
+            "formula": "raw_prefill_tokens / block_size",
+            "arithmetic": "33,912 / 64 = 529.88"
+          },
+          "overlap_credit_blocks": {
+            "value": 0.0,
+            "unit": "blocks",
+            "formula": "1.0 × G1 blocks + 0.75 × G2 blocks + 0.25 × G3 blocks",
+            "arithmetic": "1.0 × 0 + 0.75 × 0 + 0.25 × 0 = 0"
+          },
+          "adjusted_prefill_blocks": {
+            "value": 529.875,
+            "unit": "blocks",
+            "formula": "max(0, raw − credit)",
+            "arithmetic": "max(0, 529.88 − 0) = 529.88"
+          },
+          "prefill_term": {
+            "value": 529.875,
+            "unit": "blocks",
+            "arithmetic": "1.0 × 529.88 = 529.88"
+          },
+          "decode_term": {
+            "value": 5526,
+            "unit": "blocks",
+            "formula": "active_decode_blocks + request blocks",
+            "arithmetic": "5,060 + 466 = 5,526"
+          },
+          "active_request_term": {
+            "value": 0.0,
+            "unit": "blocks",
+            "arithmetic": "0.0 × 57 = 0"
+          },
+          "cost": {
+            "value": 6055.875,
+            "unit": "blocks",
+            "arithmetic": "529.88 + 5,526 + 0 = 6055.88"
+          }
+        }
+      },
+      "costs": [
+        6021.875,
+        5887.875,
+        6055.875
+      ],
+      "winner": "E2",
+      "margin_to_second": 134.0,
+      "rule": "lowest cost wins (router_temperature = 0: argmin, ties broken at random)"
+    }
+  },
+  "overloaded": {
+    "dynamo": {
+      "isl_tokens": 29816,
+      "block_size_tokens": 64,
+      "request_blocks": 466,
+      "request_blocks_formula": "ceil(29,816 / 64) = 466",
+      "isl_blocks": 465.875,
+      "rows": {
+        "E1": {
+          "endpoint": "E1",
+          "raw_prefill_tokens": {
+            "value": 69816,
+            "unit": "tokens",
+            "formula": "active_prefill_tokens + ISL",
+            "arithmetic": "40,000 + 29,816 = 69,816"
+          },
+          "raw_prefill_blocks": {
+            "value": 1090.875,
+            "unit": "blocks",
+            "formula": "raw_prefill_tokens / block_size",
+            "arithmetic": "69,816 / 64 = 1090.88"
+          },
+          "overlap_credit_blocks": {
+            "value": 368.0,
+            "unit": "blocks",
+            "formula": "1.0 × G1 blocks + 0.75 × G2 blocks + 0.25 × G3 blocks",
+            "arithmetic": "1.0 × 368 + 0.75 × 0 + 0.25 × 0 = 368"
+          },
+          "adjusted_prefill_blocks": {
+            "value": 722.875,
+            "unit": "blocks",
+            "formula": "max(0, raw − credit)",
+            "arithmetic": "max(0, 1090.88 − 368) = 722.88"
+          },
+          "prefill_term": {
+            "value": 722.875,
+            "unit": "blocks",
+            "arithmetic": "1.0 × 722.88 = 722.88"
+          },
+          "decode_term": {
+            "value": 6866,
+            "unit": "blocks",
+            "formula": "active_decode_blocks + request blocks",
+            "arithmetic": "6,400 + 466 = 6,866"
+          },
+          "active_request_term": {
+            "value": 0.0,
+            "unit": "blocks",
+            "arithmetic": "0.0 × 63 = 0"
+          },
+          "cost": {
+            "value": 7588.875,
+            "unit": "blocks",
+            "arithmetic": "722.88 + 6,866 + 0 = 7588.88"
+          }
+        },
+        "E2": {
+          "endpoint": "E2",
+          "raw_prefill_tokens": {
+            "value": 29816,
+            "unit": "tokens",
+            "formula": "active_prefill_tokens + ISL",
+            "arithmetic": "0 + 29,816 = 29,816"
+          },
+          "raw_prefill_blocks": {
+            "value": 465.875,
+            "unit": "blocks",
+            "formula": "raw_prefill_tokens / block_size",
+            "arithmetic": "29,816 / 64 = 465.88"
+          },
+          "overlap_credit_blocks": {
+            "value": 24.0,
+            "unit": "blocks",
+            "formula": "1.0 × G1 blocks + 0.75 × G2 blocks + 0.25 × G3 blocks",
+            "arithmetic": "1.0 × 24 + 0.75 × 0 + 0.25 × 0 = 24"
+          },
+          "adjusted_prefill_blocks": {
+            "value": 441.875,
+            "unit": "blocks",
+            "formula": "max(0, raw − credit)",
+            "arithmetic": "max(0, 465.88 − 24) = 441.88"
+          },
+          "prefill_term": {
+            "value": 441.875,
+            "unit": "blocks",
+            "arithmetic": "1.0 × 441.88 = 441.88"
+          },
+          "decode_term": {
+            "value": 5446,
+            "unit": "blocks",
+            "formula": "active_decode_blocks + request blocks",
+            "arithmetic": "4,980 + 466 = 5,446"
+          },
+          "active_request_term": {
+            "value": 0.0,
+            "unit": "blocks",
+            "arithmetic": "0.0 × 52 = 0"
+          },
+          "cost": {
+            "value": 5887.875,
+            "unit": "blocks",
+            "arithmetic": "441.88 + 5,446 + 0 = 5887.88"
+          }
+        },
+        "E3": {
+          "endpoint": "E3",
+          "raw_prefill_tokens": {
+            "value": 33912,
+            "unit": "tokens",
+            "formula": "active_prefill_tokens + ISL",
+            "arithmetic": "4,096 + 29,816 = 33,912"
+          },
+          "raw_prefill_blocks": {
+            "value": 529.875,
+            "unit": "blocks",
+            "formula": "raw_prefill_tokens / block_size",
+            "arithmetic": "33,912 / 64 = 529.88"
+          },
+          "overlap_credit_blocks": {
+            "value": 0.0,
+            "unit": "blocks",
+            "formula": "1.0 × G1 blocks + 0.75 × G2 blocks + 0.25 × G3 blocks",
+            "arithmetic": "1.0 × 0 + 0.75 × 0 + 0.25 × 0 = 0"
+          },
+          "adjusted_prefill_blocks": {
+            "value": 529.875,
+            "unit": "blocks",
+            "formula": "max(0, raw − credit)",
+            "arithmetic": "max(0, 529.88 − 0) = 529.88"
+          },
+          "prefill_term": {
+            "value": 529.875,
+            "unit": "blocks",
+            "arithmetic": "1.0 × 529.88 = 529.88"
+          },
+          "decode_term": {
+            "value": 5526,
+            "unit": "blocks",
+            "formula": "active_decode_blocks + request blocks",
+            "arithmetic": "5,060 + 466 = 5,526"
+          },
+          "active_request_term": {
+            "value": 0.0,
+            "unit": "blocks",
+            "arithmetic": "0.0 × 57 = 0"
+          },
+          "cost": {
+            "value": 6055.875,
+            "unit": "blocks",
+            "arithmetic": "529.88 + 5,526 + 0 = 6055.88"
+          }
+        }
+      },
+      "costs": [
+        7588.875,
+        5887.875,
+        6055.875
+      ],
+      "winner": "E2",
+      "margin_to_second": 168.0,
+      "rule": "lowest cost wins (router_temperature = 0: argmin, ties broken at random)"
+    },
+    "ttft_estimate_s": {
+      "E1": {
+        "value": 2.8915,
+        "unit": "s",
+        "arithmetic": "(40,000 + 6,264) / 16,000 = 2.89"
+      },
+      "E2": {
+        "value": 1.7675,
+        "unit": "s",
+        "arithmetic": "(0 + 28,280) / 16,000 = 1.77"
+      },
+      "E3": {
+        "value": 2.1195,
+        "unit": "s",
+        "arithmetic": "(4,096 + 29,816) / 16,000 = 2.12"
+      }
+    },
+    "peak_prefill_tokens_per_s": 16000,
+    "hit_on_loaded_minus_miss_on_idle_s": 1.124
+  },
+  "pass2_llmd": {
+    "isl_tokens": 29816,
+    "block_size_tokens": 64,
+    "affinity_threshold": 0.8,
+    "max_ttft_penalty_ms": 18000,
+    "rows": {
+      "E1": {
+        "match_blocks": 368,
+        "total_blocks": 466,
+        "match_ratio": {
+          "value": 0.7896995708154506,
+          "arithmetic": "368 / 466 = 0.7897"
+        },
+        "sticky": false,
+        "sticky_text": "no",
+        "ttft_estimate_ms": {
+          "value": 128.0,
+          "formula": "inFlightTokens / peakPrefillThroughput × 1000",
+          "arithmetic": "2,048 / 16,000 × 1000 = 128"
+        },
+        "uncached_tokens": {
+          "value": 6272,
+          "formula": "(TotalBlocks − MatchBlocks) × 64",
+          "arithmetic": "(466 − 368) × 64 = 6,272"
+        },
+        "token_load": {
+          "value": 8320,
+          "arithmetic": "2,048 + 6,272 = 8,320"
+        },
+        "token_load_score": {
+          "value": 0.998016357421875,
+          "arithmetic": "1 − 8,320 / 4,194,304 = 0.998016"
+        }
+      },
+      "E2": {
+        "match_blocks": 24,
+        "total_blocks": 466,
+        "match_ratio": {
+          "value": 0.05150214592274678,
+          "arithmetic": "24 / 466 = 0.0515"
+        },
+        "sticky": false,
+        "sticky_text": "no",
+        "ttft_estimate_ms": {
+          "value": 0.0,
+          "formula": "inFlightTokens / peakPrefillThroughput × 1000",
+          "arithmetic": "0 / 16,000 × 1000 = 0"
+        },
+        "uncached_tokens": {
+          "value": 28288,
+          "formula": "(TotalBlocks − MatchBlocks) × 64",
+          "arithmetic": "(466 − 24) × 64 = 28,288"
+        },
+        "token_load": {
+          "value": 28288,
+          "arithmetic": "0 + 28,288 = 28,288"
+        },
+        "token_load_score": {
+          "value": 0.993255615234375,
+          "arithmetic": "1 − 28,288 / 4,194,304 = 0.993256"
+        }
+      },
+      "E3": {
+        "match_blocks": 0,
+        "total_blocks": 466,
+        "match_ratio": {
+          "value": 0.0,
+          "arithmetic": "0 / 466 = 0.0000"
+        },
+        "sticky": false,
+        "sticky_text": "no",
+        "ttft_estimate_ms": {
+          "value": 256.0,
+          "formula": "inFlightTokens / peakPrefillThroughput × 1000",
+          "arithmetic": "4,096 / 16,000 × 1000 = 256"
+        },
+        "uncached_tokens": {
+          "value": 29824,
+          "formula": "(TotalBlocks − MatchBlocks) × 64",
+          "arithmetic": "(466 − 0) × 64 = 29,824"
+        },
+        "token_load": {
+          "value": 33920,
+          "arithmetic": "4,096 + 29,824 = 33,920"
+        },
+        "token_load_score": {
+          "value": 0.991912841796875,
+          "arithmetic": "1 − 33,920 / 4,194,304 = 0.991913"
+        }
+      }
+    },
+    "sticky": [],
+    "ttft_penalty_ms": null,
+    "filter_decision": "no endpoint reaches the threshold: the filter keeps all endpoints",
+    "candidates_after_filter": [
+      "E1",
+      "E2",
+      "E3"
+    ],
+    "winner": "E1"
+  },
+  "pass3_llmd": {
+    "isl_tokens": 30395,
+    "block_size_tokens": 64,
+    "affinity_threshold": 0.8,
+    "max_ttft_penalty_ms": 18000,
+    "rows": {
+      "E1": {
+        "match_blocks": 472,
+        "total_blocks": 475,
+        "match_ratio": {
+          "value": 0.9936842105263158,
+          "arithmetic": "472 / 475 = 0.9937"
+        },
+        "sticky": true,
+        "sticky_text": "yes",
+        "ttft_estimate_ms": {
+          "value": 128.0,
+          "formula": "inFlightTokens / peakPrefillThroughput × 1000",
+          "arithmetic": "2,048 / 16,000 × 1000 = 128"
+        },
+        "uncached_tokens": {
+          "value": 192,
+          "formula": "(TotalBlocks − MatchBlocks) × 64",
+          "arithmetic": "(475 − 472) × 64 = 192"
+        },
+        "token_load": {
+          "value": 2240,
+          "arithmetic": "2,048 + 192 = 2,240"
+        },
+        "token_load_score": {
+          "value": 0.9994659423828125,
+          "arithmetic": "1 − 2,240 / 4,194,304 = 0.999466"
+        }
+      },
+      "E2": {
+        "match_blocks": 24,
+        "total_blocks": 475,
+        "match_ratio": {
+          "value": 0.05052631578947368,
+          "arithmetic": "24 / 475 = 0.0505"
+        },
+        "sticky": false,
+        "sticky_text": "no",
+        "ttft_estimate_ms": {
+          "value": 0.0,
+          "formula": "inFlightTokens / peakPrefillThroughput × 1000",
+          "arithmetic": "0 / 16,000 × 1000 = 0"
+        },
+        "uncached_tokens": {
+          "value": 28864,
+          "formula": "(TotalBlocks − MatchBlocks) × 64",
+          "arithmetic": "(475 − 24) × 64 = 28,864"
+        },
+        "token_load": {
+          "value": 28864,
+          "arithmetic": "0 + 28,864 = 28,864"
+        },
+        "token_load_score": {
+          "value": 0.9931182861328125,
+          "arithmetic": "1 − 28,864 / 4,194,304 = 0.993118"
+        }
+      },
+      "E3": {
+        "match_blocks": 0,
+        "total_blocks": 475,
+        "match_ratio": {
+          "value": 0.0,
+          "arithmetic": "0 / 475 = 0.0000"
+        },
+        "sticky": false,
+        "sticky_text": "no",
+        "ttft_estimate_ms": {
+          "value": 256.0,
+          "formula": "inFlightTokens / peakPrefillThroughput × 1000",
+          "arithmetic": "4,096 / 16,000 × 1000 = 256"
+        },
+        "uncached_tokens": {
+          "value": 30400,
+          "formula": "(TotalBlocks − MatchBlocks) × 64",
+          "arithmetic": "(475 − 0) × 64 = 30,400"
+        },
+        "token_load": {
+          "value": 34496,
+          "arithmetic": "4,096 + 30,400 = 34,496"
+        },
+        "token_load_score": {
+          "value": 0.9917755126953125,
+          "arithmetic": "1 − 34,496 / 4,194,304 = 0.991776"
+        }
+      }
+    },
+    "sticky": [
+      "E1"
+    ],
+    "ttft_penalty_ms": 128.0,
+    "filter_decision": "the filter keeps only the sticky endpoints",
+    "candidates_after_filter": [
+      "E1"
+    ],
+    "winner": "E1"
+  },
+  "local_prefill": {
+    "pass1": {
+      "isl": 23322,
+      "cached": 3072,
+      "effective_isl": 20250,
+      "arithmetic": "23,322 − 3,072 = 20,250",
+      "ratio": 0.8682788783123231,
+      "limit_tokens": 2048,
+      "limit_ratio": 0.7,
+      "prefill_on": "prefill worker (remote, NIXL transfer)",
+      "local": false
+    },
+    "pass2": {
+      "isl": 29816,
+      "cached": 23552,
+      "effective_isl": 6264,
+      "arithmetic": "29,816 − 23,552 = 6,264",
+      "ratio": 0.21008854306412664,
+      "limit_tokens": 2048,
+      "limit_ratio": 0.7,
+      "prefill_on": "prefill worker (remote, NIXL transfer)",
+      "local": false
+    },
+    "pass3": {
+      "isl": 30395,
+      "cached": 30208,
+      "effective_isl": 187,
+      "arithmetic": "30,395 − 30,208 = 187",
+      "ratio": 0.006152327685474585,
+      "limit_tokens": 2048,
+      "limit_ratio": 0.7,
+      "prefill_on": "decode endpoint (local)",
+      "local": true
+    }
+  },
+  "kv_usage": {
+    "pool_bytes_per_rank": 50665032704,
+    "pool_GB": 50.665032704,
+    "block_tokens": 64,
+    "block_bytes": 1769472,
+    "block_bytes_arithmetic": "64 × 27,648 B = 1,769,472 B",
+    "fixed_state_bytes": 449372160,
+    "from": "kv_math:capacity_h_frontier_k3_dep16 (pool per rank); constants (K3 bytes)",
+    "rows": {
+      "E1": {
+        "state_bytes": 26962329600,
+        "state_arithmetic": "60 × 449,372,160 B = 26.96 GB",
+        "block_bytes": 9112780800,
+        "block_arithmetic": "5,150 × 1,769,472 B = 9.11 GB",
+        "used_GB": 36.0751104,
+        "usage": 0.7120317203930646,
+        "usage_arithmetic": "(26.96 + 9.11) GB / 50.67 GB = 0.712"
+      },
+      "E2": {
+        "state_bytes": 23367352320,
+        "state_arithmetic": "52 × 449,372,160 B = 23.37 GB",
+        "block_bytes": 8811970560,
+        "block_arithmetic": "4,980 × 1,769,472 B = 8.81 GB",
+        "used_GB": 32.17932288,
+        "usage": 0.6351386974918393,
+        "usage_arithmetic": "(23.37 + 8.81) GB / 50.67 GB = 0.635"
+      },
+      "E3": {
+        "state_bytes": 25164840960,
+        "state_arithmetic": "56 × 449,372,160 B = 25.16 GB",
+        "block_bytes": 8953528320,
+        "block_arithmetic": "5,060 × 1,769,472 B = 8.95 GB",
+        "used_GB": 34.11836928,
+        "usage": 0.6734105843635695,
+        "usage_arithmetic": "(25.16 + 8.95) GB / 50.67 GB = 0.673"
+      }
+    },
+    "note": "approximately what vllm:kv_cache_usage_perc reports: MLA pages and KDA state pages share one pool"
+  },
+  "kv_usage_burst": {
+    "pool_bytes_per_rank": 50665032704,
+    "pool_GB": 50.665032704,
+    "block_tokens": 64,
+    "block_bytes": 1769472,
+    "block_bytes_arithmetic": "64 × 27,648 B = 1,769,472 B",
+    "fixed_state_bytes": 449372160,
+    "from": "kv_math:capacity_h_frontier_k3_dep16 (pool per rank); constants (K3 bytes)",
+    "rows": {
+      "E1": {
+        "state_bytes": 32354795520,
+        "state_arithmetic": "72 × 449,372,160 B = 32.35 GB",
+        "block_bytes": 10793779200,
+        "block_arithmetic": "6,100 × 1,769,472 B = 10.79 GB",
+        "used_GB": 43.14857472,
+        "usage": 0.8516440712095588,
+        "usage_arithmetic": "(32.35 + 10.79) GB / 50.67 GB = 0.852"
+      },
+      "E2": {
+        "state_bytes": 31456051200,
+        "state_arithmetic": "70 × 449,372,160 B = 31.46 GB",
+        "block_bytes": 10439884800,
+        "block_arithmetic": "5,900 × 1,769,472 B = 10.44 GB",
+        "used_GB": 41.895936,
+        "usage": 0.8269201412494562,
+        "usage_arithmetic": "(31.46 + 10.44) GB / 50.67 GB = 0.827"
+      },
+      "E3": {
+        "state_bytes": 31905423360,
+        "state_arithmetic": "71 × 449,372,160 B = 31.91 GB",
+        "block_bytes": 10616832000,
+        "block_arithmetic": "6,000 × 1,769,472 B = 10.62 GB",
+        "used_GB": 42.52225536,
+        "usage": 0.8392821062295075,
+        "usage_arithmetic": "(31.91 + 10.62) GB / 50.67 GB = 0.839"
+      }
+    },
+    "note": "approximately what vllm:kv_cache_usage_perc reports: MLA pages and KDA state pages share one pool"
+  },
+  "flow_control": {
+    "now": {
+      "rows": {
+        "E1": {
+          "credit": 2,
+          "credit_arithmetic": "max(0, 63 − (1 + 60)) = 2",
+          "queue_score": 0.6,
+          "queue_arithmetic": "(1 + 2) / 5 = 0.60",
+          "kv_usage": 0.7120317203930646,
+          "kv_score": 0.8900396504913307,
+          "kv_arithmetic": "0.712 / 0.8 = 0.890",
+          "endpoint_score": 0.8900396504913307,
+          "binding": "KV"
+        },
+        "E2": {
+          "credit": 0,
+          "credit_arithmetic": "max(0, 52 − (0 + 52)) = 0",
+          "queue_score": 0.0,
+          "queue_arithmetic": "(0 + 0) / 5 = 0.00",
+          "kv_usage": 0.6351386974918393,
+          "kv_score": 0.793923371864799,
+          "kv_arithmetic": "0.635 / 0.8 = 0.794",
+          "endpoint_score": 0.793923371864799,
+          "binding": "KV"
+        },
+        "E3": {
+          "credit": 1,
+          "credit_arithmetic": "max(0, 57 − (0 + 56)) = 1",
+          "queue_score": 0.2,
+          "queue_arithmetic": "(0 + 1) / 5 = 0.20",
+          "kv_usage": 0.6734105843635695,
+          "kv_score": 0.8417632304544618,
+          "kv_arithmetic": "0.673 / 0.8 = 0.842",
+          "endpoint_score": 0.8417632304544618,
+          "binding": "KV"
+        }
+      },
+      "pool_saturation": 0.8419087509368639,
+      "pool_arithmetic": "(0.890 + 0.794 + 0.842) / 3 = 0.842",
+      "bands": {
+        "interactive": {
+          "priority": 10,
+          "ceiling": 1.0,
+          "dispatches": true
+        },
+        "standard": {
+          "priority": 0,
+          "ceiling": 1.0,
+          "dispatches": true
+        },
+        "batch": {
+          "priority": -10,
+          "ceiling": 0.8,
+          "dispatches": false
+        }
+      }
+    },
+    "burst": {
+      "rows": {
+        "E1": {
+          "credit": 0,
+          "credit_arithmetic": "max(0, 79 − (7 + 72)) = 0",
+          "queue_score": 1.4,
+          "queue_arithmetic": "(7 + 0) / 5 = 1.40",
+          "kv_usage": 0.8516440712095588,
+          "kv_score": 1.0645550890119484,
+          "kv_arithmetic": "0.852 / 0.8 = 1.065",
+          "endpoint_score": 1.4,
+          "binding": "queue"
+        },
+        "E2": {
+          "credit": 0,
+          "credit_arithmetic": "max(0, 75 − (5 + 70)) = 0",
+          "queue_score": 1.0,
+          "queue_arithmetic": "(5 + 0) / 5 = 1.00",
+          "kv_usage": 0.8269201412494562,
+          "kv_score": 1.0336501765618202,
+          "kv_arithmetic": "0.827 / 0.8 = 1.034",
+          "endpoint_score": 1.0336501765618202,
+          "binding": "KV"
+        },
+        "E3": {
+          "credit": 0,
+          "credit_arithmetic": "max(0, 77 − (6 + 71)) = 0",
+          "queue_score": 1.2,
+          "queue_arithmetic": "(6 + 0) / 5 = 1.20",
+          "kv_usage": 0.8392821062295075,
+          "kv_score": 1.0491026327868842,
+          "kv_arithmetic": "0.839 / 0.8 = 1.049",
+          "endpoint_score": 1.2,
+          "binding": "queue"
+        }
+      },
+      "pool_saturation": 1.2112167255206068,
+      "pool_arithmetic": "(1.400 + 1.034 + 1.200) / 3 = 1.211",
+      "bands": {
+        "interactive": {
+          "priority": 10,
+          "ceiling": 1.0,
+          "dispatches": false
+        },
+        "standard": {
+          "priority": 0,
+          "ceiling": 1.0,
+          "dispatches": false
+        },
+        "batch": {
+          "priority": -10,
+          "ceiling": 0.8,
+          "dispatches": false
+        }
+      }
+    },
+    "ttl_s": 60,
+    "band_max_requests": 5000,
+    "cap_binds_above_rate_per_s": 83.33333333333333,
+    "cap_arithmetic": "5,000 / 60 s = 83 requests/s"
+  },
+  "weighted_mix": {
+    "weights": {
+      "prefix": 3,
+      "queue": 2,
+      "kv": 2,
+      "nohit_lru": 2
+    },
+    "formula": "S = 3·prefix + 2·queue + 2·(1 − kv_usage) + 2·no_hit_lru (higher wins)",
+    "rows": {
+      "E1": {
+        "prefix": 0.7896995708154506,
+        "queue": 0.0,
+        "kv": 0.2879682796069354,
+        "nohit_lru": 0.5,
+        "score": 3.9450352716602226,
+        "arithmetic": "3 × 0.790 + 2 × 0.00 + 2 × 0.288 + 2 × 0.5 = 3.945"
+      },
+      "E2": {
+        "prefix": 0.05150214592274678,
+        "queue": 1.0,
+        "kv": 0.36486130250816073,
+        "nohit_lru": 0.5,
+        "score": 3.884229042784562,
+        "arithmetic": "3 × 0.052 + 2 × 1.00 + 2 × 0.365 + 2 × 0.5 = 3.884"
+      },
+      "E3": {
+        "prefix": 0.0,
+        "queue": 1.0,
+        "kv": 0.3265894156364305,
+        "nohit_lru": 0.5,
+        "score": 3.653178831272861,
+        "arithmetic": "3 × 0.000 + 2 × 1.00 + 2 × 0.327 + 2 × 0.5 = 3.653"
+      }
+    },
+    "winner": "E1"
+  },
+  "same_endpoint_all_passes": true,
+  "hot_prefix": {
+    "label": "ILLUSTRATIVE, HYPOTHETICAL seeded simulation (hypothetical.hot_prefix_sim, routing_sim)",
+    "workload": {
+      "requests": 4879,
+      "prompt_tokens": {
+        "min": 33,
+        "p50": 8727.0,
+        "p99": 51490.10000000018,
+        "max": 100000,
+        "mean": 8846.455831112933
+      },
+      "output_tokens": {
+        "min": 20,
+        "p50": 254.0,
+        "p99": 2626.540000000002,
+        "max": 5000,
+        "mean": 410.1406025824964
+      },
+      "later_turn_fraction": 0.631891781102685,
+      "hot_fraction_of_requests": 0.6093461774953884,
+      "offered_prefill_tokens_per_s_if_no_hits": 71936.43,
+      "pool_prefill_capacity_tokens_per_s": 128000,
+      "label": "ILLUSTRATIVE, HYPOTHETICAL workload (hypothetical.routing_sim)"
+    },
+    "hot_prefix_tokens": 8000,
+    "low_gate_ms": 2000,
+    "cases": {
+      "prefix_only": {
+        "policy": "prefix_only",
+        "requests_measured": 3006,
+        "requests_unfinished": 1608,
+        "ttft_s": {
+          "p50": 0.7928182379288131,
+          "p95": 352.67991299400734,
+          "p99": 382.89151544110746,
+          "mean": 82.96762962248795,
+          "max": 392.89507318337564,
+          "unit": "s"
+        },
+        "prefix_hit_fraction": {
+          "value": 0.44910878603881577,
+          "unit": "fraction of prompt tokens",
+          "formula": "sum(hit tokens) / sum(prompt tokens)"
+        },
+        "prefill_tokens_computed": {
+          "value": 14863579,
+          "unit": "tokens"
+        },
+        "prefill_share_max_over_mean": {
+          "value": 5.84995847904465,
+          "unit": "ratio",
+          "note": "1.0 = perfectly even prefill work across endpoints"
+        },
+        "max_queue_any_endpoint": {
+          "value": 1846,
+          "unit": "requests",
+          "note": "requests waiting for their prefill to start (engine waiting queue + prefill FIFO), maximum over time and endpoints"
+        },
+        "tpot_ms": {
+          "p50": 22.47394764957709,
+          "p95": 30.57994671659023,
+          "p99": 32.85643732952504,
+          "unit": "ms",
+          "formula": "(end - first token time) / output tokens, per request"
+        },
+        "kv_usage_mean": {
+          "value": 0.6681413096324885,
+          "unit": "fraction",
+          "note": "running contexts + cached prefixes over the KV pool, time average, mean of endpoints"
+        },
+        "kv_usage_max": {
+          "value": 1.004861418056424,
+          "unit": "fraction"
+        },
+        "hot_requests_per_endpoint": [
+          0,
+          0,
+          2973,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "endpoints_holding_hot_prefix_at_end": 0,
+        "case": "prefix_only"
+      },
+      "affinity_default_gate": {
+        "policy": "prefix_aware",
+        "requests_measured": 4614,
+        "requests_unfinished": 0,
+        "ttft_s": {
+          "p50": 0.05993032060868586,
+          "p95": 0.9854182306304802,
+          "p99": 2.541368424436886,
+          "mean": 0.24800717744704984,
+          "max": 7.526711778514795,
+          "unit": "s"
+        },
+        "prefix_hit_fraction": {
+          "value": 0.7351004015014545,
+          "unit": "fraction of prompt tokens",
+          "formula": "sum(hit tokens) / sum(prompt tokens)"
+        },
+        "prefill_tokens_computed": {
+          "value": 11453811,
+          "unit": "tokens"
+        },
+        "prefill_share_max_over_mean": {
+          "value": 1.6833628562580611,
+          "unit": "ratio",
+          "note": "1.0 = perfectly even prefill work across endpoints"
+        },
+        "max_queue_any_endpoint": {
+          "value": 6,
+          "unit": "requests",
+          "note": "requests waiting for their prefill to start (engine waiting queue + prefill FIFO), maximum over time and endpoints"
+        },
+        "tpot_ms": {
+          "p50": 25.220242859544626,
+          "p95": 28.03613460735756,
+          "p99": 29.516359868997153,
+          "unit": "ms",
+          "formula": "(end - first token time) / output tokens, per request"
+        },
+        "kv_usage_mean": {
+          "value": 0.7476378712251673,
+          "unit": "fraction",
+          "note": "running contexts + cached prefixes over the KV pool, time average, mean of endpoints"
+        },
+        "kv_usage_max": {
+          "value": 1.0016499807038108,
+          "unit": "fraction"
+        },
+        "hot_requests_per_endpoint": [
+          423,
+          0,
+          875,
+          0,
+          90,
+          743,
+          0,
+          842
+        ],
+        "endpoints_holding_hot_prefix_at_end": 5,
+        "case": "affinity_default_gate"
+      },
+      "affinity_low_gate": {
+        "policy": "prefix_aware",
+        "requests_measured": 4614,
+        "requests_unfinished": 0,
+        "ttft_s": {
+          "p50": 0.05180402473661161,
+          "p95": 0.7263346379929796,
+          "p99": 1.577770349002371,
+          "mean": 0.16672943579120947,
+          "max": 6.276314796196829,
+          "unit": "s"
+        },
+        "prefix_hit_fraction": {
+          "value": 0.8018915181783125,
+          "unit": "fraction of prompt tokens",
+          "formula": "sum(hit tokens) / sum(prompt tokens)"
+        },
+        "prefill_tokens_computed": {
+          "value": 8694452,
+          "unit": "tokens"
+        },
+        "prefill_share_max_over_mean": {
+          "value": 1.6411651936200233,
+          "unit": "ratio",
+          "note": "1.0 = perfectly even prefill work across endpoints"
+        },
+        "max_queue_any_endpoint": {
+          "value": 5,
+          "unit": "requests",
+          "note": "requests waiting for their prefill to start (engine waiting queue + prefill FIFO), maximum over time and endpoints"
+        },
+        "tpot_ms": {
+          "p50": 23.97664312038522,
+          "p95": 27.06187870346956,
+          "p99": 29.485805871210427,
+          "unit": "ms",
+          "formula": "(end - first token time) / output tokens, per request"
+        },
+        "kv_usage_mean": {
+          "value": 0.7677358713960952,
+          "unit": "fraction",
+          "note": "running contexts + cached prefixes over the KV pool, time average, mean of endpoints"
+        },
+        "kv_usage_max": {
+          "value": 1.0015705989815686,
+          "unit": "fraction"
+        },
+        "hot_requests_per_endpoint": [
+          247,
+          358,
+          661,
+          0,
+          338,
+          452,
+          204,
+          713
+        ],
+        "endpoints_holding_hot_prefix_at_end": 7,
+        "case": "affinity_low_gate"
+      },
+      "affinity_replicated": {
+        "policy": "prefix_aware",
+        "requests_measured": 4614,
+        "requests_unfinished": 0,
+        "ttft_s": {
+          "p50": 0.050033717952601364,
+          "p95": 0.6121055320422906,
+          "p99": 2.682023123789996,
+          "mean": 0.15683958967070702,
+          "max": 6.276314796196829,
+          "unit": "s"
+        },
+        "prefix_hit_fraction": {
+          "value": 0.8423251624019147,
+          "unit": "fraction of prompt tokens",
+          "formula": "sum(hit tokens) / sum(prompt tokens)"
+        },
+        "prefill_tokens_computed": {
+          "value": 6905416,
+          "unit": "tokens"
+        },
+        "prefill_share_max_over_mean": {
+          "value": 1.1952172034240949,
+          "unit": "ratio",
+          "note": "1.0 = perfectly even prefill work across endpoints"
+        },
+        "max_queue_any_endpoint": {
+          "value": 6,
+          "unit": "requests",
+          "note": "requests waiting for their prefill to start (engine waiting queue + prefill FIFO), maximum over time and endpoints"
+        },
+        "tpot_ms": {
+          "p50": 23.39288274744809,
+          "p95": 24.81250000000574,
+          "p99": 25.453202067674898,
+          "unit": "ms",
+          "formula": "(end - first token time) / output tokens, per request"
+        },
+        "kv_usage_mean": {
+          "value": 0.8239257222262073,
+          "unit": "fraction",
+          "note": "running contexts + cached prefixes over the KV pool, time average, mean of endpoints"
+        },
+        "kv_usage_max": {
+          "value": 1.0017080889178533,
+          "unit": "fraction"
+        },
+        "hot_requests_per_endpoint": [
+          358,
+          357,
+          404,
+          292,
+          364,
+          413,
+          371,
+          414
+        ],
+        "endpoints_holding_hot_prefix_at_end": 8,
+        "case": "affinity_replicated"
+      },
+      "token_load_only": {
+        "policy": "token_load",
+        "requests_measured": 4614,
+        "requests_unfinished": 0,
+        "ttft_s": {
+          "p50": 0.23881397766018608,
+          "p95": 0.9285778134799298,
+          "p99": 3.2270780710651823,
+          "mean": 0.4134490798094168,
+          "max": 6.282483021152075,
+          "unit": "s"
+        },
+        "prefix_hit_fraction": {
+          "value": 0.3109420121811056,
+          "unit": "fraction of prompt tokens",
+          "formula": "sum(hit tokens) / sum(prompt tokens)"
+        },
+        "prefill_tokens_computed": {
+          "value": 29493432,
+          "unit": "tokens"
+        },
+        "prefill_share_max_over_mean": {
+          "value": 1.049404355518883,
+          "unit": "ratio",
+          "note": "1.0 = perfectly even prefill work across endpoints"
+        },
+        "max_queue_any_endpoint": {
+          "value": 4,
+          "unit": "requests",
+          "note": "requests waiting for their prefill to start (engine waiting queue + prefill FIFO), maximum over time and endpoints"
+        },
+        "tpot_ms": {
+          "p50": 23.31647133746944,
+          "p95": 24.971261631263836,
+          "p99": 25.81391310999878,
+          "unit": "ms",
+          "formula": "(end - first token time) / output tokens, per request"
+        },
+        "kv_usage_mean": {
+          "value": 0.8811496978029532,
+          "unit": "fraction",
+          "note": "running contexts + cached prefixes over the KV pool, time average, mean of endpoints"
+        },
+        "kv_usage_max": {
+          "value": 1.002707386948533,
+          "unit": "fraction"
+        },
+        "hot_requests_per_endpoint": [
+          361,
+          345,
+          349,
+          379,
+          372,
+          387,
+          405,
+          375
+        ],
+        "endpoints_holding_hot_prefix_at_end": 8,
+        "case": "token_load_only"
+      }
+    }
+  }
+}

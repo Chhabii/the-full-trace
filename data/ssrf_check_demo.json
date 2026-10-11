@@ -1,0 +1,1158 @@
+{
+  "meta": {
+    "script": "sim/ssrf_check_demo.py",
+    "generated_at": "2026-10-09T09:24:45+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T09:24:44+00:00",
+      "sha256": "c54dbd118757"
+    },
+    "constants_used": {
+      "hypothetical.web_fetch.allowed_content_types": [
+        "text/html",
+        "application/xhtml+xml",
+        "text/plain"
+      ],
+      "hypothetical.web_fetch.allowed_ports": [
+        80,
+        443
+      ],
+      "hypothetical.web_fetch.allowed_schemes": [
+        "http",
+        "https"
+      ],
+      "hypothetical.web_fetch.max_redirects": 5,
+      "hypothetical.web_fetch.max_response_bytes": 5000000
+    }
+  },
+  "conventions": {
+    "serves": [
+      "R-VII.4"
+    ],
+    "class": "Checker logic is real; DNS answers, web responses and public addresses are ILLUSTRATIVE (class C).",
+    "python": "3.12.14",
+    "ipaddress_note": "Since Python 3.9.5 ipaddress rejects IPv4 parts with leading zeros; it never accepts decimal, hex or short forms."
+  },
+  "rules": {
+    "order": [
+      "1 parse: the URL must parse and have a host",
+      "2 scheme allowlist",
+      "3 no user information (user@host) in the URL",
+      "4 port allowlist",
+      "5 numeric host must be a canonical address (no decimal, octal, hex or short IPv4 forms)",
+      "6 host name blocklist",
+      "7 resolve once (all A and AAAA records)",
+      "8 every resolved address must pass the address check",
+      "9 connect to the checked address; Host header, SNI and certificate check use the original name"
+    ],
+    "blocked_ipv4": [
+      {
+        "range": "169.254.169.254/32",
+        "name": "cloud metadata endpoint",
+        "ref": "AWS IMDS, OWASP SSRF cheat sheet"
+      },
+      {
+        "range": "0.0.0.0/8",
+        "name": "this network",
+        "ref": "RFC 791"
+      },
+      {
+        "range": "10.0.0.0/8",
+        "name": "private use",
+        "ref": "RFC 1918"
+      },
+      {
+        "range": "100.64.0.0/10",
+        "name": "shared address space (carrier NAT)",
+        "ref": "RFC 6598"
+      },
+      {
+        "range": "127.0.0.0/8",
+        "name": "loopback",
+        "ref": "RFC 1122"
+      },
+      {
+        "range": "169.254.0.0/16",
+        "name": "link-local",
+        "ref": "RFC 3927"
+      },
+      {
+        "range": "172.16.0.0/12",
+        "name": "private use",
+        "ref": "RFC 1918"
+      },
+      {
+        "range": "192.0.0.0/24",
+        "name": "IETF protocol assignments",
+        "ref": "RFC 6890"
+      },
+      {
+        "range": "192.0.2.0/24",
+        "name": "documentation",
+        "ref": "RFC 5737"
+      },
+      {
+        "range": "192.168.0.0/16",
+        "name": "private use",
+        "ref": "RFC 1918"
+      },
+      {
+        "range": "198.18.0.0/15",
+        "name": "benchmarking",
+        "ref": "RFC 2544"
+      },
+      {
+        "range": "198.51.100.0/24",
+        "name": "documentation",
+        "ref": "RFC 5737"
+      },
+      {
+        "range": "203.0.113.0/24",
+        "name": "documentation",
+        "ref": "RFC 5737"
+      },
+      {
+        "range": "224.0.0.0/4",
+        "name": "multicast",
+        "ref": "RFC 5771"
+      },
+      {
+        "range": "240.0.0.0/4",
+        "name": "reserved",
+        "ref": "RFC 1112"
+      },
+      {
+        "range": "255.255.255.255/32",
+        "name": "limited broadcast",
+        "ref": "RFC 919"
+      }
+    ],
+    "blocked_ipv6": [
+      {
+        "range": "fd00:ec2::254/128",
+        "name": "cloud metadata endpoint (IPv6)",
+        "ref": "AWS IMDS"
+      },
+      {
+        "range": "::/128",
+        "name": "unspecified",
+        "ref": "RFC 4291"
+      },
+      {
+        "range": "::1/128",
+        "name": "loopback",
+        "ref": "RFC 4291"
+      },
+      {
+        "range": "100::/64",
+        "name": "discard-only",
+        "ref": "RFC 6666"
+      },
+      {
+        "range": "2001::/23",
+        "name": "IETF protocol assignments",
+        "ref": "RFC 2928"
+      },
+      {
+        "range": "2001:db8::/32",
+        "name": "documentation",
+        "ref": "RFC 3849"
+      },
+      {
+        "range": "2002::/16",
+        "name": "6to4 (embeds an IPv4 address)",
+        "ref": "RFC 3056"
+      },
+      {
+        "range": "64:ff9b:1::/48",
+        "name": "local IPv4/IPv6 translation",
+        "ref": "RFC 8215"
+      },
+      {
+        "range": "fc00::/7",
+        "name": "unique local (IPv6 private)",
+        "ref": "RFC 4193"
+      },
+      {
+        "range": "fe80::/10",
+        "name": "link-local",
+        "ref": "RFC 4291"
+      },
+      {
+        "range": "ff00::/8",
+        "name": "multicast",
+        "ref": "RFC 4291"
+      }
+    ],
+    "embedded_ipv4": [
+      {
+        "range": "::ffff:0:0/96",
+        "name": "IPv4-mapped IPv6",
+        "ref": "RFC 4291"
+      },
+      {
+        "range": "64:ff9b::/96",
+        "name": "NAT64 well-known prefix",
+        "ref": "RFC 6052"
+      },
+      {
+        "range": "::/96",
+        "name": "IPv4-compatible IPv6 (deprecated)",
+        "ref": "RFC 4291"
+      }
+    ],
+    "blocked_names": [
+      "localhost",
+      "metadata.google.internal",
+      "metadata.amazonaws.com"
+    ],
+    "blocked_suffixes": [
+      ".localhost",
+      ".internal"
+    ],
+    "backstop": "any address with ipaddress is_global == False is blocked too",
+    "count_ipv4_ranges": 16,
+    "count_ipv6_ranges": 11,
+    "limits": {
+      "allowed_schemes": [
+        "http",
+        "https"
+      ],
+      "allowed_ports": [
+        80,
+        443
+      ],
+      "max_redirects": 5,
+      "max_response_bytes": 5000000,
+      "allowed_content_types": [
+        "text/html",
+        "application/xhtml+xml",
+        "text/plain"
+      ]
+    }
+  },
+  "cases": {
+    "public_https": {
+      "probe": "a normal pricing page",
+      "url": "https://aldersoft.example/pricing",
+      "verdict": "allow",
+      "rule_fired": null,
+      "rule_no": null,
+      "pinned_ip": "93.184.215.14",
+      "host_header": "aldersoft.example",
+      "sni": "aldersoft.example",
+      "port": 443,
+      "steps": [
+        {
+          "rule": "2 scheme allowlist",
+          "result": "pass",
+          "detail": "https"
+        },
+        {
+          "rule": "4 port allowlist",
+          "result": "pass",
+          "detail": "443"
+        },
+        {
+          "rule": "6 host name blocklist",
+          "result": "pass",
+          "detail": "aldersoft.example"
+        },
+        {
+          "rule": "7 resolve once (all A and AAAA records)",
+          "result": "pass",
+          "detail": "1 address(es): ['93.184.215.14']"
+        },
+        {
+          "rule": "8 every resolved address must pass the address check",
+          "result": "pass",
+          "detail": [
+            "93.184.215.14"
+          ]
+        },
+        {
+          "rule": "9 connect to the checked address; Host header, SNI and certificate check use the original name",
+          "result": "pass",
+          "detail": "connect 93.184.215.14:443; Host and SNI = aldersoft.example"
+        }
+      ]
+    },
+    "public_http": {
+      "probe": "plain HTTP on port 80, IPv4 and IPv6 answers",
+      "url": "http://birchline.example/pricing",
+      "verdict": "allow",
+      "rule_fired": null,
+      "rule_no": null,
+      "pinned_ip": "93.184.215.15",
+      "host_header": "birchline.example",
+      "sni": null,
+      "port": 80,
+      "steps": [
+        {
+          "rule": "2 scheme allowlist",
+          "result": "pass",
+          "detail": "http"
+        },
+        {
+          "rule": "4 port allowlist",
+          "result": "pass",
+          "detail": "80"
+        },
+        {
+          "rule": "6 host name blocklist",
+          "result": "pass",
+          "detail": "birchline.example"
+        },
+        {
+          "rule": "7 resolve once (all A and AAAA records)",
+          "result": "pass",
+          "detail": "2 address(es): ['93.184.215.15', '2606:2800:21f:cb07:6820:80da:af6b:8b2c']"
+        },
+        {
+          "rule": "8 every resolved address must pass the address check",
+          "result": "pass",
+          "detail": [
+            "93.184.215.15",
+            "2606:2800:21f:cb07:6820:80da:af6b:8b2c"
+          ]
+        },
+        {
+          "rule": "9 connect to the checked address; Host header, SNI and certificate check use the original name",
+          "result": "pass",
+          "detail": "connect 93.184.215.15:80; Host and SNI = birchline.example"
+        }
+      ]
+    },
+    "scheme_file": {
+      "probe": "local file read",
+      "url": "file:///etc/passwd",
+      "verdict": "block",
+      "rule_fired": "2 scheme allowlist",
+      "rule_no": 2,
+      "detail": "scheme 'file' is not in ['http', 'https']",
+      "steps": [
+        {
+          "rule": "2 scheme allowlist",
+          "result": "block",
+          "detail": "scheme 'file' is not in ['http', 'https']"
+        }
+      ]
+    },
+    "scheme_gopher": {
+      "probe": "raw TCP to an internal Redis",
+      "url": "gopher://127.0.0.1:6379/_FLUSHALL",
+      "verdict": "block",
+      "rule_fired": "2 scheme allowlist",
+      "rule_no": 2,
+      "detail": "scheme 'gopher' is not in ['http', 'https']",
+      "steps": [
+        {
+          "rule": "2 scheme allowlist",
+          "result": "block",
+          "detail": "scheme 'gopher' is not in ['http', 'https']"
+        }
+      ]
+    },
+    "port_8443": {
+      "probe": "a non-default port",
+      "url": "https://aldersoft.example:8443/",
+      "verdict": "block",
+      "rule_fired": "4 port allowlist",
+      "rule_no": 4,
+      "detail": "port 8443 is not in [80, 443]",
+      "steps": [
+        {
+          "rule": "2 scheme allowlist",
+          "result": "pass",
+          "detail": "https"
+        },
+        {
+          "rule": "4 port allowlist",
+          "result": "block",
+          "detail": "port 8443 is not in [80, 443]"
+        }
+      ]
+    },
+    "metadata_ipv4": {
+      "probe": "the cloud metadata endpoint",
+      "url": "http://169.254.169.254/latest/meta-data/",
+      "verdict": "block",
+      "rule_fired": "8 every resolved address must pass the address check",
+      "rule_no": 8,
+      "detail": "169.254.169.254: blocked range 169.254.169.254/32: cloud metadata endpoint (AWS IMDS, OWASP SSRF cheat sheet); unwrap chain ['169.254.169.254']",
+      "steps": [
+        {
+          "rule": "2 scheme allowlist",
+          "result": "pass",
+          "detail": "http"
+        },
+        {
+          "rule": "4 port allowlist",
+          "result": "pass",
+          "detail": "80"
+        },
+        {
+          "rule": "5 numeric host must be a canonical address (no decimal, octal, hex or short IPv4 forms)",
+          "result": "pass",
+          "detail": "canonical literal 169.254.169.254"
+        },
+        {
+          "rule": "8 every resolved address must pass the address check",
+          "result": "block",
+          "detail": "169.254.169.254: blocked range 169.254.169.254/32: cloud metadata endpoint (AWS IMDS, OWASP SSRF cheat sheet); unwrap chain ['169.254.169.254']"
+        }
+      ]
+    },
+    "metadata_ipv6": {
+      "probe": "the IPv6 metadata endpoint",
+      "url": "http://[fd00:ec2::254]/latest/meta-data/",
+      "verdict": "block",
+      "rule_fired": "8 every resolved address must pass the address check",
+      "rule_no": 8,
+      "detail": "fd00:ec2::254: blocked range fd00:ec2::254/128: cloud metadata endpoint (IPv6) (AWS IMDS); unwrap chain ['fd00:ec2::254']",
+      "steps": [
+        {
+          "rule": "2 scheme allowlist",
+          "result": "pass",
+          "detail": "http"
+        },
+        {
+          "rule": "4 port allowlist",
+          "result": "pass",
+          "detail": "80"
+        },
+        {
+          "rule": "5 numeric host must be a canonical address (no decimal, octal, hex or short IPv4 forms)",
+          "result": "pass",
+          "detail": "canonical literal fd00:ec2::254"
+        },
+        {
+          "rule": "8 every resolved address must pass the address check",
+          "result": "block",
+          "detail": "fd00:ec2::254: blocked range fd00:ec2::254/128: cloud metadata endpoint (IPv6) (AWS IMDS); unwrap chain ['fd00:ec2::254']"
+        }
+      ]
+    },
+    "metadata_name": {
+      "probe": "a metadata host name",
+      "url": "http://metadata.google.internal/computeMetadata/v1/",
+      "verdict": "block",
+      "rule_fired": "6 host name blocklist",
+      "rule_no": 6,
+      "detail": "name 'metadata.google.internal' is on the name blocklist",
+      "steps": [
+        {
+          "rule": "2 scheme allowlist",
+          "result": "pass",
+          "detail": "http"
+        },
+        {
+          "rule": "4 port allowlist",
+          "result": "pass",
+          "detail": "80"
+        },
+        {
+          "rule": "6 host name blocklist",
+          "result": "block",
+          "detail": "name 'metadata.google.internal' is on the name blocklist"
+        }
+      ]
+    },
+    "loopback_ipv4": {
+      "probe": "loopback",
+      "url": "http://127.0.0.1/admin",
+      "verdict": "block",
+      "rule_fired": "8 every resolved address must pass the address check",
+      "rule_no": 8,
+      "detail": "127.0.0.1: blocked range 127.0.0.0/8: loopback (RFC 1122); unwrap chain ['127.0.0.1']",
+      "steps": [
+        {
+          "rule": "2 scheme allowlist",
+          "result": "pass",
+          "detail": "http"
+        },
+        {
+          "rule": "4 port allowlist",
+          "result": "pass",
+          "detail": "80"
+        },
+        {
+          "rule": "5 numeric host must be a canonical address (no decimal, octal, hex or short IPv4 forms)",
+          "result": "pass",
+          "detail": "canonical literal 127.0.0.1"
+        },
+        {
+          "rule": "8 every resolved address must pass the address check",
+          "result": "block",
+          "detail": "127.0.0.1: blocked range 127.0.0.0/8: loopback (RFC 1122); unwrap chain ['127.0.0.1']"
+        }
+      ]
+    },
+    "localhost_name": {
+      "probe": "the loopback name",
+      "url": "http://localhost/",
+      "verdict": "block",
+      "rule_fired": "6 host name blocklist",
+      "rule_no": 6,
+      "detail": "name 'localhost' is on the name blocklist",
+      "steps": [
+        {
+          "rule": "2 scheme allowlist",
+          "result": "pass",
+          "detail": "http"
+        },
+        {
+          "rule": "4 port allowlist",
+          "result": "pass",
+          "detail": "80"
+        },
+        {
+          "rule": "6 host name blocklist",
+          "result": "block",
+          "detail": "name 'localhost' is on the name blocklist"
+        }
+      ]
+    },
+    "this_network": {
+      "probe": "0.0.0.0, which Linux connects to the local host",
+      "url": "http://0.0.0.0/",
+      "verdict": "block",
+      "rule_fired": "8 every resolved address must pass the address check",
+      "rule_no": 8,
+      "detail": "0.0.0.0: blocked range 0.0.0.0/8: this network (RFC 791); unwrap chain ['0.0.0.0']",
+      "steps": [
+        {
+          "rule": "2 scheme allowlist",
+          "result": "pass",
+          "detail": "http"
+        },
+        {
+          "rule": "4 port allowlist",
+          "result": "pass",
+          "detail": "80"
+        },
+        {
+          "rule": "5 numeric host must be a canonical address (no decimal, octal, hex or short IPv4 forms)",
+          "result": "pass",
+          "detail": "canonical literal 0.0.0.0"
+        },
+        {
+          "rule": "8 every resolved address must pass the address check",
+          "result": "block",
+          "detail": "0.0.0.0: blocked range 0.0.0.0/8: this network (RFC 791); unwrap chain ['0.0.0.0']"
+        }
+      ]
+    },
+    "rfc1918_literal": {
+      "probe": "a private address literal",
+      "url": "http://10.20.30.40/",
+      "verdict": "block",
+      "rule_fired": "8 every resolved address must pass the address check",
+      "rule_no": 8,
+      "detail": "10.20.30.40: blocked range 10.0.0.0/8: private use (RFC 1918); unwrap chain ['10.20.30.40']",
+      "steps": [
+        {
+          "rule": "2 scheme allowlist",
+          "result": "pass",
+          "detail": "http"
+        },
+        {
+          "rule": "4 port allowlist",
+          "result": "pass",
+          "detail": "80"
+        },
+        {
+          "rule": "5 numeric host must be a canonical address (no decimal, octal, hex or short IPv4 forms)",
+          "result": "pass",
+          "detail": "canonical literal 10.20.30.40"
+        },
+        {
+          "rule": "8 every resolved address must pass the address check",
+          "result": "block",
+          "detail": "10.20.30.40: blocked range 10.0.0.0/8: private use (RFC 1918); unwrap chain ['10.20.30.40']"
+        }
+      ]
+    },
+    "loopback_ipv6": {
+      "probe": "IPv6 loopback",
+      "url": "http://[::1]/",
+      "verdict": "block",
+      "rule_fired": "8 every resolved address must pass the address check",
+      "rule_no": 8,
+      "detail": "::1: blocked range ::1/128: loopback (RFC 4291); unwrap chain ['::1']",
+      "steps": [
+        {
+          "rule": "2 scheme allowlist",
+          "result": "pass",
+          "detail": "http"
+        },
+        {
+          "rule": "4 port allowlist",
+          "result": "pass",
+          "detail": "80"
+        },
+        {
+          "rule": "5 numeric host must be a canonical address (no decimal, octal, hex or short IPv4 forms)",
+          "result": "pass",
+          "detail": "canonical literal ::1"
+        },
+        {
+          "rule": "8 every resolved address must pass the address check",
+          "result": "block",
+          "detail": "::1: blocked range ::1/128: loopback (RFC 4291); unwrap chain ['::1']"
+        }
+      ]
+    },
+    "link_local_ipv6": {
+      "probe": "IPv6 link-local",
+      "url": "http://[fe80::1]/",
+      "verdict": "block",
+      "rule_fired": "8 every resolved address must pass the address check",
+      "rule_no": 8,
+      "detail": "fe80::1: blocked range fe80::/10: link-local (RFC 4291); unwrap chain ['fe80::1']",
+      "steps": [
+        {
+          "rule": "2 scheme allowlist",
+          "result": "pass",
+          "detail": "http"
+        },
+        {
+          "rule": "4 port allowlist",
+          "result": "pass",
+          "detail": "80"
+        },
+        {
+          "rule": "5 numeric host must be a canonical address (no decimal, octal, hex or short IPv4 forms)",
+          "result": "pass",
+          "detail": "canonical literal fe80::1"
+        },
+        {
+          "rule": "8 every resolved address must pass the address check",
+          "result": "block",
+          "detail": "fe80::1: blocked range fe80::/10: link-local (RFC 4291); unwrap chain ['fe80::1']"
+        }
+      ]
+    },
+    "mapped_ipv6": {
+      "probe": "metadata hidden in an IPv4-mapped IPv6 address",
+      "url": "http://[::ffff:169.254.169.254]/",
+      "verdict": "block",
+      "rule_fired": "8 every resolved address must pass the address check",
+      "rule_no": 8,
+      "detail": "169.254.169.254: blocked range 169.254.169.254/32: cloud metadata endpoint (AWS IMDS, OWASP SSRF cheat sheet); unwrap chain ['::ffff:169.254.169.254', 'unwrap IPv4-mapped IPv6 (RFC 4291)', '169.254.169.254']",
+      "steps": [
+        {
+          "rule": "2 scheme allowlist",
+          "result": "pass",
+          "detail": "http"
+        },
+        {
+          "rule": "4 port allowlist",
+          "result": "pass",
+          "detail": "80"
+        },
+        {
+          "rule": "5 numeric host must be a canonical address (no decimal, octal, hex or short IPv4 forms)",
+          "result": "pass",
+          "detail": "canonical literal ::ffff:169.254.169.254"
+        },
+        {
+          "rule": "8 every resolved address must pass the address check",
+          "result": "block",
+          "detail": "169.254.169.254: blocked range 169.254.169.254/32: cloud metadata endpoint (AWS IMDS, OWASP SSRF cheat sheet); unwrap chain ['::ffff:169.254.169.254', 'unwrap IPv4-mapped IPv6 (RFC 4291)', '169.254.169.254']"
+        }
+      ]
+    },
+    "nat64_ipv6": {
+      "probe": "metadata hidden behind the NAT64 prefix",
+      "url": "http://[64:ff9b::a9fe:a9fe]/",
+      "verdict": "block",
+      "rule_fired": "8 every resolved address must pass the address check",
+      "rule_no": 8,
+      "detail": "169.254.169.254: blocked range 169.254.169.254/32: cloud metadata endpoint (AWS IMDS, OWASP SSRF cheat sheet); unwrap chain ['64:ff9b::a9fe:a9fe', 'unwrap NAT64 well-known prefix (RFC 6052)', '169.254.169.254']",
+      "steps": [
+        {
+          "rule": "2 scheme allowlist",
+          "result": "pass",
+          "detail": "http"
+        },
+        {
+          "rule": "4 port allowlist",
+          "result": "pass",
+          "detail": "80"
+        },
+        {
+          "rule": "5 numeric host must be a canonical address (no decimal, octal, hex or short IPv4 forms)",
+          "result": "pass",
+          "detail": "canonical literal 64:ff9b::a9fe:a9fe"
+        },
+        {
+          "rule": "8 every resolved address must pass the address check",
+          "result": "block",
+          "detail": "169.254.169.254: blocked range 169.254.169.254/32: cloud metadata endpoint (AWS IMDS, OWASP SSRF cheat sheet); unwrap chain ['64:ff9b::a9fe:a9fe', 'unwrap NAT64 well-known prefix (RFC 6052)', '169.254.169.254']"
+        }
+      ]
+    },
+    "decimal_ipv4": {
+      "probe": "metadata as one decimal number",
+      "url": "http://2852039166/",
+      "verdict": "block",
+      "rule_fired": "5 numeric host must be a canonical address (no decimal, octal, hex or short IPv4 forms)",
+      "rule_no": 5,
+      "detail": "'2852039166' is a non-canonical IPv4 form; a lenient resolver reads it as 169.254.169.254 (blocked range 169.254.169.254/32: cloud metadata endpoint (AWS IMDS, OWASP SSRF cheat sheet)). Python's ipaddress rejects it; inet_aton accepts it.",
+      "steps": [
+        {
+          "rule": "2 scheme allowlist",
+          "result": "pass",
+          "detail": "http"
+        },
+        {
+          "rule": "4 port allowlist",
+          "result": "pass",
+          "detail": "80"
+        },
+        {
+          "rule": "5 numeric host must be a canonical address (no decimal, octal, hex or short IPv4 forms)",
+          "result": "block",
+          "detail": "'2852039166' is a non-canonical IPv4 form; a lenient resolver reads it as 169.254.169.254 (blocked range 169.254.169.254/32: cloud metadata endpoint (AWS IMDS, OWASP SSRF cheat sheet)). Python's ipaddress rejects it; inet_aton accepts it."
+        }
+      ]
+    },
+    "octal_ipv4": {
+      "probe": "metadata in octal",
+      "url": "http://0251.0376.0251.0376/",
+      "verdict": "block",
+      "rule_fired": "5 numeric host must be a canonical address (no decimal, octal, hex or short IPv4 forms)",
+      "rule_no": 5,
+      "detail": "'0251.0376.0251.0376' is a non-canonical IPv4 form; a lenient resolver reads it as 169.254.169.254 (blocked range 169.254.169.254/32: cloud metadata endpoint (AWS IMDS, OWASP SSRF cheat sheet)). Python's ipaddress rejects it; inet_aton accepts it.",
+      "steps": [
+        {
+          "rule": "2 scheme allowlist",
+          "result": "pass",
+          "detail": "http"
+        },
+        {
+          "rule": "4 port allowlist",
+          "result": "pass",
+          "detail": "80"
+        },
+        {
+          "rule": "5 numeric host must be a canonical address (no decimal, octal, hex or short IPv4 forms)",
+          "result": "block",
+          "detail": "'0251.0376.0251.0376' is a non-canonical IPv4 form; a lenient resolver reads it as 169.254.169.254 (blocked range 169.254.169.254/32: cloud metadata endpoint (AWS IMDS, OWASP SSRF cheat sheet)). Python's ipaddress rejects it; inet_aton accepts it."
+        }
+      ]
+    },
+    "hex_ipv4": {
+      "probe": "metadata in hexadecimal",
+      "url": "http://0xA9FEA9FE/",
+      "verdict": "block",
+      "rule_fired": "5 numeric host must be a canonical address (no decimal, octal, hex or short IPv4 forms)",
+      "rule_no": 5,
+      "detail": "'0xa9fea9fe' is a non-canonical IPv4 form; a lenient resolver reads it as 169.254.169.254 (blocked range 169.254.169.254/32: cloud metadata endpoint (AWS IMDS, OWASP SSRF cheat sheet)). Python's ipaddress rejects it; inet_aton accepts it.",
+      "steps": [
+        {
+          "rule": "2 scheme allowlist",
+          "result": "pass",
+          "detail": "http"
+        },
+        {
+          "rule": "4 port allowlist",
+          "result": "pass",
+          "detail": "80"
+        },
+        {
+          "rule": "5 numeric host must be a canonical address (no decimal, octal, hex or short IPv4 forms)",
+          "result": "block",
+          "detail": "'0xa9fea9fe' is a non-canonical IPv4 form; a lenient resolver reads it as 169.254.169.254 (blocked range 169.254.169.254/32: cloud metadata endpoint (AWS IMDS, OWASP SSRF cheat sheet)). Python's ipaddress rejects it; inet_aton accepts it."
+        }
+      ]
+    },
+    "short_ipv4": {
+      "probe": "loopback in the two-part short form",
+      "url": "http://127.1/",
+      "verdict": "block",
+      "rule_fired": "5 numeric host must be a canonical address (no decimal, octal, hex or short IPv4 forms)",
+      "rule_no": 5,
+      "detail": "'127.1' is a non-canonical IPv4 form; a lenient resolver reads it as 127.0.0.1 (blocked range 127.0.0.0/8: loopback (RFC 1122)). Python's ipaddress rejects it; inet_aton accepts it.",
+      "steps": [
+        {
+          "rule": "2 scheme allowlist",
+          "result": "pass",
+          "detail": "http"
+        },
+        {
+          "rule": "4 port allowlist",
+          "result": "pass",
+          "detail": "80"
+        },
+        {
+          "rule": "5 numeric host must be a canonical address (no decimal, octal, hex or short IPv4 forms)",
+          "result": "block",
+          "detail": "'127.1' is a non-canonical IPv4 form; a lenient resolver reads it as 127.0.0.1 (blocked range 127.0.0.0/8: loopback (RFC 1122)). Python's ipaddress rejects it; inet_aton accepts it."
+        }
+      ]
+    },
+    "userinfo": {
+      "probe": "a trusted-looking name in the user part",
+      "url": "http://aldersoft.example@10.0.0.5/",
+      "verdict": "block",
+      "rule_fired": "3 no user information (user@host) in the URL",
+      "rule_no": 3,
+      "detail": "user part 'aldersoft.example' present; the real host is '10.0.0.5'",
+      "steps": [
+        {
+          "rule": "2 scheme allowlist",
+          "result": "pass",
+          "detail": "http"
+        },
+        {
+          "rule": "3 no user information (user@host) in the URL",
+          "result": "block",
+          "detail": "user part 'aldersoft.example' present; the real host is '10.0.0.5'"
+        }
+      ]
+    },
+    "private_behind_name": {
+      "probe": "a public name that resolves to a private address",
+      "url": "https://internal-wiki.cedarsystems.example/",
+      "verdict": "block",
+      "rule_fired": "8 every resolved address must pass the address check",
+      "rule_no": 8,
+      "detail": "10.1.2.3: blocked range 10.0.0.0/8: private use (RFC 1918); unwrap chain ['10.1.2.3']",
+      "steps": [
+        {
+          "rule": "2 scheme allowlist",
+          "result": "pass",
+          "detail": "https"
+        },
+        {
+          "rule": "4 port allowlist",
+          "result": "pass",
+          "detail": "443"
+        },
+        {
+          "rule": "6 host name blocklist",
+          "result": "pass",
+          "detail": "internal-wiki.cedarsystems.example"
+        },
+        {
+          "rule": "7 resolve once (all A and AAAA records)",
+          "result": "pass",
+          "detail": "1 address(es): ['10.1.2.3']"
+        },
+        {
+          "rule": "8 every resolved address must pass the address check",
+          "result": "block",
+          "detail": "10.1.2.3: blocked range 10.0.0.0/8: private use (RFC 1918); unwrap chain ['10.1.2.3']"
+        }
+      ]
+    },
+    "mixed_answers": {
+      "probe": "one public and one private answer",
+      "url": "https://mixed.example/",
+      "verdict": "block",
+      "rule_fired": "8 every resolved address must pass the address check",
+      "rule_no": 8,
+      "detail": "192.168.1.10: blocked range 192.168.0.0/16: private use (RFC 1918); unwrap chain ['192.168.1.10']; 1 other address(es) were public, the host is still blocked",
+      "steps": [
+        {
+          "rule": "2 scheme allowlist",
+          "result": "pass",
+          "detail": "https"
+        },
+        {
+          "rule": "4 port allowlist",
+          "result": "pass",
+          "detail": "443"
+        },
+        {
+          "rule": "6 host name blocklist",
+          "result": "pass",
+          "detail": "mixed.example"
+        },
+        {
+          "rule": "7 resolve once (all A and AAAA records)",
+          "result": "pass",
+          "detail": "2 address(es): ['93.184.215.18', '192.168.1.10']"
+        },
+        {
+          "rule": "8 every resolved address must pass the address check",
+          "result": "block",
+          "detail": "192.168.1.10: blocked range 192.168.0.0/16: private use (RFC 1918); unwrap chain ['192.168.1.10']; 1 other address(es) were public, the host is still blocked"
+        }
+      ]
+    },
+    "cgnat": {
+      "probe": "shared address space",
+      "url": "https://cgnat.example/",
+      "verdict": "block",
+      "rule_fired": "8 every resolved address must pass the address check",
+      "rule_no": 8,
+      "detail": "100.64.1.1: blocked range 100.64.0.0/10: shared address space (carrier NAT) (RFC 6598); unwrap chain ['100.64.1.1']",
+      "steps": [
+        {
+          "rule": "2 scheme allowlist",
+          "result": "pass",
+          "detail": "https"
+        },
+        {
+          "rule": "4 port allowlist",
+          "result": "pass",
+          "detail": "443"
+        },
+        {
+          "rule": "6 host name blocklist",
+          "result": "pass",
+          "detail": "cgnat.example"
+        },
+        {
+          "rule": "7 resolve once (all A and AAAA records)",
+          "result": "pass",
+          "detail": "1 address(es): ['100.64.1.1']"
+        },
+        {
+          "rule": "8 every resolved address must pass the address check",
+          "result": "block",
+          "detail": "100.64.1.1: blocked range 100.64.0.0/10: shared address space (carrier NAT) (RFC 6598); unwrap chain ['100.64.1.1']"
+        }
+      ]
+    }
+  },
+  "redirects": {
+    "to_metadata": {
+      "result": "blocked",
+      "hops": [
+        {
+          "hop": 0,
+          "url": "https://go.birchline.example/r",
+          "verdict": "allow",
+          "rule_fired": null,
+          "rule_no": null,
+          "connected_to": "93.184.215.17",
+          "status": 302,
+          "location": "http://169.254.169.254/latest/meta-data/iam/"
+        },
+        {
+          "hop": 1,
+          "url": "http://169.254.169.254/latest/meta-data/iam/",
+          "verdict": "block",
+          "rule_fired": "8 every resolved address must pass the address check",
+          "rule_no": 8,
+          "detail": "169.254.169.254: blocked range 169.254.169.254/32: cloud metadata endpoint (AWS IMDS, OWASP SSRF cheat sheet); unwrap chain ['169.254.169.254']"
+        }
+      ]
+    },
+    "loop": {
+      "result": "too_many_redirects",
+      "max_redirects": 5,
+      "requests_made": 6,
+      "hops": [
+        {
+          "hop": 0,
+          "url": "https://loop.birchline.example/a",
+          "verdict": "allow",
+          "rule_fired": null,
+          "rule_no": null,
+          "connected_to": "93.184.215.17",
+          "status": 301,
+          "location": "https://loop.birchline.example/b"
+        },
+        {
+          "hop": 1,
+          "url": "https://loop.birchline.example/b",
+          "verdict": "allow",
+          "rule_fired": null,
+          "rule_no": null,
+          "connected_to": "93.184.215.17",
+          "status": 301,
+          "location": "https://loop.birchline.example/a"
+        },
+        {
+          "hop": 2,
+          "url": "https://loop.birchline.example/a",
+          "verdict": "allow",
+          "rule_fired": null,
+          "rule_no": null,
+          "connected_to": "93.184.215.17",
+          "status": 301,
+          "location": "https://loop.birchline.example/b"
+        },
+        {
+          "hop": 3,
+          "url": "https://loop.birchline.example/b",
+          "verdict": "allow",
+          "rule_fired": null,
+          "rule_no": null,
+          "connected_to": "93.184.215.17",
+          "status": 301,
+          "location": "https://loop.birchline.example/a"
+        },
+        {
+          "hop": 4,
+          "url": "https://loop.birchline.example/a",
+          "verdict": "allow",
+          "rule_fired": null,
+          "rule_no": null,
+          "connected_to": "93.184.215.17",
+          "status": 301,
+          "location": "https://loop.birchline.example/b"
+        },
+        {
+          "hop": 5,
+          "url": "https://loop.birchline.example/b",
+          "verdict": "allow",
+          "rule_fired": null,
+          "rule_no": null,
+          "connected_to": "93.184.215.17",
+          "status": 301,
+          "location": "https://loop.birchline.example/a"
+        }
+      ]
+    },
+    "note": "Automatic redirect following is off in the HTTP client; the fetcher reads Location and runs every rule again."
+  },
+  "rebinding": {
+    "dns_sequence": [
+      [
+        "93.184.215.99"
+      ],
+      [
+        "127.0.0.1"
+      ]
+    ],
+    "dns_ttl_s": 0,
+    "naive": {
+      "result": "ok",
+      "checked_addresses": [
+        "93.184.215.99"
+      ],
+      "connected_to": "127.0.0.1",
+      "connected_address_check": "blocked range 127.0.0.0/8: loopback (RFC 1122)",
+      "body": "internal admin API on loopback",
+      "dns_queries": [
+        {
+          "query": 1,
+          "name": "rebind.attacker.example",
+          "answers": [
+            "93.184.215.99"
+          ],
+          "ttl_s": 0
+        },
+        {
+          "query": 2,
+          "name": "rebind.attacker.example",
+          "answers": [
+            "127.0.0.1"
+          ],
+          "ttl_s": 0
+        }
+      ]
+    },
+    "resolve_once": {
+      "result": "ok",
+      "content_type": "text/html",
+      "body_bytes_offered": 2000,
+      "body_bytes_read": 2000,
+      "truncated": false,
+      "body": "harmless page",
+      "hops": [
+        {
+          "hop": 0,
+          "url": "https://rebind.attacker.example/",
+          "verdict": "allow",
+          "rule_fired": null,
+          "rule_no": null,
+          "connected_to": "93.184.215.99",
+          "status": 200
+        }
+      ],
+      "dns_queries": [
+        {
+          "query": 1,
+          "name": "rebind.attacker.example",
+          "answers": [
+            "93.184.215.99"
+          ],
+          "ttl_s": 0
+        }
+      ]
+    },
+    "naive_reached_loopback": true,
+    "resolve_once_connected_to": "93.184.215.99"
+  },
+  "response_checks": {
+    "good_page": {
+      "result": "ok",
+      "content_type": "text/html",
+      "body_bytes_offered": 450000,
+      "body_bytes_read": 450000,
+      "truncated": false,
+      "body": null,
+      "hops": [
+        {
+          "hop": 0,
+          "url": "https://aldersoft.example/pricing",
+          "verdict": "allow",
+          "rule_fired": null,
+          "rule_no": null,
+          "connected_to": "93.184.215.14",
+          "status": 200
+        }
+      ]
+    },
+    "binary": {
+      "result": "rejected_content_type",
+      "content_type": "application/octet-stream",
+      "allowed": [
+        "text/html",
+        "application/xhtml+xml",
+        "text/plain"
+      ],
+      "hops": [
+        {
+          "hop": 0,
+          "url": "https://files.aldersoft.example/setup.exe",
+          "verdict": "allow",
+          "rule_fired": null,
+          "rule_no": null,
+          "connected_to": "93.184.215.14",
+          "status": 200
+        }
+      ]
+    },
+    "oversized": {
+      "result": "ok",
+      "content_type": "text/html",
+      "body_bytes_offered": 12000000,
+      "body_bytes_read": 5000000,
+      "truncated": true,
+      "body": null,
+      "hops": [
+        {
+          "hop": 0,
+          "url": "https://big.aldersoft.example/catalog",
+          "verdict": "allow",
+          "rule_fired": null,
+          "rule_no": null,
+          "connected_to": "93.184.215.14",
+          "status": 200
+        }
+      ]
+    }
+  },
+  "summary": {
+    "cases": 24,
+    "allowed": 2,
+    "blocked": 22,
+    "by_rule": {
+      "allowed": 2,
+      "rule_2": 2,
+      "rule_4": 1,
+      "rule_8": 12,
+      "rule_6": 2,
+      "rule_5": 4,
+      "rule_3": 1
+    }
+  }
+}

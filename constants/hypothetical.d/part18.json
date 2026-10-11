@@ -1,0 +1,118 @@
+{
+  "_about": "Part 18 (security, privacy and safety) class C values. Every value is HYPOTHETICAL and chosen to agree with RA-17, RA-33, RA-40, RA-52, RA-57, RA-58, RA-59. Author w18, 2026-10-09.",
+  "stream_safety_ref": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Output moderation on the streamed answer (Part 18.3). What real providers use is not public (class D).",
+    "check_window_tokens": {
+      "value": 16,
+      "unit": "tokens",
+      "note": "The orchestrator holds visible text back and sends one output check per 16 new tokens (was 32); a window also closes when a text segment ends (a tool call starts or the message ends). Below NeMo Guardrails' low-latency example (50), above per-token value heads; at 100 tokens/s it holds about a sixth of a second of text."
+    },
+    "window_options_tokens": {
+      "value": [8, 16, 32, 64, 128, 256],
+      "unit": "tokens",
+      "note": "Window sizes compared in the hold-back trade-off table (powers of two around the reference choice)."
+    },
+    "context_overlap_tokens": {
+      "value": 8,
+      "unit": "tokens",
+      "note": "Tokens of the previous window that each check reads again, so a phrase split across two windows is still seen whole. Half the window, the same ratio idea as NeMo's context_size."
+    },
+    "check_latency_ms": {
+      "value": 20,
+      "unit": "ms",
+      "note": "One output check: an in-region gRPC call to the classifier pool plus one batched forward of window + overlap tokens on a 1B-class classifier, including the wait for the next classifier batch. Assumption; a real deployment measures it from traces (RA-52)."
+    },
+    "classifier_params_reference": {
+      "value": "llama_guard_3_1b",
+      "unit": "model",
+      "note": "The output classifier is sized like the public Llama Guard 3 1B model (extra.sims_w18.llama_guard_3_1b_params, SRC-703). Which classifier real providers run is not public."
+    },
+    "policy_stop_status": {
+      "value": "interrupted",
+      "unit": "message status",
+      "note": "A stream that an output check stops is persisted as a partial assistant message with status interrupted (RA-59), holding only the text that was released before the failing window."
+    },
+    "policy_stop_reason": {
+      "value": "content_policy",
+      "unit": "reason code",
+      "note": "Reason field stored with the interrupted message and sent in the final error event, so the client can show a policy notice instead of a network error."
+    }
+  },
+  "log_privacy_ref": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "What the reference request leaves in logs, and how long it stays (Part 18.4).",
+    "records_per_component": {
+      "value": {"edge": 1, "api_gateway": 1, "orchestrator": 4, "retrieval": 1, "model_router": 3, "tool_executor": 2, "egress_service": 3, "sandbox_host": 1},
+      "unit": "structured log records per request",
+      "note": "INFO-level records the reference request leaves: one access record at the edge and gateway; orchestrator start, context built, two tool decisions; one per inference pass at the model router; one per tool call; one per fetched page; one VM lifecycle record."
+    },
+    "mean_record_bytes": {
+      "value": 350,
+      "unit": "B per record",
+      "note": "Serialized JSON record: timestamp, level, service, trace and span IDs, pseudonymous user ID, tenant ID, request ID, event name, durations, sizes, status. No message text."
+    },
+    "debug_sample_fraction": {
+      "value": 0.001,
+      "unit": "fraction of requests",
+      "note": "Head-sampled share of requests whose DEBUG records are kept (still redacted). Decided once at the edge from the trace ID, so all services keep or drop the same requests."
+    },
+    "retention_days": {
+      "value": {"application_logs": 30, "debug_samples": 7, "traces": 14, "security_logs": 90, "audit_events": 400},
+      "unit": "days",
+      "note": "Each log class has its own retention and then deletion. Audit events stay just over a year so a yearly review can read the whole year."
+    },
+    "pseudonym_key_rotation_days": {
+      "value": 90,
+      "unit": "days",
+      "note": "The HMAC key that turns user IDs into log pseudonyms lives in the KMS and rotates every 90 days, so pseudonyms from different quarters cannot be joined without the key."
+    }
+  },
+  "encryption_ref": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Encryption at rest and key scopes (Part 18.1, 18.5).",
+    "kms_key_scope": {
+      "value": "one key-encryption key per tenant per region",
+      "unit": "key scope",
+      "note": "Every store wraps its data keys with the tenant's regional KMS key, so a key never leaves the tenant's home region and deleting the key makes the tenant's backups unreadable."
+    },
+    "data_key_scope": {
+      "value": "one data key per object or per storage range",
+      "unit": "key scope",
+      "note": "Envelope encryption (SRC-706): the data key encrypts the bytes, the KMS key encrypts the data key, and the wrapped data key is stored next to the data."
+    },
+    "data_key_cache_s": {
+      "value": 300,
+      "unit": "s",
+      "note": "How long a service keeps an unwrapped data key in memory before it calls the KMS again; bounds both the KMS request rate and the time a stolen memory image stays useful."
+    }
+  },
+  "residency_ref": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Jurisdictions of the reference regions and the two tenants of the residency example (Part 18.5).",
+    "region_jurisdiction": {
+      "value": {"us_east": "US", "eu_west": "EU", "ap_south": "IN", "ap_northeast": "JP"},
+      "unit": "jurisdiction code per region",
+      "note": "Each reference region lies in one jurisdiction (RA-05 regions)."
+    },
+    "reference_tenant_pin": {
+      "value": "none",
+      "unit": "jurisdiction code",
+      "note": "The reference user's tenant has no residency contract; its home region ap_south comes from distance."
+    },
+    "bound_tenant_pin": {
+      "value": "IN",
+      "unit": "jurisdiction code",
+      "note": "A second, residency-bound tenant in the example: its contract keeps customer content in India, so only ap_south may hold or process it."
+    },
+    "bound_tenant_retry_after_s": {
+      "value": 30,
+      "unit": "s",
+      "note": "Retry-After on the 503 that a residency-bound request gets when no allowed region is healthy (fail closed)."
+    }
+  }
+}

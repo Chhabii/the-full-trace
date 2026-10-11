@@ -1,0 +1,259 @@
+{
+  "timeout_budget_ref": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Part 17.1 deadline split of the reference request (RA-11). The top-level deadline is hypothetical.slo.top_level_deadline_s; tool deadlines come from hypothetical.tool_exec_limits and Part 07/08 values. What real providers use is not public (class D).",
+    "edge_reserve_s": {
+      "value": 0.5,
+      "unit": "s",
+      "note": "Time the edge PoP keeps after the gateway deadline to send an error event and close the stream cleanly; the gateway deadline is the edge deadline minus this."
+    },
+    "gateway_reserve_s": {
+      "value": 0.5,
+      "unit": "s",
+      "note": "Time the API gateway keeps after the orchestrator deadline to map an error to an HTTP status and log it."
+    },
+    "final_write_reserve_s": {
+      "value": 2.0,
+      "unit": "s",
+      "note": "Time the orchestrator keeps at the end for the final (or partial) message write (RA-18, RA-59) and the usage events; no child call may use it."
+    },
+    "conversation_read_cap_s": {
+      "value": 1.0,
+      "unit": "s",
+      "note": "Cap on the history read from the conversation store; about 100 times its normal time, so it fires only on a real fault (17.5)."
+    },
+    "memory_read_cap_s": {
+      "value": 0.5,
+      "unit": "s",
+      "note": "Cap on the memory-record lookup (part 5.5); the request continues without memory if it expires."
+    },
+    "memory_read_expected_s": {
+      "value": 0.02,
+      "unit": "s",
+      "note": "Normal time of the memory lookup (embedding cache hit plus a small vector search)."
+    },
+    "retrieval_cap_s": {
+      "value": 3.0,
+      "unit": "s",
+      "note": "Cap on hybrid retrieval with reranking (part 5.3); the request continues without workspace chunks if it expires."
+    },
+    "tool_pass_cap_s": {
+      "value": 40,
+      "unit": "s",
+      "note": "Cap on one inference pass that ends in a tool call (passes 1 and 2): queue + prefill + up to about 600 output tokens at 20 tokens/s."
+    },
+    "final_pass_cap_s": {
+      "value": 60,
+      "unit": "s",
+      "note": "Cap on the final answer pass (pass 3): about 1,000 output tokens at 20 tokens/s plus queue and prefill."
+    }
+  },
+  "cancellation_ref": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Part 17.2 cancellation chain and fleet waste (RA-49, RA-59).",
+    "cancel_fraction": {
+      "value": 0.05,
+      "unit": "fraction of requests",
+      "note": "Share of requests that the user stops (Stop button) or abandons (closed tab, lost network) before message.done. Assumption; a real service measures it."
+    },
+    "mean_remaining_fraction": {
+      "value": 0.5,
+      "unit": "fraction of the output",
+      "note": "Mean share of the answer that is still to be generated when a cancel happens (cancels spread evenly over the stream)."
+    },
+    "in_region_hops_to_engine": {
+      "value": 4,
+      "unit": "hops",
+      "note": "In-region hops the cancel crosses after it reaches the region: API gateway -> orchestrator -> model router -> inference gateway -> model server. Each costs hypothetical.streaming_ref.in_region_hop_forward_ms."
+    },
+    "stop_at_visible_token": {
+      "value": 120,
+      "unit": "tokens",
+      "note": "Illustrative moment of the Stop press: the 120th visible token of pass 3 of the reference request."
+    }
+  },
+  "crash_ref": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Part 17.3 GPU worker crash during pass 3 of the reference request.",
+    "crash_at_visible_token": {
+      "value": 200,
+      "unit": "tokens",
+      "note": "Illustrative: the decode worker dies after the client has shown 200 visible tokens of pass 3."
+    },
+    "inference_readiness_period_s": {
+      "value": 5,
+      "unit": "s",
+      "note": "Readiness probe period on model-server pods (shorter than the Kubernetes default of 10 s so a dead engine leaves the endpoint set faster)."
+    },
+    "inference_readiness_failure_threshold": {
+      "value": 2,
+      "unit": "probes",
+      "note": "Failed probes before the pod is not ready (default is 3)."
+    },
+    "engine_warmup_s": {
+      "value": 90,
+      "unit": "s",
+      "note": "Time for a re-formed DEP16 decode worker to start after its weights are in HBM: NCCL and NIXL setup, memory profiling, CUDA Graph capture. Assumption; a real deployment measures it."
+    }
+  },
+  "region_failover_ref": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Part 17.4 region failure: detection, traffic shift and the conversation store's cross-region standby (refines RA-17).",
+    "global_health_interval_s": {
+      "value": 5,
+      "unit": "s",
+      "note": "Interval of the health checks that the PoPs and the global traffic manager run against each region's ingress."
+    },
+    "global_health_failures_to_down": {
+      "value": 3,
+      "unit": "checks",
+      "note": "Consecutive failed checks before global traffic management marks a region down."
+    },
+    "weight_push_s": {
+      "value": 5,
+      "unit": "s",
+      "note": "Time for the new region weights to reach every PoP proxy (xDS push)."
+    },
+    "standby_region": {
+      "value": "ap_northeast",
+      "unit": "region id",
+      "note": "Region that holds the asynchronous standby of ap_south's home-region data; the same region pair as Part 14's capacity partner (demand_curve:planning.regions.ap_south.partner)."
+    },
+    "async_replication_lag_s": {
+      "value": 10,
+      "unit": "s",
+      "note": "Typical lag of the asynchronous cross-region standby of the conversation store; CockroachDB documents lag for its physical cluster replication 'generally in the tens-of-seconds range' (SRC-687), so 10 s is the low end."
+    }
+  },
+  "slow_db_ref": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Part 17.5 slow conversation store: the Part 03 connection-pool example under slowdown.",
+    "slowdown_factors": {
+      "value": [
+        1,
+        2,
+        5,
+        10,
+        40
+      ],
+      "unit": "x normal transaction time",
+      "note": "Illustrative slowdowns of every transaction (a hot range, a leaseholder move, a long compaction)."
+    },
+    "db_call_timeout_ms": {
+      "value": 200,
+      "unit": "ms",
+      "note": "Per-transaction timeout of the orchestrator on the conversation store: 40 times the normal 5 ms, far below the 1 s history-read cap."
+    }
+  },
+  "retry_ref": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Part 17.8 retry policy values that RA-12 leaves open.",
+    "backoff_base_s": {
+      "value": 0.2,
+      "unit": "s",
+      "note": "Base of the full-jitter exponential backoff."
+    },
+    "backoff_cap_s": {
+      "value": 5,
+      "unit": "s",
+      "note": "Cap of the backoff; far below the 20 s web_search deadline."
+    },
+    "stack_layers": {
+      "value": 5,
+      "unit": "layers",
+      "note": "Depth of the call stack in the amplification example (edge, gateway, orchestrator, tool executor, provider client), the same five-deep stack as the AWS example."
+    },
+    "jitter_seed": {
+      "value": 17,
+      "unit": "seed",
+      "note": "RNG seed of the sampled sleeps."
+    }
+  },
+  "queue_burst_ref": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Part 17.7 queue-collapse example (the note-06 numbers: capacity 100 req/s, arrivals 110 req/s, 10 s client timeout, bound 200).",
+    "capacity_rps": {
+      "value": 100,
+      "unit": "requests/s",
+      "note": "Service capacity of the toy server: 10 servers, exponential service with mean 0.1 s."
+    },
+    "servers": {
+      "value": 10,
+      "unit": "servers",
+      "note": "Parallel servers of the toy service."
+    },
+    "arrival_rps": {
+      "value": 110,
+      "unit": "requests/s",
+      "note": "Poisson arrivals, 10% above capacity."
+    },
+    "client_timeout_s": {
+      "value": 10,
+      "unit": "s",
+      "note": "A client gives up after 10 s without a response; the server does not know."
+    },
+    "queue_bound": {
+      "value": 200,
+      "unit": "requests",
+      "note": "Bounded queue length; an arrival that finds it full gets an immediate 429."
+    },
+    "duration_s": {
+      "value": 300,
+      "unit": "s",
+      "note": "Simulated time."
+    },
+    "seed": {
+      "value": 17,
+      "unit": "seed",
+      "note": "RNG seed."
+    }
+  },
+  "rollout_ref": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Part 17.10 canary and draining values (RA-54, RA-61).",
+    "canary_weights_pct": {
+      "value": [
+        1,
+        5,
+        25,
+        50,
+        100
+      ],
+      "unit": "% of traffic",
+      "note": "Traffic weights of the new deployment at each canary stage."
+    },
+    "canary_stage_hold_s": {
+      "value": 900,
+      "unit": "s",
+      "note": "Minimum time at each stage before the next weight, long enough for a few thousand requests at 1%."
+    },
+    "drain_timeout_s": {
+      "value": 300,
+      "unit": "s",
+      "note": "Bound on active decodes after a worker leaves routing (vLLM --shutdown-timeout); longer than the longest stream at max_tokens 4,096 at 16 tokens/s."
+    },
+    "grace_margin_s": {
+      "value": 30,
+      "unit": "s",
+      "note": "terminationGracePeriodSeconds = drain_timeout_s + this margin, so Kubernetes never kills a draining engine."
+    },
+    "decode_workers_in_pool": {
+      "value": 26,
+      "unit": "DEP16 workers",
+      "note": "Size of the ap_south M-frontier decode pool in the example; equals capacity_math:pool.design.decode_workers_needed (Part 09)."
+    },
+    "max_unavailable_workers": {
+      "value": 2,
+      "unit": "workers",
+      "note": "Decode workers drained at the same time in one wave."
+    }
+  }
+}

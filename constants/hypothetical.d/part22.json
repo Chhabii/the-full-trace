@@ -1,0 +1,173 @@
+{
+  "_about": "Part 22 (the quantitative workbook) class C values. Every value is HYPOTHETICAL and chosen to agree with RA-11, RA-17, RA-20, RA-21, RA-30, RA-41, RA-42, RA-51, RA-52, RA-55, RA-69, RA-77, RA-79. Author w22, 2026-10-09. Every latency, token count and GPU time comes from earlier data files; these values are only the tail shapes of the latency budget (22.5), the unit prices of the non-GPU cost centers (22.6) and the burst scenario of the paper simulation (22.8).",
+  "latency_tail_ref": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Tail assumption of the TTFT and latency budget (Part 22.5). Each hop keeps the p50 that an earlier part computed; its time is drawn from a log-normal distribution with that median and the p95/p50 ratio below. No public per-hop tail exists for this hypothetical system.",
+    "samples": {
+      "value": 200000,
+      "unit": "draws",
+      "note": "Monte Carlo draws of the whole request; enough for a stable p99 (2,000 draws above it)."
+    },
+    "seed": {
+      "value": 22,
+      "unit": "seed",
+      "note": "Fixed seed so the data file is deterministic."
+    },
+    "access_p95_over_p50": {
+      "value": 2.0,
+      "unit": "ratio",
+      "note": "Access network one way (Wi-Fi or mobile radio, home router queues): the most variable network hop. Applied to the user-to-PoP leg in both directions."
+    },
+    "backbone_p95_over_p50": {
+      "value": 1.2,
+      "unit": "ratio",
+      "note": "Backbone one way: the fiber delay is fixed physics; router queues and a longer route on some paths add up to 20 % at p95."
+    },
+    "cpu_service_p95_over_p50": {
+      "value": 3.0,
+      "unit": "ratio",
+      "note": "Short CPU services (browser handler, edge checks, gateway, context assembly, model router, tool dispatch, final write): garbage-collection pauses, CPU contention and cold caches triple a few-ms step at p95."
+    },
+    "retrieval_p95_over_p50": {
+      "value": 2.0,
+      "unit": "ratio",
+      "note": "Retrieval fan-out (embedding, index search, chunk fetch, rerank on the retrieval GPU pool): the reranker batch wait and the slowest index shard double it at p95."
+    },
+    "queue_p95_over_p50": {
+      "value": 4.0,
+      "unit": "ratio",
+      "note": "Gateway queue plus engine wait per pass. An exponential waiting time has p95/p50 = ln 20 / ln 2 = 4.3; 4.0 keeps the same order without claiming an exact M/M/c shape."
+    },
+    "gpu_work_p95_over_p50": {
+      "value": 1.5,
+      "unit": "ratio",
+      "note": "Vision encoder, prefill and the KV transfer of one pass: the token count is fixed, but other prompts share the token budget of each step (chunked prefill), so the time stretches by up to 50 % at p95."
+    },
+    "sandbox_p95_over_p50": {
+      "value": 2.0,
+      "unit": "ratio",
+      "note": "run_python tool step: the code run and the artifact upload on a shared sandbox host."
+    }
+  },
+  "cost_model_ref": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Unit prices of the non-GPU cost centers (Part 22.6). Round numbers of the same order as public cloud list prices; not any provider's cost and not any company's economics. GPU-hour prices come from hypothetical.fleet_price_ref (Part 12).",
+    "vcpu_hour_usd": {
+      "value": 0.04,
+      "unit": "USD per vCPU-hour",
+      "note": "CPU tier (edge, gateway, orchestrator, model router, search engine) and sandbox hosts; one price for every general-purpose vCPU."
+    },
+    "cpu_us_per_event_per_hop": {
+      "value": 20,
+      "unit": "µs per SSE event per forwarding hop",
+      "note": "CPU time of one forwarder for one stream event: read, frame, write, flow-control bookkeeping (RA-47, RA-74)."
+    },
+    "db_usd_per_million_writes": {
+      "value": 1.25,
+      "unit": "USD per million row writes",
+      "note": "Distributed SQL write with quorum replication inside the home region (RA-17); the price covers the replicas."
+    },
+    "db_usd_per_million_reads": {
+      "value": 0.25,
+      "unit": "USD per million row reads",
+      "note": "Distributed SQL read served by one replica (RA-17)."
+    },
+    "db_storage_usd_per_gb_month": {
+      "value": 0.25,
+      "unit": "USD per GB-month",
+      "note": "Conversation store storage, per logical GB per replica."
+    },
+    "object_storage_usd_per_gb_month": {
+      "value": 0.023,
+      "unit": "USD per GB-month",
+      "note": "S3-class object store for uploaded files (RA-21)."
+    },
+    "internet_egress_usd_per_gb": {
+      "value": 0.08,
+      "unit": "USD per GB",
+      "note": "Bytes from the edge to the user's browser (the SSE stream)."
+    },
+    "cross_region_usd_per_gb": {
+      "value": 0.02,
+      "unit": "USD per GB",
+      "note": "Bytes between two regions, for example the asynchronous standby copy of the conversation store (RA-79)."
+    },
+    "telemetry_usd_per_gb": {
+      "value": 0.3,
+      "unit": "USD per GB ingested",
+      "note": "Traces, structured logs and analytics events ingested by the telemetry pipeline (RA-52, RA-77, RA-20); retention priced in."
+    },
+    "storage_months_counted": {
+      "value": 1,
+      "unit": "months",
+      "note": "The per-request cost counts one month of storage for the files and message rows a request creates; longer retention scales these two lines linearly."
+    },
+    "utilization_points": {
+      "value": [1.0, 0.7, 0.5, 0.3],
+      "unit": "fraction",
+      "note": "GPU utilization points of the sensitivity table; the fleet's daily utilization from Part 14.8 is added from data."
+    }
+  },
+  "overload_burst_ref": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Paper simulation of an overload burst (Part 22.8, R-XXII.8): a toy pool of identical serving units, FIFO queue, Poisson arrivals, exponential service. Each unit stands for one 8-GPU unit of an M-frontier rack; the warm spare is the rack's 9th 8-GPU unit (RA-55).",
+    "servers": {
+      "value": 8,
+      "unit": "serving units",
+      "note": "The 64 active GPUs of one RA-55 rack counted in 8-GPU units."
+    },
+    "capacity_rps": {
+      "value": 100,
+      "unit": "requests/s",
+      "note": "Total service rate of the 8 units, the same 100 requests/s as the toy service of Part 17.7, so mean service = 8 / 100 = 80 ms."
+    },
+    "base_arrival_rps": {
+      "value": 70,
+      "unit": "requests/s",
+      "note": "Arrival rate before and after the burst: utilization 0.7, below the autoscaling target."
+    },
+    "burst_arrival_rps": {
+      "value": 110,
+      "unit": "requests/s",
+      "note": "Arrival rate during the burst: 10 % above capacity, the same overload as Part 17.7."
+    },
+    "burst_start_s": {
+      "value": 60,
+      "unit": "s",
+      "note": "Start of the burst after the simulation starts."
+    },
+    "burst_duration_s": {
+      "value": 180,
+      "unit": "s",
+      "note": "A three-minute burst, for example a news event (Part 14.7)."
+    },
+    "duration_s": {
+      "value": 600,
+      "unit": "s",
+      "note": "Simulated time; long enough for every scenario to drain."
+    },
+    "warm_spare_servers": {
+      "value": 1,
+      "unit": "serving units",
+      "note": "RA-55 keeps 8 warm-spare GPUs per 64 active GPUs: one more 8-GPU unit, 12.5 % more capacity, weights already loaded."
+    },
+    "warm_spare_join_s": {
+      "value": 5,
+      "unit": "s",
+      "note": "From the scale-up decision until the spare takes traffic: one readiness-probe period (RA-51), no weight load and no CUDA initialization."
+    },
+    "autoscale_target_utilization": {
+      "value": 0.8,
+      "unit": "fraction",
+      "note": "KEDA scales the pool so that the measured arrival rate uses at most 80 % of capacity (RA-42); the same bound as the batch band ceiling of Part 9.4."
+    },
+    "seed": {
+      "value": 22,
+      "unit": "seed",
+      "note": "Fixed seed for the arrival and service draws."
+    }
+  }
+}

@@ -1,0 +1,219 @@
+{
+  "meta": {
+    "script": "sim/cold_start.py",
+    "generated_at": "2026-10-09T19:20:32+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T19:17:10+00:00",
+      "sha256": "4091418cecc1"
+    },
+    "constants_used": {
+      "autoscaling.hpa_sync_period_s": 15,
+      "extra.sims_w02.k8s_probe_period_s": 10,
+      "extra.sims_w19.llmd_default_loader_GBps": 1.1,
+      "extra.sims_w19.llmd_engine_init_cached_s": 77.8,
+      "extra.sims_w19.llmd_engine_init_cold_s": 94.6,
+      "extra.sims_w19.llmd_pod_ready_cached_s": 156,
+      "extra.sims_w19.llmd_pod_ready_cold_s": 181,
+      "extra.sims_w19.llmd_scale_up_period_s": 180,
+      "extra.sims_w19.llmd_torch_compile_cached_s": 3.4,
+      "extra.sims_w19.llmd_torch_compile_cold_s": 20.1,
+      "hypothetical.cold_start_ref.cuda_init_high_s": 10,
+      "hypothetical.cold_start_ref.cuda_init_low_s": 3,
+      "hypothetical.cold_start_ref.gpus_per_tray": 4,
+      "hypothetical.cold_start_ref.image_bytes": 12000000000,
+      "hypothetical.cold_start_ref.image_pull_GBps": 0.5,
+      "hypothetical.cold_start_ref.nccl_setup_high_s": 20,
+      "hypothetical.cold_start_ref.nccl_setup_low_s": 5,
+      "hypothetical.cold_start_ref.node_bind_high_s": 300,
+      "hypothetical.cold_start_ref.node_bind_low_s": 1,
+      "hypothetical.cold_start_ref.process_start_high_s": 30,
+      "hypothetical.cold_start_ref.process_start_low_s": 10,
+      "hypothetical.deployment.k3_decode_gpus_per_worker": 16,
+      "hypothetical.deployment.k3_rack_decode_workers": 3,
+      "hypothetical.deployment.k3_rack_prefill_workers": 2,
+      "hypothetical.observability_ref.metrics_scrape_interval_s": 15,
+      "hypothetical.slo.p95_ttft_ms": 1500,
+      "routing.llm_d.epp_metrics_tick_ms": 50
+    }
+  },
+  "label": "Ranges: HYPOTHETICAL step times where no source exists; measured llm-d values are for gpt-oss-120b on 8xH200",
+  "worker": {
+    "model": "M-frontier",
+    "unit": "DEP16 decode worker",
+    "gpus": 16,
+    "rank_bytes": 210000000000,
+    "rank_GB": 210.0
+  },
+  "steps": [
+    {
+      "step": "scaler decision",
+      "low_s": 0.0,
+      "high_s": 30,
+      "low_why": "the metric crosses just before a sync",
+      "high_why": "one scrape (15 s) + one HPA sync (15 s)",
+      "class": "A (HPA sync) + C (scrape)",
+      "cum_low_s": 0.0,
+      "cum_high_s": 30.0
+    },
+    {
+      "step": "node allocation",
+      "low_s": 1,
+      "high_s": 300,
+      "low_why": "free reserved trays in the rack",
+      "high_why": "a powered-down tray must boot and join",
+      "class": "C",
+      "cum_low_s": 1.0,
+      "cum_high_s": 330.0
+    },
+    {
+      "step": "container image",
+      "low_s": 0.0,
+      "high_s": 24.0,
+      "low_why": "image already on the node",
+      "high_why": "12 GB at 0.5 GB/s",
+      "class": "C",
+      "cum_low_s": 1.0,
+      "cum_high_s": 354.0
+    },
+    {
+      "step": "weights to the node",
+      "low_s": 0.0,
+      "high_s": 67.2,
+      "low_why": "peer pull or NVMe cache hit: no download",
+      "high_why": "4 ranks × 210 GB from the object store at 12.5 GB/s per tray",
+      "class": "C (RA-61)",
+      "cum_low_s": 1.0,
+      "cum_high_s": 421.2
+    },
+    {
+      "step": "process start",
+      "low_s": 10,
+      "high_s": 30,
+      "low_why": "warm page cache",
+      "high_why": "cold page cache",
+      "class": "C",
+      "cum_low_s": 11.0,
+      "cum_high_s": 451.2
+    },
+    {
+      "step": "CUDA init",
+      "low_s": 3,
+      "high_s": 10,
+      "low_why": "context creation",
+      "high_why": "plus GPU health checks",
+      "class": "C",
+      "cum_low_s": 14.0,
+      "cum_high_s": 461.2
+    },
+    {
+      "step": "weights into HBM",
+      "low_s": 2.1,
+      "high_s": 190.9090909090909,
+      "low_why": "peer HBM to HBM over 800 Gb/s (link bound)",
+      "high_why": "210 GB at the measured default-loader rate 1.1 GB/s",
+      "class": "A (rates) + C",
+      "cum_low_s": 16.1,
+      "cum_high_s": 652.1090909090909
+    },
+    {
+      "step": "NCCL and NIXL setup",
+      "low_s": 5,
+      "high_s": 20,
+      "low_why": "16 ranks in one NVLink domain",
+      "high_why": "ranks wait for the slowest loader",
+      "class": "C",
+      "cum_low_s": 21.1,
+      "cum_high_s": 672.1090909090909
+    },
+    {
+      "step": "torch.compile",
+      "low_s": 3.4,
+      "high_s": 20.1,
+      "low_why": "compile cache installed",
+      "high_why": "cold compile",
+      "class": "A (llm-d measurement, other model)",
+      "cum_low_s": 24.5,
+      "cum_high_s": 692.209090909091
+    },
+    {
+      "step": "profile, KV pool, CUDA Graphs, warm-up",
+      "low_s": 77.8,
+      "high_s": 94.6,
+      "low_why": "with compile artifacts",
+      "high_why": "cold receiver",
+      "class": "A (llm-d measurement, other model)",
+      "cum_low_s": 102.3,
+      "cum_high_s": 786.809090909091
+    },
+    {
+      "step": "readiness probe",
+      "low_s": 0.0,
+      "high_s": 10.0,
+      "low_why": "probe runs right after warm-up",
+      "high_why": "one probe period (10 s)",
+      "class": "A (default)",
+      "cum_low_s": 102.3,
+      "cum_high_s": 796.809090909091
+    },
+    {
+      "step": "first traffic",
+      "low_s": 0.05,
+      "high_s": 0.05,
+      "low_why": "one EPP metrics tick",
+      "high_why": "one EPP metrics tick",
+      "class": "A",
+      "cum_low_s": 102.35,
+      "cum_high_s": 796.8590909090909
+    }
+  ],
+  "total": {
+    "low_s": 102.35,
+    "high_s": 796.8590909090909,
+    "high_with_overlap_s": 772.8590909090909,
+    "low_min": 1.7058333333333333,
+    "high_min": 13.280984848484849
+  },
+  "gpu_steps": {
+    "low_s": 91.3,
+    "high_s": 335.6090909090909,
+    "share_of_low": 0.8920371275036639
+  },
+  "vs_ttft_slo": {
+    "slo_s": 1.5,
+    "low_ratio": 68.23333333333333,
+    "high_ratio": 531.239393939394
+  },
+  "measured_pod_ready_s": {
+    "cached": 156,
+    "cold": 181
+  },
+  "nvme_link_bound_s": 15,
+  "daily_curve": {
+    "region": "ap_south",
+    "steepest_step_utc_h": 5.5,
+    "ramp_rps_per_h": 1304.1210595797675,
+    "ramp_racks_per_h": {
+      "value": 5.5294732926182135,
+      "unit": "racks/h",
+      "arithmetic": "1,304 rps/h × 0.2 × 0.0212 racks per rps = 5.53 racks/h"
+    },
+    "ramp_workers_per_h": {
+      "value": 27.647366463091068,
+      "unit": "workers/h",
+      "arithmetic": "5.53 racks/h × (2 + 3) workers = 27.6 workers/h"
+    },
+    "llmd_policy_pods_per_h": 20.0,
+    "demand_added_during_cold_start_racks": {
+      "low": 0.15720599763874282,
+      "high": 1.223947516989402
+    },
+    "peak_racks": 49.78288847214263,
+    "headroom": 0.15,
+    "headroom_racks": 7.467433270821394,
+    "trough_racks": 12.445722118035658,
+    "peak_over_trough_racks": 4.0,
+    "lead_time_s": 796.8590909090909,
+    "note": "MODEL: one rack = the RA-55 template; demand curve and rack rate from Part 14.8"
+  }
+}

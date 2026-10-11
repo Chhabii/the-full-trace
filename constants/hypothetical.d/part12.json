@@ -1,0 +1,68 @@
+{
+  "_about": "Part 12 (distributed inference) class C values. Every value is HYPOTHETICAL and chosen to agree with RA-36, RA-46, RA-55. Author w12, 2026-10-09.",
+  "tp_comm_ref": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Inputs of the alpha-beta collective time model t = steps x alpha + bytes on the busiest link / (rated per-direction bandwidth x efficiency). NVIDIA publishes no NVLink or InfiniBand end-to-end latency (note 02 §2.4), so the per-step latencies are assumptions.",
+    "nvlink_step_latency_us": {
+      "value": 2.0,
+      "unit": "µs per synchronization step",
+      "note": "Kernel-side flag signalling plus one NVLink hop inside one HGX node. Assumption of the order that small-message microbenchmarks report; not a vendor value."
+    },
+    "network_step_latency_us": {
+      "value": 8.0,
+      "unit": "µs per synchronization step",
+      "note": "One RDMA message GPU -> PCIe -> NIC -> leaf switch -> NIC -> PCIe -> GPU plus completion signalling. Assumption; NVIDIA gives no end-to-end figure."
+    },
+    "nvlink_busbw_efficiency": {
+      "value": 0.8,
+      "unit": "fraction of rated per-direction bandwidth",
+      "note": "Achieved bus bandwidth of a large AllReduce over NVLink 4. Assumption; measure with nccl-tests on the real node."
+    },
+    "network_busbw_efficiency": {
+      "value": 0.9,
+      "unit": "fraction of rated per-direction bandwidth",
+      "note": "Achieved bus bandwidth of a large AllReduce over one 400 Gb/s RDMA NIC per GPU. Assumption."
+    },
+    "decode_batch_sequences": {
+      "value": 64,
+      "unit": "sequences per decode step",
+      "note": "Example M-dense decode batch on H-teach, well below max_num_seqs (RA-36) and the KV limit of 8k-token sequences (part 13.1)."
+    }
+  },
+  "moe_routing_ref": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Expert-load simulation for M-frontier under DEP16. No public per-expert load data exists for Kimi K3.",
+    "expert_popularity_zipf_exponent": {
+      "value": 0.3,
+      "unit": "exponent s in p(rank r) proportional to r^-s",
+      "note": "Mild skew: the hottest of 896 experts gets about 5x the mean routing probability. Assumption to show hot experts; real skew depends on the traffic mix."
+    },
+    "redundant_experts": {
+      "value": 16,
+      "unit": "extra expert copies per DEP16 worker",
+      "note": "One redundant copy of a hot expert per GPU (896 + 16 = 912 slots, 57 per GPU), in the style of vLLM EPLB num_redundant_experts. Assumption."
+    },
+    "decode_tokens_per_rank": {
+      "value": 16,
+      "unit": "tokens per rank per decode step",
+      "note": "TensorRT-LLM DEP16 concurrency 256 over 16 ranks (SRC-389); one token per sequence per step, no speculation."
+    }
+  },
+  "fleet_price_ref": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Illustrative GPU-hour prices for the price-per-performance formula (R-XII.9). Not market quotes and not any provider's cost.",
+    "h100_sxm_gpu_hour_usd": {
+      "value": 2.5,
+      "unit": "USD per GPU-hour",
+      "note": "Assumption for the formula only."
+    },
+    "gb300_gpu_hour_usd": {
+      "value": 6.0,
+      "unit": "USD per GPU-hour",
+      "note": "Assumption for the formula only; includes the rack-scale NVLink domain."
+    }
+  }
+}

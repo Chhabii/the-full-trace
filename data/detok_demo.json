@@ -1,0 +1,191 @@
+{
+  "meta": {
+    "script": "sim/detok_demo.py",
+    "generated_at": "2026-10-09T09:52:07+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T09:49:48+00:00",
+      "sha256": "03f44b394e61"
+    },
+    "constants_used": {
+      "extra.sims_w04.k3_special_slots": 256,
+      "extra.sims_w04.mistral_special_ids": 1000,
+      "extra.sims_w10.vllm_detok_initial_offset_tokens": 5
+    }
+  },
+  "label": "Illustrative text; real tokenizers (M-frontier tiktoken.model, M-dense tokenizer.json).",
+  "serves": {
+    "requirements": [
+      "R-X.11"
+    ],
+    "manuscript": "Part 10.11"
+  },
+  "text": {
+    "prompt_tail": "Chart caption:",
+    "generated": " Margin by competitor 📈",
+    "generated_md": "␣Margin␣by␣competitor␣📈"
+  },
+  "emoji": {
+    "char": "📈",
+    "code_point": "U+1F4C8",
+    "utf8_hex": "F0 9F 93 88",
+    "n_bytes": 4,
+    "bytes": [
+      {
+        "hex": "F0",
+        "bits": "11110000",
+        "role": "lead byte of a 4-byte character (11110xxx)"
+      },
+      {
+        "hex": "9F",
+        "bits": "10011111",
+        "role": "continuation byte (10xxxxxx)"
+      },
+      {
+        "hex": "93",
+        "bits": "10010011",
+        "role": "continuation byte (10xxxxxx)"
+      },
+      {
+        "hex": "88",
+        "bits": "10001000",
+        "role": "continuation byte (10xxxxxx)"
+      }
+    ]
+  },
+  "k3": {
+    "prompt_tail_ids": [
+      22263,
+      46313,
+      25
+    ],
+    "generated_ids": [
+      116389,
+      673,
+      60896,
+      131100,
+      230
+    ],
+    "generated_tokens": 5,
+    "pieces_md": "␣Margin·␣by·␣competitor·<20><F0><9F><93>·<88>",
+    "tokens_not_whole_chars": 2,
+    "emoji_token_steps": [
+      4,
+      5
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "id": 116389,
+        "bytes_hex": "20 4D 61 72 67 69 6E",
+        "n_bytes": 7,
+        "piece_md": "`␣Margin`",
+        "piece_complete_utf8": true,
+        "prefix_text": "Chart␣caption:",
+        "new_text": "Chart␣caption:␣Margin",
+        "new_text_ends_with_fffd": false,
+        "held": false,
+        "emitted": "␣Margin",
+        "emitted_md": "`␣Margin`",
+        "prefix_offset_after": 3,
+        "read_offset_after": 4,
+        "client_text_so_far": "␣Margin"
+      },
+      {
+        "step": 2,
+        "id": 673,
+        "bytes_hex": "20 62 79",
+        "n_bytes": 3,
+        "piece_md": "`␣by`",
+        "piece_complete_utf8": true,
+        "prefix_text": "␣Margin",
+        "new_text": "␣Margin␣by",
+        "new_text_ends_with_fffd": false,
+        "held": false,
+        "emitted": "␣by",
+        "emitted_md": "`␣by`",
+        "prefix_offset_after": 4,
+        "read_offset_after": 5,
+        "client_text_so_far": "␣Margin␣by"
+      },
+      {
+        "step": 3,
+        "id": 60896,
+        "bytes_hex": "20 63 6F 6D 70 65 74 69 74 6F 72",
+        "n_bytes": 11,
+        "piece_md": "`␣competitor`",
+        "piece_complete_utf8": true,
+        "prefix_text": "␣by",
+        "new_text": "␣by␣competitor",
+        "new_text_ends_with_fffd": false,
+        "held": false,
+        "emitted": "␣competitor",
+        "emitted_md": "`␣competitor`",
+        "prefix_offset_after": 5,
+        "read_offset_after": 6,
+        "client_text_so_far": "␣Margin␣by␣competitor"
+      },
+      {
+        "step": 4,
+        "id": 131100,
+        "bytes_hex": "20 F0 9F 93",
+        "n_bytes": 4,
+        "piece_md": "`<20><F0><9F><93>`",
+        "piece_complete_utf8": false,
+        "prefix_text": "␣competitor",
+        "new_text": "␣competitor␣�",
+        "new_text_ends_with_fffd": true,
+        "held": true,
+        "emitted": "",
+        "emitted_md": "(nothing)",
+        "prefix_offset_after": 5,
+        "read_offset_after": 6,
+        "client_text_so_far": "␣Margin␣by␣competitor"
+      },
+      {
+        "step": 5,
+        "id": 230,
+        "bytes_hex": "88",
+        "n_bytes": 1,
+        "piece_md": "`<88>`",
+        "piece_complete_utf8": false,
+        "prefix_text": "␣competitor",
+        "new_text": "␣competitor␣📈",
+        "new_text_ends_with_fffd": false,
+        "held": false,
+        "emitted": "␣📈",
+        "emitted_md": "`␣📈`",
+        "prefix_offset_after": 6,
+        "read_offset_after": 8,
+        "client_text_so_far": "␣Margin␣by␣competitor␣📈"
+      }
+    ],
+    "held_steps": [
+      4
+    ],
+    "held_count": 1,
+    "final_client_text": "␣Margin␣by␣competitor␣📈",
+    "final_equals_full_decode": true,
+    "initial_offset": 5
+  },
+  "mistral": {
+    "ids": [
+      96111,
+      1536,
+      87235,
+      119685,
+      1147,
+      1136
+    ],
+    "tokens": 6,
+    "pieces_md": "␣Margin·␣by·␣competitor·<20><F0><9F>·<93>·<88>",
+    "tokens_not_whole_chars": 3
+  },
+  "rule": "A step whose decoded text ends in U+FFFD may be an unfinished UTF-8 sequence, so vLLM emits nothing and waits for the next token; U+FFFD in the middle of the text is treated as a real invalid id.",
+  "sources": {
+    "detokenize_incrementally": "vllm@8cbd5d0:vllm/tokenizers/detokenizer_utils.py#L176-L277",
+    "slow_path_selection": "vllm@8cbd5d0:vllm/v1/engine/detokenizer.py#L49-L65",
+    "k3_registry": "vllm@8cbd5d0:vllm/tokenizers/registry.py#L51",
+    "utf8": "SRC-118 (RFC 3629)"
+  }
+}

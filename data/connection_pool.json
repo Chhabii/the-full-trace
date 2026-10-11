@@ -1,0 +1,251 @@
+{
+  "meta": {
+    "script": "sim/connection_pool.py",
+    "generated_at": "2026-10-09T07:36:59+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T07:33:48+00:00",
+      "sha256": "f2b8cf4307ab"
+    },
+    "constants_used": {
+      "hypothetical.backend.pod_load_rps": 100,
+      "hypothetical.backend.pods_per_region": 200,
+      "hypothetical.backend.transaction_ms": 5,
+      "hypothetical.backend.transactions_per_request": 4,
+      "network.protocols.rtt_to_request_sent_tcp_tls13": 2,
+      "retrieval_and_data.pgbouncer_default_pool_size": 20,
+      "retrieval_and_data.postgres_max_connections_default": 100
+    }
+  },
+  "conventions": {
+    "serves": [
+      "R-III.3",
+      "R-III.4"
+    ],
+    "model": "M/M/c (Erlang C), first come first served",
+    "class": "HYPOTHETICAL load inputs (class C)"
+  },
+  "inputs": {
+    "requests_per_pod_per_s": 100,
+    "transactions_per_request": 4,
+    "hold_time_ms": 5,
+    "pods_in_region": 200,
+    "simulated_transactions": 200000,
+    "seed": 20261009,
+    "from": {
+      "requests_per_pod_per_s": "hypothetical.backend.pod_load_rps",
+      "transactions_per_request": "hypothetical.backend.transactions_per_request",
+      "hold_time_ms": "hypothetical.backend.transaction_ms",
+      "pods_in_region": "hypothetical.backend.pods_per_region"
+    },
+    "label": "load inputs HYPOTHETICAL; pool sizes, simulated_transactions and seed ILLUSTRATIVE"
+  },
+  "arrival_rate": {
+    "formula": "requests/s × transactions/request",
+    "value": 400,
+    "unit": "transactions/s",
+    "arithmetic": "100 × 4 = 400"
+  },
+  "busy_connections_littles_law": {
+    "formula": "L = λ × W",
+    "value": 2,
+    "unit": "connections",
+    "arithmetic": "400 × 0.005 s = 2",
+    "note": "The pool needs more than a connections, or the queue grows without bound."
+  },
+  "service_rate_mu": {
+    "formula": "μ = 1 / W",
+    "value": 200,
+    "unit": "transactions/s per connection",
+    "arithmetic": "1 / 0.005 s = 200"
+  },
+  "pools": {
+    "3": {
+      "pool_size": 3,
+      "utilization": {
+        "formula": "a / c",
+        "value": 0.6666666667,
+        "unit": "fraction",
+        "arithmetic": "2 / 3 = 0.6666666667"
+      },
+      "p_wait": {
+        "formula": "Erlang C(c, a)",
+        "value": 0.4444444444,
+        "unit": "probability"
+      },
+      "mean_wait": {
+        "formula": "C(c, a) / (c × μ − λ)",
+        "value": 2.222222222,
+        "unit": "ms",
+        "arithmetic": "0.444 / (3 × 200 − 400) s = 2.22 ms"
+      },
+      "p_wait_over_1ms": {
+        "formula": "C(c, a) × exp(−(c × μ − λ) × 1 ms)",
+        "value": 0.3638803347,
+        "unit": "probability"
+      },
+      "simulated": {
+        "mean_wait_ms": 2.222113229,
+        "p_wait": 0.449085,
+        "p99_wait_ms": 18.79300935
+      }
+    },
+    "4": {
+      "pool_size": 4,
+      "utilization": {
+        "formula": "a / c",
+        "value": 0.5,
+        "unit": "fraction",
+        "arithmetic": "2 / 4 = 0.5"
+      },
+      "p_wait": {
+        "formula": "Erlang C(c, a)",
+        "value": 0.1739130435,
+        "unit": "probability"
+      },
+      "mean_wait": {
+        "formula": "C(c, a) / (c × μ − λ)",
+        "value": 0.4347826087,
+        "unit": "ms",
+        "arithmetic": "0.174 / (4 × 200 − 400) s = 0.43 ms"
+      },
+      "p_wait_over_1ms": {
+        "formula": "C(c, a) × exp(−(c × μ − λ) × 1 ms)",
+        "value": 0.1165773993,
+        "unit": "probability"
+      },
+      "simulated": {
+        "mean_wait_ms": 0.4063726249,
+        "p_wait": 0.16884,
+        "p99_wait_ms": 6.785257874
+      }
+    },
+    "5": {
+      "pool_size": 5,
+      "utilization": {
+        "formula": "a / c",
+        "value": 0.4,
+        "unit": "fraction",
+        "arithmetic": "2 / 5 = 0.4"
+      },
+      "p_wait": {
+        "formula": "Erlang C(c, a)",
+        "value": 0.05970149254,
+        "unit": "probability"
+      },
+      "mean_wait": {
+        "formula": "C(c, a) / (c × μ − λ)",
+        "value": 0.09950248756,
+        "unit": "ms",
+        "arithmetic": "0.060 / (5 × 200 − 400) s = 0.10 ms"
+      },
+      "p_wait_over_1ms": {
+        "formula": "C(c, a) × exp(−(c × μ − λ) × 1 ms)",
+        "value": 0.0327648738,
+        "unit": "probability"
+      },
+      "simulated": {
+        "mean_wait_ms": 0.09626616749,
+        "p_wait": 0.058595,
+        "p99_wait_ms": 2.897300403
+      }
+    },
+    "6": {
+      "pool_size": 6,
+      "utilization": {
+        "formula": "a / c",
+        "value": 0.3333333333,
+        "unit": "fraction",
+        "arithmetic": "2 / 6 = 0.3333333333"
+      },
+      "p_wait": {
+        "formula": "Erlang C(c, a)",
+        "value": 0.01801801802,
+        "unit": "probability"
+      },
+      "mean_wait": {
+        "formula": "C(c, a) / (c × μ − λ)",
+        "value": 0.02252252252,
+        "unit": "ms",
+        "arithmetic": "0.018 / (6 × 200 − 400) s = 0.02 ms"
+      },
+      "p_wait_over_1ms": {
+        "formula": "C(c, a) × exp(−(c × μ − λ) × 1 ms)",
+        "value": 0.008096017371,
+        "unit": "probability"
+      },
+      "simulated": {
+        "mean_wait_ms": 0.02095129525,
+        "p_wait": 0.017335,
+        "p99_wait_ms": 0.6573794126
+      }
+    },
+    "8": {
+      "pool_size": 8,
+      "utilization": {
+        "formula": "a / c",
+        "value": 0.25,
+        "unit": "fraction",
+        "arithmetic": "2 / 8 = 0.25"
+      },
+      "p_wait": {
+        "formula": "Erlang C(c, a)",
+        "value": 0.00114563941,
+        "unit": "probability"
+      },
+      "mean_wait": {
+        "formula": "C(c, a) / (c × μ − λ)",
+        "value": 0.0009546995083,
+        "unit": "ms",
+        "arithmetic": "0.001 / (8 × 200 − 400) s = 0.00 ms"
+      },
+      "p_wait_over_1ms": {
+        "formula": "C(c, a) × exp(−(c × μ − λ) × 1 ms)",
+        "value": 0.0003450599592,
+        "unit": "probability"
+      },
+      "simulated": {
+        "mean_wait_ms": 0.00111803615,
+        "p_wait": 0.001405,
+        "p99_wait_ms": 0
+      }
+    }
+  },
+  "fleet": {
+    "chosen_pool_size_per_pod": 4,
+    "server_connections": {
+      "formula": "pods × pool size",
+      "value": 800,
+      "unit": "connections",
+      "arithmetic": "200 × 4 = 800"
+    },
+    "busy_on_average": {
+      "formula": "pods × a",
+      "value": 400,
+      "unit": "connections"
+    },
+    "postgres_max_connections_default": {
+      "value": 100,
+      "unit": "connections",
+      "from": "retrieval_and_data.postgres_max_connections_default"
+    },
+    "over_default_limit": 8,
+    "pgbouncer_default_pool_size": {
+      "value": 20,
+      "unit": "server connections per user/db",
+      "from": "retrieval_and_data.pgbouncer_default_pool_size"
+    }
+  },
+  "new_connection_per_transaction": {
+    "rtt_before_first_query": {
+      "value": 2,
+      "unit": "RTT",
+      "from": "network.protocols.rtt_to_request_sent_tcp_tls13"
+    },
+    "handshakes_per_s_per_pod": {
+      "value": 400,
+      "unit": "handshakes/s",
+      "note": "TCP + TLS 1.3 only; the database's own startup and authentication round trips come on top and are not counted."
+    }
+  }
+}

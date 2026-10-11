@@ -1,0 +1,661 @@
+{
+  "meta": {
+    "script": "sim/sse_framing.py",
+    "generated_at": "2026-10-09T12:31:37+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T12:31:14+00:00",
+      "sha256": "7760cf964886"
+    },
+    "constants_used": {
+      "extra.sims_w04.k3_special_slots": 256,
+      "extra.sims_w15.aead_tag_bytes": 16,
+      "extra.sims_w15.envoy_http2_initial_stream_window_bytes": 16777216,
+      "extra.sims_w15.grpc_message_prefix_bytes": 5,
+      "extra.sims_w15.http2_frame_header_bytes": 9,
+      "extra.sims_w15.http3_data_frame_type_bytes": 1,
+      "extra.sims_w15.ipv4_min_header_bytes": 20,
+      "extra.sims_w15.quic_short_header_flags_bytes": 1,
+      "extra.sims_w15.quic_stream_frame_type_bytes": 1,
+      "extra.sims_w15.tcp_delayed_ack_max_s": 0.5,
+      "extra.sims_w15.tcp_min_header_bytes": 20,
+      "extra.sims_w15.tls_inner_content_type_bytes": 1,
+      "extra.sims_w15.tls_record_header_bytes": 5,
+      "extra.sims_w15.udp_header_bytes": 8,
+      "hypothetical.backend.default_max_tokens": 4096,
+      "hypothetical.backend.gateway_pods_per_region": 8,
+      "hypothetical.edge.user_to_pop_rtt_ms": 20,
+      "hypothetical.reference_request.citations": 5,
+      "hypothetical.reference_request.output_tokens_visible": 450,
+      "hypothetical.serving_assumptions.stream_rate_example_tokens_per_s": 100,
+      "hypothetical.streaming_ref.display_refresh_hz": 60,
+      "hypothetical.streaming_ref.in_region_hop_forward_ms": 0.25,
+      "hypothetical.streaming_ref.per_hop_stream_buffer_bytes": 16384,
+      "hypothetical.streaming_ref.quic_dcid_bytes": 8,
+      "hypothetical.streaming_ref.quic_packet_number_bytes": 2,
+      "hypothetical.streaming_ref.quic_request_stream_id": 44,
+      "hypothetical.streaming_ref.slow_client_stall_limit_s": 30,
+      "hypothetical.tool_call_story.chart_file_id": "file_9c41d2e07b",
+      "hypothetical.tool_loop.pass1_reasoning_tokens": 300,
+      "hypothetical.tool_loop.pass2_reasoning_tokens": 200,
+      "hypothetical.tool_loop.pass3_reasoning_tokens": 400,
+      "hypothetical.traffic.mean_output_tokens": 400,
+      "hypothetical.traffic.per_request_decode_speed": 20,
+      "models.M-frontier.model_id": "moonshotai/Kimi-K3",
+      "network.protocols.sse_keepalive_s": 15
+    }
+  },
+  "label": "Client event format: this reference system's design (RA-47), ILLUSTRATIVE; not any provider's format. Answer text: Part 07's illustrative sentences on the REAL K3 tokenizer.",
+  "serves": [
+    "R-XV.1",
+    "R-XV.2",
+    "R-XV.3",
+    "R-XV.4",
+    "R-XV.5"
+  ],
+  "inputs": {
+    "reference_step_ms": 47.238,
+    "reference_rate_tokens_per_s": 21.16939751894661,
+    "reference_step_source": "request_cost:design_point.step_s (Part 14.2)",
+    "example_rate_tokens_per_s": 100,
+    "example_interval_ms": 10.0,
+    "example_label": "ILLUSTRATIVE SSE framing example: the Nagle replay and the render comparison only",
+    "keepalive_s": 15,
+    "max_tokens": 4096,
+    "visible_tokens": 450,
+    "backbone_rtt_ms": 44.47877682,
+    "access_rtt_ms": 20
+  },
+  "opening": {
+    "events": [
+      {
+        "type": "message.start",
+        "payload": {
+          "message_id": "msg_01JA4Q7Z9M3P5R7T9V1X3Z5B7D",
+          "parent_message_id": "msg_01JA4Q7Z3K9W2T6R8Y5U0P1M4N"
+        },
+        "text": "event: message.start\ndata: {\"message_id\":\"msg_01JA4Q7Z9M3P5R7T9V1X3Z5B7D\",\"parent_message_id\":\"msg_01JA4Q7Z3K9W2T6R8Y5U0P1M4N\"}\n\n",
+        "bytes": 129
+      },
+      {
+        "type": "reasoning.status",
+        "payload": {
+          "state": "started",
+          "pass": 1
+        },
+        "text": "event: reasoning.status\ndata: {\"state\":\"started\",\"pass\":1}\n\n",
+        "bytes": 60
+      },
+      {
+        "type": "reasoning.status",
+        "payload": {
+          "state": "done",
+          "pass": 1
+        },
+        "text": "event: reasoning.status\ndata: {\"state\":\"done\",\"pass\":1}\n\n",
+        "bytes": 57
+      },
+      {
+        "type": "output_text.delta",
+        "payload": {
+          "delta": "I"
+        },
+        "text": "event: output_text.delta\ndata: {\"delta\":\"I\"}\n\n",
+        "bytes": 46
+      },
+      {
+        "type": "output_text.delta",
+        "payload": {
+          "delta": " will"
+        },
+        "text": "event: output_text.delta\ndata: {\"delta\":\" will\"}\n\n",
+        "bytes": 50
+      },
+      {
+        "type": "output_text.delta",
+        "payload": {
+          "delta": " check"
+        },
+        "text": "event: output_text.delta\ndata: {\"delta\":\" check\"}\n\n",
+        "bytes": 51
+      }
+    ],
+    "text": "event: message.start\ndata: {\"message_id\":\"msg_01JA4Q7Z9M3P5R7T9V1X3Z5B7D\",\"parent_message_id\":\"msg_01JA4Q7Z3K9W2T6R8Y5U0P1M4N\"}\n\nevent: reasoning.status\ndata: {\"state\":\"started\",\"pass\":1}\n\nevent: reasoning.status\ndata: {\"state\":\"done\",\"pass\":1}\n\nevent: output_text.delta\ndata: {\"delta\":\"I\"}\n\nevent: output_text.delta\ndata: {\"delta\":\" will\"}\n\nevent: output_text.delta\ndata: {\"delta\":\" check\"}\n\n",
+    "preamble": "I will check the current list prices first.",
+    "preamble_tokens": 9,
+    "tool_status": [
+      {
+        "type": "tool.status",
+        "text": "event: tool.status\ndata: {\"tool\":\"web_search\",\"state\":\"running\",\"label\":\"Searching the web\"}\n\n",
+        "bytes": 94
+      },
+      {
+        "type": "tool.status",
+        "text": "event: tool.status\ndata: {\"tool\":\"web_search\",\"state\":\"done\",\"label\":\"Read 3 pages\"}\n\n",
+        "bytes": 86
+      }
+    ],
+    "keepalive": {
+      "text": ": keep-alive\n\n",
+      "bytes": 14
+    }
+  },
+  "answer": {
+    "text": "AlderSoft lists the Business plan at EUR 42 per seat per month [7]. Birchline charges EUR 55 per user per month for the Team plan [8]. Birchline raised this price in August 2026 [10]. Cedar Systems lists the Pro plan at EUR 38 per seat per month [9]. Cedar Systems bills this plan annually [12].",
+    "tokens": 74,
+    "token_text_bytes": 295,
+    "mean_token_text_bytes": 3.9864864864864864,
+    "client_events": 74,
+    "delta_events": 69,
+    "citation_events": 5,
+    "tokens_without_event": 5,
+    "client_bytes": 4018,
+    "mean_delta_event_bytes": 49.028985507246375,
+    "mean_vllm_chunk_bytes": 245.98648648648648,
+    "vllm_bytes": 18203,
+    "expansion_client": 13.620338983050848,
+    "expansion_vllm": 61.70508474576271,
+    "first_events_text": "event: output_text.delta\ndata: {\"delta\":\"A\"}\n\nevent: output_text.delta\ndata: {\"delta\":\"lder\"}\n\nevent: output_text.delta\ndata: {\"delta\":\"Soft\"}\n\nevent: output_text.delta\ndata: {\"delta\":\" lists\"}\n\n",
+    "citation_example": "event: citation\ndata: {\"source_id\":7,\"title\":\"AlderSoft pricing\",\"url\":\"https://aldersoft.example/pricing\"}\n\n",
+    "citation_rows": [
+      {
+        "index": 15,
+        "id": 793,
+        "piece": " [",
+        "piece_bytes": 2,
+        "events": [
+          "output_text.delta"
+        ],
+        "held_chars": 1
+      },
+      {
+        "index": 16,
+        "id": 22,
+        "piece": "7",
+        "piece_bytes": 1,
+        "events": [],
+        "held_chars": 2
+      },
+      {
+        "index": 17,
+        "id": 2302,
+        "piece": "].",
+        "piece_bytes": 2,
+        "events": [
+          "citation",
+          "output_text.delta"
+        ],
+        "held_chars": 0
+      },
+      {
+        "index": 32,
+        "id": 793,
+        "piece": " [",
+        "piece_bytes": 2,
+        "events": [
+          "output_text.delta"
+        ],
+        "held_chars": 1
+      },
+      {
+        "index": 33,
+        "id": 23,
+        "piece": "8",
+        "piece_bytes": 1,
+        "events": [],
+        "held_chars": 2
+      },
+      {
+        "index": 34,
+        "id": 2302,
+        "piece": "].",
+        "piece_bytes": 2,
+        "events": [
+          "citation",
+          "output_text.delta"
+        ],
+        "held_chars": 0
+      }
+    ],
+    "vllm_chunk_example": "data: {\"id\":\"chatcmpl-3f9a1c7e2b6d4e80a5c1f7b29d03e6a4\",\"object\":\"chat.completion.chunk\",\"created\":1791547200,\"model\":\"moonshotai/Kimi-K3\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"A\"},\"logprobs\":null,\"finish_reason\":null,\"token_ids\":null}]}\n\n",
+    "vllm_chunk_example_bytes": 243
+  },
+  "typical_delta": {
+    "text": "event: output_text.delta\ndata: {\"delta\":\" the\"}\n\n",
+    "bytes": 49,
+    "vllm_chunk": "data: {\"id\":\"chatcmpl-3f9a1c7e2b6d4e80a5c1f7b29d03e6a4\",\"object\":\"chat.completion.chunk\",\"created\":1791547200,\"model\":\"moonshotai/Kimi-K3\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\" the\"},\"logprobs\":null,\"finish_reason\":null,\"token_ids\":null}]}\n\n",
+    "vllm_bytes": 246,
+    "mid_stream_offset_illustrative": 2000
+  },
+  "hops": [
+    {
+      "hop": 1,
+      "from": "GPU sampler",
+      "to": "engine core (CPU)",
+      "transport": "device-to-host copy",
+      "unit": "token ID",
+      "bytes_per_token": 4,
+      "note": "RA-44: only token IDs (4 bytes each) leave the GPU"
+    },
+    {
+      "hop": 2,
+      "from": "engine core",
+      "to": "API server process",
+      "transport": "ZeroMQ IPC, msgpack",
+      "unit": "one message per engine step for all sequences",
+      "bytes_per_token": null,
+      "note": "vllm@8cbd5d0:vllm/v1/engine/core_client.py#L650-L668, #L714"
+    },
+    {
+      "hop": 3,
+      "from": "model server",
+      "to": "inference gateway",
+      "transport": "HTTP/1.1 chunked over TCP + mTLS",
+      "unit": "vLLM chunk",
+      "payload": 246,
+      "http1_chunk": 252,
+      "tls_record": 274,
+      "tcp_segment": 294,
+      "ip_packet": 314,
+      "overhead": 68
+    },
+    {
+      "hop": 4,
+      "from": "inference gateway",
+      "to": "model router",
+      "transport": "HTTP/2 over TCP + mTLS",
+      "unit": "vLLM chunk",
+      "payload": 246,
+      "http2_data_frame": 255,
+      "tls_record": 277,
+      "tcp_segment": 297,
+      "ip_packet": 317,
+      "overhead": 71
+    },
+    {
+      "hop": 5,
+      "from": "model router",
+      "to": "orchestrator",
+      "transport": "HTTP/2 over TCP + mTLS",
+      "unit": "vLLM chunk",
+      "payload": 246,
+      "http2_data_frame": 255,
+      "tls_record": 277,
+      "tcp_segment": 297,
+      "ip_packet": 317,
+      "overhead": 71
+    },
+    {
+      "hop": 6,
+      "from": "orchestrator",
+      "to": "API gateway",
+      "transport": "gRPC server stream (HTTP/2 + mTLS)",
+      "unit": "ClientEvent protobuf",
+      "payload": 16,
+      "protobuf_message": 37,
+      "grpc_message": 42,
+      "http2_data_frame": 51,
+      "tls_record": 73,
+      "tcp_segment": 93,
+      "ip_packet": 113,
+      "overhead": 97
+    },
+    {
+      "hop": 7,
+      "from": "API gateway",
+      "to": "regional ingress",
+      "transport": "HTTP/2 over TCP + mTLS",
+      "unit": "client SSE event",
+      "payload": 49,
+      "http2_data_frame": 58,
+      "tls_record": 80,
+      "tcp_segment": 100,
+      "ip_packet": 120,
+      "overhead": 71
+    },
+    {
+      "hop": 8,
+      "from": "regional ingress",
+      "to": "edge PoP",
+      "transport": "HTTP/2 over TCP + TLS (backbone)",
+      "unit": "client SSE event",
+      "payload": 49,
+      "http2_data_frame": 58,
+      "tls_record": 80,
+      "tcp_segment": 100,
+      "ip_packet": 120,
+      "overhead": 71
+    },
+    {
+      "hop": 9,
+      "from": "edge PoP",
+      "to": "browser",
+      "transport": "HTTP/3 over QUIC over UDP",
+      "unit": "client SSE event",
+      "payload": 49,
+      "http3_data_frame": 51,
+      "quic_stream_frame": 56,
+      "quic_packet": 83,
+      "udp_datagram": 91,
+      "ip_packet": 111,
+      "overhead": 62
+    },
+    {
+      "hop": "9b",
+      "from": "edge PoP",
+      "to": "browser",
+      "transport": "HTTP/2 over TCP + TLS (fallback)",
+      "unit": "client SSE event",
+      "payload": 49,
+      "http2_data_frame": 58,
+      "tls_record": 80,
+      "tcp_segment": 100,
+      "ip_packet": 120,
+      "overhead": 71
+    }
+  ],
+  "browser_hop": {
+    "wire_bytes": 111,
+    "overhead": 62,
+    "expansion": 27.75
+  },
+  "coalescing": [
+    {
+      "tokens_per_event": 1,
+      "events": 69,
+      "wire_bytes_per_token": 111.02898550724638,
+      "packets_per_s_at_reference_rate": 21.16939751894661,
+      "wire_bytes_per_s_at_reference_rate": 2350.4167303282607,
+      "mean_added_delay_ms_at_reference_step": 0.0,
+      "max_added_delay_ms_at_reference_step": 0.0
+    },
+    {
+      "tokens_per_event": 2,
+      "events": 35,
+      "wire_bytes_per_token": 58.30434782608695,
+      "packets_per_s_at_reference_rate": 10.584698759473305,
+      "wire_bytes_per_s_at_reference_rate": 1234.2679162133654,
+      "mean_added_delay_ms_at_reference_step": 23.619,
+      "max_added_delay_ms_at_reference_step": 47.238
+    },
+    {
+      "tokens_per_event": 4,
+      "events": 18,
+      "wire_bytes_per_token": 32.15942028985507,
+      "packets_per_s_at_reference_rate": 5.2923493797366525,
+      "wire_bytes_per_s_at_reference_rate": 680.7955520948192,
+      "mean_added_delay_ms_at_reference_step": 70.857,
+      "max_added_delay_ms_at_reference_step": 141.714
+    },
+    {
+      "tokens_per_event": 8,
+      "events": 9,
+      "wire_bytes_per_token": 18.246376811594203,
+      "packets_per_s_at_reference_rate": 2.6461746898683263,
+      "wire_bytes_per_s_at_reference_rate": 386.2648040051273,
+      "mean_added_delay_ms_at_reference_step": 165.333,
+      "max_added_delay_ms_at_reference_step": 330.666
+    }
+  ],
+  "reference_stream": {
+    "events": 477,
+    "bytes_estimate": 24228.804347826088,
+    "status_events": 10,
+    "artifact_event": "event: artifact\ndata: {\"file_id\":\"file_9c41d2e07b\",\"kind\":\"image\",\"name\":\"margin_by_competitor.png\"}\n\n",
+    "done_event": "event: message.done\ndata: {\"message_id\":\"msg_01JA4Q7Z9M3P5R7T9V1X3Z5B7D\",\"status\":\"completed\",\"output_tokens\":450}\n\n",
+    "done_bytes": 116,
+    "gaps_ms": {
+      "pass1_reasoning": 14171.4,
+      "web_search": 1605.3,
+      "pass2_reasoning": 9447.6,
+      "run_python": 1305,
+      "pass3_reasoning": 18895.2
+    },
+    "longest_gap_ms": 18895.2,
+    "longest_gap_name": "pass3_reasoning",
+    "keepalives_per_gap": {
+      "pass1_reasoning": 0,
+      "web_search": 0,
+      "pass2_reasoning": 0,
+      "run_python": 0,
+      "pass3_reasoning": 1
+    },
+    "keepalives_needed": 1,
+    "visible_answer_ms": 21257.1,
+    "step_ms": 47.238,
+    "output_tokens_all_passes": 1727,
+    "delta_tokens": 459,
+    "delta_share_of_output": 0.26577880718008107,
+    "reasoning_tokens_all_passes": 900
+  },
+  "nagle": {
+    "rtt_ms": 44.47877682,
+    "interval_ms": 10.0,
+    "rate_tokens_per_s": 100,
+    "label": "ILLUSTRATIVE: the 100 tokens/s SSE framing example, faster than your stream",
+    "nodelay": {
+      "segments": 60,
+      "tokens": 60,
+      "mean_wait_ms": 0.0,
+      "max_wait_ms": 0.0,
+      "tokens_per_segment": 1.0
+    },
+    "nagle_immediate_ack": {
+      "segments": 15,
+      "tokens": 60,
+      "mean_wait_ms": 22.281941315999997,
+      "max_wait_ms": 43.745321839999974,
+      "tokens_per_segment": 4.0
+    },
+    "nagle_delayed_ack": {
+      "segments": 8,
+      "tokens": 60,
+      "mean_wait_ms": 41.50712766633337,
+      "max_wait_ms": 83.43633046000002,
+      "tokens_per_segment": 7.5
+    },
+    "delayed_ack_ms_illustrative": 40.0,
+    "delayed_ack_bound_s": 0.5,
+    "at_reference_step": {
+      "interval_ms": 47.238,
+      "nodelay": {
+        "segments": 60,
+        "tokens": 60,
+        "mean_wait_ms": 0.0,
+        "max_wait_ms": 0.0,
+        "tokens_per_segment": 1.0
+      },
+      "nagle_immediate_ack": {
+        "segments": 60,
+        "tokens": 60,
+        "mean_wait_ms": 0.0,
+        "max_wait_ms": 0.0,
+        "tokens_per_segment": 1.0
+      },
+      "nagle_delayed_ack": {
+        "segments": 34,
+        "tokens": 60,
+        "mean_wait_ms": 41.210226326332666,
+        "max_wait_ms": 83.48353639999914,
+        "tokens_per_segment": 1.7647058823529411
+      }
+    }
+  },
+  "buffers": {
+    "cap_per_hop": {
+      "value": 16384,
+      "unit": "B",
+      "KiB": 16.0
+    },
+    "hops_with_buffers": [
+      "edge proxy",
+      "regional ingress",
+      "API gateway",
+      "orchestrator",
+      "model router",
+      "inference gateway"
+    ],
+    "client_stream_rate": {
+      "formula": "mean delta event bytes × your tokens/s (1 / Part 14 decode step)",
+      "arithmetic": "49.0 B × 21.2 /s",
+      "value": 1037.9140841535707,
+      "unit": "B/s"
+    },
+    "cap_holds_seconds": {
+      "formula": "cap / client stream rate",
+      "value": 15.785506960685783,
+      "unit": "s"
+    },
+    "cap_holds_tokens": {
+      "value": 334.16967188885604,
+      "unit": "tokens"
+    },
+    "per_stream_bound": {
+      "formula": "hops × cap",
+      "arithmetic": "6 × 16,384",
+      "value": 98304,
+      "unit": "B",
+      "KiB": 96.0
+    },
+    "in_flight_normal": {
+      "formula": "client stream rate × backbone one-way delay",
+      "value": 23.082574453700683,
+      "unit": "B",
+      "note": "bytes of one healthy stream that are inside the network at any instant"
+    },
+    "unbounded_one_stream": {
+      "formula": "max_tokens × mean model-server chunk bytes",
+      "arithmetic": "4,096 × 246.0 B",
+      "value": 1007560.6486486486,
+      "unit": "B",
+      "MB": 1.0075606486486486
+    },
+    "envoy_default_stream_window": {
+      "value": 16777216,
+      "unit": "B",
+      "MiB": 16.0
+    },
+    "fleet": {
+      "streams": 1000000,
+      "bounded_all_full": {
+        "formula": "streams × per-stream bound",
+        "value": 98304000000,
+        "unit": "B",
+        "GB": 98.304
+      },
+      "unbounded_all_stalled": {
+        "formula": "streams × unbounded one stream",
+        "value": 1007560648648.6487,
+        "unit": "B",
+        "GB": 1007.5606486486487
+      },
+      "envoy_windows_promised": {
+        "formula": "streams × Envoy default HTTP/2 stream window",
+        "value": 16777216000000,
+        "unit": "B",
+        "TB": 16.777216
+      }
+    },
+    "gateway_pod_ap_south": {
+      "streams_per_pod": {
+        "formula": "ap_south M-frontier open streams / gateway pods",
+        "arithmetic": "33,195 / 8",
+        "value": 4149.375
+      },
+      "bounded_all_full": {
+        "value": 67983360.0,
+        "unit": "B",
+        "MB": 67.98336
+      },
+      "unbounded_all_stalled": {
+        "value": 4180746966.4864864,
+        "unit": "B",
+        "GB": 4.1807469664864865
+      }
+    },
+    "stall_limit_s": 30,
+    "tokens_generated_during_stall": 635
+  },
+  "cascade": [
+    {
+      "decode_slowdown": 1.0,
+      "W_s": 22.13,
+      "open_streams": 33195.0,
+      "arithmetic": "1,500 /s × 22.13 s = 33,195",
+      "per_gateway_pod": 4149.375
+    },
+    {
+      "decode_slowdown": 2.0,
+      "W_s": 42.129999999999995,
+      "open_streams": 63194.99999999999,
+      "arithmetic": "1,500 /s × 42.13 s = 63,195",
+      "per_gateway_pod": 7899.374999999999
+    }
+  ],
+  "render": {
+    "frame_ms": 16.666666666666668,
+    "tokens_per_frame_at_reference_rate": 0.3528232919824435,
+    "mean_chars_per_token": 3.9864864864864864,
+    "renders_per_event": 450,
+    "renders_per_frame": 450,
+    "reparse_chars_per_frame": 404528.7162162162,
+    "reparse_chars_per_event": 404528.7162162162,
+    "incremental_chars": 1793.918918918919,
+    "example": {
+      "rate_tokens_per_s": 100,
+      "tokens_per_frame": 1.6666666666666667,
+      "renders_per_frame": 270,
+      "reparse_chars_per_frame": 243578.3108108108,
+      "label": "ILLUSTRATIVE: the 100 tokens/s SSE framing example"
+    },
+    "note": "full re-parse = parse the whole message after each update; incremental = parse only new text; per frame = one render per frame in which a token arrives"
+  },
+  "latency": {
+    "forwarders": [
+      "inference gateway",
+      "model router",
+      "orchestrator",
+      "API gateway",
+      "regional ingress",
+      "edge proxy"
+    ],
+    "n_forwarders": 6,
+    "terms_ms": {
+      "forwarding": 1.5,
+      "backbone_one_way": 22.23938841,
+      "access_one_way": 10.0
+    },
+    "network_and_forwarding_ms": 33.739388410000004,
+    "frame_wait_mean_ms": 8.333333333333334,
+    "frame_wait_max_ms": 16.666666666666668,
+    "total_mean_ms": 42.07272174333334,
+    "total_max_ms": 50.406055076666675,
+    "step_ms": 47.238,
+    "tokens_in_flight": 0.7142425252974302
+  },
+  "fleet": {
+    "streams": 1000000,
+    "tokens_per_s": 20000000,
+    "events_per_s": 20000000,
+    "edge_bytes_per_s": 2220579710.1449275,
+    "edge_Gbps": 17.76463768115942
+  },
+  "resumable": {
+    "per_stream": {
+      "formula": "mean output tokens × mean delta event bytes",
+      "arithmetic": "400 × 49.0 B",
+      "value": 19611.594202898552,
+      "unit": "B"
+    },
+    "fleet": {
+      "formula": "in-flight streams × per-stream replay bytes",
+      "value": 19611594202.898552,
+      "unit": "B",
+      "GB": 19.61159420289855
+    },
+    "writes_per_s": {
+      "formula": "fleet events/s (one append per event)",
+      "value": 20000000
+    }
+  }
+}

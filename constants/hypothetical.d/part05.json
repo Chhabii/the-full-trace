@@ -1,0 +1,171 @@
+{
+  "retrieval_ref": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Part 05 (retrieval, memory, context construction) reference-system values. Agree with RA-22 to RA-26.",
+    "chunks_per_document_mean": {
+      "value": 24,
+      "unit": "chunks per document",
+      "note": "Workspace mixes short memos and long reports; 24 chunks of about 550 tokens is a document of about 13,000 tokens on average."
+    },
+    "chunk_tokens_mean": {
+      "value": 550,
+      "unit": "tokens (M-embed tokenizer)",
+      "note": "Mean chunk length inside the 300-800 token range of RA-22."
+    },
+    "acl_readable_fraction": {
+      "value": 0.7,
+      "unit": "fraction of workspace documents",
+      "note": "Share of the tenant's 4,200 workspace documents whose ACL principals include the reference user or one of the user's groups."
+    },
+    "hnsw_m": {
+      "value": 16,
+      "unit": "links per node",
+      "note": "RA-24; equals the pgvector and Elasticsearch default."
+    },
+    "hnsw_ef_construction": {
+      "value": 200,
+      "unit": "candidates",
+      "note": "RA-24; higher than the pgvector (64) and Elasticsearch (100) defaults for build-time recall near 1."
+    },
+    "hnsw_ef_search": {
+      "value": 100,
+      "unit": "candidates",
+      "note": "Must be at least the per-retriever top-k (100) so the vector retriever can return 100 candidates."
+    },
+    "per_retriever_top_k": {
+      "value": 100,
+      "unit": "chunks",
+      "note": "BM25 and the vector index each return 100 candidates to fusion (RA-25)."
+    },
+    "rerank_keep": {
+      "value": 20,
+      "unit": "chunks",
+      "note": "RA-25: keep the top 20 after reranking, then trim to the token budget."
+    },
+    "query_embed_tokens": {
+      "value": 80,
+      "unit": "tokens (M-embed tokenizer)",
+      "note": "Task instruction plus the rewritten retrieval query on the query side of M-embed."
+    },
+    "rerank_template_tokens": {
+      "value": 60,
+      "unit": "tokens per pair",
+      "note": "Instruction, query and chat-template tokens that M-rerank reads with each candidate."
+    },
+    "pool_gpu": {
+      "value": "H100 SXM",
+      "unit": "GPU type",
+      "note": "The retrieval pool (M-embed, M-rerank) runs on H-teach-class GPUs, separate from the K3 fleet."
+    },
+    "query_embedding_cache_ttl_s": {
+      "value": 3600,
+      "unit": "s",
+      "note": "TTL of query embeddings in the Redis-compatible cache (RA-19); chunk embeddings live until the chunk or the model version changes."
+    },
+    "rerank_parallel_gpus": {
+      "value": 4,
+      "unit": "GPUs",
+      "note": "One query's rerank candidates are split across 4 M-rerank replicas in the retrieval pool, so the pairs run in parallel."
+    },
+    "rerank_min_score": {
+      "value": 0.5,
+      "unit": "P(yes)",
+      "note": "Of the top 20 after reranking, only chunks with M-rerank P(yes) at or above 0.5 enter the context, up to the token budget; 6 pass for the reference request."
+    }
+  },
+  "memory_ref": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Long-term memory of the reference user (RA-27).",
+    "record_texts": {
+      "value": [
+        "Reports figures in EUR.",
+        "Prefers results as a table."
+      ],
+      "unit": "text",
+      "note": "The two records the read path returns for the reference request (hypothetical.reference_request.memory_records_retrieved)."
+    },
+    "records_stored": {
+      "value": 14,
+      "unit": "records",
+      "note": "Records the reference user has in total; only 2 pass the relevance threshold for this request."
+    },
+    "read_top_k": {
+      "value": 5,
+      "unit": "records",
+      "note": "Most records the read path returns per turn."
+    },
+    "read_min_cosine": {
+      "value": 0.35,
+      "unit": "cosine",
+      "note": "Records below this similarity to the query are not injected."
+    },
+    "token_cap": {
+      "value": 300,
+      "unit": "tokens",
+      "note": "Hard cap on the memory message in the context."
+    },
+    "dedupe_cosine": {
+      "value": 0.9,
+      "unit": "cosine",
+      "note": "A new candidate record above this similarity to an existing record updates that record instead of adding one."
+    }
+  },
+  "context_budget_ref": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Context-construction budget of the reference system (Part 5.6, 5.7).",
+    "history_turn_tokens": {
+      "value": [
+        780,
+        840,
+        980
+      ],
+      "unit": "tokens per turn (K3, rendered)",
+      "note": "Turns 1-3 of the conversation (user message plus final assistant answer, no reasoning); sum equals hypothetical.reference_request.history_tokens."
+    },
+    "rag_chunk_tokens": {
+      "value": [
+        610,
+        540,
+        720,
+        480,
+        390,
+        560
+      ],
+      "unit": "tokens per chunk (K3)",
+      "note": "The 6 chunks that survive rerank and trim for the reference request, each inside RA-22's 300-800 range."
+    },
+    "rag_token_budget": {
+      "value": 6000,
+      "unit": "tokens",
+      "note": "Most tokens the orchestrator gives to retrieved chunks in one turn; chunks are added in rerank order until the next one would not fit."
+    },
+    "prompt_budget_tokens": {
+      "value": 131072,
+      "unit": "tokens",
+      "note": "Orchestrator cap on prompt tokens per pass, far below K3's 1,048,576-token window, to bound prefill time, KV memory and cost."
+    },
+    "compaction_trigger_tokens": {
+      "value": 24000,
+      "unit": "tokens",
+      "note": "History above this size triggers compaction of the oldest turns."
+    },
+    "compaction_keep_recent_turns": {
+      "value": 4,
+      "unit": "turns",
+      "note": "The newest turns stay verbatim after compaction."
+    },
+    "compaction_summary_tokens": {
+      "value": 1200,
+      "unit": "tokens",
+      "note": "Target length of the summary that replaces the older turns."
+    },
+    "safety_metadata_tokens": {
+      "value": 0,
+      "unit": "tokens",
+      "note": "Safety metadata (classifier labels, tenant policy flags) travels as request fields to the gateway and orchestrator, not as context tokens."
+    }
+  }
+}

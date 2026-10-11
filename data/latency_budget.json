@@ -1,0 +1,1186 @@
+{
+  "meta": {
+    "script": "sim/latency_budget.py",
+    "generated_at": "2026-10-09T19:20:35+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T19:17:10+00:00",
+      "sha256": "4091418cecc1"
+    },
+    "constants_used": {
+      "hypothetical.latency_tail_ref.access_p95_over_p50": 2.0,
+      "hypothetical.latency_tail_ref.backbone_p95_over_p50": 1.2,
+      "hypothetical.latency_tail_ref.cpu_service_p95_over_p50": 3.0,
+      "hypothetical.latency_tail_ref.gpu_work_p95_over_p50": 1.5,
+      "hypothetical.latency_tail_ref.queue_p95_over_p50": 4.0,
+      "hypothetical.latency_tail_ref.retrieval_p95_over_p50": 2.0,
+      "hypothetical.latency_tail_ref.samples": 200000,
+      "hypothetical.latency_tail_ref.sandbox_p95_over_p50": 2.0,
+      "hypothetical.latency_tail_ref.seed": 22,
+      "hypothetical.slo.p95_tpot_ms": 60,
+      "hypothetical.slo.p95_ttft_ms": 1500,
+      "hypothetical.tool_loop.pass1_reasoning_tokens": 300,
+      "hypothetical.tool_loop.pass3_reasoning_tokens": 400
+    }
+  },
+  "label": "Latency budget of the reference request. p50 times come from earlier data files; the tail shapes are HYPOTHETICAL (latency_tail_ref, class C); latency classes are ILLUSTRATIVE.",
+  "serves": [
+    "R-XXII.5"
+  ],
+  "inputs": {
+    "step_s": 0.047238,
+    "tpot_p95_slo_s": 0.06,
+    "ttft_p95_slo_s": 1.5,
+    "ratios_p95_over_p50": {
+      "access": 2,
+      "backbone": 1.2,
+      "cpu_service": 3,
+      "retrieval": 2,
+      "queue": 4,
+      "gpu_work": 1.5,
+      "sandbox": 2,
+      "decode_step": 1.270163851
+    },
+    "frame_ms": 16.66666667,
+    "web_search_step_ms": {
+      "p50": 1605.3,
+      "p95": 3279.3,
+      "p99": 4967.2
+    },
+    "samples": 200000,
+    "seed": 22
+  },
+  "ttft": {
+    "hops": [
+      {
+        "key": "browser",
+        "category": "client and network",
+        "hop": "browser handler, render, fetch()",
+        "p50_s": 0.003,
+        "p50_ms": 3,
+        "p95_ms": 9.0,
+        "tail": "log-normal, p95 = 3 x p50",
+        "tail_kind": "cpu_service",
+        "class": "few ms",
+        "from": "hypothetical.super_trace_ref.client_handler_ms",
+        "ra": "RA-07"
+      },
+      {
+        "key": "access_up",
+        "category": "client and network",
+        "hop": "access network, user to PoP (one way)",
+        "p50_s": 0.01,
+        "p50_ms": 10,
+        "p95_ms": 20,
+        "tail": "log-normal, p95 = 2 x p50",
+        "tail_kind": "access",
+        "class": "tens of ms",
+        "from": "network_latency:ttft_timer_reference_request.request_reaches_pop",
+        "ra": "RA-01"
+      },
+      {
+        "key": "edge",
+        "category": "edge",
+        "hop": "edge checks: TLS, limits, WAF, bot score, traceparent",
+        "p50_s": 0.001,
+        "p50_ms": 1,
+        "p95_ms": 3,
+        "tail": "log-normal, p95 = 3 x p50",
+        "tail_kind": "cpu_service",
+        "class": "few ms",
+        "from": "hypothetical.observability_ref.edge_proxy_ms",
+        "ra": "RA-04"
+      },
+      {
+        "key": "backbone_up",
+        "category": "client and network",
+        "hop": "backbone, PoP to ap_south (one way)",
+        "p50_s": 0.02223938841,
+        "p50_ms": 22.23938841,
+        "p95_ms": 26.68726609,
+        "tail": "log-normal, p95 = 1.2 x p50",
+        "tail_kind": "backbone",
+        "class": "tens of ms",
+        "from": "network_latency:ttft_timer_reference_request (region minus PoP)",
+        "ra": "RA-05"
+      },
+      {
+        "key": "gateway",
+        "category": "auth and orchestration",
+        "hop": "API gateway: token check and RPM bucket",
+        "p50_s": 0.002,
+        "p50_ms": 2,
+        "p95_ms": 6,
+        "tail": "log-normal, p95 = 3 x p50",
+        "tail_kind": "cpu_service",
+        "class": "few ms",
+        "from": "hypothetical.observability_ref.auth_verify_ms",
+        "ra": "RA-09, RA-10"
+      },
+      {
+        "key": "fan_out",
+        "category": "context preparation",
+        "hop": "orchestrator fan-out: history, memory, retrieval, insert (slowest: retrieval)",
+        "p50_s": 0.18082,
+        "p50_ms": 180.82,
+        "p95_ms": 361.64,
+        "tail": "log-normal, p95 = 2 x p50",
+        "tail_kind": "retrieval",
+        "class": "hundreds of ms",
+        "from": "reference_trace:times.history_and_retrieval_s",
+        "ra": "RA-14, RA-24, RA-25"
+      },
+      {
+        "key": "assemble",
+        "category": "context preparation",
+        "hop": "context assembly and token count",
+        "p50_s": 0.002662880519,
+        "p50_ms": 2.662880519,
+        "p95_ms": 7.988641557,
+        "tail": "log-normal, p95 = 3 x p50",
+        "tail_kind": "cpu_service",
+        "class": "few ms",
+        "from": "tokenize_demo speed x context_budget:pass1_without_image",
+        "ra": "RA-62, RA-68"
+      },
+      {
+        "key": "model_router",
+        "category": "auth and orchestration",
+        "hop": "model router: rule table and TPM reservation (pass 1)",
+        "p50_s": 0.001,
+        "p50_ms": 1,
+        "p95_ms": 3,
+        "tail": "log-normal, p95 = 3 x p50",
+        "tail_kind": "cpu_service",
+        "class": "few ms",
+        "from": "hypothetical.super_trace_ref.model_router_ms",
+        "ra": "RA-10, RA-56"
+      },
+      {
+        "key": "queue",
+        "category": "queue",
+        "hop": "inference gateway queue and engine wait (pass 1)",
+        "p50_s": 0.17,
+        "p50_ms": 170.0,
+        "p95_ms": 680.0,
+        "tail": "log-normal, p95 = 4 x p50",
+        "tail_kind": "queue",
+        "class": "hundreds of ms",
+        "from": "hypothetical.pool_queueing (gateway + engine wait)",
+        "ra": "RA-41"
+      },
+      {
+        "key": "prefill",
+        "category": "prefill",
+        "hop": "vision encoder and prefill on a TEP8 worker (pass 1)",
+        "p50_s": 0.5306537581,
+        "p50_ms": 530.6537581,
+        "p95_ms": 795.9806372,
+        "tail": "log-normal, p95 = 1.5 x p50",
+        "tail_kind": "gpu_work",
+        "class": "hundreds of ms",
+        "from": "request_cost:four_requests.r4.first_pass_prefill_s",
+        "ra": "RA-38, RA-55"
+      },
+      {
+        "key": "kv_transfer",
+        "category": "first decode step",
+        "hop": "KV pull by NIXL over NVLink (pass 1)",
+        "p50_s": 0.00321572352,
+        "p50_ms": 3.21572352,
+        "p95_ms": 4.82358528,
+        "tail": "log-normal, p95 = 1.5 x p50",
+        "tail_kind": "gpu_work",
+        "class": "few ms",
+        "from": "request_cost:four_requests.r4.passes.0.kv_transfer.s",
+        "ra": "RA-38, RA-55"
+      },
+      {
+        "key": "first_token",
+        "category": "first decode step",
+        "hop": "first decode step: recompute the last prompt token, sample token 1",
+        "p50_s": 0.047238,
+        "p50_ms": 47.238,
+        "p95_ms": 60,
+        "tail": "log-normal, p95 = 1.27016 x p50",
+        "tail_kind": "decode_step",
+        "class": "tens of ms",
+        "from": "request_cost:design_point.step_s (Part 14.2); RA-38: the decode worker samples token 1",
+        "ra": "RA-38, RA-44"
+      },
+      {
+        "key": "stream_forward",
+        "category": "stream propagation",
+        "hop": "6 forwarders, engine to edge",
+        "p50_s": 0.0015,
+        "p50_ms": 1.5,
+        "p95_ms": 4.5,
+        "tail": "log-normal, p95 = 3 x p50",
+        "tail_kind": "cpu_service",
+        "class": "few ms",
+        "from": "sse_framing:latency.terms_ms.forwarding",
+        "ra": "RA-47, RA-74"
+      },
+      {
+        "key": "backbone_down",
+        "category": "stream propagation",
+        "hop": "backbone, ap_south to PoP (one way)",
+        "p50_s": 0.02223938841,
+        "p50_ms": 22.23938841,
+        "p95_ms": 26.68726609,
+        "tail": "log-normal, p95 = 1.2 x p50",
+        "tail_kind": "backbone",
+        "class": "tens of ms",
+        "from": "sse_framing:latency.terms_ms.backbone_one_way",
+        "ra": "RA-05"
+      },
+      {
+        "key": "access_down",
+        "category": "stream propagation",
+        "hop": "access network, PoP to user (one way)",
+        "p50_s": 0.01,
+        "p50_ms": 10,
+        "p95_ms": 20,
+        "tail": "log-normal, p95 = 2 x p50",
+        "tail_kind": "access",
+        "class": "tens of ms",
+        "from": "sse_framing:latency.terms_ms.access_one_way",
+        "ra": "RA-01"
+      },
+      {
+        "key": "frame_wait",
+        "category": "stream propagation",
+        "hop": "wait for the next display frame (mean)",
+        "p50_s": 0.008333333333,
+        "p50_ms": 8.333333333,
+        "p95_ms": 15.83333333,
+        "tail": "uniform between 0 and one frame",
+        "tail_kind": "uniform_frame",
+        "class": "few ms",
+        "from": "sse_framing:latency.frame_wait_mean_ms",
+        "ra": "RA-47"
+      }
+    ],
+    "by_hop": {
+      "browser": {
+        "key": "browser",
+        "category": "client and network",
+        "hop": "browser handler, render, fetch()",
+        "p50_s": 0.003,
+        "p50_ms": 3,
+        "p95_ms": 9.0,
+        "tail": "log-normal, p95 = 3 x p50",
+        "tail_kind": "cpu_service",
+        "class": "few ms",
+        "from": "hypothetical.super_trace_ref.client_handler_ms",
+        "ra": "RA-07"
+      },
+      "access_up": {
+        "key": "access_up",
+        "category": "client and network",
+        "hop": "access network, user to PoP (one way)",
+        "p50_s": 0.01,
+        "p50_ms": 10,
+        "p95_ms": 20,
+        "tail": "log-normal, p95 = 2 x p50",
+        "tail_kind": "access",
+        "class": "tens of ms",
+        "from": "network_latency:ttft_timer_reference_request.request_reaches_pop",
+        "ra": "RA-01"
+      },
+      "edge": {
+        "key": "edge",
+        "category": "edge",
+        "hop": "edge checks: TLS, limits, WAF, bot score, traceparent",
+        "p50_s": 0.001,
+        "p50_ms": 1,
+        "p95_ms": 3,
+        "tail": "log-normal, p95 = 3 x p50",
+        "tail_kind": "cpu_service",
+        "class": "few ms",
+        "from": "hypothetical.observability_ref.edge_proxy_ms",
+        "ra": "RA-04"
+      },
+      "backbone_up": {
+        "key": "backbone_up",
+        "category": "client and network",
+        "hop": "backbone, PoP to ap_south (one way)",
+        "p50_s": 0.02223938841,
+        "p50_ms": 22.23938841,
+        "p95_ms": 26.68726609,
+        "tail": "log-normal, p95 = 1.2 x p50",
+        "tail_kind": "backbone",
+        "class": "tens of ms",
+        "from": "network_latency:ttft_timer_reference_request (region minus PoP)",
+        "ra": "RA-05"
+      },
+      "gateway": {
+        "key": "gateway",
+        "category": "auth and orchestration",
+        "hop": "API gateway: token check and RPM bucket",
+        "p50_s": 0.002,
+        "p50_ms": 2,
+        "p95_ms": 6,
+        "tail": "log-normal, p95 = 3 x p50",
+        "tail_kind": "cpu_service",
+        "class": "few ms",
+        "from": "hypothetical.observability_ref.auth_verify_ms",
+        "ra": "RA-09, RA-10"
+      },
+      "fan_out": {
+        "key": "fan_out",
+        "category": "context preparation",
+        "hop": "orchestrator fan-out: history, memory, retrieval, insert (slowest: retrieval)",
+        "p50_s": 0.18082,
+        "p50_ms": 180.82,
+        "p95_ms": 361.64,
+        "tail": "log-normal, p95 = 2 x p50",
+        "tail_kind": "retrieval",
+        "class": "hundreds of ms",
+        "from": "reference_trace:times.history_and_retrieval_s",
+        "ra": "RA-14, RA-24, RA-25"
+      },
+      "assemble": {
+        "key": "assemble",
+        "category": "context preparation",
+        "hop": "context assembly and token count",
+        "p50_s": 0.002662880519,
+        "p50_ms": 2.662880519,
+        "p95_ms": 7.988641557,
+        "tail": "log-normal, p95 = 3 x p50",
+        "tail_kind": "cpu_service",
+        "class": "few ms",
+        "from": "tokenize_demo speed x context_budget:pass1_without_image",
+        "ra": "RA-62, RA-68"
+      },
+      "model_router": {
+        "key": "model_router",
+        "category": "auth and orchestration",
+        "hop": "model router: rule table and TPM reservation (pass 1)",
+        "p50_s": 0.001,
+        "p50_ms": 1,
+        "p95_ms": 3,
+        "tail": "log-normal, p95 = 3 x p50",
+        "tail_kind": "cpu_service",
+        "class": "few ms",
+        "from": "hypothetical.super_trace_ref.model_router_ms",
+        "ra": "RA-10, RA-56"
+      },
+      "queue": {
+        "key": "queue",
+        "category": "queue",
+        "hop": "inference gateway queue and engine wait (pass 1)",
+        "p50_s": 0.17,
+        "p50_ms": 170.0,
+        "p95_ms": 680.0,
+        "tail": "log-normal, p95 = 4 x p50",
+        "tail_kind": "queue",
+        "class": "hundreds of ms",
+        "from": "hypothetical.pool_queueing (gateway + engine wait)",
+        "ra": "RA-41"
+      },
+      "prefill": {
+        "key": "prefill",
+        "category": "prefill",
+        "hop": "vision encoder and prefill on a TEP8 worker (pass 1)",
+        "p50_s": 0.5306537581,
+        "p50_ms": 530.6537581,
+        "p95_ms": 795.9806372,
+        "tail": "log-normal, p95 = 1.5 x p50",
+        "tail_kind": "gpu_work",
+        "class": "hundreds of ms",
+        "from": "request_cost:four_requests.r4.first_pass_prefill_s",
+        "ra": "RA-38, RA-55"
+      },
+      "kv_transfer": {
+        "key": "kv_transfer",
+        "category": "first decode step",
+        "hop": "KV pull by NIXL over NVLink (pass 1)",
+        "p50_s": 0.00321572352,
+        "p50_ms": 3.21572352,
+        "p95_ms": 4.82358528,
+        "tail": "log-normal, p95 = 1.5 x p50",
+        "tail_kind": "gpu_work",
+        "class": "few ms",
+        "from": "request_cost:four_requests.r4.passes.0.kv_transfer.s",
+        "ra": "RA-38, RA-55"
+      },
+      "first_token": {
+        "key": "first_token",
+        "category": "first decode step",
+        "hop": "first decode step: recompute the last prompt token, sample token 1",
+        "p50_s": 0.047238,
+        "p50_ms": 47.238,
+        "p95_ms": 60,
+        "tail": "log-normal, p95 = 1.27016 x p50",
+        "tail_kind": "decode_step",
+        "class": "tens of ms",
+        "from": "request_cost:design_point.step_s (Part 14.2); RA-38: the decode worker samples token 1",
+        "ra": "RA-38, RA-44"
+      },
+      "stream_forward": {
+        "key": "stream_forward",
+        "category": "stream propagation",
+        "hop": "6 forwarders, engine to edge",
+        "p50_s": 0.0015,
+        "p50_ms": 1.5,
+        "p95_ms": 4.5,
+        "tail": "log-normal, p95 = 3 x p50",
+        "tail_kind": "cpu_service",
+        "class": "few ms",
+        "from": "sse_framing:latency.terms_ms.forwarding",
+        "ra": "RA-47, RA-74"
+      },
+      "backbone_down": {
+        "key": "backbone_down",
+        "category": "stream propagation",
+        "hop": "backbone, ap_south to PoP (one way)",
+        "p50_s": 0.02223938841,
+        "p50_ms": 22.23938841,
+        "p95_ms": 26.68726609,
+        "tail": "log-normal, p95 = 1.2 x p50",
+        "tail_kind": "backbone",
+        "class": "tens of ms",
+        "from": "sse_framing:latency.terms_ms.backbone_one_way",
+        "ra": "RA-05"
+      },
+      "access_down": {
+        "key": "access_down",
+        "category": "stream propagation",
+        "hop": "access network, PoP to user (one way)",
+        "p50_s": 0.01,
+        "p50_ms": 10,
+        "p95_ms": 20,
+        "tail": "log-normal, p95 = 2 x p50",
+        "tail_kind": "access",
+        "class": "tens of ms",
+        "from": "sse_framing:latency.terms_ms.access_one_way",
+        "ra": "RA-01"
+      },
+      "frame_wait": {
+        "key": "frame_wait",
+        "category": "stream propagation",
+        "hop": "wait for the next display frame (mean)",
+        "p50_s": 0.008333333333,
+        "p50_ms": 8.333333333,
+        "p95_ms": 15.83333333,
+        "tail": "uniform between 0 and one frame",
+        "tail_kind": "uniform_frame",
+        "class": "few ms",
+        "from": "sse_framing:latency.frame_wait_mean_ms",
+        "ra": "RA-47"
+      }
+    },
+    "categories": [
+      {
+        "category": "client and network",
+        "p50_ms": 35.23938841,
+        "share": 0.03468776715,
+        "hops": [
+          "browser",
+          "access_up",
+          "backbone_up"
+        ]
+      },
+      {
+        "category": "edge",
+        "p50_ms": 1,
+        "share": 0.0009843464577,
+        "hops": [
+          "edge"
+        ]
+      },
+      {
+        "category": "auth and orchestration",
+        "p50_ms": 3,
+        "share": 0.002953039373,
+        "hops": [
+          "gateway",
+          "model_router"
+        ]
+      },
+      {
+        "category": "queue",
+        "p50_ms": 170,
+        "share": 0.1673388978,
+        "hops": [
+          "queue"
+        ]
+      },
+      {
+        "category": "context preparation",
+        "p50_ms": 183.4828805,
+        "share": 0.1806107235,
+        "hops": [
+          "fan_out",
+          "assemble"
+        ]
+      },
+      {
+        "category": "prefill",
+        "p50_ms": 530.6537581,
+        "share": 0.5223471471,
+        "hops": [
+          "prefill"
+        ]
+      },
+      {
+        "category": "first decode step",
+        "p50_ms": 50.45372352,
+        "share": 0.04966394403,
+        "hops": [
+          "kv_transfer",
+          "first_token"
+        ]
+      },
+      {
+        "category": "stream propagation",
+        "p50_ms": 42.07272174,
+        "share": 0.04141413461,
+        "hops": [
+          "stream_forward",
+          "backbone_down",
+          "access_down",
+          "frame_wait"
+        ]
+      }
+    ],
+    "by_category": {
+      "client_network": {
+        "category": "client and network",
+        "p50_ms": 35.23938841,
+        "share": 0.03468776715,
+        "hops": [
+          "browser",
+          "access_up",
+          "backbone_up"
+        ]
+      },
+      "edge": {
+        "category": "edge",
+        "p50_ms": 1,
+        "share": 0.0009843464577,
+        "hops": [
+          "edge"
+        ]
+      },
+      "auth_orchestration": {
+        "category": "auth and orchestration",
+        "p50_ms": 3,
+        "share": 0.002953039373,
+        "hops": [
+          "gateway",
+          "model_router"
+        ]
+      },
+      "queue": {
+        "category": "queue",
+        "p50_ms": 170,
+        "share": 0.1673388978,
+        "hops": [
+          "queue"
+        ]
+      },
+      "context_preparation": {
+        "category": "context preparation",
+        "p50_ms": 183.4828805,
+        "share": 0.1806107235,
+        "hops": [
+          "fan_out",
+          "assemble"
+        ]
+      },
+      "prefill": {
+        "category": "prefill",
+        "p50_ms": 530.6537581,
+        "share": 0.5223471471,
+        "hops": [
+          "prefill"
+        ]
+      },
+      "first_decode_step": {
+        "category": "first decode step",
+        "p50_ms": 50.45372352,
+        "share": 0.04966394403,
+        "hops": [
+          "kv_transfer",
+          "first_token"
+        ]
+      },
+      "stream_propagation": {
+        "category": "stream propagation",
+        "p50_ms": 42.07272174,
+        "share": 0.04141413461,
+        "hops": [
+          "stream_forward",
+          "backbone_down",
+          "access_down",
+          "frame_wait"
+        ]
+      }
+    },
+    "p50_s": 1.015902472,
+    "p50_ms": 1015.902472,
+    "engine_side_s": 0.7511074816,
+    "engine_side_share": 0.7393499889,
+    "outside_engine_s": 0.2647949907,
+    "sum_of_hop_p95_s": 2.04514073,
+    "mc": {
+      "p50_s": 1.075232709,
+      "p95_s": 1.633867865,
+      "p99_s": 2.126647858,
+      "p99_over_p50": 1.977848925
+    },
+    "sum_of_hop_p95_over_mc_p95": 1.251717335,
+    "share_within_slo": 0.91476,
+    "slo_s": 1.5,
+    "variance_share": [
+      {
+        "hop": "queue",
+        "share": 0.697561393
+      },
+      {
+        "hop": "prefill",
+        "share": 0.2131944892
+      },
+      {
+        "hop": "fan_out",
+        "share": 0.08748835017
+      },
+      {
+        "hop": "first_token",
+        "share": 0.0005593369761
+      },
+      {
+        "hop": "access_down",
+        "share": 0.0002669953974
+      },
+      {
+        "hop": "access",
+        "share": 0.0002664282817
+      },
+      {
+        "hop": "frame_wait",
+        "share": 0.000266318475
+      },
+      {
+        "hop": "browser",
+        "share": 9.217384346e-05
+      },
+      {
+        "hop": "assemble",
+        "share": 7.17578425e-05
+      },
+      {
+        "hop": "backbone",
+        "share": 7.1050421e-05
+      },
+      {
+        "hop": "backbone_down",
+        "share": 7.06282554e-05
+      },
+      {
+        "hop": "gateway",
+        "share": 4.019569889e-05
+      },
+      {
+        "hop": "stream_forward",
+        "share": 2.253451172e-05
+      },
+      {
+        "hop": "model_router",
+        "share": 1.023114886e-05
+      },
+      {
+        "hop": "edge",
+        "share": 1.017057993e-05
+      },
+      {
+        "hop": "kv_transfer",
+        "share": 7.946141782e-06
+      }
+    ]
+  },
+  "first_visible": {
+    "formula": "pass-1 prefill end + KV transfer + (reasoning + preamble tokens) x step + hold-back check + engine to pixel",
+    "terms": {
+      "pass1_prefill_end_s": 0.923376027,
+      "kv_transfer_s": 0.00321572352,
+      "reasoning_tokens": 300,
+      "preamble_tokens": 9,
+      "step_s": 0.047238,
+      "decode_steps_s": 14.596542,
+      "check_s": 0.02,
+      "engine_to_pixel_s": 0.04207272174
+    },
+    "value_s": 15.58520647,
+    "over_ttft": 15.34124278,
+    "decode_share": 0.9365639157
+  },
+  "milestones_mc": {
+    "at_gateway": {
+      "p50_s": 0.04002489382,
+      "p95_s": 0.05253236896,
+      "p99_s": 0.06000078562,
+      "p99_over_p50": 1.49908669
+    },
+    "context_ready": {
+      "p50_s": 0.2252881893,
+      "p95_s": 0.407496145,
+      "p99_s": 0.5257992749,
+      "p99_over_p50": 2.333896315
+    },
+    "first_token_engine": {
+      "p50_s": 1.031454956,
+      "p95_s": 1.589783463,
+      "p99_s": 2.082665354,
+      "p99_over_p50": 2.019152985
+    },
+    "ttft_pixel": {
+      "p50_s": 1.075232709,
+      "p95_s": 1.633867865,
+      "p99_s": 2.126647858,
+      "p99_over_p50": 1.977848925
+    },
+    "first_visible_pixel": {
+      "p50_s": 15.69228595,
+      "p95_s": 19.66163373,
+      "p99_s": 21.64450594,
+      "p99_over_p50": 1.379308662
+    },
+    "first_answer_pixel": {
+      "p50_s": 65.76519759,
+      "p95_s": 75.00633608,
+      "p99_s": 79.24941187,
+      "p99_over_p50": 1.205035715
+    },
+    "last_text_pixel": {
+      "p50_s": 86.95822434,
+      "p95_s": 100.2254667,
+      "p99_s": 106.3107643,
+      "p99_over_p50": 1.222549852
+    },
+    "done_pixel": {
+      "p50_s": 86.96058119,
+      "p95_s": 100.2285129,
+      "p99_s": 106.3126352,
+      "p99_over_p50": 1.222538232
+    }
+  },
+  "timeline": [
+    {
+      "label": "T+0: you press Send",
+      "trace_s": 0.0,
+      "p50_s": 0.0,
+      "p95_s": 0.0
+    },
+    {
+      "label": "request reaches the API gateway in ap_south",
+      "trace_s": 0.03623938841,
+      "p50_s": 0.04002489382,
+      "p95_s": 0.05253236896
+    },
+    {
+      "label": "message.start painted",
+      "trace_s": 0.07956211015,
+      "p50_s": null,
+      "p95_s": null
+    },
+    {
+      "label": "context object ready (before the first GPU cycle)",
+      "trace_s": 0.2217222689,
+      "p50_s": 0.2252881893,
+      "p95_s": 0.407496145
+    },
+    {
+      "label": "first token at the engine",
+      "trace_s": 0.9738297506,
+      "p50_s": 1.031454956,
+      "p95_s": 1.589783463
+    },
+    {
+      "label": "TTFT: reasoning status painted",
+      "trace_s": 1.015902472,
+      "p50_s": 1.075232709,
+      "p95_s": 1.633867865
+    },
+    {
+      "label": "first visible text (the preamble) painted",
+      "trace_s": 15.58520647,
+      "p50_s": 15.69228595,
+      "p95_s": 19.66163373
+    },
+    {
+      "label": "first answer token painted",
+      "trace_s": 64.82496669,
+      "p50_s": 65.76519759,
+      "p95_s": 75.00633608
+    },
+    {
+      "label": "last text painted",
+      "trace_s": 85.94035269,
+      "p50_s": 86.95822434,
+      "p95_s": 100.2254667
+    },
+    {
+      "label": "message.done painted",
+      "trace_s": 85.94235269,
+      "p50_s": 86.96058119,
+      "p95_s": 100.2285129
+    }
+  ],
+  "total": {
+    "formula": "total ~ TTFT + (N_out - 1) x TPOT",
+    "ttft_s": 1.015902472,
+    "n_out": 1727,
+    "tpot_s": 0.047238,
+    "decode_term_s": 81.532788,
+    "formula_s": 82.54869047,
+    "trace_e2e_s": 85.94235269,
+    "gap_s": 3.393662221,
+    "gap_share": 0.03948765788,
+    "left_out": {
+      "tool_steps_s": 2.9143,
+      "passes_2_3_router_queue_prefill_transfer_s": 0.5046002207,
+      "last_check_and_final_write_s": 0.022,
+      "step_count_difference_s": -0.047238
+    },
+    "steps_after_token_1": 1725,
+    "note": "TTFT already holds pass 1's KV pull and first decode step. Disaggregated passes take one decode step per output token; a locally prefilled pass (pass 3) takes token 1 from its prefill step. So the trace holds steps_after_token_1 decode steps after token 1, against the formula's N_out - 1.",
+    "at_p95_tpot_s": 104.5759025
+  },
+  "tokens_before_display": {
+    "first_visible_tokens_generated": 309,
+    "share_of_all_output": 0.1789229878,
+    "pass3_tokens_generated_at_first_answer_pixel": 416,
+    "pass3_output_tokens": 863,
+    "pass3_share_at_first_answer_pixel": 0.4820393975,
+    "answer_wait_if_buffered_s": 21.115386
+  },
+  "e2e_variance_share": [
+    {
+      "segment": "decode",
+      "share": 0.9773948025
+    },
+    {
+      "segment": "web_search",
+      "share": 0.01171542558
+    },
+    {
+      "segment": "run_python",
+      "share": 0.00711032002
+    },
+    {
+      "segment": "queue",
+      "share": 0.003270018802
+    },
+    {
+      "segment": "prefill",
+      "share": 0.0003636250258
+    },
+    {
+      "segment": "fan_out",
+      "share": 0.000137352571
+    },
+    {
+      "segment": "holdback",
+      "share": 6.478950572e-06
+    },
+    {
+      "segment": "stream_back",
+      "share": 9.782918317e-07
+    },
+    {
+      "segment": "access",
+      "share": 4.182797985e-07
+    },
+    {
+      "segment": "browser",
+      "share": 1.447085738e-07
+    },
+    {
+      "segment": "assemble",
+      "share": 1.126564181e-07
+    },
+    {
+      "segment": "backbone",
+      "share": 1.115457998e-07
+    },
+    {
+      "segment": "gateway",
+      "share": 6.310534575e-08
+    },
+    {
+      "segment": "final_write",
+      "share": 6.305102837e-08
+    },
+    {
+      "segment": "model_router",
+      "share": 4.784875985e-08
+    },
+    {
+      "segment": "kv_transfer",
+      "share": 2.112218029e-08
+    },
+    {
+      "segment": "edge",
+      "share": 1.596732935e-08
+    }
+  ],
+  "component_classes": [
+    {
+      "key": "browser",
+      "s": 0.003,
+      "class": "few ms"
+    },
+    {
+      "key": "access",
+      "s": 0.01,
+      "class": "tens of ms"
+    },
+    {
+      "key": "edge",
+      "s": 0.001,
+      "class": "few ms"
+    },
+    {
+      "key": "backbone",
+      "s": 0.02223938841,
+      "class": "tens of ms"
+    },
+    {
+      "key": "gateway",
+      "s": 0.002,
+      "class": "few ms"
+    },
+    {
+      "key": "fan_out",
+      "s": 0.18082,
+      "class": "hundreds of ms"
+    },
+    {
+      "key": "assemble",
+      "s": 0.002662880519,
+      "class": "few ms"
+    },
+    {
+      "key": "model_router",
+      "s": 0.001,
+      "class": "few ms"
+    },
+    {
+      "key": "queue",
+      "s": 0.17,
+      "class": "hundreds of ms"
+    },
+    {
+      "key": "prefill",
+      "s": 0.5306537581,
+      "class": "hundreds of ms"
+    },
+    {
+      "key": "kv_transfer",
+      "s": 0.00321572352,
+      "class": "few ms"
+    },
+    {
+      "key": "web_search",
+      "s": 1.6073,
+      "class": "seconds"
+    },
+    {
+      "key": "run_python",
+      "s": 1.307,
+      "class": "seconds"
+    },
+    {
+      "key": "holdback",
+      "s": 0.02,
+      "class": "tens of ms"
+    },
+    {
+      "key": "stream_back",
+      "s": 0.04207272174,
+      "class": "tens of ms"
+    },
+    {
+      "key": "final_write",
+      "s": 0.002,
+      "class": "few ms"
+    },
+    {
+      "key": "one_decode_step",
+      "s": 0.047238,
+      "class": "tens of ms"
+    },
+    {
+      "key": "pass1_decode",
+      "s": 20.028912,
+      "class": "seconds"
+    },
+    {
+      "key": "frame_wait",
+      "s": 0.008333333333,
+      "class": "few ms"
+    }
+  ],
+  "component_class_by_key": {
+    "browser": {
+      "key": "browser",
+      "s": 0.003,
+      "class": "few ms"
+    },
+    "access": {
+      "key": "access",
+      "s": 0.01,
+      "class": "tens of ms"
+    },
+    "edge": {
+      "key": "edge",
+      "s": 0.001,
+      "class": "few ms"
+    },
+    "backbone": {
+      "key": "backbone",
+      "s": 0.02223938841,
+      "class": "tens of ms"
+    },
+    "gateway": {
+      "key": "gateway",
+      "s": 0.002,
+      "class": "few ms"
+    },
+    "fan_out": {
+      "key": "fan_out",
+      "s": 0.18082,
+      "class": "hundreds of ms"
+    },
+    "assemble": {
+      "key": "assemble",
+      "s": 0.002662880519,
+      "class": "few ms"
+    },
+    "model_router": {
+      "key": "model_router",
+      "s": 0.001,
+      "class": "few ms"
+    },
+    "queue": {
+      "key": "queue",
+      "s": 0.17,
+      "class": "hundreds of ms"
+    },
+    "prefill": {
+      "key": "prefill",
+      "s": 0.5306537581,
+      "class": "hundreds of ms"
+    },
+    "kv_transfer": {
+      "key": "kv_transfer",
+      "s": 0.00321572352,
+      "class": "few ms"
+    },
+    "web_search": {
+      "key": "web_search",
+      "s": 1.6073,
+      "class": "seconds"
+    },
+    "run_python": {
+      "key": "run_python",
+      "s": 1.307,
+      "class": "seconds"
+    },
+    "holdback": {
+      "key": "holdback",
+      "s": 0.02,
+      "class": "tens of ms"
+    },
+    "stream_back": {
+      "key": "stream_back",
+      "s": 0.04207272174,
+      "class": "tens of ms"
+    },
+    "final_write": {
+      "key": "final_write",
+      "s": 0.002,
+      "class": "few ms"
+    },
+    "one_decode_step": {
+      "key": "one_decode_step",
+      "s": 0.047238,
+      "class": "tens of ms"
+    },
+    "pass1_decode": {
+      "key": "pass1_decode",
+      "s": 20.028912,
+      "class": "seconds"
+    },
+    "frame_wait": {
+      "key": "frame_wait",
+      "s": 0.008333333333,
+      "class": "few ms"
+    }
+  },
+  "timeline_by_key": {
+    "click": {
+      "label": "T+0: you press Send",
+      "trace_s": 0.0,
+      "p50_s": 0.0,
+      "p95_s": 0.0
+    },
+    "at_gateway": {
+      "label": "request reaches the API gateway in ap_south",
+      "trace_s": 0.03623938841,
+      "p50_s": 0.04002489382,
+      "p95_s": 0.05253236896
+    },
+    "message_start": {
+      "label": "message.start painted",
+      "trace_s": 0.07956211015,
+      "p50_s": null,
+      "p95_s": null
+    },
+    "context_ready": {
+      "label": "context object ready (before the first GPU cycle)",
+      "trace_s": 0.2217222689,
+      "p50_s": 0.2252881893,
+      "p95_s": 0.407496145
+    },
+    "first_token_engine": {
+      "label": "first token at the engine",
+      "trace_s": 0.9738297506,
+      "p50_s": 1.031454956,
+      "p95_s": 1.589783463
+    },
+    "ttft_pixel": {
+      "label": "TTFT: reasoning status painted",
+      "trace_s": 1.015902472,
+      "p50_s": 1.075232709,
+      "p95_s": 1.633867865
+    },
+    "first_visible": {
+      "label": "first visible text (the preamble) painted",
+      "trace_s": 15.58520647,
+      "p50_s": 15.69228595,
+      "p95_s": 19.66163373
+    },
+    "first_answer": {
+      "label": "first answer token painted",
+      "trace_s": 64.82496669,
+      "p50_s": 65.76519759,
+      "p95_s": 75.00633608
+    },
+    "last_text": {
+      "label": "last text painted",
+      "trace_s": 85.94035269,
+      "p50_s": 86.95822434,
+      "p95_s": 100.2254667
+    },
+    "done": {
+      "label": "message.done painted",
+      "trace_s": 85.94235269,
+      "p50_s": 86.96058119,
+      "p95_s": 100.2285129
+    }
+  }
+}

@@ -1,0 +1,198 @@
+{
+  "_about": "Part 20 (other branches: image generation, voice, long-running agents) class C values. Every value is HYPOTHETICAL and agrees with RA-14, RA-15/RA-56, RA-20, RA-41, RA-49, RA-63, RA-68, RA-74. Author w20, 2026-10-09.",
+  "image_gen_ref": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "The image branch of this reference system (Part 20.1). The image model has the public shape of FLUX.1 [dev] (extra.sims_w20); which image models real providers run is not public (class D).",
+    "image_px": {
+      "value": 1024,
+      "unit": "pixels per side",
+      "note": "Default square output, the size of the FLUX.1 [dev] card example."
+    },
+    "steps": {
+      "value": 28,
+      "unit": "denoising steps",
+      "note": "Equal to the Diffusers FluxPipeline default (extra.sims_w20.flux_pipeline_default_steps); a guidance-distilled model needs no second CFG pass."
+    },
+    "cfg_passes_per_step": {
+      "value": 1,
+      "unit": "transformer passes per step",
+      "note": "Guidance distillation folds classifier-free guidance into one pass; a model with true CFG runs 2."
+    },
+    "gpus_per_worker": {
+      "value": 1,
+      "unit": "H100 GPUs",
+      "note": "12B parameters in BF16 are 24 GB of weights, so one 80 GB H100 holds the model, the VAE and the text encoders."
+    },
+    "max_batch_images": {
+      "value": 4,
+      "unit": "images per denoising batch",
+      "note": "Images of the same size and step count share one batch; more raises latency linearly because one image already saturates compute."
+    },
+    "vae_decode_ms": {
+      "value": 150,
+      "unit": "ms",
+      "note": "Latent to 1024x1024 RGB decode on the same GPU after the last step."
+    },
+    "prompt_check_ms": {
+      "value": 30,
+      "unit": "ms",
+      "note": "Text classifier on the image prompt after the tool call, before the GPU job (prompt blocking)."
+    },
+    "output_check_ms": {
+      "value": 120,
+      "unit": "ms",
+      "note": "Image classifiers on the decoded image before any byte leaves the worker (output blocking)."
+    },
+    "encode_and_put_ms": {
+      "value": 60,
+      "unit": "ms",
+      "note": "PNG encode, provenance manifest sign, and PUT to the regional object store."
+    },
+    "signed_url_ttl_s": {
+      "value": 300,
+      "unit": "s",
+      "note": "Lifetime of the signed GET URL the client receives; the same lifetime as the sandbox artifact URL (hypothetical.sandbox_vm)."
+    },
+    "ar_pixels_per_token_side": {
+      "value": 16,
+      "unit": "pixels per token side",
+      "note": "Chameleon-style tokenizer: 512 px / 32 tokens per side = 16 px; used for the autoregressive comparison at 1024 px."
+    }
+  },
+  "voice_ref": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Latency budget of one spoken turn and barge-in values (Part 20.2). Real providers do not publish their per-stage budgets (class D).",
+    "opus_bitrate_kbps": {
+      "value": 32,
+      "unit": "kbit/s",
+      "note": "Opus voice bitrate inside RFC 6716's 6-510 kbit/s range; wideband speech is clear at this rate."
+    },
+    "uplink_jitter_buffer_ms": {
+      "value": 40,
+      "unit": "ms",
+      "note": "Server-side jitter buffer depth for the microphone stream (two 20 ms packets)."
+    },
+    "downlink_jitter_buffer_ms": {
+      "value": 60,
+      "unit": "ms",
+      "note": "Browser playout buffer for the voice stream (three 20 ms packets); mobile networks jitter more on the downlink path."
+    },
+    "endpoint_silence_ms": {
+      "value": 500,
+      "unit": "ms",
+      "note": "Silence after speech that the VAD needs before it ends the user's turn; shorter values cut users off mid-sentence."
+    },
+    "asr_finalize_ms": {
+      "value": 100,
+      "unit": "ms",
+      "note": "Time after the end of turn for the streaming ASR to emit its last words; most of the delay overlaps the endpoint silence."
+    },
+    "llm_ttft_ms": {
+      "value": 350,
+      "unit": "ms",
+      "note": "First text token for a short spoken turn: the system prompt and history hit the prefix cache (RA-40), the new text is a few dozen tokens."
+    },
+    "tts_first_phrase_tokens": {
+      "value": 12,
+      "unit": "text tokens",
+      "note": "The TTS worker starts after the first phrase so that prosody has a clause to work with."
+    },
+    "tts_first_audio_ms": {
+      "value": 200,
+      "unit": "ms",
+      "note": "Streaming TTS time from the first phrase to the first 20 ms audio frame."
+    },
+    "native_turn_detect_ms": {
+      "value": 300,
+      "unit": "ms",
+      "note": "A semantic turn detector in a native speech model ends the turn earlier than silence alone."
+    },
+    "speech_words_per_minute": {
+      "value": 150,
+      "unit": "words/min",
+      "note": "Typical conversational speaking rate of the synthesized voice."
+    },
+    "tokens_per_word": {
+      "value": 1.3,
+      "unit": "text tokens per word",
+      "note": "English text with a BPE tokenizer."
+    },
+    "barge_in_min_speech_ms": {
+      "value": 200,
+      "unit": "ms",
+      "note": "Speech the VAD must hear during playback before it calls a barge-in, so a cough does not stop the answer."
+    },
+    "tts_realtime_factor": {
+      "value": 4,
+      "unit": "x real time",
+      "note": "The TTS worker produces 4 s of audio per second of wall time once it runs."
+    },
+    "barge_in_at_playback_s": {
+      "value": 3.0,
+      "unit": "s",
+      "note": "Illustrative: the user starts to speak 3 s into the spoken answer."
+    },
+    "tts_lookahead_cap_s": {
+      "value": 2.0,
+      "unit": "s of audio",
+      "note": "The voice gateway lets the TTS run at most 2 s of audio ahead of playback, which bounds the audio thrown away on a barge-in."
+    }
+  },
+  "agent_task_ref": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "One deep-research task as a background job (Part 20.3). Per-pass token sizes reuse hypothetical.workload_profiles (workload C).",
+    "passes": {
+      "value": 40,
+      "unit": "inference passes",
+      "note": "39 tool passes and one final report pass; a multi-source research question."
+    },
+    "raised_max_passes": {
+      "value": 64,
+      "unit": "passes",
+      "note": "Loop limit for background research tasks, raised from 8 because a budget now bounds the task."
+    },
+    "searches_per_pass": {
+      "value": 2,
+      "unit": "search queries per tool pass",
+      "note": "Mean queries a tool pass sends; at most 4 calls run in parallel (hypothetical.tool_exec_limits.max_parallel_calls_per_pass)."
+    },
+    "fetch_wait_s": {
+      "value": 4,
+      "unit": "s per tool pass",
+      "note": "Page fetches after the searches, in parallel, under the 6 s total fetch limit (Part 07)."
+    },
+    "compaction_trigger_tokens": {
+      "value": 48000,
+      "unit": "tokens",
+      "note": "Working context of a task above which the orchestrator runs a compaction pass: the model writes a summary (hypothetical.context_budget_ref.compaction_summary_tokens) of all old tool results, which then replace them. Well under the 131,072-token prompt cap (RA-68)."
+    },
+    "task_usd_budget": {
+      "value": 3.0,
+      "unit": "USD (list price)",
+      "note": "Per-task spending cap the orchestrator checks before every pass; the task finishes with what it has when the next pass would exceed it."
+    },
+    "wall_clock_limit_s": {
+      "value": 3600,
+      "unit": "s",
+      "note": "A task that runs longer than one hour stops and writes a partial report."
+    },
+    "checkpoint_bytes": {
+      "value": 24000,
+      "unit": "B per checkpoint",
+      "note": "Plan, step cursor, compacted notes, source list and artifact IDs; tool results themselves live in the object store."
+    },
+    "client_disconnect_per_min": {
+      "value": 0.01,
+      "unit": "probability per minute",
+      "note": "Chance that one client connection breaks in a given minute (phone sleeps, network change, tab closed)."
+    },
+    "push_ttl_s": {
+      "value": 86400,
+      "unit": "s",
+      "note": "TTL header of the Web Push message that says the report is ready."
+    }
+  }
+}

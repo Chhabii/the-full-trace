@@ -1,0 +1,502 @@
+{
+  "_about": "Part 09 (inference routing, admission and queueing) class C values. Every value is HYPOTHETICAL and chosen to agree with RA-34, RA-36, RA-37, RA-38, RA-41, RA-55. Author w09, 2026-10-09.",
+  "routing_endpoints_ref": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "State of three M-frontier decode endpoints (attention-DP ranks of DEP16 decode workers) in ap_south at the moment pass 2 of the reference request reaches the endpoint picker. E1 decoded pass 1. Blocks are 64-token KV blocks (the K3 block size on GB300).",
+    "names": {
+      "value": [
+        "E1",
+        "E2",
+        "E3"
+      ],
+      "unit": "endpoint ids",
+      "note": "E1 served pass 1 of the reference request; E2 holds the tenant's stable prefix from another user of the same organization; E3 holds no block under this tenant's cache salt."
+    },
+    "running_sequences": {
+      "value": [
+        60,
+        52,
+        56
+      ],
+      "unit": "sequences",
+      "note": "vllm:num_requests_running per endpoint; below the 74 sequences of 8k context that one rank's KV pool holds (kv_math)."
+    },
+    "waiting_requests": {
+      "value": [
+        1,
+        0,
+        0
+      ],
+      "unit": "requests",
+      "note": "vllm:num_requests_waiting per endpoint at the last scrape."
+    },
+    "in_flight_requests": {
+      "value": [
+        63,
+        52,
+        57
+      ],
+      "unit": "requests",
+      "note": "Requests the EPP dispatched and has not seen finish; larger than waiting + running when the scrape lags the dispatches."
+    },
+    "active_decode_blocks": {
+      "value": [
+        5150,
+        4980,
+        5060
+      ],
+      "unit": "64-token blocks",
+      "note": "KV blocks held by the running sequences (mean about 5,500 tokens of context per sequence)."
+    },
+    "active_prefill_tokens": {
+      "value": [
+        2048,
+        0,
+        4096
+      ],
+      "unit": "tokens",
+      "note": "Uncached prompt tokens dispatched to the endpoint and not yet prefilled (local prefill of short suffixes, RA-38). The EPP's in-flight token count uses the same number."
+    },
+    "g1_overlap_blocks": {
+      "value": [
+        368,
+        24,
+        0
+      ],
+      "unit": "64-token blocks",
+      "note": "Blocks of pass 2's prefix in each endpoint's HBM. E1: the 23,552 reusable tokens of pass 1 (context_budget p2.prefix_hit_tokens_512). E2: the tenant's stable prefix, 1,536 tokens (context_budget p1.stable_prefix_hit_512)."
+    },
+    "g2_overlap_blocks": {
+      "value": [
+        0,
+        0,
+        0
+      ],
+      "unit": "64-token blocks",
+      "note": "Blocks in pinned host DRAM (G2) for the main case; the tier variant moves E1's blocks there."
+    },
+    "g3_overlap_blocks": {
+      "value": [
+        0,
+        0,
+        0
+      ],
+      "unit": "64-token blocks",
+      "note": "Blocks on local NVMe (G3) for the main case."
+    }
+  },
+  "routing_endpoints_overloaded": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Variant of routing_endpoints_ref in which E1 is overloaded: a burst of long prompts landed on it just before pass 2. E2 and E3 keep their values.",
+    "e1_active_prefill_tokens": {
+      "value": 40000,
+      "unit": "tokens",
+      "note": "About 2.5 s of prefill work at the calibrated 16,000 tokens/s."
+    },
+    "e1_active_decode_blocks": {
+      "value": 6400,
+      "unit": "64-token blocks",
+      "note": "E1 near its KV limit."
+    }
+  },
+  "routing_endpoints_burst": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Second snapshot of E1-E3 a few seconds later during a regional burst, for the flow-control saturation example (RA-41).",
+    "running_sequences": {
+      "value": [
+        72,
+        70,
+        71
+      ],
+      "unit": "sequences",
+      "note": "Close to the 74-sequence limit of one rank at 8k."
+    },
+    "waiting_requests": {
+      "value": [
+        7,
+        5,
+        6
+      ],
+      "unit": "requests",
+      "note": "vllm:num_requests_waiting at the last scrape."
+    },
+    "in_flight_requests": {
+      "value": [
+        79,
+        75,
+        77
+      ],
+      "unit": "requests",
+      "note": "Equal to waiting + running: the scrape is current."
+    },
+    "active_decode_blocks": {
+      "value": [
+        6100,
+        5900,
+        6000
+      ],
+      "unit": "64-token blocks",
+      "note": "KV blocks of the running sequences."
+    }
+  },
+  "epp_calibration": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "peak_prefill_tokens_per_s": {
+      "value": 16000,
+      "unit": "tokens/s",
+      "note": "peakPrefillThroughput set on the prefix-cache-affinity-filter for one K3 decode endpoint's local prefill. llm-d's default 15,928 is calibrated for Qwen3-32B on 2x H100; a real deployment measures its own value with the calibration guide. Also the prefill rate of one endpoint in sim/routing_policies_sim.py."
+    }
+  },
+  "routing_sim": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Inputs of the seeded routing-policy simulation (sim/routing_policies_sim.py). One pool of identical endpoints; illustrative mixed chat workload, not a fleet measurement.",
+    "seed": {
+      "value": 9,
+      "unit": "seed",
+      "note": "numpy default_rng seed."
+    },
+    "endpoints": {
+      "value": 8,
+      "unit": "endpoints",
+      "note": "Endpoints in the simulated pool."
+    },
+    "duration_s": {
+      "value": 600,
+      "unit": "s",
+      "note": "Simulated time."
+    },
+    "warmup_s": {
+      "value": 60,
+      "unit": "s",
+      "note": "Requests that arrive before this time are left out of the statistics."
+    },
+    "step_s": {
+      "value": 0.05,
+      "unit": "s",
+      "note": "Time step of the simulation."
+    },
+    "conversation_rate_per_s": {
+      "value": 4.0,
+      "unit": "conversations/s",
+      "note": "Poisson arrival rate of new conversations."
+    },
+    "mean_turns_per_conversation": {
+      "value": 3,
+      "unit": "turns",
+      "note": "Geometric number of turns per conversation."
+    },
+    "mean_think_time_s": {
+      "value": 15,
+      "unit": "s",
+      "note": "Exponential gap between a response and the next turn."
+    },
+    "first_prompt_median_tokens": {
+      "value": 2000,
+      "unit": "tokens",
+      "note": "Log-normal first-turn prompt length."
+    },
+    "first_prompt_sigma": {
+      "value": 1.3,
+      "unit": "log-normal sigma",
+      "note": "Gives prompts from tens of tokens to about 100k tokens."
+    },
+    "followup_new_tokens_median": {
+      "value": 150,
+      "unit": "tokens",
+      "note": "New user tokens in each later turn."
+    },
+    "followup_new_tokens_sigma": {
+      "value": 1.0,
+      "unit": "log-normal sigma",
+      "note": "Spread of the new user tokens per later turn."
+    },
+    "output_median_tokens": {
+      "value": 250,
+      "unit": "tokens",
+      "note": "Log-normal output length."
+    },
+    "output_sigma": {
+      "value": 1.0,
+      "unit": "log-normal sigma",
+      "note": "Outputs from about 20 to 5,000 tokens."
+    },
+    "prompt_min_tokens": {
+      "value": 20,
+      "unit": "tokens",
+      "note": "Clip of the prompt distribution (spec R-IX.2 example)."
+    },
+    "prompt_max_tokens": {
+      "value": 100000,
+      "unit": "tokens",
+      "note": "Clip of the prompt distribution (spec R-IX.2 example)."
+    },
+    "output_min_tokens": {
+      "value": 20,
+      "unit": "tokens",
+      "note": "Clip of the output distribution (spec R-IX.2 example)."
+    },
+    "output_max_tokens": {
+      "value": 5000,
+      "unit": "tokens",
+      "note": "Clip of the output distribution (spec R-IX.2 example)."
+    },
+    "kv_capacity_tokens": {
+      "value": 600000,
+      "unit": "tokens",
+      "note": "KV pool of one simulated endpoint; running contexts and cached prefixes share it (cached entries are evicted LRU)."
+    },
+    "max_running": {
+      "value": 64,
+      "unit": "sequences",
+      "note": "max_num_seqs analogue per endpoint."
+    },
+    "tpot_base_ms": {
+      "value": 20,
+      "unit": "ms",
+      "note": "Decode step time with one sequence."
+    },
+    "tpot_per_running_ms": {
+      "value": 0.3,
+      "unit": "ms per running sequence",
+      "note": "Added step time per running sequence (more KV to read)."
+    },
+    "kv_block_tokens": {
+      "value": 64,
+      "unit": "tokens",
+      "note": "Block size used by the Dynamo cost in the simulation."
+    }
+  },
+  "hot_prefix_sim": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Hot-prefix scenario of sim/routing_score.py: one large tenant sends many short requests that all start with the same long prefix (system prompt + tool schemas, hypothetical.serving_assumptions.reference_shared_prefix_tokens).",
+    "hot_fraction": {
+      "value": 0.6,
+      "unit": "fraction of conversations",
+      "note": "Share of conversations that belong to the hot tenant."
+    },
+    "hot_suffix_median_tokens": {
+      "value": 500,
+      "unit": "tokens",
+      "note": "Median new suffix after the shared prefix (matches serving_assumptions.prefix_hit_suffix_tokens)."
+    },
+    "conversation_rate_per_s": {
+      "value": 3.0,
+      "unit": "conversations/s",
+      "note": "Higher rate than routing_sim, because hot requests are short."
+    },
+    "low_gate_ms": {
+      "value": 2000,
+      "unit": "ms",
+      "note": "maxTTFTPenaltyMs of the 'load threshold' variant, instead of the default 18,000 ms."
+    }
+  },
+  "admission_ref": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Priority bands of the reference system's EPP flow control (InferenceObjective.spec.priority; higher = more critical).",
+    "band_names": {
+      "value": [
+        "interactive",
+        "standard",
+        "batch"
+      ],
+      "unit": "names",
+      "note": "Paid interactive chat, free-tier chat, and background jobs (evaluations, offline summaries)."
+    },
+    "band_priorities": {
+      "value": [
+        10,
+        0,
+        -10
+      ],
+      "unit": "InferenceObjective priority",
+      "note": "Strict priority across bands; the reference request runs in 'interactive'."
+    },
+    "reference_request_band": {
+      "value": "interactive",
+      "unit": "band",
+      "note": "The reference user's plan is a paid plan."
+    },
+    "batch_band_usage_ceiling": {
+      "value": 0.8,
+      "unit": "pool saturation",
+      "note": "The batch band dispatches only while pool saturation is below 0.8, which keeps headroom for interactive bands."
+    },
+    "retry_after_s": {
+      "value": 5,
+      "unit": "s",
+      "note": "Retry-After the model router adds when it turns an EPP 429 into a client 429 (llm-d's 429 carries no Retry-After)."
+    }
+  },
+  "fairness_ref": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Fairness inside one priority band: llm-d program-aware-fairness with the las strategy, keyed by tenant ID. The weights equal the plugin defaults.",
+    "las_weight_service": {
+      "value": 0.8,
+      "unit": "weight",
+      "note": "lasWeightService default (llm-d-router program-aware README)."
+    },
+    "las_weight_head_wait": {
+      "value": 0.2,
+      "unit": "weight",
+      "note": "lasWeightHeadWait default."
+    },
+    "las_half_life_s": {
+      "value": 60,
+      "unit": "s",
+      "note": "lasHalfLifeSeconds default."
+    },
+    "las_output_token_weight": {
+      "value": 2,
+      "unit": "weight per output token",
+      "note": "Output tokens count twice in attained service (strategy_las.go)."
+    },
+    "toy_tenants": {
+      "value": [
+        "T-long",
+        "T-chat",
+        "T-new"
+      ],
+      "unit": "names",
+      "note": "Illustrative tenants of the fairness example."
+    },
+    "toy_prompt_tokens": {
+      "value": [
+        600000,
+        90000,
+        0
+      ],
+      "unit": "tokens",
+      "note": "Prompt tokens each tenant consumed in its completed requests."
+    },
+    "toy_output_tokens": {
+      "value": [
+        10000,
+        30000,
+        0
+      ],
+      "unit": "tokens",
+      "note": "Output tokens each tenant consumed."
+    },
+    "toy_seconds_since_service": {
+      "value": [
+        30,
+        0,
+        0
+      ],
+      "unit": "s",
+      "note": "Age of the service record (decay)."
+    },
+    "toy_head_wait_ms": {
+      "value": [
+        200,
+        800,
+        50
+      ],
+      "unit": "ms",
+      "note": "Wait of each tenant's oldest queued request."
+    },
+    "drr_quantum_tokens": {
+      "value": 8000,
+      "unit": "tokens per round",
+      "note": "Quantum of the deficit-round-robin example."
+    },
+    "drr_queue_a_tokens": {
+      "value": [
+        60000,
+        2000
+      ],
+      "unit": "tokens per request",
+      "note": "Tenant A: one long-document request, then a short one (backend.long_document_prompt_tokens)."
+    },
+    "drr_queue_b_tokens": {
+      "value": [
+        3000,
+        3000,
+        3000,
+        3000
+      ],
+      "unit": "tokens per request",
+      "note": "Tenant B: four chat requests of the mean prompt size."
+    }
+  },
+  "pool_queueing": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Inputs for Little's Law at the ap_south M-frontier pool (Part 9.5). Part 14 owns fleet sizing.",
+    "ap_south_share_of_asia_pacific": {
+      "value": 0.5,
+      "unit": "fraction",
+      "note": "Share of asia_pacific traffic that ap_south serves."
+    },
+    "m_frontier_share_of_requests": {
+      "value": 0.2,
+      "unit": "fraction",
+      "note": "Share of requests that select M-frontier."
+    },
+    "extra_passes_per_tool_request": {
+      "value": 2,
+      "unit": "passes",
+      "note": "Mean extra inference passes of a request that uses tools; the reference request has 2."
+    },
+    "mean_tool_time_s": {
+      "value": 3,
+      "unit": "s",
+      "note": "Mean time of one tool call between passes."
+    },
+    "gateway_queue_wait_s": {
+      "value": 0.02,
+      "unit": "s",
+      "note": "Mean wait in the EPP flow-control queue at peak."
+    },
+    "engine_wait_s": {
+      "value": 0.15,
+      "unit": "s",
+      "note": "Mean time in the engine's waiting queue before the first prefill chunk."
+    },
+    "prefill_time_s": {
+      "value": 0.25,
+      "unit": "s",
+      "note": "Mean prefill time per pass, prefix hits included."
+    },
+    "littles_example_rate_per_s": {
+      "value": 10000,
+      "unit": "requests/s",
+      "note": "Spec R-IX.5 example."
+    },
+    "littles_example_wait_s": {
+      "value": 2,
+      "unit": "s",
+      "note": "Spec R-IX.5 example."
+    },
+    "mm1_utilizations": {
+      "value": [
+        0.5,
+        0.7,
+        0.8,
+        0.9,
+        0.95,
+        0.99
+      ],
+      "unit": "fraction",
+      "note": "Utilization points of the curve."
+    },
+    "mmc_servers": {
+      "value": 8,
+      "unit": "endpoints",
+      "note": "Endpoints behind one shared queue in the M/M/c comparison."
+    },
+    "decode_step_tokens_e1": {
+      "value": 2048,
+      "unit": "tokens",
+      "note": "Local prefill chunk in E1's step at the counter moment (in addition to one token per running sequence)."
+    }
+  }
+}

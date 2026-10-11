@@ -1,0 +1,497 @@
+{
+  "_about": "Class C (reference-architecture choice) and HYPOTHETICAL values only. Every value here is invented for teaching and must be labelled hypothetical wherever it appears. Merged into constants.json by constants/build_constants.py. Draft v1, 2026-10-09.",
+  "reference_request": {
+    "_class": "C",
+    "conversation_turn": {
+      "value": 4,
+      "unit": "turn",
+      "note": "Three earlier turns exist in the same conversation."
+    },
+    "user_text": {
+      "value": "Here is our Q3 report and a photo of last week's whiteboard plan. Using our pricing policy, check the current list prices of our three main competitors, compute our gross margin at each of their price points, and plot it. Cite your sources.",
+      "unit": "text",
+      "note": "Generic, original example. No real company."
+    },
+    "image": {
+      "value": {
+        "format": "JPEG",
+        "width_px": 4032,
+        "height_px": 3024,
+        "bytes": 2900000,
+        "source": "phone photo of a whiteboard"
+      },
+      "unit": "object"
+    },
+    "pdf": {
+      "value": {
+        "name": "q3-report.pdf",
+        "pages": 18,
+        "bytes": 2100000,
+        "layout": "two-column, 6 tables, 4 figures",
+        "text_layer_pages": 16,
+        "scanned_pages": 2
+      },
+      "unit": "object",
+      "note": "Uploaded before Send; parsed and indexed at upload time."
+    },
+    "history_turns": {
+      "value": 3,
+      "unit": "turns"
+    },
+    "history_tokens": {
+      "value": 2600,
+      "unit": "tokens",
+      "note": "Before any compaction."
+    },
+    "memory_records_retrieved": {
+      "value": 2,
+      "unit": "records",
+      "note": "Example records: 'reports figures in EUR', 'prefers results as a table'."
+    },
+    "rag_workspace_documents": {
+      "value": 4200,
+      "unit": "documents"
+    },
+    "rag_chunks_selected": {
+      "value": 6,
+      "unit": "chunks"
+    },
+    "web_queries": {
+      "value": 3,
+      "unit": "queries"
+    },
+    "web_results_considered": {
+      "value": 8,
+      "unit": "results"
+    },
+    "web_pages_fetched": {
+      "value": 3,
+      "unit": "pages"
+    },
+    "code_task": {
+      "value": "compute gross margin at three price points and render a PNG chart",
+      "unit": "text"
+    },
+    "output_tokens_visible": {
+      "value": 450,
+      "unit": "tokens",
+      "note": "Streamed answer with a table, citations and a chart link."
+    },
+    "citations": {
+      "value": 5,
+      "unit": "citations"
+    },
+    "serving_region": {
+      "value": "ap_south",
+      "unit": "region id",
+      "note": "Nearest region to the Nairobi user by great-circle distance (network_latency:distances.nearest_region). Also the conversation's home region (RA-17)."
+    }
+  },
+  "traffic": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "registered_users": {
+      "value": 1000000000,
+      "unit": "users"
+    },
+    "daily_active_users": {
+      "value": 250000000,
+      "unit": "users"
+    },
+    "requests_per_dau_per_day": {
+      "value": 12,
+      "unit": "requests/user/day"
+    },
+    "peak_to_average_ratio": {
+      "value": 1.45,
+      "unit": "ratio",
+      "note": "Daily curve peak over the 24-hour average."
+    },
+    "peak_concurrently_connected_users": {
+      "value": 25000000,
+      "unit": "users",
+      "note": "10% of DAU hold an open app session at the global peak."
+    },
+    "peak_arrival_rate": {
+      "value": 50000,
+      "unit": "requests/s",
+      "note": "Chosen so that peak arrival × request duration gives one million in-flight generations (R-XIV.2)."
+    },
+    "mean_output_tokens": {
+      "value": 400,
+      "unit": "tokens"
+    },
+    "per_request_decode_speed": {
+      "value": 20,
+      "unit": "tokens/s",
+      "note": "Per-user decode TARGET of the R-XIV.2 example (TPOT 50 ms): it sets the batch per rank and the fleet Little's Law. The reference request's actual speed is the Part 14.2 design point, request_cost:design_point.step_s."
+    },
+    "mean_prompt_tokens": {
+      "value": 3000,
+      "unit": "tokens",
+      "note": "System prompt + tools + history + new message, before prefix-cache reuse."
+    },
+    "prefix_cache_hit_fraction": {
+      "value": 0.6,
+      "unit": "fraction of prompt tokens"
+    },
+    "tool_use_fraction": {
+      "value": 0.25,
+      "unit": "fraction of requests"
+    },
+    "web_search_fraction": {
+      "value": 0.15,
+      "unit": "fraction of requests"
+    },
+    "code_execution_fraction": {
+      "value": 0.05,
+      "unit": "fraction of requests"
+    },
+    "image_input_fraction": {
+      "value": 0.08,
+      "unit": "fraction of requests"
+    },
+    "regional_split": {
+      "value": {
+        "north_america": 0.35,
+        "europe": 0.25,
+        "asia_pacific": 0.3,
+        "rest_of_world": 0.1
+      },
+      "unit": "fraction of requests"
+    }
+  },
+  "slo": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "availability": {
+      "value": 0.999,
+      "unit": "fraction per 30 days"
+    },
+    "p95_ttft_ms": {
+      "value": 1500,
+      "unit": "ms",
+      "note": "Text-only requests without tools."
+    },
+    "p95_tpot_ms": {
+      "value": 60,
+      "unit": "ms"
+    },
+    "top_level_deadline_s": {
+      "value": 120,
+      "unit": "s",
+      "note": "Overall request deadline before downstream budgets are split."
+    }
+  },
+  "reference_regions": {
+    "_class": "C",
+    "_note": "Generic region names. Coordinates are city centres used only for great-circle distance (sim/network_latency.py).",
+    "us_east": {
+      "value": {
+        "city": "Ashburn, Virginia",
+        "lat": 39.0438,
+        "lon": -77.4874
+      },
+      "unit": "location"
+    },
+    "eu_west": {
+      "value": {
+        "city": "Dublin",
+        "lat": 53.3498,
+        "lon": -6.2603
+      },
+      "unit": "location"
+    },
+    "ap_south": {
+      "value": {
+        "city": "Mumbai",
+        "lat": 19.076,
+        "lon": 72.8777
+      },
+      "unit": "location"
+    },
+    "ap_northeast": {
+      "value": {
+        "city": "Tokyo",
+        "lat": 35.6762,
+        "lon": 139.6503
+      },
+      "unit": "location"
+    },
+    "user_location": {
+      "value": {
+        "city": "Nairobi",
+        "lat": -1.2921,
+        "lon": 36.8219
+      },
+      "unit": "location",
+      "note": "Where the reference user sits. Chosen far from every reference region so distance and region choice matter in the routing chapters."
+    }
+  },
+  "serving_assumptions": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL / reference assumption",
+    "_note": "Values the engine measures at startup on real hardware (vLLM's profiling run reports 'Available KV cache memory'). Here they are fixed assumptions so the math is reproducible.",
+    "non_kv_overhead_per_gpu_gib": {
+      "value": 4.0,
+      "unit": "GiB",
+      "note": "Peak activations + CUDA Graph pools + NCCL buffers + allocator overhead per GPU, beyond weights and KV. Assumption; a real deployment measures it."
+    },
+    "prefill_mfu": {
+      "value": 0.5,
+      "unit": "fraction of dense BF16 peak",
+      "note": "Model FLOPs utilization during long prefill. Assumption used only to turn FLOPs into time for TTFT-saved estimates."
+    },
+    "kv_transfer_software_overhead_ms": {
+      "value": 2.0,
+      "unit": "ms",
+      "note": "Fixed per-transfer setup cost (descriptor exchange, notification) added to bytes/bandwidth. Assumption."
+    },
+    "reference_shared_prefix_tokens": {
+      "value": 8000,
+      "unit": "tokens",
+      "note": "System prompt + tool schemas shared by many requests of one tenant, for the prefix-cache TTFT example."
+    },
+    "reference_context_tokens": {
+      "value": 32768,
+      "unit": "tokens",
+      "note": "Context length used for the disaggregation KV-transfer example."
+    },
+    "slow_path_tcp_gbps": {
+      "value": 25,
+      "unit": "Gb/s",
+      "source": "reference choice, 2026-10-09",
+      "accessed": "2026-10-09",
+      "hypothetical": true,
+      "class": "C",
+      "note": "HYPOTHETICAL slow KV path (TCP over a 25 Gb/s Ethernet port shared by the node). Reference choice, not a measured or vendor value."
+    },
+    "concurrent_sequences_example": {
+      "value": 1000,
+      "unit": "sequences",
+      "source": "reference choice, 2026-10-09",
+      "accessed": "2026-10-09",
+      "hypothetical": true,
+      "class": "C",
+      "note": "HYPOTHETICAL N for the 'how many nodes for N concurrent 8k sequences' design example."
+    },
+    "prefix_hit_suffix_tokens": {
+      "value": 500,
+      "unit": "tokens",
+      "source": "reference choice, 2026-10-09",
+      "accessed": "2026-10-09",
+      "hypothetical": true,
+      "class": "C",
+      "note": "HYPOTHETICAL new (uncached) suffix after the 8,000-token shared prefix (hypothetical.serving_assumptions.reference_shared_prefix_tokens) in the R-XIII.3 prefix-cache TTFT example."
+    },
+    "object_store_read_gbps_per_node": {
+      "value": 100,
+      "unit": "Gb/s",
+      "hypothetical": true,
+      "class": "C",
+      "note": "HYPOTHETICAL. Aggregate read throughput from the regional object store into one GPU node over its front-end storage network port (parallel range reads). A reference choice, separate from the deliberately slow 25 Gb/s KV path (slow_path_tcp_gbps)."
+    },
+    "stream_rate_example_tokens_per_s": {
+      "value": 100,
+      "unit": "tokens/s",
+      "hypothetical": true,
+      "class": "C",
+      "note": "HYPOTHETICAL. Example stream rate from spec R-XXII.4; one token per SSE event (vLLM stream_interval = 1)."
+    }
+  },
+  "edge": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "user_to_pop_rtt_ms": {
+      "value": 20,
+      "unit": "ms",
+      "note": "Round trip from the reference user's device to the nearest edge PoP over the access network (Wi-Fi + fixed or mobile broadband). The PoP sits in the user's metro, so fiber distance is negligible and the access network dominates."
+    },
+    "nearest_pop": {
+      "value": {
+        "city": "Nairobi",
+        "lat": -1.2921,
+        "lon": 36.8219
+      },
+      "unit": "location",
+      "note": "Edge PoP in the reference user's metro (same coordinates as user_location)."
+    }
+  },
+  "backend": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "plan_rpm_limit": {
+      "value": 300,
+      "unit": "requests/min",
+      "note": "Example plan limit used in the rate-limit worked example (Part 03)."
+    },
+    "plan_tpm_limit": {
+      "value": 400000,
+      "unit": "tokens/min",
+      "note": "Example plan token limit (Part 03)."
+    },
+    "long_document_prompt_tokens": {
+      "value": 60000,
+      "unit": "tokens",
+      "note": "Long-document tenant example: prompt tokens per request."
+    },
+    "long_document_output_tokens": {
+      "value": 1000,
+      "unit": "tokens",
+      "note": "Long-document tenant example: output tokens per request."
+    },
+    "default_max_tokens": {
+      "value": 4096,
+      "unit": "tokens",
+      "note": "Default max_tokens reserved when the client sets none."
+    },
+    "burst_requests": {
+      "value": 150,
+      "unit": "requests",
+      "note": "Burst size in the 429 example."
+    },
+    "gateway_pods_per_region": {
+      "value": 8,
+      "unit": "pods",
+      "note": "Gateway pods per region in the distributed rate-limit example."
+    },
+    "clock_skew_s": {
+      "value": 0.1,
+      "unit": "s",
+      "note": "Clock skew between gateway pods in the distributed rate-limit example."
+    },
+    "flush_every_tokens": {
+      "value": 50,
+      "unit": "tokens",
+      "note": "Buffered persistence: flush the partial assistant message every N tokens."
+    },
+    "flush_every_s": {
+      "value": 1,
+      "unit": "s",
+      "note": "Buffered persistence: flush at least every N seconds."
+    },
+    "indexes_per_message_row": {
+      "value": 2,
+      "unit": "indexes",
+      "note": "Secondary indexes updated per message-row write."
+    },
+    "pod_load_rps": {
+      "value": 100,
+      "unit": "requests/s",
+      "note": "Requests per second per application pod in the connection-pool example."
+    },
+    "transactions_per_request": {
+      "value": 4,
+      "unit": "transactions",
+      "note": "Database transactions per request in the connection-pool example."
+    },
+    "transaction_ms": {
+      "value": 5,
+      "unit": "ms",
+      "note": "Mean database transaction time in the connection-pool example."
+    },
+    "pods_per_region": {
+      "value": 200,
+      "unit": "pods",
+      "note": "Application pods per region in the connection-pool example."
+    }
+  },
+  "deployment": {
+    "_class": "C",
+    "_label": "reference choice (RA-55)",
+    "k3_rack_prefill_workers": {
+      "value": 2,
+      "unit": "workers",
+      "note": "Prefill workers per GB300 NVL72 rack (RA-55)."
+    },
+    "k3_prefill_gpus_per_worker": {
+      "value": 8,
+      "unit": "GPUs",
+      "note": "TEP8 prefill worker size (vLLM validated P/D topology)."
+    },
+    "k3_rack_decode_workers": {
+      "value": 3,
+      "unit": "workers",
+      "note": "Decode workers per rack (RA-55)."
+    },
+    "k3_decode_gpus_per_worker": {
+      "value": 16,
+      "unit": "GPUs",
+      "note": "DEP16 decode worker size."
+    },
+    "k3_rack_spare_gpus": {
+      "value": 8,
+      "unit": "GPUs",
+      "note": "Warm-spare GPUs per rack with weights loaded (RA-55)."
+    },
+    "m_dense_replica_gpus": {
+      "value": 8,
+      "unit": "GPUs",
+      "note": "One M-dense replica = one 8x H100 node at TP=8 (RA-36)."
+    }
+  },
+  "ingestion": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "page_render_dpi": {
+      "value": 150,
+      "unit": "dpi",
+      "note": "Resolution at which scanned PDF pages are rendered to images for OCR and layout detection (Part 04)."
+    }
+  },
+  "tool_loop": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Shared values for the reference request's three inference passes (Part 03 walk; Parts 05-08). A reference choice.",
+    "system_prompt_tokens": {
+      "value": 1200,
+      "unit": "tokens",
+      "note": "Operator-owned system prompt (role, policies, citation format, current date). Identical for all users of the deployment; its KV blocks are reused only within one tenant, because every request carries the tenant cache_salt in block 0 (RA-40)."
+    },
+    "pass1_reasoning_tokens": {
+      "value": 300,
+      "unit": "tokens",
+      "note": "Thinking tokens before the web_search call in pass 1."
+    },
+    "pass2_reasoning_tokens": {
+      "value": 200,
+      "unit": "tokens",
+      "note": "Thinking tokens before the run_python call in pass 2."
+    },
+    "pass3_reasoning_tokens": {
+      "value": 400,
+      "unit": "tokens",
+      "note": "Thinking tokens before the visible answer in pass 3."
+    },
+    "web_snippet_tokens_per_result": {
+      "value": 80,
+      "unit": "tokens",
+      "note": "Title, URL, date and snippet of one search result as given to the model."
+    },
+    "fetched_page_tokens_cap": {
+      "value": 3000,
+      "unit": "tokens",
+      "note": "Hard cap on the extracted main text of one fetched page; longer text is truncated."
+    },
+    "fetched_page_tokens_reference": {
+      "value": 1800,
+      "unit": "tokens",
+      "note": "Mean extracted main text per fetched page for the reference request (3 pricing pages)."
+    },
+    "code_result_tokens": {
+      "value": 160,
+      "unit": "tokens",
+      "note": "stdout, stderr and the artifact list that run_python returns to the model for the reference request."
+    },
+    "code_output_cap_tokens": {
+      "value": 2000,
+      "unit": "tokens",
+      "note": "Hard cap on stdout plus stderr returned to the model; the rest is truncated with a marker."
+    },
+    "max_tool_iterations": {
+      "value": 8,
+      "unit": "passes",
+      "note": "Loop limit: the orchestrator stops calling the model for tools after this many passes and asks for a final answer."
+    }
+  }
+}

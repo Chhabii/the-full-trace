@@ -1,0 +1,736 @@
+{
+  "meta": {
+    "script": "sim/usage_accounting.py",
+    "generated_at": "2026-10-09T10:23:27+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T10:23:27+00:00",
+      "sha256": "7d0453de0b2b"
+    },
+    "constants_used": {
+      "extra.sims_w16.kafka_retention_ms_default": 604800000,
+      "extra.sims_w16.stripe_meter_event_calls_per_s": 1000,
+      "hypothetical.billing_ref.active_hours_per_tenant_per_day": 3,
+      "hypothetical.billing_ref.price_cached_input_usd_per_mtok": 0.2,
+      "hypothetical.billing_ref.price_code_exec_usd_per_s": 0.0001,
+      "hypothetical.billing_ref.price_input_usd_per_mtok": 2.0,
+      "hypothetical.billing_ref.price_output_usd_per_mtok": 8.0,
+      "hypothetical.billing_ref.price_storage_usd_per_gb_month": 0.1,
+      "hypothetical.billing_ref.price_web_search_usd_per_1000_queries": 10.0,
+      "hypothetical.event_stream_ref.aggregator_events_per_s": 5000,
+      "hypothetical.event_stream_ref.analytics_event_bytes": 1000,
+      "hypothetical.event_stream_ref.audit_event_bytes": 600,
+      "hypothetical.event_stream_ref.dedupe_entry_bytes": 64,
+      "hypothetical.event_stream_ref.dedupe_window_s": 86400,
+      "hypothetical.event_stream_ref.min_insync_replicas": 2,
+      "hypothetical.event_stream_ref.tool_calls_per_tool_request": 2,
+      "hypothetical.event_stream_ref.turn_completed_event_bytes": 300,
+      "hypothetical.event_stream_ref.usage_event_bytes": 400,
+      "hypothetical.event_stream_ref.usage_topic_partitions": 64,
+      "hypothetical.reference_request.image": {
+        "format": "JPEG",
+        "width_px": 4032,
+        "height_px": 3024,
+        "bytes": 2900000,
+        "source": "phone photo of a whiteboard"
+      },
+      "hypothetical.reference_request.pdf": {
+        "name": "q3-report.pdf",
+        "pages": 18,
+        "bytes": 2100000,
+        "layout": "two-column, 6 tables, 4 figures",
+        "text_layer_pages": 16,
+        "scanned_pages": 2
+      },
+      "hypothetical.reference_request.web_queries": 3,
+      "hypothetical.sandbox_pool.reference_run_ms": 1200,
+      "hypothetical.storage_ref.bytes_per_token_text": 4,
+      "hypothetical.storage_ref.in_region_commit_ms": 2,
+      "hypothetical.storage_ref.large_tenant_requests_per_s": 2000,
+      "hypothetical.storage_ref.mean_user_message_tokens": 60,
+      "hypothetical.storage_ref.message_row_overhead_bytes": 300,
+      "hypothetical.storage_ref.messages_per_request": 2,
+      "hypothetical.storage_ref.quota_counter_shards": 32,
+      "hypothetical.storage_ref.replicas_per_range": 3,
+      "hypothetical.traffic.daily_active_users": 250000000,
+      "hypothetical.traffic.mean_output_tokens": 400,
+      "hypothetical.traffic.peak_arrival_rate": 50000,
+      "hypothetical.traffic.peak_to_average_ratio": 1.45,
+      "hypothetical.traffic.requests_per_dau_per_day": 12,
+      "hypothetical.traffic.tool_use_fraction": 0.25,
+      "retrieval_and_data.kafka_batch_size_default": 16384,
+      "retrieval_and_data.kafka_common_replication_factor": 3,
+      "retrieval_and_data.kafka_linger_ms_default": 5
+    }
+  },
+  "conventions": {
+    "serves": [
+      "R-XVI.1",
+      "R-XVI.2",
+      "R-XVI.4"
+    ],
+    "class": "HYPOTHETICAL traffic, sizes and prices (class C); Kafka and Stripe defaults are class A",
+    "units": "decimal: 1 MB = 1e6 B, 1 TB = 1e12 B, 1 PB = 1e15 B; Mtok = 1e6 tokens"
+  },
+  "db": {
+    "inputs": {
+      "daily_active_users": {
+        "value": 250000000,
+        "unit": "users",
+        "from": "hypothetical.traffic.daily_active_users"
+      },
+      "requests_per_dau_per_day": {
+        "value": 12,
+        "unit": "requests/user/day",
+        "from": "hypothetical.traffic.requests_per_dau_per_day"
+      },
+      "mean_user_message_tokens": {
+        "value": 60,
+        "unit": "tokens",
+        "from": "hypothetical.storage_ref.mean_user_message_tokens"
+      },
+      "mean_output_tokens": {
+        "value": 400,
+        "unit": "tokens",
+        "from": "hypothetical.traffic.mean_output_tokens"
+      },
+      "bytes_per_token_text": {
+        "value": 4,
+        "unit": "B/token",
+        "from": "hypothetical.storage_ref.bytes_per_token_text"
+      },
+      "row_overhead_bytes": {
+        "value": 300,
+        "unit": "B",
+        "from": "hypothetical.storage_ref.message_row_overhead_bytes"
+      },
+      "replicas_per_range": {
+        "value": 3,
+        "unit": "replicas",
+        "from": "hypothetical.storage_ref.replicas_per_range"
+      }
+    },
+    "requests_per_day": {
+      "formula": "DAU × requests per DAU per day",
+      "value": 3000000000,
+      "unit": "requests/day",
+      "arithmetic": "250,000,000 × 12 = 3,000,000,000"
+    },
+    "average_requests_per_s": {
+      "formula": "requests per day / 86,400 s",
+      "value": 34722.22222,
+      "unit": "requests/s",
+      "arithmetic": "3,000,000,000 / 86,400 = 34,722.2"
+    },
+    "peak_check": {
+      "formula": "average × peak-to-average ratio",
+      "value": 50347.22222,
+      "unit": "requests/s",
+      "arithmetic": "34,722.2 × 1.45 = 50,347",
+      "note": "Agrees with hypothetical.traffic.peak_arrival_rate within 1%."
+    },
+    "peak_arrival_rate": 50000,
+    "messages_per_day": {
+      "formula": "requests per day × 2 message rows",
+      "value": 6000000000,
+      "unit": "rows/day",
+      "arithmetic": "3,000,000,000 × 2 = 6,000,000,000"
+    },
+    "message_writes_per_s_peak": {
+      "formula": "peak arrival × 2",
+      "value": 100000,
+      "unit": "rows/s",
+      "arithmetic": "50,000 × 2 = 100,000"
+    },
+    "user_row_bytes": {
+      "formula": "user tokens × B/token + overhead",
+      "value": 540,
+      "unit": "B",
+      "arithmetic": "60 × 4 + 300 = 540"
+    },
+    "assistant_row_bytes": {
+      "formula": "output tokens × B/token + overhead",
+      "value": 1900,
+      "unit": "B",
+      "arithmetic": "400 × 4 + 300 = 1,900"
+    },
+    "bytes_per_request": {
+      "value": 2440,
+      "unit": "B",
+      "arithmetic": "540 + 1,900 = 2,440"
+    },
+    "logical_bytes_per_day": {
+      "formula": "requests per day × bytes per request",
+      "value": 7320000000000,
+      "unit": "B/day",
+      "arithmetic": "3,000,000,000 × 2,440 = 7,320,000,000,000",
+      "TB_1e12": 7.32
+    },
+    "physical_bytes_per_day": {
+      "formula": "logical × replicas per range",
+      "value": 21960000000000,
+      "unit": "B/day",
+      "arithmetic": "7.32 TB × 3 = 21.96 TB",
+      "TB_1e12": 21.96,
+      "note": "Message rows only; indexes, MVCC versions and compaction overhead not included."
+    },
+    "physical_bytes_per_year": {
+      "value": 8015400000000000,
+      "unit": "B/year",
+      "PB_1e15": 8.0154,
+      "arithmetic": "21.96 TB × 365 = 8.0154 PB"
+    }
+  },
+  "hot_row": {
+    "inputs": {
+      "large_tenant_requests_per_s": {
+        "value": 2000,
+        "unit": "requests/s",
+        "from": "hypothetical.storage_ref.large_tenant_requests_per_s"
+      },
+      "in_region_commit_ms": {
+        "value": 2,
+        "unit": "ms",
+        "from": "hypothetical.storage_ref.in_region_commit_ms"
+      },
+      "quota_counter_shards": {
+        "value": 32,
+        "unit": "rows",
+        "from": "hypothetical.storage_ref.quota_counter_shards"
+      },
+      "passes_per_request": {
+        "value": 3,
+        "unit": "passes",
+        "from": "reference request (3 inference passes)"
+      },
+      "writes_per_pass": {
+        "value": 2,
+        "unit": "writes",
+        "from": "reserve + settle (RA-10 pattern on the SQL counter)"
+      }
+    },
+    "counter_writes_per_s": {
+      "formula": "requests/s × passes × 2",
+      "value": 12000,
+      "unit": "writes/s",
+      "arithmetic": "2,000 × 3 × 2 = 12,000"
+    },
+    "max_serial_writes_per_row": {
+      "formula": "1,000 ms / commit time",
+      "value": 500,
+      "unit": "writes/s",
+      "arithmetic": "1,000 / 2 = 500",
+      "note": "Each update holds the row lock until its quorum commit returns."
+    },
+    "overload_factor_one_row": {
+      "value": 24,
+      "unit": "ratio",
+      "arithmetic": "12,000 / 500 = 24"
+    },
+    "max_writes_sharded": {
+      "formula": "per-row limit × shards",
+      "value": 16000,
+      "unit": "writes/s",
+      "arithmetic": "500 × 32 = 16,000"
+    },
+    "sharded_utilization": {
+      "value": 0.75,
+      "unit": "fraction",
+      "arithmetic": "12,000 / 16,000 = 0.75"
+    }
+  },
+  "events": {
+    "event_bytes": {
+      "usage": {
+        "value": 400,
+        "unit": "B",
+        "from": "hypothetical.event_stream_ref.usage_event_bytes"
+      },
+      "audit": {
+        "value": 600,
+        "unit": "B",
+        "from": "hypothetical.event_stream_ref.audit_event_bytes"
+      },
+      "analytics": {
+        "value": 1000,
+        "unit": "B",
+        "from": "hypothetical.event_stream_ref.analytics_event_bytes"
+      },
+      "turn_completed": {
+        "value": 300,
+        "unit": "B",
+        "from": "hypothetical.event_stream_ref.turn_completed_event_bytes"
+      }
+    },
+    "reference_request": {
+      "counts": {
+        "usage": 5,
+        "audit": 2,
+        "analytics": 1,
+        "turn_completed": 1
+      },
+      "count_rules": {
+        "usage": "one per inference pass (3) + one per tool call (2)",
+        "audit": "one per tool call",
+        "analytics": "one request summary",
+        "turn_completed": "one per finished turn (triggers memory extraction and conversation indexing)"
+      },
+      "bytes": {
+        "usage": 2000,
+        "audit": 1200,
+        "analytics": 1000,
+        "turn_completed": 300
+      },
+      "total_events": 9,
+      "total_bytes": {
+        "value": 4500,
+        "unit": "B",
+        "arithmetic": "2,000 + 1,200 + 1,000 + 300 = 4,500"
+      }
+    },
+    "fleet_mean_per_request": {
+      "tool_use_fraction": {
+        "value": 0.25,
+        "unit": "fraction",
+        "from": "hypothetical.traffic.tool_use_fraction"
+      },
+      "tool_calls_per_tool_request": {
+        "value": 2,
+        "unit": "calls",
+        "from": "hypothetical.event_stream_ref.tool_calls_per_tool_request"
+      },
+      "mean_tool_calls": {
+        "value": 0.5,
+        "unit": "calls",
+        "arithmetic": "0.25 × 2 = 0.5"
+      },
+      "mean_passes": {
+        "formula": "1 + mean tool calls",
+        "value": 1.5,
+        "unit": "passes",
+        "arithmetic": "1 + 0.5 = 1.5"
+      },
+      "counts": {
+        "usage": 2,
+        "audit": 0.5,
+        "analytics": 1,
+        "turn_completed": 1
+      },
+      "total_events": {
+        "value": 4.5,
+        "unit": "events/request",
+        "arithmetic": "2 + 0.5 + 1 + 1 = 4.5"
+      },
+      "total_bytes": {
+        "value": 2400,
+        "unit": "B/request",
+        "arithmetic": "2 × 400 + 0.5 × 600 + 1 × 1000 + 1 × 300 = 2,400"
+      }
+    },
+    "fleet_peak": {
+      "events_per_s": {
+        "value": 225000,
+        "unit": "events/s",
+        "arithmetic": "50,000 × 4.5 = 225,000"
+      },
+      "bytes_per_s": {
+        "value": 120000000,
+        "unit": "B/s",
+        "arithmetic": "50,000 × 2,400 = 120,000,000",
+        "MB_1e6": 120
+      },
+      "replicated_write_bytes_per_s": {
+        "value": 360000000,
+        "unit": "B/s",
+        "arithmetic": "120 MB/s × 3 = 360 MB/s",
+        "MB_1e6": 360
+      },
+      "usage_events_per_s": {
+        "value": 100000,
+        "unit": "events/s",
+        "arithmetic": "50,000 × 2 = 100,000"
+      },
+      "message_writes_per_s": 100000
+    },
+    "replication": {
+      "replication_factor": 3,
+      "min_insync_replicas": 2,
+      "broker_failures_without_blocking_writes": 1,
+      "broker_failures_without_losing_committed": 2
+    },
+    "fleet_day": {
+      "events_per_day": {
+        "value": 13500000000,
+        "unit": "events/day",
+        "arithmetic": "3,000,000,000 × 4.5 = 13,500,000,000"
+      },
+      "bytes_per_day": {
+        "value": 7200000000000,
+        "unit": "B/day",
+        "arithmetic": "3,000,000,000 × 2,400 = 7,200,000,000,000",
+        "TB_1e12": 7.2
+      },
+      "retention_days": {
+        "value": 7,
+        "unit": "days",
+        "arithmetic": "604,800,000 ms / 86,400,000 = 7"
+      },
+      "stored_bytes_retention": {
+        "formula": "bytes per day × retention days × replication factor",
+        "value": 151200000000000,
+        "unit": "B",
+        "arithmetic": "7.2 TB × 7 × 3 = 151.2 TB",
+        "TB_1e12": 151.2,
+        "note": "Uncompressed; producer compression would shrink it."
+      }
+    },
+    "partitions": {
+      "usage_topic_partitions": {
+        "value": 64,
+        "unit": "partitions",
+        "from": "hypothetical.event_stream_ref.usage_topic_partitions"
+      },
+      "aggregator_events_per_s": {
+        "value": 5000,
+        "unit": "events/s",
+        "from": "hypothetical.event_stream_ref.aggregator_events_per_s"
+      },
+      "min_consumers": {
+        "formula": "ceil(usage events/s / events/s per consumer)",
+        "value": 20,
+        "unit": "consumers",
+        "arithmetic": "ceil(100,000 / 5,000) = 20",
+        "note": "Whole fleet at peak; each region has its own log, so the per-region count is lower."
+      },
+      "per_partition_events_per_s": {
+        "value": 1562.5,
+        "unit": "events/s",
+        "arithmetic": "100,000 / 64 = 1,562.5"
+      },
+      "per_partition_bytes_per_s": {
+        "value": 625000,
+        "unit": "B/s",
+        "arithmetic": "1,562.5 × 400 = 625,000",
+        "KB_1e3": 625
+      },
+      "large_tenant_usage_events_per_s": {
+        "value": 4000,
+        "unit": "events/s",
+        "arithmetic": "2,000 × 2 = 4,000"
+      },
+      "large_tenant_share_of_one_consumer": {
+        "value": 0.8,
+        "unit": "ratio",
+        "arithmetic": "4,000 / 5,000 = 0.8",
+        "note": "If the key were the tenant ID, this tenant's events would all land on one partition and one consumer."
+      },
+      "events_per_batch_at_linger": {
+        "formula": "events/s per partition × linger.ms",
+        "value": 7.8125,
+        "unit": "events",
+        "arithmetic": "1,562.5 × 5 / 1,000 = 7.8125",
+        "note": "Per partition, summed over all producers; one producer's batch holds fewer."
+      },
+      "batch_size_bytes": 16384,
+      "linger_ms": 5
+    },
+    "dedupe": {
+      "window_s": {
+        "value": 86400,
+        "unit": "s",
+        "from": "hypothetical.event_stream_ref.dedupe_window_s"
+      },
+      "entry_bytes": {
+        "value": 64,
+        "unit": "B",
+        "from": "hypothetical.event_stream_ref.dedupe_entry_bytes"
+      },
+      "usage_events_per_day": {
+        "value": 6000000000,
+        "unit": "events/day",
+        "arithmetic": "3,000,000,000 × 2 = 6,000,000,000"
+      },
+      "entries": {
+        "formula": "usage events per day × window / 1 day",
+        "value": 6000000000,
+        "unit": "event IDs",
+        "arithmetic": "6,000,000,000"
+      },
+      "bytes": {
+        "value": 384000000000,
+        "unit": "B",
+        "arithmetic": "6,000,000,000 × 64 = 384,000,000,000",
+        "GB_1e9": 384
+      }
+    }
+  },
+  "billing": {
+    "prices": {
+      "input": {
+        "value": 2,
+        "unit": "USD/Mtok",
+        "from": "hypothetical.billing_ref.price_input_usd_per_mtok"
+      },
+      "cached_input": {
+        "value": 0.2,
+        "unit": "USD/Mtok",
+        "from": "hypothetical.billing_ref.price_cached_input_usd_per_mtok"
+      },
+      "output": {
+        "value": 8,
+        "unit": "USD/Mtok",
+        "from": "hypothetical.billing_ref.price_output_usd_per_mtok"
+      },
+      "cached_discount": 0.9,
+      "web_search_per_1000": {
+        "value": 10,
+        "unit": "USD/1000 queries",
+        "from": "hypothetical.billing_ref.price_web_search_usd_per_1000_queries"
+      },
+      "code_exec_per_s": {
+        "value": 0.0001,
+        "unit": "USD/s",
+        "from": "hypothetical.billing_ref.price_code_exec_usd_per_s"
+      },
+      "storage_per_gb_month": {
+        "value": 0.1,
+        "unit": "USD/GB-month",
+        "from": "hypothetical.billing_ref.price_storage_usd_per_gb_month"
+      }
+    },
+    "cached_rule": "hash-block rule of data/context_budget.json (prefix_hit_tokens_512), the split Part 14.4 also uses",
+    "passes": {
+      "p1": {
+        "prompt_tokens": 23322,
+        "cached_tokens": 3072,
+        "uncached_tokens": 20250,
+        "output_tokens": 424,
+        "reasoning_tokens": 300,
+        "visible_and_frame_tokens": 124,
+        "usd_uncached": {
+          "value": 0.0405,
+          "unit": "USD",
+          "arithmetic": "20,250 × 2.0 / 1e6 = 0.040500"
+        },
+        "usd_cached": {
+          "value": 0.0006144,
+          "unit": "USD",
+          "arithmetic": "3,072 × 0.2 / 1e6 = 0.000614"
+        },
+        "usd_output": {
+          "value": 0.003392,
+          "unit": "USD",
+          "arithmetic": "424 × 8.0 / 1e6 = 0.003392"
+        },
+        "usd_tokens": {
+          "value": 0.0445064,
+          "unit": "USD"
+        },
+        "tpm_reserved": {
+          "formula": "prompt + max_tokens",
+          "value": 27418,
+          "unit": "tokens",
+          "arithmetic": "23,322 + 4,096 = 27,418"
+        },
+        "tpm_charged": {
+          "formula": "prompt + actual output",
+          "value": 23746,
+          "unit": "tokens",
+          "arithmetic": "23,322 + 424 = 23,746"
+        },
+        "tpm_refund": {
+          "formula": "reserved − charged",
+          "value": 3672,
+          "unit": "tokens",
+          "arithmetic": "27,418 − 23,746 = 3,672"
+        }
+      },
+      "p2": {
+        "prompt_tokens": 29816,
+        "cached_tokens": 23552,
+        "uncached_tokens": 6264,
+        "output_tokens": 440,
+        "reasoning_tokens": 200,
+        "visible_and_frame_tokens": 240,
+        "usd_uncached": {
+          "value": 0.012528,
+          "unit": "USD",
+          "arithmetic": "6,264 × 2.0 / 1e6 = 0.012528"
+        },
+        "usd_cached": {
+          "value": 0.0047104,
+          "unit": "USD",
+          "arithmetic": "23,552 × 0.2 / 1e6 = 0.004710"
+        },
+        "usd_output": {
+          "value": 0.00352,
+          "unit": "USD",
+          "arithmetic": "440 × 8.0 / 1e6 = 0.003520"
+        },
+        "usd_tokens": {
+          "value": 0.0207584,
+          "unit": "USD"
+        },
+        "tpm_reserved": {
+          "formula": "prompt + max_tokens",
+          "value": 33912,
+          "unit": "tokens",
+          "arithmetic": "29,816 + 4,096 = 33,912"
+        },
+        "tpm_charged": {
+          "formula": "prompt + actual output",
+          "value": 30256,
+          "unit": "tokens",
+          "arithmetic": "29,816 + 440 = 30,256"
+        },
+        "tpm_refund": {
+          "formula": "reserved − charged",
+          "value": 3656,
+          "unit": "tokens",
+          "arithmetic": "33,912 − 30,256 = 3,656"
+        }
+      },
+      "p3": {
+        "prompt_tokens": 30395,
+        "cached_tokens": 30208,
+        "uncached_tokens": 187,
+        "output_tokens": 863,
+        "reasoning_tokens": 400,
+        "visible_and_frame_tokens": 463,
+        "usd_uncached": {
+          "value": 0.000374,
+          "unit": "USD",
+          "arithmetic": "187 × 2.0 / 1e6 = 0.000374"
+        },
+        "usd_cached": {
+          "value": 0.0060416,
+          "unit": "USD",
+          "arithmetic": "30,208 × 0.2 / 1e6 = 0.006042"
+        },
+        "usd_output": {
+          "value": 0.006904,
+          "unit": "USD",
+          "arithmetic": "863 × 8.0 / 1e6 = 0.006904"
+        },
+        "usd_tokens": {
+          "value": 0.0133196,
+          "unit": "USD"
+        },
+        "tpm_reserved": {
+          "formula": "prompt + max_tokens",
+          "value": 34491,
+          "unit": "tokens",
+          "arithmetic": "30,395 + 4,096 = 34,491"
+        },
+        "tpm_charged": {
+          "formula": "prompt + actual output",
+          "value": 31258,
+          "unit": "tokens",
+          "arithmetic": "30,395 + 863 = 31,258"
+        },
+        "tpm_refund": {
+          "formula": "reserved − charged",
+          "value": 3233,
+          "unit": "tokens",
+          "arithmetic": "34,491 − 31,258 = 3,233"
+        }
+      }
+    },
+    "totals": {
+      "prompt_tokens": 83533,
+      "cached_tokens": 56832,
+      "uncached_tokens": 26701,
+      "output_tokens": 1727,
+      "reasoning_tokens": 900,
+      "visible_and_frame_tokens": 827,
+      "cached_fraction": 0.6803538721,
+      "usd_uncached": 0.053402,
+      "usd_cached": 0.0113664,
+      "usd_output": 0.013816,
+      "usd_tokens": {
+        "value": 0.0785844,
+        "unit": "USD",
+        "arithmetic": "0.053402 + 0.011366 + 0.013816 = 0.078584"
+      },
+      "usd_tokens_without_cache_discount": {
+        "formula": "all prompt tokens at the input price + output",
+        "value": 0.180882,
+        "unit": "USD",
+        "arithmetic": "83,533 × 2.0 / 1e6 + 0.013816 = 0.180882"
+      },
+      "cache_discount_saves_fraction": 0.5655488108,
+      "output_share_of_token_usd": 0.1758109752,
+      "reasoning_usd": 0.0072,
+      "tpm_reserved": 95821,
+      "tpm_charged": 85260,
+      "tpm_refund": 10561,
+      "tpm_charged_check": 85260
+    },
+    "tools": {
+      "web_queries": 3,
+      "usd_web_search": {
+        "value": 0.03,
+        "unit": "USD",
+        "arithmetic": "3 × 10.0 / 1,000 = 0.0300"
+      },
+      "code_run_s": 1.2,
+      "usd_code_exec": {
+        "value": 0.00012,
+        "unit": "USD",
+        "arithmetic": "1.2 s × 0.0001 = 0.000120"
+      }
+    },
+    "storage": {
+      "file_bytes": 5000000,
+      "file_GB": 0.005,
+      "usd_per_month": {
+        "value": 0.0005,
+        "unit": "USD/month",
+        "arithmetic": "0.005 GB × 0.1 = 0.000500"
+      },
+      "usd_per_day": {
+        "value": 1.666666667e-05,
+        "unit": "USD/day",
+        "arithmetic": "0.000500 / 30 = 0.0000167"
+      }
+    },
+    "request_usd": {
+      "formula": "tokens + web search + code execution (storage accrues per day)",
+      "value": 0.1087044,
+      "unit": "USD",
+      "arithmetic": "0.078584 + 0.0300 + 0.000120 = 0.108704"
+    },
+    "aggregation": {
+      "usage_events_per_request": {
+        "formula": "passes + tool calls = 1 + 2 × tool fraction × calls",
+        "value": 2,
+        "unit": "events",
+        "arithmetic": "1 + 2 × 0.25 × 2 = 2"
+      },
+      "usage_events_per_day": {
+        "value": 6000000000,
+        "unit": "events/day",
+        "arithmetic": "3,000,000,000 × 2 = 6,000,000,000"
+      },
+      "ledger_rows_per_day": {
+        "formula": "active tenants × active hours (one row per tenant-hour per usage kind and model, single kind here)",
+        "value": 750000000,
+        "unit": "rows/day",
+        "arithmetic": "250,000,000 × 3 = 750,000,000",
+        "note": "Upper bound with one tenant per daily active user; organizations hold many users, so fewer rows."
+      },
+      "reduction_factor": {
+        "value": 8,
+        "unit": "ratio",
+        "arithmetic": "6,000,000,000 / 750,000,000 = 8"
+      },
+      "usage_events_per_s_avg": 69444.44444,
+      "stripe_meter_calls_per_s_limit": 1000,
+      "raw_events_over_stripe_limit": {
+        "value": 69.44444444,
+        "unit": "ratio",
+        "arithmetic": "69,444 / 1,000 = 69.4444"
+      }
+    }
+  }
+}

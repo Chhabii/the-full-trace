@@ -1,0 +1,5805 @@
+{
+  "meta": {
+    "script": "sim/rate_limit_sim.py",
+    "generated_at": "2026-10-09T07:36:58+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T07:33:48+00:00",
+      "sha256": "f2b8cf4307ab"
+    },
+    "constants_used": {
+      "hardware.H-teach.h100_sxm_bf16_dense": 989.5,
+      "hypothetical.backend.burst_requests": 150,
+      "hypothetical.backend.clock_skew_s": 0.1,
+      "hypothetical.backend.default_max_tokens": 4096,
+      "hypothetical.backend.gateway_pods_per_region": 8,
+      "hypothetical.backend.long_document_output_tokens": 1000,
+      "hypothetical.backend.long_document_prompt_tokens": 60000,
+      "hypothetical.backend.plan_rpm_limit": 300,
+      "hypothetical.backend.plan_tpm_limit": 400000,
+      "hypothetical.serving_assumptions.prefill_mfu": 0.5,
+      "hypothetical.traffic.mean_output_tokens": 400,
+      "hypothetical.traffic.mean_prompt_tokens": 3000,
+      "hypothetical.traffic.peak_arrival_rate": 50000,
+      "hypothetical.traffic.per_request_decode_speed": 20,
+      "models.M-dense.head_dim": 128,
+      "models.M-dense.hidden_size": 12288,
+      "models.M-dense.intermediate_size": 28672,
+      "models.M-dense.max_position_embeddings": 262144,
+      "models.M-dense.num_attention_heads": 96,
+      "models.M-dense.num_hidden_layers": 88,
+      "models.M-dense.num_key_value_heads": 8,
+      "models.M-dense.text_params": 125025988608,
+      "models.M-dense.tie_word_embeddings": false,
+      "models.M-dense.torch_dtype": "bfloat16",
+      "models.M-dense.total_params": 127704210176,
+      "models.M-dense.vision_params": 2678221568,
+      "models.M-dense.vllm_recipe": {
+        "recommended_hw": "8x H200 (alt 4x B200, 2-8x MI300X)",
+        "tp": 8,
+        "eagle_num_speculative_tokens": 3,
+        "mi300x_tp8_1k_in_1k_out_conc32": {
+          "output_tok_s": 915,
+          "mean_ttft_ms": 2522,
+          "mean_tpot_ms": 26.1
+        },
+        "mi300x_tp1": {
+          "output_tok_s": 438,
+          "mean_ttft_ms": 5719,
+          "mean_tpot_ms": 55.2
+        }
+      },
+      "models.M-dense.vocab_size": 131072
+    }
+  },
+  "conventions": {
+    "serves": [
+      "R-III.2"
+    ],
+    "class": "Inputs marked ILLUSTRATIVE or HYPOTHETICAL are class C.",
+    "times": "seconds",
+    "exact_arithmetic": "bucket state uses exact fractions, printed as decimals"
+  },
+  "worked_example": {
+    "inputs_illustrative": {
+      "capacity_B": 10,
+      "refill_r_per_s": 5,
+      "cost_per_request": 1,
+      "events": [
+        [
+          0,
+          4
+        ],
+        [
+          0.4,
+          8
+        ],
+        [
+          0.5,
+          3
+        ],
+        [
+          1.5,
+          2
+        ],
+        [
+          4,
+          12
+        ]
+      ],
+      "start": "bucket full",
+      "label": "ILLUSTRATIVE toy bucket (research note 06 §2.5)"
+    },
+    "equations": {
+      "refill": "n ← min(B, n + r × (t − t0)); t0 ← t",
+      "admit": "if n ≥ c: n ← n − c, admit; else reject with 429",
+      "retry_after": "Retry-After = ceil((c − n) / r) seconds",
+      "window_bound": "over any window of length T, at most B + r × T units pass"
+    },
+    "steps": [
+      {
+        "step": 1,
+        "t_s": 0,
+        "arrivals": 4,
+        "tokens_before": 10,
+        "elapsed_s": 0,
+        "refill": 0,
+        "refill_arithmetic": "5 × 0 = 0",
+        "tokens_after_refill": 10,
+        "lost_to_cap": 0,
+        "admitted": 4,
+        "rejected_429": 0,
+        "tokens_after": 6
+      },
+      {
+        "step": 2,
+        "t_s": 0.4,
+        "arrivals": 8,
+        "tokens_before": 6,
+        "elapsed_s": 0.4,
+        "refill": 2,
+        "refill_arithmetic": "5 × 0.4 = 2",
+        "tokens_after_refill": 8,
+        "lost_to_cap": 0,
+        "admitted": 8,
+        "rejected_429": 0,
+        "tokens_after": 0
+      },
+      {
+        "step": 3,
+        "t_s": 0.5,
+        "arrivals": 3,
+        "tokens_before": 0,
+        "elapsed_s": 0.1,
+        "refill": 0.5,
+        "refill_arithmetic": "5 × 0.1 = 0.5",
+        "tokens_after_refill": 0.5,
+        "lost_to_cap": 0,
+        "admitted": 0,
+        "rejected_429": 3,
+        "tokens_after": 0.5,
+        "next_token_in_s": 0.1,
+        "retry_after_s": 1,
+        "retry_after_arithmetic": "ceil((1 − 0.5) / 5) = ceil(0.1) = 1"
+      },
+      {
+        "step": 4,
+        "t_s": 1.5,
+        "arrivals": 2,
+        "tokens_before": 0.5,
+        "elapsed_s": 1,
+        "refill": 5,
+        "refill_arithmetic": "5 × 1 = 5",
+        "tokens_after_refill": 5.5,
+        "lost_to_cap": 0,
+        "admitted": 2,
+        "rejected_429": 0,
+        "tokens_after": 3.5
+      },
+      {
+        "step": 5,
+        "t_s": 4,
+        "arrivals": 12,
+        "tokens_before": 3.5,
+        "elapsed_s": 2.5,
+        "refill": 12.5,
+        "refill_arithmetic": "5 × 2.5 = 12.5",
+        "tokens_after_refill": 10,
+        "lost_to_cap": 6,
+        "admitted": 10,
+        "rejected_429": 2,
+        "tokens_after": 0,
+        "next_token_in_s": 0.2,
+        "retry_after_s": 1,
+        "retry_after_arithmetic": "ceil((1 − 0) / 5) = ceil(0.2) = 1"
+      }
+    ],
+    "totals": {
+      "arrivals": 29,
+      "admitted": 24,
+      "rejected_429": 5
+    },
+    "window_check": {
+      "formula": "B + r × T",
+      "value": 30,
+      "unit": "requests",
+      "arithmetic": "10 + 5 × 4 = 30",
+      "admitted_in_window": 24,
+      "holds": true
+    }
+  },
+  "burst": {
+    "inputs_illustrative": {
+      "capacity_B": 10,
+      "refill_r_per_s": 5,
+      "cost_per_request": 1,
+      "at_once": 15,
+      "spread_over_1s": 50,
+      "idle_after_s": 2,
+      "label": "ILLUSTRATIVE"
+    },
+    "at_once": {
+      "arrivals": 15,
+      "admitted": 10,
+      "rejected_429": 5,
+      "next_token_in_s": 0.2,
+      "retry_after_s": 1,
+      "retry_after_arithmetic": "ceil((1 − 0) / 5) = ceil(0.2) = 1"
+    },
+    "spread_over_one_second": {
+      "arrivals": 50,
+      "admitted": 14,
+      "rejected_429": 36,
+      "bound": {
+        "formula": "B + r × T",
+        "value": 14.9,
+        "unit": "requests",
+        "arithmetic": "10 + 5 × 0.98 = 14.9",
+        "note": "Only whole tokens admit a request, so the count is the floor of the bound."
+      },
+      "timeline": [
+        {
+          "t_s": 0,
+          "admitted": true,
+          "tokens_after": 9
+        },
+        {
+          "t_s": 0.02,
+          "admitted": true,
+          "tokens_after": 8.1
+        },
+        {
+          "t_s": 0.04,
+          "admitted": true,
+          "tokens_after": 7.2
+        },
+        {
+          "t_s": 0.06,
+          "admitted": true,
+          "tokens_after": 6.3
+        },
+        {
+          "t_s": 0.08,
+          "admitted": true,
+          "tokens_after": 5.4
+        },
+        {
+          "t_s": 0.1,
+          "admitted": true,
+          "tokens_after": 4.5
+        },
+        {
+          "t_s": 0.12,
+          "admitted": true,
+          "tokens_after": 3.6
+        },
+        {
+          "t_s": 0.14,
+          "admitted": true,
+          "tokens_after": 2.7
+        },
+        {
+          "t_s": 0.16,
+          "admitted": true,
+          "tokens_after": 1.8
+        },
+        {
+          "t_s": 0.18,
+          "admitted": true,
+          "tokens_after": 0.9
+        },
+        {
+          "t_s": 0.2,
+          "admitted": true,
+          "tokens_after": 0
+        },
+        {
+          "t_s": 0.22,
+          "admitted": false,
+          "tokens_after": 0.1
+        },
+        {
+          "t_s": 0.24,
+          "admitted": false,
+          "tokens_after": 0.2
+        },
+        {
+          "t_s": 0.26,
+          "admitted": false,
+          "tokens_after": 0.3
+        },
+        {
+          "t_s": 0.28,
+          "admitted": false,
+          "tokens_after": 0.4
+        },
+        {
+          "t_s": 0.3,
+          "admitted": false,
+          "tokens_after": 0.5
+        },
+        {
+          "t_s": 0.32,
+          "admitted": false,
+          "tokens_after": 0.6
+        },
+        {
+          "t_s": 0.34,
+          "admitted": false,
+          "tokens_after": 0.7
+        },
+        {
+          "t_s": 0.36,
+          "admitted": false,
+          "tokens_after": 0.8
+        },
+        {
+          "t_s": 0.38,
+          "admitted": false,
+          "tokens_after": 0.9
+        },
+        {
+          "t_s": 0.4,
+          "admitted": true,
+          "tokens_after": 0
+        },
+        {
+          "t_s": 0.42,
+          "admitted": false,
+          "tokens_after": 0.1
+        },
+        {
+          "t_s": 0.44,
+          "admitted": false,
+          "tokens_after": 0.2
+        },
+        {
+          "t_s": 0.46,
+          "admitted": false,
+          "tokens_after": 0.3
+        },
+        {
+          "t_s": 0.48,
+          "admitted": false,
+          "tokens_after": 0.4
+        },
+        {
+          "t_s": 0.5,
+          "admitted": false,
+          "tokens_after": 0.5
+        },
+        {
+          "t_s": 0.52,
+          "admitted": false,
+          "tokens_after": 0.6
+        },
+        {
+          "t_s": 0.54,
+          "admitted": false,
+          "tokens_after": 0.7
+        },
+        {
+          "t_s": 0.56,
+          "admitted": false,
+          "tokens_after": 0.8
+        },
+        {
+          "t_s": 0.58,
+          "admitted": false,
+          "tokens_after": 0.9
+        },
+        {
+          "t_s": 0.6,
+          "admitted": true,
+          "tokens_after": 0
+        },
+        {
+          "t_s": 0.62,
+          "admitted": false,
+          "tokens_after": 0.1
+        },
+        {
+          "t_s": 0.64,
+          "admitted": false,
+          "tokens_after": 0.2
+        },
+        {
+          "t_s": 0.66,
+          "admitted": false,
+          "tokens_after": 0.3
+        },
+        {
+          "t_s": 0.68,
+          "admitted": false,
+          "tokens_after": 0.4
+        },
+        {
+          "t_s": 0.7,
+          "admitted": false,
+          "tokens_after": 0.5
+        },
+        {
+          "t_s": 0.72,
+          "admitted": false,
+          "tokens_after": 0.6
+        },
+        {
+          "t_s": 0.74,
+          "admitted": false,
+          "tokens_after": 0.7
+        },
+        {
+          "t_s": 0.76,
+          "admitted": false,
+          "tokens_after": 0.8
+        },
+        {
+          "t_s": 0.78,
+          "admitted": false,
+          "tokens_after": 0.9
+        },
+        {
+          "t_s": 0.8,
+          "admitted": true,
+          "tokens_after": 0
+        },
+        {
+          "t_s": 0.82,
+          "admitted": false,
+          "tokens_after": 0.1
+        },
+        {
+          "t_s": 0.84,
+          "admitted": false,
+          "tokens_after": 0.2
+        },
+        {
+          "t_s": 0.86,
+          "admitted": false,
+          "tokens_after": 0.3
+        },
+        {
+          "t_s": 0.88,
+          "admitted": false,
+          "tokens_after": 0.4
+        },
+        {
+          "t_s": 0.9,
+          "admitted": false,
+          "tokens_after": 0.5
+        },
+        {
+          "t_s": 0.92,
+          "admitted": false,
+          "tokens_after": 0.6
+        },
+        {
+          "t_s": 0.94,
+          "admitted": false,
+          "tokens_after": 0.7
+        },
+        {
+          "t_s": 0.96,
+          "admitted": false,
+          "tokens_after": 0.8
+        },
+        {
+          "t_s": 0.98,
+          "admitted": false,
+          "tokens_after": 0.9
+        }
+      ]
+    },
+    "after_idle": {
+      "idle_s": 2,
+      "tokens_before": 0.9,
+      "tokens_after_refill": 10,
+      "arithmetic": "min(10, 0.9 + 5 × 2) = 10"
+    },
+    "gpu_protection": {
+      "formula": "requests rejected at the gateway × mean prompt tokens",
+      "terms": {
+        "rejected": {
+          "value": 41,
+          "unit": "requests"
+        },
+        "mean_prompt_tokens": {
+          "value": 3000,
+          "unit": "tokens",
+          "from": "hypothetical.traffic.mean_prompt_tokens"
+        }
+      },
+      "value": 123000,
+      "unit": "prompt tokens",
+      "note": "Prefill work that never reaches an inference queue or takes KV blocks. HYPOTHETICAL mean prompt size."
+    }
+  },
+  "fixed_window": {
+    "inputs_illustrative": {
+      "limit_per_window": 300,
+      "window_s": 60,
+      "batch": 300,
+      "first_batch_at_s": 59.9,
+      "second_batch_at_s": 60.1,
+      "bucket_capacity_B": 10,
+      "bucket_refill_r_per_s": 5,
+      "label": "ILLUSTRATIVE"
+    },
+    "fixed_window": {
+      "windows": [
+        0,
+        1
+      ],
+      "passed": 600,
+      "within_s": 0.2,
+      "note": "INCR + EXPIRE counts reset at the window boundary, so both batches pass."
+    },
+    "token_bucket": {
+      "passed_first_batch": 10,
+      "passed_second_batch": 1,
+      "passed": 11,
+      "bound": {
+        "formula": "B + r × T",
+        "value": 11,
+        "unit": "requests",
+        "arithmetic": "10 + 5 × 0.2 = 11"
+      }
+    },
+    "ratio_fixed_over_bucket": 54.54545455
+  },
+  "rpm_vs_tpm": {
+    "plan": {
+      "rpm_limit": 300,
+      "tpm_limit": 400000,
+      "from": {
+        "rpm_limit": "hypothetical.backend.plan_rpm_limit",
+        "tpm_limit": "hypothetical.backend.plan_tpm_limit"
+      },
+      "label": "HYPOTHETICAL plan limits (one plan for both tenants)"
+    },
+    "model": "M-dense prefill on H-teach (H100 SXM, BF16 dense peak × hypothetical prefill_mfu); no prefix-cache reuse; decode cost not included",
+    "terms": {
+      "h100_bf16_dense": {
+        "value": 989.5,
+        "unit": "TFLOP/s",
+        "from": "hardware.H-teach.h100_sxm_bf16_dense"
+      },
+      "prefill_mfu": {
+        "value": 0.5,
+        "unit": "fraction",
+        "from": "hypothetical.serving_assumptions.prefill_mfu"
+      },
+      "matmul_params": {
+        "value": 123413200896,
+        "unit": "params",
+        "from": "models.M-dense (config)"
+      }
+    },
+    "tenants": {
+      "A_chat": {
+        "requests_per_min": 100,
+        "prompt_tokens": 3000,
+        "output_tokens": 400,
+        "shape_source": "hypothetical.traffic means",
+        "tokens_per_request": {
+          "formula": "prompt + output",
+          "value": 3400,
+          "unit": "tokens"
+        },
+        "tokens_per_min": {
+          "formula": "requests/min × tokens/request",
+          "value": 340000,
+          "unit": "tokens/min",
+          "arithmetic": "100 × 3,400 = 340,000"
+        },
+        "share_of_rpm_limit": 0.3333333333,
+        "share_of_tpm_limit": 0.85,
+        "admitted_rpm_with_rpm_limit_only": 100,
+        "admitted_rpm_with_rpm_and_tpm": {
+          "formula": "min(requests/min, floor(TPM limit / tokens per request))",
+          "value": 100,
+          "unit": "requests/min",
+          "arithmetic": "min(100, floor(400,000 / 3,400)) = 100"
+        },
+        "prefill_flops_per_request": {
+          "formula": "2 × N_matmul × T + 2 × H × d_head × L × T × (T + 1)",
+          "value": 759949885440000,
+          "unit": "FLOP",
+          "matmul": 740479205376000,
+          "attention": 19470680064000,
+          "attention_share": 0.02562100533
+        },
+        "prefill_gpu_seconds_per_min": {
+          "formula": "requests/min × prefill FLOPs / (H100 BF16 dense × prefill_mfu)",
+          "value": 153.6028066,
+          "unit": "GPU-s/min"
+        },
+        "gpus_busy_with_prefill": {
+          "formula": "GPU-s per minute / 60 s",
+          "value": 2.560046776,
+          "unit": "GPUs"
+        }
+      },
+      "B_long_documents": {
+        "requests_per_min": 20,
+        "prompt_tokens": 60000,
+        "output_tokens": 1000,
+        "shape_source": "hypothetical.backend.long_document_* (HYPOTHETICAL); requests_per_min ILLUSTRATIVE",
+        "tokens_per_request": {
+          "formula": "prompt + output",
+          "value": 61000,
+          "unit": "tokens"
+        },
+        "tokens_per_min": {
+          "formula": "requests/min × tokens/request",
+          "value": 1220000,
+          "unit": "tokens/min",
+          "arithmetic": "20 × 61,000 = 1,220,000"
+        },
+        "share_of_rpm_limit": 0.06666666667,
+        "share_of_tpm_limit": 3.05,
+        "admitted_rpm_with_rpm_limit_only": 20,
+        "admitted_rpm_with_rpm_and_tpm": {
+          "formula": "min(requests/min, floor(TPM limit / tokens per request))",
+          "value": 6,
+          "unit": "requests/min",
+          "arithmetic": "min(20, floor(400,000 / 61,000)) = 6"
+        },
+        "prefill_flops_per_request": {
+          "formula": "2 × N_matmul × T + 2 × H × d_head × L × T × (T + 1)",
+          "value": 22595390668800000,
+          "unit": "FLOP",
+          "matmul": 14809584107520000,
+          "attention": 7785806561280000,
+          "attention_share": 0.3445749921
+        },
+        "prefill_gpu_seconds_per_min": {
+          "formula": "requests/min × prefill FLOPs / (H100 BF16 dense × prefill_mfu)",
+          "value": 913.4063939,
+          "unit": "GPU-s/min"
+        },
+        "gpus_busy_with_prefill": {
+          "formula": "GPU-s per minute / 60 s",
+          "value": 15.2234399,
+          "unit": "GPUs"
+        }
+      }
+    },
+    "ratios_B_over_A": {
+      "requests_per_min": 0.2,
+      "tokens_per_min": 3.588235294,
+      "prefill_gpu_seconds": 5.946547554,
+      "tokens_per_request": 17.94117647,
+      "prefill_flops_per_request": 29.73273778
+    }
+  },
+  "reserve_refund": {
+    "inputs": {
+      "prompt_tokens": {
+        "value": 3000,
+        "unit": "tokens",
+        "from": "hypothetical.traffic.mean_prompt_tokens"
+      },
+      "output_tokens": {
+        "value": 400,
+        "unit": "tokens",
+        "from": "hypothetical.traffic.mean_output_tokens"
+      },
+      "max_tokens": {
+        "value": 4096,
+        "unit": "tokens",
+        "from": "hypothetical.backend.default_max_tokens"
+      },
+      "decode_speed": {
+        "value": 20,
+        "unit": "tokens/s",
+        "from": "hypothetical.traffic.per_request_decode_speed"
+      }
+    },
+    "reserved_at_admission": {
+      "formula": "prompt + max_tokens",
+      "value": 7096,
+      "unit": "tokens",
+      "arithmetic": "3,000 + 4,096 = 7,096"
+    },
+    "charged_at_completion": {
+      "formula": "prompt + actual output",
+      "value": 3400,
+      "unit": "tokens",
+      "arithmetic": "3,000 + 400 = 3,400"
+    },
+    "refund": {
+      "formula": "max_tokens − actual output",
+      "value": 3696,
+      "unit": "tokens",
+      "arithmetic": "4,096 − 400 = 3,696"
+    },
+    "reservation_over_use": {
+      "formula": "reserved / charged",
+      "value": 2.087058824,
+      "unit": "ratio"
+    },
+    "held_for": {
+      "formula": "output tokens / decode speed",
+      "value": 20,
+      "unit": "s",
+      "arithmetic": "400 / 20 = 20"
+    },
+    "max_admitted_at_once_full_bucket": {
+      "formula": "floor(TPM limit / reservation)",
+      "value": 56,
+      "unit": "requests",
+      "arithmetic": "floor(400,000 / 7,096) = 56"
+    }
+  },
+  "accounting_policies": {
+    "inputs": {
+      "tpm_limit": {
+        "value": 400000,
+        "unit": "tokens/min",
+        "from": "hypothetical.backend.plan_tpm_limit"
+      },
+      "bucket_capacity": {
+        "value": 400000,
+        "unit": "tokens",
+        "note": "one minute of tokens (ILLUSTRATIVE choice)"
+      },
+      "refill_per_s": {
+        "formula": "TPM limit / 60",
+        "value": 6666.666667,
+        "unit": "tokens/s"
+      },
+      "prompt_tokens": {
+        "value": 3000,
+        "unit": "tokens",
+        "from": "hypothetical.traffic.mean_prompt_tokens"
+      },
+      "output_tokens": {
+        "value": 400,
+        "unit": "tokens",
+        "from": "hypothetical.traffic.mean_output_tokens"
+      },
+      "max_tokens": {
+        "value": 4096,
+        "unit": "tokens",
+        "from": "hypothetical.backend.default_max_tokens"
+      },
+      "stream_duration_s": {
+        "formula": "output / decode speed",
+        "value": 20,
+        "unit": "s",
+        "arithmetic": "400 / 20 = 20"
+      },
+      "arrivals": {
+        "at_t0": 150,
+        "then_per_s": 1,
+        "steady_until_s": 120,
+        "simulate_until_s": 180,
+        "from": {
+          "at_t0": "hypothetical.backend.burst_requests"
+        },
+        "label": "at_t0 HYPOTHETICAL (hypothetical.backend.burst_requests); the trickle is ILLUSTRATIVE; rejected requests are not retried"
+      },
+      "time_step_s": 1
+    },
+    "policies": {
+      "reserve_then_refund": {
+        "rule": "admit if bucket ≥ prompt + max_tokens; take that; give back max_tokens − output at completion",
+        "admitted_in_burst_at_t0": 56,
+        "admitted_total": 175,
+        "rejected_total": 95,
+        "first_rejection_at_s": 0,
+        "retry_after_at_first_rejection_s": 1,
+        "lowest_bucket_level": 48,
+        "overrun_tokens": 0,
+        "peak_requests_in_flight": 74,
+        "peak_context_if_all_reach_max_tokens": {
+          "formula": "peak requests in flight × (prompt + max_tokens)",
+          "value": 525104,
+          "unit": "context tokens",
+          "arithmetic": "74 × 7,096 = 525,104"
+        },
+        "context_tokens_in_flight_bound": {
+          "formula": "B + r × D",
+          "value": 533333.3333,
+          "unit": "context tokens",
+          "arithmetic": "400,000 + 6,666.67 × 20 = 533,333",
+          "note": "Reservations admitted within one stream duration D fit in B + r × D, and each covers prompt + max_tokens."
+        },
+        "context_tokens_in_flight_bound_note": "the limiter guarantees it",
+        "series": [
+          {
+            "t_s": 0,
+            "bucket": 2624,
+            "in_flight": 56,
+            "admitted": 56,
+            "rejected": 94,
+            "admitted_cum": 56,
+            "rejected_cum": 94
+          },
+          {
+            "t_s": 1,
+            "bucket": 2194.667,
+            "in_flight": 57,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 57,
+            "rejected_cum": 94
+          },
+          {
+            "t_s": 2,
+            "bucket": 1765.333,
+            "in_flight": 58,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 58,
+            "rejected_cum": 94
+          },
+          {
+            "t_s": 3,
+            "bucket": 1336,
+            "in_flight": 59,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 59,
+            "rejected_cum": 94
+          },
+          {
+            "t_s": 4,
+            "bucket": 906.667,
+            "in_flight": 60,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 60,
+            "rejected_cum": 94
+          },
+          {
+            "t_s": 5,
+            "bucket": 477.333,
+            "in_flight": 61,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 61,
+            "rejected_cum": 94
+          },
+          {
+            "t_s": 6,
+            "bucket": 48,
+            "in_flight": 62,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 62,
+            "rejected_cum": 94
+          },
+          {
+            "t_s": 7,
+            "bucket": 6714.667,
+            "in_flight": 62,
+            "admitted": 0,
+            "rejected": 1,
+            "admitted_cum": 62,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 8,
+            "bucket": 6285.333,
+            "in_flight": 63,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 63,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 9,
+            "bucket": 5856,
+            "in_flight": 64,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 64,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 10,
+            "bucket": 5426.667,
+            "in_flight": 65,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 65,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 11,
+            "bucket": 4997.333,
+            "in_flight": 66,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 66,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 12,
+            "bucket": 4568,
+            "in_flight": 67,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 67,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 13,
+            "bucket": 4138.667,
+            "in_flight": 68,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 68,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 14,
+            "bucket": 3709.333,
+            "in_flight": 69,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 69,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 15,
+            "bucket": 3280,
+            "in_flight": 70,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 70,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 16,
+            "bucket": 2850.667,
+            "in_flight": 71,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 71,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 17,
+            "bucket": 2421.333,
+            "in_flight": 72,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 72,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 18,
+            "bucket": 1992,
+            "in_flight": 73,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 73,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 19,
+            "bucket": 1562.667,
+            "in_flight": 74,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 74,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 20,
+            "bucket": 208109.333,
+            "in_flight": 19,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 75,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 21,
+            "bucket": 211376,
+            "in_flight": 19,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 76,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 22,
+            "bucket": 214642.667,
+            "in_flight": 19,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 77,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 23,
+            "bucket": 217909.333,
+            "in_flight": 19,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 78,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 24,
+            "bucket": 221176,
+            "in_flight": 19,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 79,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 25,
+            "bucket": 224442.667,
+            "in_flight": 19,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 80,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 26,
+            "bucket": 227709.333,
+            "in_flight": 19,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 81,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 27,
+            "bucket": 227280,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 82,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 28,
+            "bucket": 230546.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 83,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 29,
+            "bucket": 233813.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 84,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 30,
+            "bucket": 237080,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 85,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 31,
+            "bucket": 240346.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 86,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 32,
+            "bucket": 243613.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 87,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 33,
+            "bucket": 246880,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 88,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 34,
+            "bucket": 250146.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 89,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 35,
+            "bucket": 253413.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 90,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 36,
+            "bucket": 256680,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 91,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 37,
+            "bucket": 259946.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 92,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 38,
+            "bucket": 263213.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 93,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 39,
+            "bucket": 266480,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 94,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 40,
+            "bucket": 269746.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 95,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 41,
+            "bucket": 273013.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 96,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 42,
+            "bucket": 276280,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 97,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 43,
+            "bucket": 279546.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 98,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 44,
+            "bucket": 282813.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 99,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 45,
+            "bucket": 286080,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 100,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 46,
+            "bucket": 289346.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 101,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 47,
+            "bucket": 292613.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 102,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 48,
+            "bucket": 295880,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 103,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 49,
+            "bucket": 299146.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 104,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 50,
+            "bucket": 302413.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 105,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 51,
+            "bucket": 305680,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 106,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 52,
+            "bucket": 308946.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 107,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 53,
+            "bucket": 312213.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 108,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 54,
+            "bucket": 315480,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 109,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 55,
+            "bucket": 318746.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 110,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 56,
+            "bucket": 322013.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 111,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 57,
+            "bucket": 325280,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 112,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 58,
+            "bucket": 328546.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 113,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 59,
+            "bucket": 331813.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 114,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 60,
+            "bucket": 335080,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 115,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 61,
+            "bucket": 338346.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 116,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 62,
+            "bucket": 341613.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 117,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 63,
+            "bucket": 344880,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 118,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 64,
+            "bucket": 348146.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 119,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 65,
+            "bucket": 351413.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 120,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 66,
+            "bucket": 354680,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 121,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 67,
+            "bucket": 357946.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 122,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 68,
+            "bucket": 361213.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 123,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 69,
+            "bucket": 364480,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 124,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 70,
+            "bucket": 367746.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 125,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 71,
+            "bucket": 371013.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 126,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 72,
+            "bucket": 374280,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 127,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 73,
+            "bucket": 377546.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 128,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 74,
+            "bucket": 380813.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 129,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 75,
+            "bucket": 384080,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 130,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 76,
+            "bucket": 387346.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 131,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 77,
+            "bucket": 390613.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 132,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 78,
+            "bucket": 392904,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 133,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 79,
+            "bucket": 392904,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 134,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 80,
+            "bucket": 392904,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 135,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 81,
+            "bucket": 392904,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 136,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 82,
+            "bucket": 392904,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 137,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 83,
+            "bucket": 392904,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 138,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 84,
+            "bucket": 392904,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 139,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 85,
+            "bucket": 392904,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 140,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 86,
+            "bucket": 392904,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 141,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 87,
+            "bucket": 392904,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 142,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 88,
+            "bucket": 392904,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 143,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 89,
+            "bucket": 392904,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 144,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 90,
+            "bucket": 392904,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 145,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 91,
+            "bucket": 392904,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 146,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 92,
+            "bucket": 392904,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 147,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 93,
+            "bucket": 392904,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 148,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 94,
+            "bucket": 392904,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 149,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 95,
+            "bucket": 392904,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 150,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 96,
+            "bucket": 392904,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 151,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 97,
+            "bucket": 392904,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 152,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 98,
+            "bucket": 392904,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 153,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 99,
+            "bucket": 392904,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 154,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 100,
+            "bucket": 392904,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 155,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 101,
+            "bucket": 392904,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 156,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 102,
+            "bucket": 392904,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 157,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 103,
+            "bucket": 392904,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 158,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 104,
+            "bucket": 392904,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 159,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 105,
+            "bucket": 392904,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 160,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 106,
+            "bucket": 392904,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 161,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 107,
+            "bucket": 392904,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 162,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 108,
+            "bucket": 392904,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 163,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 109,
+            "bucket": 392904,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 164,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 110,
+            "bucket": 392904,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 165,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 111,
+            "bucket": 392904,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 166,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 112,
+            "bucket": 392904,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 167,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 113,
+            "bucket": 392904,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 168,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 114,
+            "bucket": 392904,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 169,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 115,
+            "bucket": 392904,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 170,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 116,
+            "bucket": 392904,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 171,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 117,
+            "bucket": 392904,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 172,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 118,
+            "bucket": 392904,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 173,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 119,
+            "bucket": 392904,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 174,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 120,
+            "bucket": 392904,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 121,
+            "bucket": 400000,
+            "in_flight": 19,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 122,
+            "bucket": 400000,
+            "in_flight": 18,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 123,
+            "bucket": 400000,
+            "in_flight": 17,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 124,
+            "bucket": 400000,
+            "in_flight": 16,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 125,
+            "bucket": 400000,
+            "in_flight": 15,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 126,
+            "bucket": 400000,
+            "in_flight": 14,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 127,
+            "bucket": 400000,
+            "in_flight": 13,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 128,
+            "bucket": 400000,
+            "in_flight": 12,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 129,
+            "bucket": 400000,
+            "in_flight": 11,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 130,
+            "bucket": 400000,
+            "in_flight": 10,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 131,
+            "bucket": 400000,
+            "in_flight": 9,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 132,
+            "bucket": 400000,
+            "in_flight": 8,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 133,
+            "bucket": 400000,
+            "in_flight": 7,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 134,
+            "bucket": 400000,
+            "in_flight": 6,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 135,
+            "bucket": 400000,
+            "in_flight": 5,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 136,
+            "bucket": 400000,
+            "in_flight": 4,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 137,
+            "bucket": 400000,
+            "in_flight": 3,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 138,
+            "bucket": 400000,
+            "in_flight": 2,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 139,
+            "bucket": 400000,
+            "in_flight": 1,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 140,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 141,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 142,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 143,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 144,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 145,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 146,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 147,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 148,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 149,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 150,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 151,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 152,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 153,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 154,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 155,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 156,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 157,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 158,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 159,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 160,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 161,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 162,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 163,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 164,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 165,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 166,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 167,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 168,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 169,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 170,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 171,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 172,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 173,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 174,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 175,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 176,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 177,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 178,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 179,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          },
+          {
+            "t_s": 180,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 95
+          }
+        ]
+      },
+      "count_as_produced": {
+        "rule": "admit if bucket ≥ prompt; take prompt; take each output token in the second it is produced",
+        "admitted_in_burst_at_t0": 133,
+        "admitted_total": 253,
+        "rejected_total": 17,
+        "first_rejection_at_s": 0,
+        "retry_after_at_first_rejection_s": 1,
+        "lowest_bucket_level": 1000,
+        "overrun_tokens": 0,
+        "peak_requests_in_flight": 152,
+        "peak_context_if_all_reach_max_tokens": {
+          "formula": "peak requests in flight × (prompt + max_tokens)",
+          "value": 1078592,
+          "unit": "context tokens",
+          "arithmetic": "152 × 7,096 = 1,078,592"
+        },
+        "context_tokens_in_flight_bound": {
+          "formula": "floor((B + r × D) / prompt) × (prompt + max_tokens)",
+          "value": 1255992,
+          "unit": "context tokens",
+          "arithmetic": "floor(533,333 / 3,000) × 7,096 = 1,255,992",
+          "note": "Admission takes only the prompt, but each request can grow to max_tokens."
+        },
+        "context_tokens_in_flight_bound_note": "the limiter guarantees it, but it is larger by the ratio (prompt + max_tokens) / prompt",
+        "series": [
+          {
+            "t_s": 0,
+            "bucket": 1000,
+            "in_flight": 133,
+            "admitted": 133,
+            "rejected": 17,
+            "admitted_cum": 133,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 1,
+            "bucket": 2006.667,
+            "in_flight": 134,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 134,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 2,
+            "bucket": 2993.333,
+            "in_flight": 135,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 135,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 3,
+            "bucket": 3960,
+            "in_flight": 136,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 136,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 4,
+            "bucket": 4906.667,
+            "in_flight": 137,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 137,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 5,
+            "bucket": 5833.333,
+            "in_flight": 138,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 138,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 6,
+            "bucket": 6740,
+            "in_flight": 139,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 139,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 7,
+            "bucket": 7626.667,
+            "in_flight": 140,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 140,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 8,
+            "bucket": 8493.333,
+            "in_flight": 141,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 141,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 9,
+            "bucket": 9340,
+            "in_flight": 142,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 142,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 10,
+            "bucket": 10166.667,
+            "in_flight": 143,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 143,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 11,
+            "bucket": 10973.333,
+            "in_flight": 144,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 144,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 12,
+            "bucket": 11760,
+            "in_flight": 145,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 145,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 13,
+            "bucket": 12526.667,
+            "in_flight": 146,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 146,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 14,
+            "bucket": 13273.333,
+            "in_flight": 147,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 147,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 15,
+            "bucket": 14000,
+            "in_flight": 148,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 148,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 16,
+            "bucket": 14706.667,
+            "in_flight": 149,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 149,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 17,
+            "bucket": 15393.333,
+            "in_flight": 150,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 150,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 18,
+            "bucket": 16060,
+            "in_flight": 151,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 151,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 19,
+            "bucket": 16706.667,
+            "in_flight": 152,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 152,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 20,
+            "bucket": 17333.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 153,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 21,
+            "bucket": 20600,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 154,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 22,
+            "bucket": 23866.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 155,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 23,
+            "bucket": 27133.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 156,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 24,
+            "bucket": 30400,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 157,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 25,
+            "bucket": 33666.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 158,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 26,
+            "bucket": 36933.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 159,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 27,
+            "bucket": 40200,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 160,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 28,
+            "bucket": 43466.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 161,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 29,
+            "bucket": 46733.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 162,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 30,
+            "bucket": 50000,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 163,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 31,
+            "bucket": 53266.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 164,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 32,
+            "bucket": 56533.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 165,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 33,
+            "bucket": 59800,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 166,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 34,
+            "bucket": 63066.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 167,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 35,
+            "bucket": 66333.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 168,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 36,
+            "bucket": 69600,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 169,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 37,
+            "bucket": 72866.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 170,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 38,
+            "bucket": 76133.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 171,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 39,
+            "bucket": 79400,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 172,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 40,
+            "bucket": 82666.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 173,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 41,
+            "bucket": 85933.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 174,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 42,
+            "bucket": 89200,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 43,
+            "bucket": 92466.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 176,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 44,
+            "bucket": 95733.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 177,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 45,
+            "bucket": 99000,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 178,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 46,
+            "bucket": 102266.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 179,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 47,
+            "bucket": 105533.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 180,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 48,
+            "bucket": 108800,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 181,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 49,
+            "bucket": 112066.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 182,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 50,
+            "bucket": 115333.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 183,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 51,
+            "bucket": 118600,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 184,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 52,
+            "bucket": 121866.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 185,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 53,
+            "bucket": 125133.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 186,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 54,
+            "bucket": 128400,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 187,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 55,
+            "bucket": 131666.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 188,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 56,
+            "bucket": 134933.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 189,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 57,
+            "bucket": 138200,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 190,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 58,
+            "bucket": 141466.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 191,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 59,
+            "bucket": 144733.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 192,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 60,
+            "bucket": 148000,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 193,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 61,
+            "bucket": 151266.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 194,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 62,
+            "bucket": 154533.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 195,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 63,
+            "bucket": 157800,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 196,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 64,
+            "bucket": 161066.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 197,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 65,
+            "bucket": 164333.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 198,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 66,
+            "bucket": 167600,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 199,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 67,
+            "bucket": 170866.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 200,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 68,
+            "bucket": 174133.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 201,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 69,
+            "bucket": 177400,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 202,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 70,
+            "bucket": 180666.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 203,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 71,
+            "bucket": 183933.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 204,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 72,
+            "bucket": 187200,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 205,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 73,
+            "bucket": 190466.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 206,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 74,
+            "bucket": 193733.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 207,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 75,
+            "bucket": 197000,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 208,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 76,
+            "bucket": 200266.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 209,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 77,
+            "bucket": 203533.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 210,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 78,
+            "bucket": 206800,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 211,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 79,
+            "bucket": 210066.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 212,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 80,
+            "bucket": 213333.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 213,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 81,
+            "bucket": 216600,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 214,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 82,
+            "bucket": 219866.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 215,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 83,
+            "bucket": 223133.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 216,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 84,
+            "bucket": 226400,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 217,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 85,
+            "bucket": 229666.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 218,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 86,
+            "bucket": 232933.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 219,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 87,
+            "bucket": 236200,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 220,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 88,
+            "bucket": 239466.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 221,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 89,
+            "bucket": 242733.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 222,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 90,
+            "bucket": 246000,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 223,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 91,
+            "bucket": 249266.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 224,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 92,
+            "bucket": 252533.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 225,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 93,
+            "bucket": 255800,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 226,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 94,
+            "bucket": 259066.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 227,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 95,
+            "bucket": 262333.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 228,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 96,
+            "bucket": 265600,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 229,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 97,
+            "bucket": 268866.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 230,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 98,
+            "bucket": 272133.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 231,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 99,
+            "bucket": 275400,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 232,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 100,
+            "bucket": 278666.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 233,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 101,
+            "bucket": 281933.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 234,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 102,
+            "bucket": 285200,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 235,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 103,
+            "bucket": 288466.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 236,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 104,
+            "bucket": 291733.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 237,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 105,
+            "bucket": 295000,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 238,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 106,
+            "bucket": 298266.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 239,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 107,
+            "bucket": 301533.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 240,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 108,
+            "bucket": 304800,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 241,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 109,
+            "bucket": 308066.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 242,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 110,
+            "bucket": 311333.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 111,
+            "bucket": 314600,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 244,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 112,
+            "bucket": 317866.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 245,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 113,
+            "bucket": 321133.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 246,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 114,
+            "bucket": 324400,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 247,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 115,
+            "bucket": 327666.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 248,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 116,
+            "bucket": 330933.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 249,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 117,
+            "bucket": 334200,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 250,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 118,
+            "bucket": 337466.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 251,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 119,
+            "bucket": 340733.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 252,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 120,
+            "bucket": 344000,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 121,
+            "bucket": 350266.667,
+            "in_flight": 19,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 122,
+            "bucket": 356553.333,
+            "in_flight": 18,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 123,
+            "bucket": 362860,
+            "in_flight": 17,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 124,
+            "bucket": 369186.667,
+            "in_flight": 16,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 125,
+            "bucket": 375533.333,
+            "in_flight": 15,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 126,
+            "bucket": 381900,
+            "in_flight": 14,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 127,
+            "bucket": 388286.667,
+            "in_flight": 13,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 128,
+            "bucket": 394693.333,
+            "in_flight": 12,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 129,
+            "bucket": 399760,
+            "in_flight": 11,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 130,
+            "bucket": 399780,
+            "in_flight": 10,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 131,
+            "bucket": 399800,
+            "in_flight": 9,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 132,
+            "bucket": 399820,
+            "in_flight": 8,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 133,
+            "bucket": 399840,
+            "in_flight": 7,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 134,
+            "bucket": 399860,
+            "in_flight": 6,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 135,
+            "bucket": 399880,
+            "in_flight": 5,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 136,
+            "bucket": 399900,
+            "in_flight": 4,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 137,
+            "bucket": 399920,
+            "in_flight": 3,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 138,
+            "bucket": 399940,
+            "in_flight": 2,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 139,
+            "bucket": 399960,
+            "in_flight": 1,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 140,
+            "bucket": 399980,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 141,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 142,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 143,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 144,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 145,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 146,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 147,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 148,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 149,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 150,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 151,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 152,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 153,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 154,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 155,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 156,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 157,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 158,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 159,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 160,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 161,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 162,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 163,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 164,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 165,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 166,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 167,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 168,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 169,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 170,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 171,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 172,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 173,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 174,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 175,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 176,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 177,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 178,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 179,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 180,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 253,
+            "rejected_cum": 17
+          }
+        ]
+      },
+      "charge_at_completion": {
+        "rule": "admit if bucket > 0; take prompt + output when the response completes",
+        "admitted_in_burst_at_t0": 150,
+        "admitted_total": 243,
+        "rejected_total": 27,
+        "first_rejection_at_s": 20,
+        "retry_after_at_first_rejection_s": 17,
+        "lowest_bucket_level": -110000,
+        "overrun_tokens": 110000,
+        "peak_requests_in_flight": 169,
+        "peak_context_if_all_reach_max_tokens": {
+          "formula": "peak requests in flight × (prompt + max_tokens)",
+          "value": 1199224,
+          "unit": "context tokens",
+          "arithmetic": "169 × 7,096 = 1,199,224"
+        },
+        "context_tokens_in_flight_bound": null,
+        "context_tokens_in_flight_bound_note": "no bound from the limiter: every request is admitted while the bucket is positive",
+        "series": [
+          {
+            "t_s": 0,
+            "bucket": 400000,
+            "in_flight": 150,
+            "admitted": 150,
+            "rejected": 0,
+            "admitted_cum": 150,
+            "rejected_cum": 0
+          },
+          {
+            "t_s": 1,
+            "bucket": 400000,
+            "in_flight": 151,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 151,
+            "rejected_cum": 0
+          },
+          {
+            "t_s": 2,
+            "bucket": 400000,
+            "in_flight": 152,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 152,
+            "rejected_cum": 0
+          },
+          {
+            "t_s": 3,
+            "bucket": 400000,
+            "in_flight": 153,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 153,
+            "rejected_cum": 0
+          },
+          {
+            "t_s": 4,
+            "bucket": 400000,
+            "in_flight": 154,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 154,
+            "rejected_cum": 0
+          },
+          {
+            "t_s": 5,
+            "bucket": 400000,
+            "in_flight": 155,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 155,
+            "rejected_cum": 0
+          },
+          {
+            "t_s": 6,
+            "bucket": 400000,
+            "in_flight": 156,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 156,
+            "rejected_cum": 0
+          },
+          {
+            "t_s": 7,
+            "bucket": 400000,
+            "in_flight": 157,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 157,
+            "rejected_cum": 0
+          },
+          {
+            "t_s": 8,
+            "bucket": 400000,
+            "in_flight": 158,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 158,
+            "rejected_cum": 0
+          },
+          {
+            "t_s": 9,
+            "bucket": 400000,
+            "in_flight": 159,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 159,
+            "rejected_cum": 0
+          },
+          {
+            "t_s": 10,
+            "bucket": 400000,
+            "in_flight": 160,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 160,
+            "rejected_cum": 0
+          },
+          {
+            "t_s": 11,
+            "bucket": 400000,
+            "in_flight": 161,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 161,
+            "rejected_cum": 0
+          },
+          {
+            "t_s": 12,
+            "bucket": 400000,
+            "in_flight": 162,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 162,
+            "rejected_cum": 0
+          },
+          {
+            "t_s": 13,
+            "bucket": 400000,
+            "in_flight": 163,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 163,
+            "rejected_cum": 0
+          },
+          {
+            "t_s": 14,
+            "bucket": 400000,
+            "in_flight": 164,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 164,
+            "rejected_cum": 0
+          },
+          {
+            "t_s": 15,
+            "bucket": 400000,
+            "in_flight": 165,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 165,
+            "rejected_cum": 0
+          },
+          {
+            "t_s": 16,
+            "bucket": 400000,
+            "in_flight": 166,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 166,
+            "rejected_cum": 0
+          },
+          {
+            "t_s": 17,
+            "bucket": 400000,
+            "in_flight": 167,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 167,
+            "rejected_cum": 0
+          },
+          {
+            "t_s": 18,
+            "bucket": 400000,
+            "in_flight": 168,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 168,
+            "rejected_cum": 0
+          },
+          {
+            "t_s": 19,
+            "bucket": 400000,
+            "in_flight": 169,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 169,
+            "rejected_cum": 0
+          },
+          {
+            "t_s": 20,
+            "bucket": -110000,
+            "in_flight": 19,
+            "admitted": 0,
+            "rejected": 1,
+            "admitted_cum": 169,
+            "rejected_cum": 1
+          },
+          {
+            "t_s": 21,
+            "bucket": -106733.333,
+            "in_flight": 18,
+            "admitted": 0,
+            "rejected": 1,
+            "admitted_cum": 169,
+            "rejected_cum": 2
+          },
+          {
+            "t_s": 22,
+            "bucket": -103466.667,
+            "in_flight": 17,
+            "admitted": 0,
+            "rejected": 1,
+            "admitted_cum": 169,
+            "rejected_cum": 3
+          },
+          {
+            "t_s": 23,
+            "bucket": -100200,
+            "in_flight": 16,
+            "admitted": 0,
+            "rejected": 1,
+            "admitted_cum": 169,
+            "rejected_cum": 4
+          },
+          {
+            "t_s": 24,
+            "bucket": -96933.333,
+            "in_flight": 15,
+            "admitted": 0,
+            "rejected": 1,
+            "admitted_cum": 169,
+            "rejected_cum": 5
+          },
+          {
+            "t_s": 25,
+            "bucket": -93666.667,
+            "in_flight": 14,
+            "admitted": 0,
+            "rejected": 1,
+            "admitted_cum": 169,
+            "rejected_cum": 6
+          },
+          {
+            "t_s": 26,
+            "bucket": -90400,
+            "in_flight": 13,
+            "admitted": 0,
+            "rejected": 1,
+            "admitted_cum": 169,
+            "rejected_cum": 7
+          },
+          {
+            "t_s": 27,
+            "bucket": -87133.333,
+            "in_flight": 12,
+            "admitted": 0,
+            "rejected": 1,
+            "admitted_cum": 169,
+            "rejected_cum": 8
+          },
+          {
+            "t_s": 28,
+            "bucket": -83866.667,
+            "in_flight": 11,
+            "admitted": 0,
+            "rejected": 1,
+            "admitted_cum": 169,
+            "rejected_cum": 9
+          },
+          {
+            "t_s": 29,
+            "bucket": -80600,
+            "in_flight": 10,
+            "admitted": 0,
+            "rejected": 1,
+            "admitted_cum": 169,
+            "rejected_cum": 10
+          },
+          {
+            "t_s": 30,
+            "bucket": -77333.333,
+            "in_flight": 9,
+            "admitted": 0,
+            "rejected": 1,
+            "admitted_cum": 169,
+            "rejected_cum": 11
+          },
+          {
+            "t_s": 31,
+            "bucket": -74066.667,
+            "in_flight": 8,
+            "admitted": 0,
+            "rejected": 1,
+            "admitted_cum": 169,
+            "rejected_cum": 12
+          },
+          {
+            "t_s": 32,
+            "bucket": -70800,
+            "in_flight": 7,
+            "admitted": 0,
+            "rejected": 1,
+            "admitted_cum": 169,
+            "rejected_cum": 13
+          },
+          {
+            "t_s": 33,
+            "bucket": -67533.333,
+            "in_flight": 6,
+            "admitted": 0,
+            "rejected": 1,
+            "admitted_cum": 169,
+            "rejected_cum": 14
+          },
+          {
+            "t_s": 34,
+            "bucket": -64266.667,
+            "in_flight": 5,
+            "admitted": 0,
+            "rejected": 1,
+            "admitted_cum": 169,
+            "rejected_cum": 15
+          },
+          {
+            "t_s": 35,
+            "bucket": -61000,
+            "in_flight": 4,
+            "admitted": 0,
+            "rejected": 1,
+            "admitted_cum": 169,
+            "rejected_cum": 16
+          },
+          {
+            "t_s": 36,
+            "bucket": -57733.333,
+            "in_flight": 3,
+            "admitted": 0,
+            "rejected": 1,
+            "admitted_cum": 169,
+            "rejected_cum": 17
+          },
+          {
+            "t_s": 37,
+            "bucket": -54466.667,
+            "in_flight": 2,
+            "admitted": 0,
+            "rejected": 1,
+            "admitted_cum": 169,
+            "rejected_cum": 18
+          },
+          {
+            "t_s": 38,
+            "bucket": -51200,
+            "in_flight": 1,
+            "admitted": 0,
+            "rejected": 1,
+            "admitted_cum": 169,
+            "rejected_cum": 19
+          },
+          {
+            "t_s": 39,
+            "bucket": -47933.333,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 1,
+            "admitted_cum": 169,
+            "rejected_cum": 20
+          },
+          {
+            "t_s": 40,
+            "bucket": -41266.667,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 1,
+            "admitted_cum": 169,
+            "rejected_cum": 21
+          },
+          {
+            "t_s": 41,
+            "bucket": -34600,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 1,
+            "admitted_cum": 169,
+            "rejected_cum": 22
+          },
+          {
+            "t_s": 42,
+            "bucket": -27933.333,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 1,
+            "admitted_cum": 169,
+            "rejected_cum": 23
+          },
+          {
+            "t_s": 43,
+            "bucket": -21266.667,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 1,
+            "admitted_cum": 169,
+            "rejected_cum": 24
+          },
+          {
+            "t_s": 44,
+            "bucket": -14600,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 1,
+            "admitted_cum": 169,
+            "rejected_cum": 25
+          },
+          {
+            "t_s": 45,
+            "bucket": -7933.333,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 1,
+            "admitted_cum": 169,
+            "rejected_cum": 26
+          },
+          {
+            "t_s": 46,
+            "bucket": -1266.667,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 1,
+            "admitted_cum": 169,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 47,
+            "bucket": 5400,
+            "in_flight": 1,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 170,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 48,
+            "bucket": 12066.667,
+            "in_flight": 2,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 171,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 49,
+            "bucket": 18733.333,
+            "in_flight": 3,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 172,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 50,
+            "bucket": 25400,
+            "in_flight": 4,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 173,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 51,
+            "bucket": 32066.667,
+            "in_flight": 5,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 174,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 52,
+            "bucket": 38733.333,
+            "in_flight": 6,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 175,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 53,
+            "bucket": 45400,
+            "in_flight": 7,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 176,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 54,
+            "bucket": 52066.667,
+            "in_flight": 8,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 177,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 55,
+            "bucket": 58733.333,
+            "in_flight": 9,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 178,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 56,
+            "bucket": 65400,
+            "in_flight": 10,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 179,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 57,
+            "bucket": 72066.667,
+            "in_flight": 11,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 180,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 58,
+            "bucket": 78733.333,
+            "in_flight": 12,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 181,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 59,
+            "bucket": 85400,
+            "in_flight": 13,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 182,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 60,
+            "bucket": 92066.667,
+            "in_flight": 14,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 183,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 61,
+            "bucket": 98733.333,
+            "in_flight": 15,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 184,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 62,
+            "bucket": 105400,
+            "in_flight": 16,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 185,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 63,
+            "bucket": 112066.667,
+            "in_flight": 17,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 186,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 64,
+            "bucket": 118733.333,
+            "in_flight": 18,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 187,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 65,
+            "bucket": 125400,
+            "in_flight": 19,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 188,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 66,
+            "bucket": 132066.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 189,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 67,
+            "bucket": 135333.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 190,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 68,
+            "bucket": 138600,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 191,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 69,
+            "bucket": 141866.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 192,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 70,
+            "bucket": 145133.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 193,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 71,
+            "bucket": 148400,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 194,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 72,
+            "bucket": 151666.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 195,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 73,
+            "bucket": 154933.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 196,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 74,
+            "bucket": 158200,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 197,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 75,
+            "bucket": 161466.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 198,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 76,
+            "bucket": 164733.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 199,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 77,
+            "bucket": 168000,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 200,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 78,
+            "bucket": 171266.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 201,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 79,
+            "bucket": 174533.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 202,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 80,
+            "bucket": 177800,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 203,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 81,
+            "bucket": 181066.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 204,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 82,
+            "bucket": 184333.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 205,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 83,
+            "bucket": 187600,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 206,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 84,
+            "bucket": 190866.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 207,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 85,
+            "bucket": 194133.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 208,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 86,
+            "bucket": 197400,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 209,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 87,
+            "bucket": 200666.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 210,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 88,
+            "bucket": 203933.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 211,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 89,
+            "bucket": 207200,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 212,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 90,
+            "bucket": 210466.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 213,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 91,
+            "bucket": 213733.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 214,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 92,
+            "bucket": 217000,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 215,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 93,
+            "bucket": 220266.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 216,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 94,
+            "bucket": 223533.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 217,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 95,
+            "bucket": 226800,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 218,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 96,
+            "bucket": 230066.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 219,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 97,
+            "bucket": 233333.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 220,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 98,
+            "bucket": 236600,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 221,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 99,
+            "bucket": 239866.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 222,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 100,
+            "bucket": 243133.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 223,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 101,
+            "bucket": 246400,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 224,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 102,
+            "bucket": 249666.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 225,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 103,
+            "bucket": 252933.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 226,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 104,
+            "bucket": 256200,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 227,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 105,
+            "bucket": 259466.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 228,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 106,
+            "bucket": 262733.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 229,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 107,
+            "bucket": 266000,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 230,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 108,
+            "bucket": 269266.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 231,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 109,
+            "bucket": 272533.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 232,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 110,
+            "bucket": 275800,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 233,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 111,
+            "bucket": 279066.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 234,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 112,
+            "bucket": 282333.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 235,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 113,
+            "bucket": 285600,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 236,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 114,
+            "bucket": 288866.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 237,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 115,
+            "bucket": 292133.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 238,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 116,
+            "bucket": 295400,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 239,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 117,
+            "bucket": 298666.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 240,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 118,
+            "bucket": 301933.333,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 241,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 119,
+            "bucket": 305200,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 242,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 120,
+            "bucket": 308466.667,
+            "in_flight": 20,
+            "admitted": 1,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 121,
+            "bucket": 311733.333,
+            "in_flight": 19,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 122,
+            "bucket": 315000,
+            "in_flight": 18,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 123,
+            "bucket": 318266.667,
+            "in_flight": 17,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 124,
+            "bucket": 321533.333,
+            "in_flight": 16,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 125,
+            "bucket": 324800,
+            "in_flight": 15,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 126,
+            "bucket": 328066.667,
+            "in_flight": 14,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 127,
+            "bucket": 331333.333,
+            "in_flight": 13,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 128,
+            "bucket": 334600,
+            "in_flight": 12,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 129,
+            "bucket": 337866.667,
+            "in_flight": 11,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 130,
+            "bucket": 341133.333,
+            "in_flight": 10,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 131,
+            "bucket": 344400,
+            "in_flight": 9,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 132,
+            "bucket": 347666.667,
+            "in_flight": 8,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 133,
+            "bucket": 350933.333,
+            "in_flight": 7,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 134,
+            "bucket": 354200,
+            "in_flight": 6,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 135,
+            "bucket": 357466.667,
+            "in_flight": 5,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 136,
+            "bucket": 360733.333,
+            "in_flight": 4,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 137,
+            "bucket": 364000,
+            "in_flight": 3,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 138,
+            "bucket": 367266.667,
+            "in_flight": 2,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 139,
+            "bucket": 370533.333,
+            "in_flight": 1,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 140,
+            "bucket": 373800,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 141,
+            "bucket": 380466.667,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 142,
+            "bucket": 387133.333,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 143,
+            "bucket": 393800,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 144,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 145,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 146,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 147,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 148,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 149,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 150,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 151,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 152,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 153,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 154,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 155,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 156,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 157,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 158,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 159,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 160,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 161,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 162,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 163,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 164,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 165,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 166,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 167,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 168,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 169,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 170,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 171,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 172,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 173,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 174,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 175,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 176,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 177,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 178,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 179,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          },
+          {
+            "t_s": 180,
+            "bucket": 400000,
+            "in_flight": 0,
+            "admitted": 0,
+            "rejected": 0,
+            "admitted_cum": 243,
+            "rejected_cum": 27
+          }
+        ]
+      }
+    },
+    "public_examples": {
+      "reserve_then_refund": "OpenAI's rate-limit guide: the limit counts the maximum of max_tokens and an estimate (SRC-164)",
+      "count_as_produced": "Anthropic's rate-limit docs: output-token limits count tokens as they are produced; max_tokens does not count (SRC-163)",
+      "charge_at_completion": "Agent Router (formerly Envoy AI Gateway): usage is charged after the response completes; an admitted stream is not cut (SRC-302)"
+    }
+  },
+  "distributed": {
+    "inputs": {
+      "gateway_pods": 8,
+      "tenant_rpm_limit": 300,
+      "tenant_rate_per_s": 4,
+      "pods_carrying_traffic": 2,
+      "clock_skew_s": 0.1,
+      "from": {
+        "gateway_pods": "hypothetical.backend.gateway_pods_per_region",
+        "tenant_rpm_limit": "hypothetical.backend.plan_rpm_limit",
+        "clock_skew_s": "hypothetical.backend.clock_skew_s"
+      },
+      "label": "gateway_pods, tenant_rpm_limit, clock_skew_s HYPOTHETICAL; tenant_rate_per_s and pods_carrying_traffic ILLUSTRATIVE"
+    },
+    "local_buckets": {
+      "per_pod_rate": {
+        "formula": "tenant limit / pods",
+        "value": 0.625,
+        "unit": "requests/s",
+        "arithmetic": "5 / 8 = 0.625"
+      },
+      "tenant_share_of_limit": 0.8,
+      "admitted_rate": {
+        "formula": "min(tenant rate, pods carrying traffic × per-pod rate)",
+        "value": 1.25,
+        "unit": "requests/s",
+        "arithmetic": "min(4, 2 × 0.625) = 1.25"
+      },
+      "rejected_share": 0.6875,
+      "note": "The tenant is under its limit, but long-lived HTTP/2 connections put all its requests on a few pods."
+    },
+    "central_bucket": {
+      "admitted_rate": 4,
+      "rejected_share": 0,
+      "cost": "one round trip to the shared store per check"
+    },
+    "script_calls_per_request": {
+      "formula": "1 RPM check + passes × (1 reserve + 1 refund)",
+      "value": 3,
+      "unit": "calls",
+      "arithmetic": "1 + 1 × (1 + 1) = 3",
+      "breakdown": {
+        "rpm_check_at_api_gateway": 1,
+        "tpm_reserve_per_pass": 1,
+        "tpm_refund_per_pass": 1
+      },
+      "note": "Minimum: a request without tool calls has one inference pass."
+    },
+    "script_calls_fleet": {
+      "formula": "peak arrival rate × calls per request",
+      "terms": {
+        "peak_arrival_rate": {
+          "value": 50000,
+          "unit": "requests/s",
+          "from": "hypothetical.traffic.peak_arrival_rate"
+        }
+      },
+      "value": 150000,
+      "unit": "script calls/s",
+      "arithmetic": "50,000 × 3 = 150,000",
+      "note": "A lower bound: every extra inference pass adds two calls."
+    },
+    "clock_skew_error": {
+      "formula": "TPM refill rate × clock skew",
+      "value": 666.6666667,
+      "unit": "tokens",
+      "arithmetic": "400,000 / 60 × 0.1 ≈ 667",
+      "note": "Extra or missing refill per update if each gateway used its own clock."
+    }
+  }
+}

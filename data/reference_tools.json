@@ -1,0 +1,120 @@
+{
+  "meta": {
+    "script": "sim/reference_tools.py",
+    "generated_at": "2026-10-09T08:47:00+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T08:45:29+00:00",
+      "sha256": "2db02a40b496"
+    },
+    "constants_used": {
+      "extra.sims_w04.k3_special_slots": 256,
+      "extra.sims_w04.mistral_medium_repo_sha": "22b2b868a156",
+      "models.M-frontier.tokenizer_code_url": "https://huggingface.co/moonshotai/Kimi-K3/resolve/f831ab66814297da540d832a5235f8e904f29d06/tokenization_kimi.py",
+      "models.M-frontier.tokenizer_config_url": "https://huggingface.co/moonshotai/Kimi-K3/resolve/f831ab66814297da540d832a5235f8e904f29d06/tokenizer_config.json",
+      "models.M-frontier.tokenizer_model_url": "https://huggingface.co/moonshotai/Kimi-K3/resolve/f831ab66814297da540d832a5235f8e904f29d06/tiktoken.model"
+    }
+  },
+  "class": "class C: reference-system choice (Part 03 orchestrator walk, RA-14, RA-29, RA-30); not a real product's schema",
+  "tool_names": [
+    "web_search",
+    "run_python"
+  ],
+  "tools": {
+    "web_search": {
+      "schema": {
+        "type": "function",
+        "function": {
+          "name": "web_search",
+          "description": "Search the public web. Returns ranked results with title, URL, snippet and date. The top results are fetched as clean text for reading and citation.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "queries": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                "minItems": 1,
+                "maxItems": 4,
+                "description": "One to four search queries, each self-contained."
+              },
+              "recency_days": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Only return pages published within this many days."
+              },
+              "fetch_top": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 5,
+                "description": "How many top results to fetch as full text."
+              }
+            },
+            "required": [
+              "queries"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "json_bytes": 703
+    },
+    "run_python": {
+      "schema": {
+        "type": "function",
+        "function": {
+          "name": "run_python",
+          "description": "Run Python 3 code in an isolated sandbox with no network access. Files the user uploaded are mounted read-only under /mnt/data. Files written to /mnt/output are returned as downloadable artifacts. Returns stdout, stderr and the artifact list.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string",
+                "description": "The Python source to run."
+              },
+              "timeout_s": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 120,
+                "description": "Wall-clock limit for this run in seconds."
+              }
+            },
+            "required": [
+              "code"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "json_bytes": 588
+    }
+  },
+  "k3_tool_declare": {
+    "tokens": 315,
+    "special_tokens": 5,
+    "text_tokens": 310,
+    "json_bytes": 1294,
+    "serialization": "json.dumps(tools, separators=(',', ':'), sort_keys=True) inside a system message with type=\"tool-declare\" (encoding_k3.py)"
+  },
+  "per_tool": {
+    "web_search": {
+      "tokens": 192,
+      "special_tokens": 5,
+      "text_tokens": 187,
+      "json_bytes": 705
+    },
+    "run_python": {
+      "tokens": 160,
+      "special_tokens": 5,
+      "text_tokens": 155,
+      "json_bytes": 590
+    }
+  },
+  "shared_wrapper_tokens": {
+    "value": 37,
+    "formula": "tokens(web_search alone) + tokens(run_python alone) - tokens(both)",
+    "note": "tokens of the message frame and heading that two tools share instead of paying twice (BPE merges at the join can shift this by a token)"
+  }
+}

@@ -1,0 +1,871 @@
+{
+  "meta": {
+    "script": "sim/mini/run.py",
+    "generated_at": "2026-10-09T12:58:34+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T12:31:14+00:00",
+      "sha256": "7760cf964886"
+    },
+    "constants_used": {
+      "extra.sims_w09.dynamo_decode_active_request_weight": 0.0,
+      "hardware.H-teach.h100_sxm_bf16_dense": 989.5,
+      "hardware.H-teach.h100_sxm_fp8_dense": 1979,
+      "hardware.H-teach.h100_sxm_hbm_bandwidth": 3.35,
+      "hypothetical.async_work_ref.event_append_ms": 5,
+      "hypothetical.backend.default_max_tokens": 4096,
+      "hypothetical.backend.transaction_ms": 5,
+      "hypothetical.context_budget_ref.prompt_budget_tokens": 131072,
+      "hypothetical.epp_calibration.peak_prefill_tokens_per_s": 16000,
+      "hypothetical.gpu_step_model.hbm_bandwidth_efficiency": 0.8,
+      "hypothetical.gpu_step_model.per_layer_overhead_us": 40,
+      "hypothetical.gpu_step_model.per_step_overhead_ms": 0.5,
+      "hypothetical.memory_ref.record_texts": [
+        "Reports figures in EUR.",
+        "Prefers results as a table."
+      ],
+      "hypothetical.observability_ref.auth_verify_ms": 2,
+      "hypothetical.observability_ref.conversation_read_ms": 6,
+      "hypothetical.observability_ref.rag_chunk_fetch_ms": 5,
+      "hypothetical.observability_ref.rag_index_search_ms": 25,
+      "hypothetical.reference_request.user_text": "Here is our Q3 report and a photo of last week's whiteboard plan. Using our pricing policy, check the current list prices of our three main competitors, compute our gross margin at each of their price points, and plot it. Cite your sources.",
+      "hypothetical.reference_request.web_pages_fetched": 3,
+      "hypothetical.retrieval_ref.hnsw_ef_search": 100,
+      "hypothetical.serving_assumptions.prefill_mfu": 0.5,
+      "hypothetical.slo.top_level_deadline_s": 120,
+      "hypothetical.storage_ref.in_region_commit_ms": 2,
+      "hypothetical.super_trace_ref.model_router_ms": 1,
+      "hypothetical.super_trace_ref.tool_dispatch_ms": 2,
+      "hypothetical.timeout_budget_ref.conversation_read_cap_s": 1.0,
+      "hypothetical.timeout_budget_ref.final_pass_cap_s": 60,
+      "hypothetical.timeout_budget_ref.final_write_reserve_s": 2.0,
+      "hypothetical.timeout_budget_ref.memory_read_cap_s": 0.5,
+      "hypothetical.timeout_budget_ref.memory_read_expected_s": 0.02,
+      "hypothetical.timeout_budget_ref.retrieval_cap_s": 3.0,
+      "hypothetical.timeout_budget_ref.tool_pass_cap_s": 40,
+      "hypothetical.tool_call_story.competitor_names": [
+        "AlderSoft",
+        "Birchline",
+        "Cedar Systems"
+      ],
+      "hypothetical.tool_call_story.competitor_prices_eur": [
+        42.0,
+        55.0,
+        38.0
+      ],
+      "hypothetical.tool_call_story.pass1_preamble": "I will check the current list prices first.",
+      "hypothetical.tool_call_story.recency_days": 90,
+      "hypothetical.tool_call_story.search_queries": [
+        "AlderSoft list price per seat 2026",
+        "Birchline pricing plans list price per user",
+        "Cedar Systems pricing per seat per month"
+      ],
+      "hypothetical.tool_call_story.unit_cost_eur": 17.6,
+      "hypothetical.tool_exec_limits.max_parallel_calls_per_pass": 4,
+      "hypothetical.tool_exec_limits.run_python_deadline_margin_s": 5,
+      "hypothetical.tool_exec_limits.tool_calls_per_user_per_minute": 60,
+      "hypothetical.tool_exec_limits.web_search_deadline_s": 20,
+      "hypothetical.tool_loop.max_tool_iterations": 8,
+      "models.M-dense.head_dim": 128,
+      "models.M-dense.hidden_size": 12288,
+      "models.M-dense.intermediate_size": 28672,
+      "models.M-dense.max_position_embeddings": 262144,
+      "models.M-dense.num_attention_heads": 96,
+      "models.M-dense.num_hidden_layers": 88,
+      "models.M-dense.num_key_value_heads": 8,
+      "models.M-dense.text_params": 125025988608,
+      "models.M-dense.tie_word_embeddings": false,
+      "models.M-dense.torch_dtype": "bfloat16",
+      "models.M-dense.total_params": 127704210176,
+      "models.M-dense.vision_params": 2678221568,
+      "models.M-dense.vllm_recipe": {
+        "recommended_hw": "8x H200 (alt 4x B200, 2-8x MI300X)",
+        "tp": 8,
+        "eagle_num_speculative_tokens": 3,
+        "mi300x_tp8_1k_in_1k_out_conc32": {
+          "output_tok_s": 915,
+          "mean_ttft_ms": 2522,
+          "mean_tpot_ms": 26.1
+        },
+        "mi300x_tp1": {
+          "output_tok_s": 438,
+          "mean_ttft_ms": 5719,
+          "mean_tpot_ms": 55.2
+        }
+      },
+      "models.M-dense.vocab_size": 131072,
+      "models.M-vision.image_mean": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "models.M-vision.image_std": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "models.M-vision.in_patch_limit": 65536,
+      "models.M-vision.merge_kernel_size": 2,
+      "models.M-vision.patch_limit_on_one_side": 512,
+      "models.M-vision.patch_size": 14,
+      "models.M-vision.resize_rule": "scale = min(1, sqrt(65536/((W//14)*(H//14))), 7168/W, 7168/H); bicubic; zero-pad right/bottom to multiple of 28; tokens = (H'/28)*(W'/28)",
+      "retrieval_and_data.bm25_b": 0.75,
+      "retrieval_and_data.bm25_k1": 1.2,
+      "retrieval_and_data.rrf_k": 60,
+      "routing.dynamo.disk_hit_credit": 0.25,
+      "routing.dynamo.host_hit_credit": 0.75,
+      "routing.dynamo.overlap_score_credit_gpu": 1.0,
+      "routing.dynamo.prefill_load_scale": 1.0,
+      "routing.llm_d.prefix_affinity_max_ttft_penalty_ms": 18000,
+      "routing.llm_d.prefix_affinity_threshold": 0.8,
+      "routing.llm_d.token_load_queue_threshold_tokens": 4194304,
+      "software.vllm.block_size_tokens": 16
+    }
+  },
+  "toy": {
+    "label": "illustrative toy input of the miniature, chosen for this demo; not a measured or sourced value (hand-checkable sizes; step time fixed, not modelled)",
+    "engine": {
+      "block_size": 4,
+      "num_blocks": 11,
+      "usable_blocks": 10,
+      "budget": 16,
+      "max_seqs": 4,
+      "step_s": 0.01
+    },
+    "requests": [
+      {
+        "rid": "A",
+        "arrives_during_step": 1,
+        "prompt_tokens": 7,
+        "output_tokens": 4
+      },
+      {
+        "rid": "B",
+        "arrives_during_step": 1,
+        "prompt_tokens": 7,
+        "output_tokens": 9
+      },
+      {
+        "rid": "C",
+        "arrives_during_step": 1,
+        "prompt_tokens": 20,
+        "output_tokens": 2
+      },
+      {
+        "rid": "D",
+        "arrives_during_step": 2,
+        "prompt_tokens": 7,
+        "output_tokens": 3
+      }
+    ],
+    "abort": {
+      "rid": "B",
+      "during_step": 6
+    },
+    "steps": [
+      {
+        "step": 1,
+        "scheduled": [
+          [
+            "A",
+            7,
+            "prefill"
+          ],
+          [
+            "B",
+            7,
+            "prefill"
+          ],
+          [
+            "C",
+            2,
+            "prefill chunk"
+          ]
+        ],
+        "scheduled_text": "A 7 prefill · B 7 prefill · C 2 chunk",
+        "batched_tokens": 16,
+        "budget_left": 0,
+        "admitted": [
+          "A",
+          "B",
+          "C"
+        ],
+        "preempted": [],
+        "aborted_before_step": [],
+        "produced_token": [
+          "A",
+          "B"
+        ],
+        "finished": [],
+        "free_blocks_before": 10,
+        "free_blocks_after_alloc": 1,
+        "free_blocks_end": 1,
+        "queues_before": {
+          "running": [],
+          "waiting": [
+            [
+              "A",
+              0,
+              7,
+              7
+            ],
+            [
+              "B",
+              0,
+              7,
+              7
+            ],
+            [
+              "C",
+              0,
+              20,
+              20
+            ]
+          ]
+        },
+        "prefill_queue": [
+          "A",
+          "B",
+          "C"
+        ],
+        "decode_queue": [],
+        "waiting_before": [
+          "A",
+          "B",
+          "C"
+        ],
+        "prefill_queue_text": "A, B, C",
+        "decode_queue_text": "none"
+      },
+      {
+        "step": 2,
+        "scheduled": [
+          [
+            "A",
+            1,
+            "decode"
+          ],
+          [
+            "B",
+            1,
+            "decode"
+          ],
+          [
+            "C",
+            14,
+            "prefill chunk"
+          ]
+        ],
+        "scheduled_text": "A 1 decode · B 1 decode · C 14 chunk",
+        "batched_tokens": 16,
+        "budget_left": 0,
+        "admitted": [],
+        "preempted": [],
+        "aborted_before_step": [],
+        "produced_token": [
+          "A",
+          "B"
+        ],
+        "finished": [],
+        "free_blocks_before": 1,
+        "free_blocks_after_alloc": 1,
+        "free_blocks_end": 1,
+        "queues_before": {
+          "running": [
+            [
+              "A",
+              7,
+              8,
+              7
+            ],
+            [
+              "B",
+              7,
+              8,
+              7
+            ],
+            [
+              "C",
+              2,
+              20,
+              20
+            ]
+          ],
+          "waiting": []
+        },
+        "prefill_queue": [
+          "C"
+        ],
+        "decode_queue": [
+          "A",
+          "B"
+        ],
+        "waiting_before": [],
+        "prefill_queue_text": "C",
+        "decode_queue_text": "A, B"
+      },
+      {
+        "step": 3,
+        "scheduled": [
+          [
+            "A",
+            1,
+            "decode"
+          ],
+          [
+            "B",
+            1,
+            "decode"
+          ]
+        ],
+        "scheduled_text": "A 1 decode · B 1 decode",
+        "batched_tokens": 2,
+        "budget_left": 14,
+        "admitted": [],
+        "preempted": [
+          "C"
+        ],
+        "aborted_before_step": [],
+        "produced_token": [
+          "A",
+          "B"
+        ],
+        "finished": [],
+        "free_blocks_before": 1,
+        "free_blocks_after_alloc": 4,
+        "free_blocks_end": 4,
+        "queues_before": {
+          "running": [
+            [
+              "A",
+              8,
+              9,
+              7
+            ],
+            [
+              "B",
+              8,
+              9,
+              7
+            ],
+            [
+              "C",
+              16,
+              20,
+              20
+            ]
+          ],
+          "waiting": [
+            [
+              "D",
+              0,
+              7,
+              7
+            ]
+          ]
+        },
+        "prefill_queue": [
+          "D",
+          "C"
+        ],
+        "decode_queue": [
+          "A",
+          "B"
+        ],
+        "waiting_before": [
+          "D"
+        ],
+        "prefill_queue_text": "D, C",
+        "decode_queue_text": "A, B"
+      },
+      {
+        "step": 4,
+        "scheduled": [
+          [
+            "A",
+            1,
+            "decode"
+          ],
+          [
+            "B",
+            1,
+            "decode"
+          ]
+        ],
+        "scheduled_text": "A 1 decode · B 1 decode",
+        "batched_tokens": 2,
+        "budget_left": 14,
+        "admitted": [],
+        "preempted": [],
+        "aborted_before_step": [],
+        "produced_token": [
+          "A",
+          "B"
+        ],
+        "finished": [
+          "A"
+        ],
+        "free_blocks_before": 4,
+        "free_blocks_after_alloc": 4,
+        "free_blocks_end": 7,
+        "queues_before": {
+          "running": [
+            [
+              "A",
+              9,
+              10,
+              7
+            ],
+            [
+              "B",
+              9,
+              10,
+              7
+            ]
+          ],
+          "waiting": [
+            [
+              "C",
+              0,
+              20,
+              20
+            ],
+            [
+              "D",
+              0,
+              7,
+              7
+            ]
+          ]
+        },
+        "prefill_queue": [
+          "C",
+          "D"
+        ],
+        "decode_queue": [
+          "A",
+          "B"
+        ],
+        "waiting_before": [
+          "C",
+          "D"
+        ],
+        "prefill_queue_text": "C, D",
+        "decode_queue_text": "A, B"
+      },
+      {
+        "step": 5,
+        "scheduled": [
+          [
+            "B",
+            1,
+            "decode"
+          ],
+          [
+            "C",
+            4,
+            "prefill"
+          ],
+          [
+            "D",
+            7,
+            "prefill"
+          ]
+        ],
+        "scheduled_text": "B 1 decode · C 4 prefill · D 7 prefill",
+        "batched_tokens": 12,
+        "budget_left": 4,
+        "admitted": [
+          "C",
+          "D"
+        ],
+        "preempted": [],
+        "aborted_before_step": [],
+        "produced_token": [
+          "B",
+          "C",
+          "D"
+        ],
+        "finished": [],
+        "free_blocks_before": 7,
+        "free_blocks_after_alloc": 0,
+        "free_blocks_end": 0,
+        "queues_before": {
+          "running": [
+            [
+              "B",
+              10,
+              11,
+              7
+            ]
+          ],
+          "waiting": [
+            [
+              "C",
+              16,
+              20,
+              20
+            ],
+            [
+              "D",
+              0,
+              7,
+              7
+            ]
+          ]
+        },
+        "prefill_queue": [
+          "C",
+          "D"
+        ],
+        "decode_queue": [
+          "B"
+        ],
+        "waiting_before": [
+          "C",
+          "D"
+        ],
+        "prefill_queue_text": "C, D",
+        "decode_queue_text": "B"
+      },
+      {
+        "step": 6,
+        "scheduled": [
+          [
+            "B",
+            1,
+            "decode"
+          ],
+          [
+            "C",
+            1,
+            "decode"
+          ]
+        ],
+        "scheduled_text": "B 1 decode · C 1 decode",
+        "batched_tokens": 2,
+        "budget_left": 14,
+        "admitted": [],
+        "preempted": [
+          "D"
+        ],
+        "aborted_before_step": [],
+        "produced_token": [
+          "C"
+        ],
+        "finished": [
+          "C"
+        ],
+        "free_blocks_before": 0,
+        "free_blocks_after_alloc": 1,
+        "free_blocks_end": 7,
+        "queues_before": {
+          "running": [
+            [
+              "B",
+              11,
+              12,
+              7
+            ],
+            [
+              "C",
+              20,
+              21,
+              20
+            ],
+            [
+              "D",
+              7,
+              8,
+              7
+            ]
+          ],
+          "waiting": []
+        },
+        "prefill_queue": [],
+        "decode_queue": [
+          "B",
+          "C",
+          "D"
+        ],
+        "waiting_before": [],
+        "prefill_queue_text": "none",
+        "decode_queue_text": "B, C, D"
+      },
+      {
+        "step": 7,
+        "scheduled": [
+          [
+            "D",
+            4,
+            "prefill"
+          ]
+        ],
+        "scheduled_text": "D 4 prefill",
+        "batched_tokens": 4,
+        "budget_left": 12,
+        "admitted": [
+          "D"
+        ],
+        "preempted": [],
+        "aborted_before_step": [
+          "B"
+        ],
+        "produced_token": [
+          "D"
+        ],
+        "finished": [],
+        "free_blocks_before": 10,
+        "free_blocks_after_alloc": 8,
+        "free_blocks_end": 8,
+        "queues_before": {
+          "running": [],
+          "waiting": [
+            [
+              "D",
+              0,
+              8,
+              7
+            ]
+          ]
+        },
+        "prefill_queue": [
+          "D"
+        ],
+        "decode_queue": [],
+        "waiting_before": [
+          "D"
+        ],
+        "prefill_queue_text": "D",
+        "decode_queue_text": "none"
+      },
+      {
+        "step": 8,
+        "scheduled": [
+          [
+            "D",
+            1,
+            "decode"
+          ]
+        ],
+        "scheduled_text": "D 1 decode",
+        "batched_tokens": 1,
+        "budget_left": 15,
+        "admitted": [],
+        "preempted": [],
+        "aborted_before_step": [],
+        "produced_token": [
+          "D"
+        ],
+        "finished": [
+          "D"
+        ],
+        "free_blocks_before": 8,
+        "free_blocks_after_alloc": 7,
+        "free_blocks_end": 10,
+        "queues_before": {
+          "running": [
+            [
+              "D",
+              8,
+              9,
+              7
+            ]
+          ],
+          "waiting": []
+        },
+        "prefill_queue": [],
+        "decode_queue": [
+          "D"
+        ],
+        "waiting_before": [],
+        "prefill_queue_text": "none",
+        "decode_queue_text": "D"
+      }
+    ],
+    "budget_never_exceeded": true,
+    "tokens_streamed": {
+      "A": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "C": [
+        "C1",
+        "C2"
+      ],
+      "B": [
+        "B1",
+        "B2",
+        "B3",
+        "B4",
+        "B5"
+      ],
+      "D": [
+        "D1",
+        "D2",
+        "D3"
+      ]
+    },
+    "tokens_streamed_count": {
+      "A": 4,
+      "C": 2,
+      "B": 5,
+      "D": 3
+    },
+    "prompt_blocks": {
+      "A": 2,
+      "B": 2,
+      "C": 5,
+      "D": 2
+    },
+    "admissions": [
+      {
+        "step": 1,
+        "rid": "A",
+        "tokens": 7,
+        "computed_now": 7,
+        "hit_tokens": 0,
+        "hit_blocks": 0
+      },
+      {
+        "step": 1,
+        "rid": "B",
+        "tokens": 7,
+        "computed_now": 7,
+        "hit_tokens": 0,
+        "hit_blocks": 0
+      },
+      {
+        "step": 1,
+        "rid": "C",
+        "tokens": 20,
+        "computed_now": 2,
+        "hit_tokens": 18,
+        "hit_blocks": 4
+      },
+      {
+        "step": 5,
+        "rid": "C",
+        "tokens": 20,
+        "computed_now": 4,
+        "hit_tokens": 16,
+        "hit_blocks": 4
+      },
+      {
+        "step": 5,
+        "rid": "D",
+        "tokens": 7,
+        "computed_now": 7,
+        "hit_tokens": 0,
+        "hit_blocks": 0
+      },
+      {
+        "step": 7,
+        "rid": "D",
+        "tokens": 8,
+        "computed_now": 4,
+        "hit_tokens": 4,
+        "hit_blocks": 1
+      }
+    ],
+    "readmitted_with_hit": {
+      "C": {
+        "step": 5,
+        "rid": "C",
+        "tokens": 20,
+        "computed_now": 4,
+        "hit_tokens": 16,
+        "hit_blocks": 4
+      },
+      "D": {
+        "step": 7,
+        "rid": "D",
+        "tokens": 8,
+        "computed_now": 4,
+        "hit_tokens": 4,
+        "hit_blocks": 1
+      }
+    },
+    "counters": {
+      "steps": 8,
+      "preemptions": 2,
+      "prefix_cache_queries": 69,
+      "prefix_cache_hits": 20,
+      "aborts": 1,
+      "aborted_blocks_freed": 3,
+      "busy_s": 0.08,
+      "tokens_out": 14
+    },
+    "evictions": 2
+  },
+  "main_run": {
+    "count": 535,
+    "first": [
+      {
+        "replica": "r1",
+        "t_ms": 190.789,
+        "step_ms": 20.0001,
+        "mine": [
+          [
+            "turn4-p1",
+            503,
+            "prefill chunk"
+          ]
+        ],
+        "batch_sequences": 10,
+        "batched_tokens": 512,
+        "decodes": 9,
+        "prefill_tokens": 503,
+        "running": 10,
+        "waiting": 0,
+        "free_blocks_end": 672,
+        "kv_usage_end": 0.3431
+      },
+      {
+        "replica": "r1",
+        "t_ms": 210.789,
+        "step_ms": 17.0957,
+        "mine": [
+          [
+            "turn4-p1",
+            403,
+            "prefill"
+          ]
+        ],
+        "batch_sequences": 10,
+        "batched_tokens": 412,
+        "decodes": 9,
+        "prefill_tokens": 403,
+        "running": 10,
+        "waiting": 0,
+        "free_blocks_end": 672,
+        "kv_usage_end": 0.3431
+      },
+      {
+        "replica": "r1",
+        "t_ms": 227.885,
+        "step_ms": 9.9866,
+        "mine": [
+          [
+            "turn4-p1",
+            1,
+            "decode"
+          ]
+        ],
+        "batch_sequences": 10,
+        "batched_tokens": 10,
+        "decodes": 10,
+        "prefill_tokens": 0,
+        "running": 10,
+        "waiting": 0,
+        "free_blocks_end": 672,
+        "kv_usage_end": 0.3431
+      }
+    ],
+    "mean_step_ms": 10.4002,
+    "max_batch_sequences": 12,
+    "mean_batch_sequences": 6.46
+  }
+}

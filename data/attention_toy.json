@@ -1,0 +1,3494 @@
+{
+  "meta": {
+    "script": "sim/rmsnorm_attention_toy.py",
+    "generated_at": "2026-10-09T06:48:51+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T06:45:24+00:00",
+      "sha256": "36e36e01982d"
+    },
+    "constants_used": {
+      "models.M-dense.head_dim": 128,
+      "models.M-dense.hidden_size": 12288,
+      "models.M-dense.rms_norm_eps": 1e-05
+    }
+  },
+  "label": "Illustrative toy inputs chosen so every step can be checked by hand with a calculator. They are not real model weights, activations or logits.",
+  "serves": {
+    "requirements": [
+      "R-X.3",
+      "R-X.6",
+      "R-X.7"
+    ],
+    "video_sequence": 9,
+    "manuscript": "Part 10 (Transformer internals)"
+  },
+  "display_decimals": 4,
+  "rmsnorm": {
+    "equation": "y_i = x_i / sqrt( (1/d) * sum_j x_j^2 + eps ) * gamma_i",
+    "d": 4,
+    "x": {
+      "value": [
+        1.0,
+        -2.0,
+        2.0,
+        4.0
+      ],
+      "display": [
+        "1",
+        "-2",
+        "2",
+        "4"
+      ]
+    },
+    "squares": {
+      "value": [
+        1.0,
+        4.0,
+        4.0,
+        16.0
+      ],
+      "display": [
+        "1",
+        "4",
+        "4",
+        "16"
+      ],
+      "terms": [
+        "(1)^2 = 1",
+        "(-2)^2 = 4",
+        "(2)^2 = 4",
+        "(4)^2 = 16"
+      ]
+    },
+    "sum_squares": {
+      "value": 25.0,
+      "display": "25"
+    },
+    "mean_squares": {
+      "value": 6.25,
+      "display": "6.25",
+      "text": "25 / 4 = 6.25"
+    },
+    "eps": {
+      "value": 1e-05,
+      "display": "1e-05",
+      "constant": "models.M-dense.rms_norm_eps",
+      "source": "https://huggingface.co/mistralai/Mistral-Medium-3.5-128B/raw/main/config.json"
+    },
+    "mean_squares_plus_eps": {
+      "value": 6.25001,
+      "display": "6.250010"
+    },
+    "rms": {
+      "value": 2.5000019999992,
+      "display": "2.500002"
+    },
+    "rms_without_eps": {
+      "value": 2.5,
+      "display": "2.500000"
+    },
+    "eps_effect": {
+      "relative_change_of_rms": 7.999996800567288e-07,
+      "display": "0.00008 %",
+      "note": "eps = 1e-05 is negligible here: it changes the RMS from 2.500000 to 2.500002. It only matters when every x_i is close to 0, where it prevents a division by zero."
+    },
+    "x_over_rms": {
+      "value": [
+        0.399999680000384,
+        -0.799999360000768,
+        0.799999360000768,
+        1.599998720001536
+      ],
+      "display": [
+        "0.4000",
+        "-0.8000",
+        "0.8000",
+        "1.6000"
+      ]
+    },
+    "x_over_rms_mean_squares": {
+      "value": 0.9999984000025599,
+      "display": "0.999998",
+      "note": "after dividing by the RMS the mean of squares is 1 (minus the eps effect)"
+    },
+    "gamma": {
+      "value": [
+        1.0,
+        0.5,
+        2.0,
+        0.5
+      ],
+      "display": [
+        "1",
+        "0.5",
+        "2",
+        "0.5"
+      ],
+      "note": "toy values; in a real model gamma is a learned vector of length d_model"
+    },
+    "output": {
+      "value": [
+        0.399999680000384,
+        -0.399999680000384,
+        1.599998720001536,
+        0.799999360000768
+      ],
+      "display": [
+        "0.4000",
+        "-0.4000",
+        "1.6000",
+        "0.8000"
+      ]
+    },
+    "output_terms": [
+      "0.4000 x 1 = 0.4000",
+      "-0.8000 x 0.5 = -0.4000",
+      "0.8000 x 2 = 1.6000",
+      "1.6000 x 0.5 = 0.8000"
+    ],
+    "no_mean_subtraction": "RMSNorm only rescales; unlike LayerNorm it does not subtract the mean and has no bias.",
+    "why_pre_norm": "Each layer computes H = X + Attention(RMSNorm(X)) and X' = H + MLP(RMSNorm(H)): the norm sits inside the residual branch, so the residual stream itself is never normalised. With this pre-norm layout the gradients near the output are well-behaved at initialisation and training needs no learning-rate warm-up stage; post-norm needs it.",
+    "real_model": {
+      "d_model": 12288,
+      "constant": "models.M-dense.hidden_size",
+      "note": "M-dense does the same arithmetic over 12,288 values per token, before attention and before the MLP in every layer."
+    },
+    "sources": {
+      "formula": "research/notes/05-papers-architecture.md §2.A A2 [S2 Zhang & Sennrich 2019, eq. 4]; eps is an implementation detail added inside the square root (class B)",
+      "pre_norm": "research/notes/05-papers-architecture.md §2.G G1 [S59 Xiong et al. 2020]"
+    }
+  },
+  "attention": {
+    "equation": "O = softmax( Q K^T / sqrt(d_head) + M ) V",
+    "n_tokens": 4,
+    "d_head": 4,
+    "one_head": true,
+    "shapes": {
+      "Q": [
+        4,
+        4
+      ],
+      "K": [
+        4,
+        4
+      ],
+      "V": [
+        4,
+        4
+      ],
+      "QK^T": [
+        4,
+        4
+      ],
+      "weights": [
+        4,
+        4
+      ],
+      "O": [
+        4,
+        4
+      ]
+    },
+    "Q": {
+      "value": [
+        [
+          1.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          2.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.5,
+          -1.0,
+          1.0,
+          2.0
+        ]
+      ],
+      "display": [
+        [
+          "1",
+          "0",
+          "1",
+          "0"
+        ],
+        [
+          "1",
+          "2",
+          "0",
+          "0"
+        ],
+        [
+          "1",
+          "1",
+          "0",
+          "-1"
+        ],
+        [
+          "0.5",
+          "-1",
+          "1",
+          "2"
+        ]
+      ]
+    },
+    "K": {
+      "value": [
+        [
+          1.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          -1.0,
+          0.0,
+          2.0,
+          1.0
+        ]
+      ],
+      "display": [
+        [
+          "1",
+          "1",
+          "0",
+          "0"
+        ],
+        [
+          "0",
+          "1",
+          "1",
+          "0"
+        ],
+        [
+          "1",
+          "0",
+          "0",
+          "1"
+        ],
+        [
+          "-1",
+          "0",
+          "2",
+          "1"
+        ]
+      ]
+    },
+    "V": {
+      "value": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          2.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          1.0
+        ],
+        [
+          2.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          2.0,
+          -1.0
+        ]
+      ],
+      "display": [
+        [
+          "1",
+          "0",
+          "0",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "0",
+          "1"
+        ],
+        [
+          "2",
+          "0",
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "0",
+          "2",
+          "-1"
+        ]
+      ]
+    },
+    "inputs_note": "Row i of Q, K, V belongs to token i. In a model they come from X·W_q, X·W_k, X·W_v.",
+    "step1_dot_products": {
+      "entries": [
+        {
+          "row": 0,
+          "col": 0,
+          "q": {
+            "value": [
+              1.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            "display": [
+              "1",
+              "0",
+              "1",
+              "0"
+            ]
+          },
+          "k": {
+            "value": [
+              1.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "display": [
+              "1",
+              "1",
+              "0",
+              "0"
+            ]
+          },
+          "terms": {
+            "value": [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "display": [
+              "1",
+              "0",
+              "0",
+              "0"
+            ]
+          },
+          "text": "(1)(1) + (0)(1) + (1)(0) + (0)(0) = 1",
+          "sum": {
+            "value": 1.0,
+            "display": "1"
+          }
+        },
+        {
+          "row": 0,
+          "col": 1,
+          "q": {
+            "value": [
+              1.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            "display": [
+              "1",
+              "0",
+              "1",
+              "0"
+            ]
+          },
+          "k": {
+            "value": [
+              0.0,
+              1.0,
+              1.0,
+              0.0
+            ],
+            "display": [
+              "0",
+              "1",
+              "1",
+              "0"
+            ]
+          },
+          "terms": {
+            "value": [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            "display": [
+              "0",
+              "0",
+              "1",
+              "0"
+            ]
+          },
+          "text": "(1)(0) + (0)(1) + (1)(1) + (0)(0) = 1",
+          "sum": {
+            "value": 1.0,
+            "display": "1"
+          }
+        },
+        {
+          "row": 0,
+          "col": 2,
+          "q": {
+            "value": [
+              1.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            "display": [
+              "1",
+              "0",
+              "1",
+              "0"
+            ]
+          },
+          "k": {
+            "value": [
+              1.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "display": [
+              "1",
+              "0",
+              "0",
+              "1"
+            ]
+          },
+          "terms": {
+            "value": [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "display": [
+              "1",
+              "0",
+              "0",
+              "0"
+            ]
+          },
+          "text": "(1)(1) + (0)(0) + (1)(0) + (0)(1) = 1",
+          "sum": {
+            "value": 1.0,
+            "display": "1"
+          }
+        },
+        {
+          "row": 0,
+          "col": 3,
+          "q": {
+            "value": [
+              1.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            "display": [
+              "1",
+              "0",
+              "1",
+              "0"
+            ]
+          },
+          "k": {
+            "value": [
+              -1.0,
+              0.0,
+              2.0,
+              1.0
+            ],
+            "display": [
+              "-1",
+              "0",
+              "2",
+              "1"
+            ]
+          },
+          "terms": {
+            "value": [
+              -1.0,
+              0.0,
+              2.0,
+              0.0
+            ],
+            "display": [
+              "-1",
+              "0",
+              "2",
+              "0"
+            ]
+          },
+          "text": "(1)(-1) + (0)(0) + (1)(2) + (0)(1) = 1",
+          "sum": {
+            "value": 1.0,
+            "display": "1"
+          }
+        },
+        {
+          "row": 1,
+          "col": 0,
+          "q": {
+            "value": [
+              1.0,
+              2.0,
+              0.0,
+              0.0
+            ],
+            "display": [
+              "1",
+              "2",
+              "0",
+              "0"
+            ]
+          },
+          "k": {
+            "value": [
+              1.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "display": [
+              "1",
+              "1",
+              "0",
+              "0"
+            ]
+          },
+          "terms": {
+            "value": [
+              1.0,
+              2.0,
+              0.0,
+              0.0
+            ],
+            "display": [
+              "1",
+              "2",
+              "0",
+              "0"
+            ]
+          },
+          "text": "(1)(1) + (2)(1) + (0)(0) + (0)(0) = 3",
+          "sum": {
+            "value": 3.0,
+            "display": "3"
+          }
+        },
+        {
+          "row": 1,
+          "col": 1,
+          "q": {
+            "value": [
+              1.0,
+              2.0,
+              0.0,
+              0.0
+            ],
+            "display": [
+              "1",
+              "2",
+              "0",
+              "0"
+            ]
+          },
+          "k": {
+            "value": [
+              0.0,
+              1.0,
+              1.0,
+              0.0
+            ],
+            "display": [
+              "0",
+              "1",
+              "1",
+              "0"
+            ]
+          },
+          "terms": {
+            "value": [
+              0.0,
+              2.0,
+              0.0,
+              0.0
+            ],
+            "display": [
+              "0",
+              "2",
+              "0",
+              "0"
+            ]
+          },
+          "text": "(1)(0) + (2)(1) + (0)(1) + (0)(0) = 2",
+          "sum": {
+            "value": 2.0,
+            "display": "2"
+          }
+        },
+        {
+          "row": 1,
+          "col": 2,
+          "q": {
+            "value": [
+              1.0,
+              2.0,
+              0.0,
+              0.0
+            ],
+            "display": [
+              "1",
+              "2",
+              "0",
+              "0"
+            ]
+          },
+          "k": {
+            "value": [
+              1.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "display": [
+              "1",
+              "0",
+              "0",
+              "1"
+            ]
+          },
+          "terms": {
+            "value": [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "display": [
+              "1",
+              "0",
+              "0",
+              "0"
+            ]
+          },
+          "text": "(1)(1) + (2)(0) + (0)(0) + (0)(1) = 1",
+          "sum": {
+            "value": 1.0,
+            "display": "1"
+          }
+        },
+        {
+          "row": 1,
+          "col": 3,
+          "q": {
+            "value": [
+              1.0,
+              2.0,
+              0.0,
+              0.0
+            ],
+            "display": [
+              "1",
+              "2",
+              "0",
+              "0"
+            ]
+          },
+          "k": {
+            "value": [
+              -1.0,
+              0.0,
+              2.0,
+              1.0
+            ],
+            "display": [
+              "-1",
+              "0",
+              "2",
+              "1"
+            ]
+          },
+          "terms": {
+            "value": [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "display": [
+              "-1",
+              "0",
+              "0",
+              "0"
+            ]
+          },
+          "text": "(1)(-1) + (2)(0) + (0)(2) + (0)(1) = -1",
+          "sum": {
+            "value": -1.0,
+            "display": "-1"
+          }
+        },
+        {
+          "row": 2,
+          "col": 0,
+          "q": {
+            "value": [
+              1.0,
+              1.0,
+              0.0,
+              -1.0
+            ],
+            "display": [
+              "1",
+              "1",
+              "0",
+              "-1"
+            ]
+          },
+          "k": {
+            "value": [
+              1.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "display": [
+              "1",
+              "1",
+              "0",
+              "0"
+            ]
+          },
+          "terms": {
+            "value": [
+              1.0,
+              1.0,
+              0.0,
+              -0.0
+            ],
+            "display": [
+              "1",
+              "1",
+              "0",
+              "0"
+            ]
+          },
+          "text": "(1)(1) + (1)(1) + (0)(0) + (-1)(0) = 2",
+          "sum": {
+            "value": 2.0,
+            "display": "2"
+          }
+        },
+        {
+          "row": 2,
+          "col": 1,
+          "q": {
+            "value": [
+              1.0,
+              1.0,
+              0.0,
+              -1.0
+            ],
+            "display": [
+              "1",
+              "1",
+              "0",
+              "-1"
+            ]
+          },
+          "k": {
+            "value": [
+              0.0,
+              1.0,
+              1.0,
+              0.0
+            ],
+            "display": [
+              "0",
+              "1",
+              "1",
+              "0"
+            ]
+          },
+          "terms": {
+            "value": [
+              0.0,
+              1.0,
+              0.0,
+              -0.0
+            ],
+            "display": [
+              "0",
+              "1",
+              "0",
+              "0"
+            ]
+          },
+          "text": "(1)(0) + (1)(1) + (0)(1) + (-1)(0) = 1",
+          "sum": {
+            "value": 1.0,
+            "display": "1"
+          }
+        },
+        {
+          "row": 2,
+          "col": 2,
+          "q": {
+            "value": [
+              1.0,
+              1.0,
+              0.0,
+              -1.0
+            ],
+            "display": [
+              "1",
+              "1",
+              "0",
+              "-1"
+            ]
+          },
+          "k": {
+            "value": [
+              1.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "display": [
+              "1",
+              "0",
+              "0",
+              "1"
+            ]
+          },
+          "terms": {
+            "value": [
+              1.0,
+              0.0,
+              0.0,
+              -1.0
+            ],
+            "display": [
+              "1",
+              "0",
+              "0",
+              "-1"
+            ]
+          },
+          "text": "(1)(1) + (1)(0) + (0)(0) + (-1)(1) = 0",
+          "sum": {
+            "value": 0.0,
+            "display": "0"
+          }
+        },
+        {
+          "row": 2,
+          "col": 3,
+          "q": {
+            "value": [
+              1.0,
+              1.0,
+              0.0,
+              -1.0
+            ],
+            "display": [
+              "1",
+              "1",
+              "0",
+              "-1"
+            ]
+          },
+          "k": {
+            "value": [
+              -1.0,
+              0.0,
+              2.0,
+              1.0
+            ],
+            "display": [
+              "-1",
+              "0",
+              "2",
+              "1"
+            ]
+          },
+          "terms": {
+            "value": [
+              -1.0,
+              0.0,
+              0.0,
+              -1.0
+            ],
+            "display": [
+              "-1",
+              "0",
+              "0",
+              "-1"
+            ]
+          },
+          "text": "(1)(-1) + (1)(0) + (0)(2) + (-1)(1) = -2",
+          "sum": {
+            "value": -2.0,
+            "display": "-2"
+          }
+        },
+        {
+          "row": 3,
+          "col": 0,
+          "q": {
+            "value": [
+              0.5,
+              -1.0,
+              1.0,
+              2.0
+            ],
+            "display": [
+              "0.5",
+              "-1",
+              "1",
+              "2"
+            ]
+          },
+          "k": {
+            "value": [
+              1.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "display": [
+              "1",
+              "1",
+              "0",
+              "0"
+            ]
+          },
+          "terms": {
+            "value": [
+              0.5,
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "display": [
+              "0.5",
+              "-1",
+              "0",
+              "0"
+            ]
+          },
+          "text": "(0.5)(1) + (-1)(1) + (1)(0) + (2)(0) = -0.5",
+          "sum": {
+            "value": -0.5,
+            "display": "-0.5"
+          }
+        },
+        {
+          "row": 3,
+          "col": 1,
+          "q": {
+            "value": [
+              0.5,
+              -1.0,
+              1.0,
+              2.0
+            ],
+            "display": [
+              "0.5",
+              "-1",
+              "1",
+              "2"
+            ]
+          },
+          "k": {
+            "value": [
+              0.0,
+              1.0,
+              1.0,
+              0.0
+            ],
+            "display": [
+              "0",
+              "1",
+              "1",
+              "0"
+            ]
+          },
+          "terms": {
+            "value": [
+              0.0,
+              -1.0,
+              1.0,
+              0.0
+            ],
+            "display": [
+              "0",
+              "-1",
+              "1",
+              "0"
+            ]
+          },
+          "text": "(0.5)(0) + (-1)(1) + (1)(1) + (2)(0) = 0",
+          "sum": {
+            "value": 0.0,
+            "display": "0"
+          }
+        },
+        {
+          "row": 3,
+          "col": 2,
+          "q": {
+            "value": [
+              0.5,
+              -1.0,
+              1.0,
+              2.0
+            ],
+            "display": [
+              "0.5",
+              "-1",
+              "1",
+              "2"
+            ]
+          },
+          "k": {
+            "value": [
+              1.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "display": [
+              "1",
+              "0",
+              "0",
+              "1"
+            ]
+          },
+          "terms": {
+            "value": [
+              0.5,
+              -0.0,
+              0.0,
+              2.0
+            ],
+            "display": [
+              "0.5",
+              "0",
+              "0",
+              "2"
+            ]
+          },
+          "text": "(0.5)(1) + (-1)(0) + (1)(0) + (2)(1) = 2.5",
+          "sum": {
+            "value": 2.5,
+            "display": "2.5"
+          }
+        },
+        {
+          "row": 3,
+          "col": 3,
+          "q": {
+            "value": [
+              0.5,
+              -1.0,
+              1.0,
+              2.0
+            ],
+            "display": [
+              "0.5",
+              "-1",
+              "1",
+              "2"
+            ]
+          },
+          "k": {
+            "value": [
+              -1.0,
+              0.0,
+              2.0,
+              1.0
+            ],
+            "display": [
+              "-1",
+              "0",
+              "2",
+              "1"
+            ]
+          },
+          "terms": {
+            "value": [
+              -0.5,
+              -0.0,
+              2.0,
+              2.0
+            ],
+            "display": [
+              "-0.5",
+              "0",
+              "2",
+              "2"
+            ]
+          },
+          "text": "(0.5)(-1) + (-1)(0) + (1)(2) + (2)(1) = 3.5",
+          "sum": {
+            "value": 3.5,
+            "display": "3.5"
+          }
+        }
+      ],
+      "matrix": {
+        "value": [
+          [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          [
+            3.0,
+            2.0,
+            1.0,
+            -1.0
+          ],
+          [
+            2.0,
+            1.0,
+            0.0,
+            -2.0
+          ],
+          [
+            -0.5,
+            0.0,
+            2.5,
+            3.5
+          ]
+        ],
+        "display": [
+          [
+            "1",
+            "1",
+            "1",
+            "1"
+          ],
+          [
+            "3",
+            "2",
+            "1",
+            "-1"
+          ],
+          [
+            "2",
+            "1",
+            "0",
+            "-2"
+          ],
+          [
+            "-0.5",
+            "0",
+            "2.5",
+            "3.5"
+          ]
+        ]
+      },
+      "note": "Entry (i, j) is q_i · k_j: how strongly token i's query matches token j's key. All 16 are computed, including the future ones the mask removes next."
+    },
+    "step2_scale": {
+      "sqrt_d_head": {
+        "value": 2.0,
+        "display": "2"
+      },
+      "factor": {
+        "value": 0.5,
+        "display": "0.5"
+      },
+      "matrix": {
+        "value": [
+          [
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ],
+          [
+            1.5,
+            1.0,
+            0.5,
+            -0.5
+          ],
+          [
+            1.0,
+            0.5,
+            0.0,
+            -1.0
+          ],
+          [
+            -0.25,
+            0.0,
+            1.25,
+            1.75
+          ]
+        ],
+        "display": [
+          [
+            "0.5",
+            "0.5",
+            "0.5",
+            "0.5"
+          ],
+          [
+            "1.5",
+            "1",
+            "0.5",
+            "-0.5"
+          ],
+          [
+            "1",
+            "0.5",
+            "0",
+            "-1"
+          ],
+          [
+            "-0.25",
+            "0",
+            "1.25",
+            "1.75"
+          ]
+        ]
+      },
+      "why": "Dividing by sqrt(d_head) keeps the dot products' spread roughly independent of d_head, so softmax does not saturate when d_head is large (128 in M-dense).",
+      "real_head_dim": {
+        "value": 128,
+        "constant": "models.M-dense.head_dim"
+      }
+    },
+    "step3_mask": {
+      "allowed": [
+        [
+          true,
+          false,
+          false,
+          false
+        ],
+        [
+          true,
+          true,
+          false,
+          false
+        ],
+        [
+          true,
+          true,
+          true,
+          false
+        ],
+        [
+          true,
+          true,
+          true,
+          true
+        ]
+      ],
+      "mask_display": [
+        [
+          "0",
+          "−∞",
+          "−∞",
+          "−∞"
+        ],
+        [
+          "0",
+          "0",
+          "−∞",
+          "−∞"
+        ],
+        [
+          "0",
+          "0",
+          "0",
+          "−∞"
+        ],
+        [
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "masked_scores": {
+        "value": [
+          [
+            0.5,
+            null,
+            null,
+            null
+          ],
+          [
+            1.5,
+            1.0,
+            null,
+            null
+          ],
+          [
+            1.0,
+            0.5,
+            0.0,
+            null
+          ],
+          [
+            -0.25,
+            0.0,
+            1.25,
+            1.75
+          ]
+        ],
+        "display": [
+          [
+            "0.5000",
+            "−∞",
+            "−∞",
+            "−∞"
+          ],
+          [
+            "1.5000",
+            "1.0000",
+            "−∞",
+            "−∞"
+          ],
+          [
+            "1.0000",
+            "0.5000",
+            "0.0000",
+            "−∞"
+          ],
+          [
+            "-0.2500",
+            "0.0000",
+            "1.2500",
+            "1.7500"
+          ]
+        ]
+      },
+      "rule": "M[i][j] = 0 if j <= i, -inf if j > i (above the diagonal)",
+      "why_no_future": "Token i is generated before tokens i+1, i+2, ... exist, so during generation there is nothing to look at. Training and prefill process all positions at once, so the future keys ARE in memory; the mask adds -inf to every score with j > i. exp(-inf) = 0, so those keys get weight exactly 0 and contribute nothing to token i's output. This keeps prefill (all tokens at once) and decode (one token at a time) consistent: token i's result is mathematically the same either way.",
+      "per_row_visible": [
+        "token 0 sees keys 0..0",
+        "token 1 sees keys 0..1",
+        "token 2 sees keys 0..2",
+        "token 3 sees keys 0..3"
+      ]
+    },
+    "step4_softmax_rows": [
+      {
+        "input": {
+          "value": [
+            0.5,
+            null,
+            null,
+            null
+          ],
+          "display": [
+            "0.5000",
+            "−∞",
+            "−∞",
+            "−∞"
+          ]
+        },
+        "max": {
+          "value": 0.5,
+          "display": "0.5000"
+        },
+        "minus_max": {
+          "value": [
+            0.0,
+            null,
+            null,
+            null
+          ],
+          "display": [
+            "0.0000",
+            "−∞",
+            "−∞",
+            "−∞"
+          ]
+        },
+        "exp": {
+          "value": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "display": [
+            "1.0000",
+            "0.0000",
+            "0.0000",
+            "0.0000"
+          ]
+        },
+        "sum_exp": {
+          "value": 1.0,
+          "display": "1.0000"
+        },
+        "probs": {
+          "value": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "display": [
+            "1.0000",
+            "0.0000",
+            "0.0000",
+            "0.0000"
+          ]
+        },
+        "probs_sum": {
+          "value": 1.0,
+          "display": "1.000000000000"
+        },
+        "row": 0,
+        "visible_keys": [
+          0
+        ]
+      },
+      {
+        "input": {
+          "value": [
+            1.5,
+            1.0,
+            null,
+            null
+          ],
+          "display": [
+            "1.5000",
+            "1.0000",
+            "−∞",
+            "−∞"
+          ]
+        },
+        "max": {
+          "value": 1.5,
+          "display": "1.5000"
+        },
+        "minus_max": {
+          "value": [
+            0.0,
+            -0.5,
+            null,
+            null
+          ],
+          "display": [
+            "0.0000",
+            "-0.5000",
+            "−∞",
+            "−∞"
+          ]
+        },
+        "exp": {
+          "value": [
+            1.0,
+            0.6065306597126334,
+            0.0,
+            0.0
+          ],
+          "display": [
+            "1.0000",
+            "0.6065",
+            "0.0000",
+            "0.0000"
+          ]
+        },
+        "sum_exp": {
+          "value": 1.6065306597126334,
+          "display": "1.6065"
+        },
+        "probs": {
+          "value": [
+            0.6224593312018546,
+            0.37754066879814546,
+            0.0,
+            0.0
+          ],
+          "display": [
+            "0.6225",
+            "0.3775",
+            "0.0000",
+            "0.0000"
+          ]
+        },
+        "probs_sum": {
+          "value": 1.0,
+          "display": "1.000000000000"
+        },
+        "row": 1,
+        "visible_keys": [
+          0,
+          1
+        ]
+      },
+      {
+        "input": {
+          "value": [
+            1.0,
+            0.5,
+            0.0,
+            null
+          ],
+          "display": [
+            "1.0000",
+            "0.5000",
+            "0.0000",
+            "−∞"
+          ]
+        },
+        "max": {
+          "value": 1.0,
+          "display": "1.0000"
+        },
+        "minus_max": {
+          "value": [
+            0.0,
+            -0.5,
+            -1.0,
+            null
+          ],
+          "display": [
+            "0.0000",
+            "-0.5000",
+            "-1.0000",
+            "−∞"
+          ]
+        },
+        "exp": {
+          "value": [
+            1.0,
+            0.6065306597126334,
+            0.36787944117144233,
+            0.0
+          ],
+          "display": [
+            "1.0000",
+            "0.6065",
+            "0.3679",
+            "0.0000"
+          ]
+        },
+        "sum_exp": {
+          "value": 1.9744101008840758,
+          "display": "1.9744"
+        },
+        "probs": {
+          "value": [
+            0.506480391055654,
+            0.3071958857184984,
+            0.1863237232258476,
+            0.0
+          ],
+          "display": [
+            "0.5065",
+            "0.3072",
+            "0.1863",
+            "0.0000"
+          ]
+        },
+        "probs_sum": {
+          "value": 0.9999999999999999,
+          "display": "1.000000000000"
+        },
+        "row": 2,
+        "visible_keys": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "input": {
+          "value": [
+            -0.25,
+            0.0,
+            1.25,
+            1.75
+          ],
+          "display": [
+            "-0.2500",
+            "0.0000",
+            "1.2500",
+            "1.7500"
+          ]
+        },
+        "max": {
+          "value": 1.75,
+          "display": "1.7500"
+        },
+        "minus_max": {
+          "value": [
+            -2.0,
+            -1.75,
+            -0.5,
+            0.0
+          ],
+          "display": [
+            "-2.0000",
+            "-1.7500",
+            "-0.5000",
+            "0.0000"
+          ]
+        },
+        "exp": {
+          "value": [
+            0.1353352832366127,
+            0.17377394345044514,
+            0.6065306597126334,
+            1.0
+          ],
+          "display": [
+            "0.1353",
+            "0.1738",
+            "0.6065",
+            "1.0000"
+          ]
+        },
+        "sum_exp": {
+          "value": 1.9156398863996913,
+          "display": "1.9156"
+        },
+        "probs": {
+          "value": [
+            0.07064755969921138,
+            0.090713262280752,
+            0.3166203961500116,
+            0.522018781870025
+          ],
+          "display": [
+            "0.0706",
+            "0.0907",
+            "0.3166",
+            "0.5220"
+          ]
+        },
+        "probs_sum": {
+          "value": 1.0,
+          "display": "1.000000000000"
+        },
+        "row": 3,
+        "visible_keys": [
+          0,
+          1,
+          2,
+          3
+        ]
+      }
+    ],
+    "weights": {
+      "value": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.6224593312018546,
+          0.37754066879814546,
+          0.0,
+          0.0
+        ],
+        [
+          0.506480391055654,
+          0.3071958857184984,
+          0.1863237232258476,
+          0.0
+        ],
+        [
+          0.07064755969921138,
+          0.090713262280752,
+          0.3166203961500116,
+          0.522018781870025
+        ]
+      ],
+      "display": [
+        [
+          "1.0000",
+          "0.0000",
+          "0.0000",
+          "0.0000"
+        ],
+        [
+          "0.6225",
+          "0.3775",
+          "0.0000",
+          "0.0000"
+        ],
+        [
+          "0.5065",
+          "0.3072",
+          "0.1863",
+          "0.0000"
+        ],
+        [
+          "0.0706",
+          "0.0907",
+          "0.3166",
+          "0.5220"
+        ]
+      ]
+    },
+    "masked_weights_are_zero": true,
+    "row_sums": {
+      "value": [
+        1.0,
+        1.0,
+        0.9999999999999999,
+        1.0
+      ],
+      "display": [
+        "1.000000000000",
+        "1.000000000000",
+        "1.000000000000",
+        "1.000000000000"
+      ]
+    },
+    "step5_weighted_sum": [
+      {
+        "row": 0,
+        "terms": [
+          {
+            "key": 0,
+            "weight": {
+              "value": 1.0,
+              "display": "1.0000"
+            },
+            "v": {
+              "value": [
+                1.0,
+                0.0,
+                0.0,
+                2.0
+              ],
+              "display": [
+                "1",
+                "0",
+                "0",
+                "2"
+              ]
+            },
+            "weight_times_v": {
+              "value": [
+                1.0,
+                0.0,
+                0.0,
+                2.0
+              ],
+              "display": [
+                "1.0000",
+                "0.0000",
+                "0.0000",
+                "2.0000"
+              ]
+            },
+            "masked": false
+          },
+          {
+            "key": 1,
+            "weight": {
+              "value": 0.0,
+              "display": "0.0000"
+            },
+            "v": {
+              "value": [
+                0.0,
+                1.0,
+                0.0,
+                1.0
+              ],
+              "display": [
+                "0",
+                "1",
+                "0",
+                "1"
+              ]
+            },
+            "weight_times_v": {
+              "value": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "display": [
+                "0.0000",
+                "0.0000",
+                "0.0000",
+                "0.0000"
+              ]
+            },
+            "masked": true
+          },
+          {
+            "key": 2,
+            "weight": {
+              "value": 0.0,
+              "display": "0.0000"
+            },
+            "v": {
+              "value": [
+                2.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              "display": [
+                "2",
+                "0",
+                "1",
+                "0"
+              ]
+            },
+            "weight_times_v": {
+              "value": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "display": [
+                "0.0000",
+                "0.0000",
+                "0.0000",
+                "0.0000"
+              ]
+            },
+            "masked": true
+          },
+          {
+            "key": 3,
+            "weight": {
+              "value": 0.0,
+              "display": "0.0000"
+            },
+            "v": {
+              "value": [
+                0.0,
+                0.0,
+                2.0,
+                -1.0
+              ],
+              "display": [
+                "0",
+                "0",
+                "2",
+                "-1"
+              ]
+            },
+            "weight_times_v": {
+              "value": [
+                0.0,
+                0.0,
+                0.0,
+                -0.0
+              ],
+              "display": [
+                "0.0000",
+                "0.0000",
+                "0.0000",
+                "0.0000"
+              ]
+            },
+            "masked": true
+          }
+        ],
+        "output": {
+          "value": [
+            1.0,
+            0.0,
+            0.0,
+            2.0
+          ],
+          "display": [
+            "1.0000",
+            "0.0000",
+            "0.0000",
+            "2.0000"
+          ]
+        },
+        "text": "1.0000·v0"
+      },
+      {
+        "row": 1,
+        "terms": [
+          {
+            "key": 0,
+            "weight": {
+              "value": 0.6224593312018546,
+              "display": "0.6225"
+            },
+            "v": {
+              "value": [
+                1.0,
+                0.0,
+                0.0,
+                2.0
+              ],
+              "display": [
+                "1",
+                "0",
+                "0",
+                "2"
+              ]
+            },
+            "weight_times_v": {
+              "value": [
+                0.6224593312018546,
+                0.0,
+                0.0,
+                1.2449186624037092
+              ],
+              "display": [
+                "0.6225",
+                "0.0000",
+                "0.0000",
+                "1.2449"
+              ]
+            },
+            "masked": false
+          },
+          {
+            "key": 1,
+            "weight": {
+              "value": 0.37754066879814546,
+              "display": "0.3775"
+            },
+            "v": {
+              "value": [
+                0.0,
+                1.0,
+                0.0,
+                1.0
+              ],
+              "display": [
+                "0",
+                "1",
+                "0",
+                "1"
+              ]
+            },
+            "weight_times_v": {
+              "value": [
+                0.0,
+                0.37754066879814546,
+                0.0,
+                0.37754066879814546
+              ],
+              "display": [
+                "0.0000",
+                "0.3775",
+                "0.0000",
+                "0.3775"
+              ]
+            },
+            "masked": false
+          },
+          {
+            "key": 2,
+            "weight": {
+              "value": 0.0,
+              "display": "0.0000"
+            },
+            "v": {
+              "value": [
+                2.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              "display": [
+                "2",
+                "0",
+                "1",
+                "0"
+              ]
+            },
+            "weight_times_v": {
+              "value": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "display": [
+                "0.0000",
+                "0.0000",
+                "0.0000",
+                "0.0000"
+              ]
+            },
+            "masked": true
+          },
+          {
+            "key": 3,
+            "weight": {
+              "value": 0.0,
+              "display": "0.0000"
+            },
+            "v": {
+              "value": [
+                0.0,
+                0.0,
+                2.0,
+                -1.0
+              ],
+              "display": [
+                "0",
+                "0",
+                "2",
+                "-1"
+              ]
+            },
+            "weight_times_v": {
+              "value": [
+                0.0,
+                0.0,
+                0.0,
+                -0.0
+              ],
+              "display": [
+                "0.0000",
+                "0.0000",
+                "0.0000",
+                "0.0000"
+              ]
+            },
+            "masked": true
+          }
+        ],
+        "output": {
+          "value": [
+            0.6224593312018546,
+            0.37754066879814546,
+            0.0,
+            1.6224593312018547
+          ],
+          "display": [
+            "0.6225",
+            "0.3775",
+            "0.0000",
+            "1.6225"
+          ]
+        },
+        "text": "0.6225·v0 + 0.3775·v1"
+      },
+      {
+        "row": 2,
+        "terms": [
+          {
+            "key": 0,
+            "weight": {
+              "value": 0.506480391055654,
+              "display": "0.5065"
+            },
+            "v": {
+              "value": [
+                1.0,
+                0.0,
+                0.0,
+                2.0
+              ],
+              "display": [
+                "1",
+                "0",
+                "0",
+                "2"
+              ]
+            },
+            "weight_times_v": {
+              "value": [
+                0.506480391055654,
+                0.0,
+                0.0,
+                1.012960782111308
+              ],
+              "display": [
+                "0.5065",
+                "0.0000",
+                "0.0000",
+                "1.0130"
+              ]
+            },
+            "masked": false
+          },
+          {
+            "key": 1,
+            "weight": {
+              "value": 0.3071958857184984,
+              "display": "0.3072"
+            },
+            "v": {
+              "value": [
+                0.0,
+                1.0,
+                0.0,
+                1.0
+              ],
+              "display": [
+                "0",
+                "1",
+                "0",
+                "1"
+              ]
+            },
+            "weight_times_v": {
+              "value": [
+                0.0,
+                0.3071958857184984,
+                0.0,
+                0.3071958857184984
+              ],
+              "display": [
+                "0.0000",
+                "0.3072",
+                "0.0000",
+                "0.3072"
+              ]
+            },
+            "masked": false
+          },
+          {
+            "key": 2,
+            "weight": {
+              "value": 0.1863237232258476,
+              "display": "0.1863"
+            },
+            "v": {
+              "value": [
+                2.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              "display": [
+                "2",
+                "0",
+                "1",
+                "0"
+              ]
+            },
+            "weight_times_v": {
+              "value": [
+                0.3726474464516952,
+                0.0,
+                0.1863237232258476,
+                0.0
+              ],
+              "display": [
+                "0.3726",
+                "0.0000",
+                "0.1863",
+                "0.0000"
+              ]
+            },
+            "masked": false
+          },
+          {
+            "key": 3,
+            "weight": {
+              "value": 0.0,
+              "display": "0.0000"
+            },
+            "v": {
+              "value": [
+                0.0,
+                0.0,
+                2.0,
+                -1.0
+              ],
+              "display": [
+                "0",
+                "0",
+                "2",
+                "-1"
+              ]
+            },
+            "weight_times_v": {
+              "value": [
+                0.0,
+                0.0,
+                0.0,
+                -0.0
+              ],
+              "display": [
+                "0.0000",
+                "0.0000",
+                "0.0000",
+                "0.0000"
+              ]
+            },
+            "masked": true
+          }
+        ],
+        "output": {
+          "value": [
+            0.8791278375073492,
+            0.3071958857184984,
+            0.1863237232258476,
+            1.3201566678298065
+          ],
+          "display": [
+            "0.8791",
+            "0.3072",
+            "0.1863",
+            "1.3202"
+          ]
+        },
+        "text": "0.5065·v0 + 0.3072·v1 + 0.1863·v2"
+      },
+      {
+        "row": 3,
+        "terms": [
+          {
+            "key": 0,
+            "weight": {
+              "value": 0.07064755969921138,
+              "display": "0.0706"
+            },
+            "v": {
+              "value": [
+                1.0,
+                0.0,
+                0.0,
+                2.0
+              ],
+              "display": [
+                "1",
+                "0",
+                "0",
+                "2"
+              ]
+            },
+            "weight_times_v": {
+              "value": [
+                0.07064755969921138,
+                0.0,
+                0.0,
+                0.14129511939842276
+              ],
+              "display": [
+                "0.0706",
+                "0.0000",
+                "0.0000",
+                "0.1413"
+              ]
+            },
+            "masked": false
+          },
+          {
+            "key": 1,
+            "weight": {
+              "value": 0.090713262280752,
+              "display": "0.0907"
+            },
+            "v": {
+              "value": [
+                0.0,
+                1.0,
+                0.0,
+                1.0
+              ],
+              "display": [
+                "0",
+                "1",
+                "0",
+                "1"
+              ]
+            },
+            "weight_times_v": {
+              "value": [
+                0.0,
+                0.090713262280752,
+                0.0,
+                0.090713262280752
+              ],
+              "display": [
+                "0.0000",
+                "0.0907",
+                "0.0000",
+                "0.0907"
+              ]
+            },
+            "masked": false
+          },
+          {
+            "key": 2,
+            "weight": {
+              "value": 0.3166203961500116,
+              "display": "0.3166"
+            },
+            "v": {
+              "value": [
+                2.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              "display": [
+                "2",
+                "0",
+                "1",
+                "0"
+              ]
+            },
+            "weight_times_v": {
+              "value": [
+                0.6332407923000232,
+                0.0,
+                0.3166203961500116,
+                0.0
+              ],
+              "display": [
+                "0.6332",
+                "0.0000",
+                "0.3166",
+                "0.0000"
+              ]
+            },
+            "masked": false
+          },
+          {
+            "key": 3,
+            "weight": {
+              "value": 0.522018781870025,
+              "display": "0.5220"
+            },
+            "v": {
+              "value": [
+                0.0,
+                0.0,
+                2.0,
+                -1.0
+              ],
+              "display": [
+                "0",
+                "0",
+                "2",
+                "-1"
+              ]
+            },
+            "weight_times_v": {
+              "value": [
+                0.0,
+                0.0,
+                1.04403756374005,
+                -0.522018781870025
+              ],
+              "display": [
+                "0.0000",
+                "0.0000",
+                "1.0440",
+                "-0.5220"
+              ]
+            },
+            "masked": false
+          }
+        ],
+        "output": {
+          "value": [
+            0.7038883519992345,
+            0.090713262280752,
+            1.3606579598900617,
+            -0.2900104001908503
+          ],
+          "display": [
+            "0.7039",
+            "0.0907",
+            "1.3607",
+            "-0.2900"
+          ]
+        },
+        "text": "0.0706·v0 + 0.0907·v1 + 0.3166·v2 + 0.5220·v3"
+      }
+    ],
+    "output": {
+      "value": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          2.0
+        ],
+        [
+          0.6224593312018546,
+          0.37754066879814546,
+          0.0,
+          1.6224593312018547
+        ],
+        [
+          0.8791278375073492,
+          0.3071958857184984,
+          0.1863237232258476,
+          1.3201566678298065
+        ],
+        [
+          0.7038883519992345,
+          0.090713262280752,
+          1.3606579598900617,
+          -0.2900104001908503
+        ]
+      ],
+      "display": [
+        [
+          "1.0000",
+          "0.0000",
+          "0.0000",
+          "2.0000"
+        ],
+        [
+          "0.6225",
+          "0.3775",
+          "0.0000",
+          "1.6225"
+        ],
+        [
+          "0.8791",
+          "0.3072",
+          "0.1863",
+          "1.3202"
+        ],
+        [
+          "0.7039",
+          "0.0907",
+          "1.3607",
+          "-0.2900"
+        ]
+      ]
+    },
+    "sources": {
+      "attention": "research/notes/05-papers-architecture.md §2.A A1 [S1 Vaswani et al. 2017]"
+    }
+  },
+  "online_softmax": {
+    "tile_size": 2,
+    "tiles": [
+      [
+        0,
+        1
+      ],
+      [
+        2,
+        3
+      ]
+    ],
+    "algorithm": "FlashAttention-2 style recurrence for one query row: keep a running max m, a running sum l of exp(score - m) and an unnormalised accumulator acc. For each tile of keys: m_new = max(m, max(tile scores)); rescale = exp(m - m_new); p = exp(tile scores - m_new); l = rescale*l + sum(p); acc = rescale*acc + p·V_tile. At the end, output = acc / l.",
+    "why_rescale": "Earlier tiles were exponentiated relative to an older, smaller max. Multiplying by exp(m_old - m_new) converts them to the new max, so the result equals one softmax over all keys. The full score row never has to exist at once.",
+    "rows": [
+      {
+        "row": 0,
+        "init": {
+          "m": {
+            "value": null,
+            "display": "−∞"
+          },
+          "l": {
+            "value": 0.0,
+            "display": "0.0000"
+          },
+          "acc": {
+            "value": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "display": [
+              "0.0000",
+              "0.0000",
+              "0.0000",
+              "0.0000"
+            ]
+          }
+        },
+        "steps": [
+          {
+            "tile": 0,
+            "keys": [
+              0,
+              1
+            ],
+            "skipped": false,
+            "scores": {
+              "value": [
+                0.5,
+                null
+              ],
+              "display": [
+                "0.5000",
+                "−∞"
+              ]
+            },
+            "tile_max": {
+              "value": 0.5,
+              "display": "0.5000"
+            },
+            "m_old": {
+              "value": null,
+              "display": "−∞"
+            },
+            "m_new": {
+              "value": 0.5,
+              "display": "0.5000",
+              "text": "max(−∞, 0.5000) = 0.5000"
+            },
+            "rescale_old": {
+              "value": 0.0,
+              "display": "0.0000",
+              "text": "exp(m_old - m_new) = exp(-inf) = 0 (first tile: nothing to rescale)"
+            },
+            "p": {
+              "value": [
+                1.0,
+                0.0
+              ],
+              "display": [
+                "1.0000",
+                "0.0000"
+              ],
+              "text": "exp(score - m_new) for each key in the tile"
+            },
+            "tile_sum": {
+              "value": 1.0,
+              "display": "1.0000"
+            },
+            "l_old": {
+              "value": 0.0,
+              "display": "0.0000"
+            },
+            "l_new": {
+              "value": 1.0,
+              "display": "1.0000",
+              "text": "0.0000 x 0.0000 + 1.0000 = 1.0000"
+            },
+            "p_times_v": {
+              "value": [
+                1.0,
+                0.0,
+                0.0,
+                2.0
+              ],
+              "display": [
+                "1.0000",
+                "0.0000",
+                "0.0000",
+                "2.0000"
+              ]
+            },
+            "acc_old": {
+              "value": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "display": [
+                "0.0000",
+                "0.0000",
+                "0.0000",
+                "0.0000"
+              ]
+            },
+            "acc_new": {
+              "value": [
+                1.0,
+                0.0,
+                0.0,
+                2.0
+              ],
+              "display": [
+                "1.0000",
+                "0.0000",
+                "0.0000",
+                "2.0000"
+              ],
+              "text": "rescale_old x acc_old + p·V_tile"
+            }
+          },
+          {
+            "tile": 1,
+            "keys": [
+              2,
+              3
+            ],
+            "skipped": true,
+            "reason": "every key in this tile is after token 0 (j > 0), so the whole tile is masked; causal FlashAttention kernels skip such tiles"
+          }
+        ],
+        "final": {
+          "m": {
+            "value": 0.5,
+            "display": "0.5000"
+          },
+          "l": {
+            "value": 1.0,
+            "display": "1.0000"
+          },
+          "acc": {
+            "value": [
+              1.0,
+              0.0,
+              0.0,
+              2.0
+            ],
+            "display": [
+              "1.0000",
+              "0.0000",
+              "0.0000",
+              "2.0000"
+            ]
+          },
+          "output": {
+            "value": [
+              1.0,
+              0.0,
+              0.0,
+              2.0
+            ],
+            "display": [
+              "1.0000",
+              "0.0000",
+              "0.0000",
+              "2.0000"
+            ],
+            "text": "acc / l (one division at the end)"
+          },
+          "standard_output": {
+            "value": [
+              1.0,
+              0.0,
+              0.0,
+              2.0
+            ],
+            "display": [
+              "1.0000",
+              "0.0000",
+              "0.0000",
+              "2.0000"
+            ]
+          },
+          "max_abs_diff": 0.0
+        }
+      },
+      {
+        "row": 1,
+        "init": {
+          "m": {
+            "value": null,
+            "display": "−∞"
+          },
+          "l": {
+            "value": 0.0,
+            "display": "0.0000"
+          },
+          "acc": {
+            "value": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "display": [
+              "0.0000",
+              "0.0000",
+              "0.0000",
+              "0.0000"
+            ]
+          }
+        },
+        "steps": [
+          {
+            "tile": 0,
+            "keys": [
+              0,
+              1
+            ],
+            "skipped": false,
+            "scores": {
+              "value": [
+                1.5,
+                1.0
+              ],
+              "display": [
+                "1.5000",
+                "1.0000"
+              ]
+            },
+            "tile_max": {
+              "value": 1.5,
+              "display": "1.5000"
+            },
+            "m_old": {
+              "value": null,
+              "display": "−∞"
+            },
+            "m_new": {
+              "value": 1.5,
+              "display": "1.5000",
+              "text": "max(−∞, 1.5000) = 1.5000"
+            },
+            "rescale_old": {
+              "value": 0.0,
+              "display": "0.0000",
+              "text": "exp(m_old - m_new) = exp(-inf) = 0 (first tile: nothing to rescale)"
+            },
+            "p": {
+              "value": [
+                1.0,
+                0.6065306597126334
+              ],
+              "display": [
+                "1.0000",
+                "0.6065"
+              ],
+              "text": "exp(score - m_new) for each key in the tile"
+            },
+            "tile_sum": {
+              "value": 1.6065306597126334,
+              "display": "1.6065"
+            },
+            "l_old": {
+              "value": 0.0,
+              "display": "0.0000"
+            },
+            "l_new": {
+              "value": 1.6065306597126334,
+              "display": "1.6065",
+              "text": "0.0000 x 0.0000 + 1.6065 = 1.6065"
+            },
+            "p_times_v": {
+              "value": [
+                1.0,
+                0.6065306597126334,
+                0.0,
+                2.606530659712633
+              ],
+              "display": [
+                "1.0000",
+                "0.6065",
+                "0.0000",
+                "2.6065"
+              ]
+            },
+            "acc_old": {
+              "value": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "display": [
+                "0.0000",
+                "0.0000",
+                "0.0000",
+                "0.0000"
+              ]
+            },
+            "acc_new": {
+              "value": [
+                1.0,
+                0.6065306597126334,
+                0.0,
+                2.606530659712633
+              ],
+              "display": [
+                "1.0000",
+                "0.6065",
+                "0.0000",
+                "2.6065"
+              ],
+              "text": "rescale_old x acc_old + p·V_tile"
+            }
+          },
+          {
+            "tile": 1,
+            "keys": [
+              2,
+              3
+            ],
+            "skipped": true,
+            "reason": "every key in this tile is after token 1 (j > 1), so the whole tile is masked; causal FlashAttention kernels skip such tiles"
+          }
+        ],
+        "final": {
+          "m": {
+            "value": 1.5,
+            "display": "1.5000"
+          },
+          "l": {
+            "value": 1.6065306597126334,
+            "display": "1.6065"
+          },
+          "acc": {
+            "value": [
+              1.0,
+              0.6065306597126334,
+              0.0,
+              2.606530659712633
+            ],
+            "display": [
+              "1.0000",
+              "0.6065",
+              "0.0000",
+              "2.6065"
+            ]
+          },
+          "output": {
+            "value": [
+              0.6224593312018546,
+              0.37754066879814546,
+              0.0,
+              1.6224593312018545
+            ],
+            "display": [
+              "0.6225",
+              "0.3775",
+              "0.0000",
+              "1.6225"
+            ],
+            "text": "acc / l (one division at the end)"
+          },
+          "standard_output": {
+            "value": [
+              0.6224593312018546,
+              0.37754066879814546,
+              0.0,
+              1.6224593312018547
+            ],
+            "display": [
+              "0.6225",
+              "0.3775",
+              "0.0000",
+              "1.6225"
+            ]
+          },
+          "max_abs_diff": 2.220446049250313e-16
+        }
+      },
+      {
+        "row": 2,
+        "init": {
+          "m": {
+            "value": null,
+            "display": "−∞"
+          },
+          "l": {
+            "value": 0.0,
+            "display": "0.0000"
+          },
+          "acc": {
+            "value": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "display": [
+              "0.0000",
+              "0.0000",
+              "0.0000",
+              "0.0000"
+            ]
+          }
+        },
+        "steps": [
+          {
+            "tile": 0,
+            "keys": [
+              0,
+              1
+            ],
+            "skipped": false,
+            "scores": {
+              "value": [
+                1.0,
+                0.5
+              ],
+              "display": [
+                "1.0000",
+                "0.5000"
+              ]
+            },
+            "tile_max": {
+              "value": 1.0,
+              "display": "1.0000"
+            },
+            "m_old": {
+              "value": null,
+              "display": "−∞"
+            },
+            "m_new": {
+              "value": 1.0,
+              "display": "1.0000",
+              "text": "max(−∞, 1.0000) = 1.0000"
+            },
+            "rescale_old": {
+              "value": 0.0,
+              "display": "0.0000",
+              "text": "exp(m_old - m_new) = exp(-inf) = 0 (first tile: nothing to rescale)"
+            },
+            "p": {
+              "value": [
+                1.0,
+                0.6065306597126334
+              ],
+              "display": [
+                "1.0000",
+                "0.6065"
+              ],
+              "text": "exp(score - m_new) for each key in the tile"
+            },
+            "tile_sum": {
+              "value": 1.6065306597126334,
+              "display": "1.6065"
+            },
+            "l_old": {
+              "value": 0.0,
+              "display": "0.0000"
+            },
+            "l_new": {
+              "value": 1.6065306597126334,
+              "display": "1.6065",
+              "text": "0.0000 x 0.0000 + 1.6065 = 1.6065"
+            },
+            "p_times_v": {
+              "value": [
+                1.0,
+                0.6065306597126334,
+                0.0,
+                2.606530659712633
+              ],
+              "display": [
+                "1.0000",
+                "0.6065",
+                "0.0000",
+                "2.6065"
+              ]
+            },
+            "acc_old": {
+              "value": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "display": [
+                "0.0000",
+                "0.0000",
+                "0.0000",
+                "0.0000"
+              ]
+            },
+            "acc_new": {
+              "value": [
+                1.0,
+                0.6065306597126334,
+                0.0,
+                2.606530659712633
+              ],
+              "display": [
+                "1.0000",
+                "0.6065",
+                "0.0000",
+                "2.6065"
+              ],
+              "text": "rescale_old x acc_old + p·V_tile"
+            }
+          },
+          {
+            "tile": 1,
+            "keys": [
+              2,
+              3
+            ],
+            "skipped": false,
+            "scores": {
+              "value": [
+                0.0,
+                null
+              ],
+              "display": [
+                "0.0000",
+                "−∞"
+              ]
+            },
+            "tile_max": {
+              "value": 0.0,
+              "display": "0.0000"
+            },
+            "m_old": {
+              "value": 1.0,
+              "display": "1.0000"
+            },
+            "m_new": {
+              "value": 1.0,
+              "display": "1.0000",
+              "text": "max(1.0000, 0.0000) = 1.0000"
+            },
+            "rescale_old": {
+              "value": 1.0,
+              "display": "1.0000",
+              "text": "exp(1.0000 - 1.0000) = 1.0000"
+            },
+            "p": {
+              "value": [
+                0.36787944117144233,
+                0.0
+              ],
+              "display": [
+                "0.3679",
+                "0.0000"
+              ],
+              "text": "exp(score - m_new) for each key in the tile"
+            },
+            "tile_sum": {
+              "value": 0.36787944117144233,
+              "display": "0.3679"
+            },
+            "l_old": {
+              "value": 1.6065306597126334,
+              "display": "1.6065"
+            },
+            "l_new": {
+              "value": 1.9744101008840758,
+              "display": "1.9744",
+              "text": "1.0000 x 1.6065 + 0.3679 = 1.9744"
+            },
+            "p_times_v": {
+              "value": [
+                0.7357588823428847,
+                0.0,
+                0.36787944117144233,
+                0.0
+              ],
+              "display": [
+                "0.7358",
+                "0.0000",
+                "0.3679",
+                "0.0000"
+              ]
+            },
+            "acc_old": {
+              "value": [
+                1.0,
+                0.6065306597126334,
+                0.0,
+                2.606530659712633
+              ],
+              "display": [
+                "1.0000",
+                "0.6065",
+                "0.0000",
+                "2.6065"
+              ]
+            },
+            "acc_new": {
+              "value": [
+                1.7357588823428847,
+                0.6065306597126334,
+                0.36787944117144233,
+                2.606530659712633
+              ],
+              "display": [
+                "1.7358",
+                "0.6065",
+                "0.3679",
+                "2.6065"
+              ],
+              "text": "rescale_old x acc_old + p·V_tile"
+            }
+          }
+        ],
+        "final": {
+          "m": {
+            "value": 1.0,
+            "display": "1.0000"
+          },
+          "l": {
+            "value": 1.9744101008840758,
+            "display": "1.9744"
+          },
+          "acc": {
+            "value": [
+              1.7357588823428847,
+              0.6065306597126334,
+              0.36787944117144233,
+              2.606530659712633
+            ],
+            "display": [
+              "1.7358",
+              "0.6065",
+              "0.3679",
+              "2.6065"
+            ]
+          },
+          "output": {
+            "value": [
+              0.8791278375073492,
+              0.3071958857184984,
+              0.1863237232258476,
+              1.3201566678298062
+            ],
+            "display": [
+              "0.8791",
+              "0.3072",
+              "0.1863",
+              "1.3202"
+            ],
+            "text": "acc / l (one division at the end)"
+          },
+          "standard_output": {
+            "value": [
+              0.8791278375073492,
+              0.3071958857184984,
+              0.1863237232258476,
+              1.3201566678298065
+            ],
+            "display": [
+              "0.8791",
+              "0.3072",
+              "0.1863",
+              "1.3202"
+            ]
+          },
+          "max_abs_diff": 2.220446049250313e-16
+        }
+      },
+      {
+        "row": 3,
+        "init": {
+          "m": {
+            "value": null,
+            "display": "−∞"
+          },
+          "l": {
+            "value": 0.0,
+            "display": "0.0000"
+          },
+          "acc": {
+            "value": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "display": [
+              "0.0000",
+              "0.0000",
+              "0.0000",
+              "0.0000"
+            ]
+          }
+        },
+        "steps": [
+          {
+            "tile": 0,
+            "keys": [
+              0,
+              1
+            ],
+            "skipped": false,
+            "scores": {
+              "value": [
+                -0.25,
+                0.0
+              ],
+              "display": [
+                "-0.2500",
+                "0.0000"
+              ]
+            },
+            "tile_max": {
+              "value": 0.0,
+              "display": "0.0000"
+            },
+            "m_old": {
+              "value": null,
+              "display": "−∞"
+            },
+            "m_new": {
+              "value": 0.0,
+              "display": "0.0000",
+              "text": "max(−∞, 0.0000) = 0.0000"
+            },
+            "rescale_old": {
+              "value": 0.0,
+              "display": "0.0000",
+              "text": "exp(m_old - m_new) = exp(-inf) = 0 (first tile: nothing to rescale)"
+            },
+            "p": {
+              "value": [
+                0.7788007830714049,
+                1.0
+              ],
+              "display": [
+                "0.7788",
+                "1.0000"
+              ],
+              "text": "exp(score - m_new) for each key in the tile"
+            },
+            "tile_sum": {
+              "value": 1.778800783071405,
+              "display": "1.7788"
+            },
+            "l_old": {
+              "value": 0.0,
+              "display": "0.0000"
+            },
+            "l_new": {
+              "value": 1.778800783071405,
+              "display": "1.7788",
+              "text": "0.0000 x 0.0000 + 1.7788 = 1.7788"
+            },
+            "p_times_v": {
+              "value": [
+                0.7788007830714049,
+                1.0,
+                0.0,
+                2.55760156614281
+              ],
+              "display": [
+                "0.7788",
+                "1.0000",
+                "0.0000",
+                "2.5576"
+              ]
+            },
+            "acc_old": {
+              "value": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "display": [
+                "0.0000",
+                "0.0000",
+                "0.0000",
+                "0.0000"
+              ]
+            },
+            "acc_new": {
+              "value": [
+                0.7788007830714049,
+                1.0,
+                0.0,
+                2.55760156614281
+              ],
+              "display": [
+                "0.7788",
+                "1.0000",
+                "0.0000",
+                "2.5576"
+              ],
+              "text": "rescale_old x acc_old + p·V_tile"
+            }
+          },
+          {
+            "tile": 1,
+            "keys": [
+              2,
+              3
+            ],
+            "skipped": false,
+            "scores": {
+              "value": [
+                1.25,
+                1.75
+              ],
+              "display": [
+                "1.2500",
+                "1.7500"
+              ]
+            },
+            "tile_max": {
+              "value": 1.75,
+              "display": "1.7500"
+            },
+            "m_old": {
+              "value": 0.0,
+              "display": "0.0000"
+            },
+            "m_new": {
+              "value": 1.75,
+              "display": "1.7500",
+              "text": "max(0.0000, 1.7500) = 1.7500"
+            },
+            "rescale_old": {
+              "value": 0.17377394345044514,
+              "display": "0.1738",
+              "text": "exp(0.0000 - 1.7500) = 0.1738"
+            },
+            "p": {
+              "value": [
+                0.6065306597126334,
+                1.0
+              ],
+              "display": [
+                "0.6065",
+                "1.0000"
+              ],
+              "text": "exp(score - m_new) for each key in the tile"
+            },
+            "tile_sum": {
+              "value": 1.6065306597126334,
+              "display": "1.6065"
+            },
+            "l_old": {
+              "value": 1.778800783071405,
+              "display": "1.7788"
+            },
+            "l_new": {
+              "value": 1.9156398863996913,
+              "display": "1.9156",
+              "text": "0.1738 x 1.7788 + 1.6065 = 1.9156"
+            },
+            "p_times_v": {
+              "value": [
+                1.2130613194252668,
+                0.0,
+                2.606530659712633,
+                -1.0
+              ],
+              "display": [
+                "1.2131",
+                "0.0000",
+                "2.6065",
+                "-1.0000"
+              ]
+            },
+            "acc_old": {
+              "value": [
+                0.7788007830714049,
+                1.0,
+                0.0,
+                2.55760156614281
+              ],
+              "display": [
+                "0.7788",
+                "1.0000",
+                "0.0000",
+                "2.5576"
+              ]
+            },
+            "acc_new": {
+              "value": [
+                1.3483966026618797,
+                0.17377394345044514,
+                2.606530659712633,
+                -0.5555554900763294
+              ],
+              "display": [
+                "1.3484",
+                "0.1738",
+                "2.6065",
+                "-0.5556"
+              ],
+              "text": "rescale_old x acc_old + p·V_tile"
+            }
+          }
+        ],
+        "final": {
+          "m": {
+            "value": 1.75,
+            "display": "1.7500"
+          },
+          "l": {
+            "value": 1.9156398863996913,
+            "display": "1.9156"
+          },
+          "acc": {
+            "value": [
+              1.3483966026618797,
+              0.17377394345044514,
+              2.606530659712633,
+              -0.5555554900763294
+            ],
+            "display": [
+              "1.3484",
+              "0.1738",
+              "2.6065",
+              "-0.5556"
+            ]
+          },
+          "output": {
+            "value": [
+              0.7038883519992346,
+              0.090713262280752,
+              1.3606579598900614,
+              -0.2900104001908503
+            ],
+            "display": [
+              "0.7039",
+              "0.0907",
+              "1.3607",
+              "-0.2900"
+            ],
+            "text": "acc / l (one division at the end)"
+          },
+          "standard_output": {
+            "value": [
+              0.7038883519992345,
+              0.090713262280752,
+              1.3606579598900617,
+              -0.2900104001908503
+            ],
+            "display": [
+              "0.7039",
+              "0.0907",
+              "1.3607",
+              "-0.2900"
+            ]
+          },
+          "max_abs_diff": 2.220446049250313e-16
+        }
+      }
+    ],
+    "max_abs_diff_vs_standard": 2.220446049250313e-16,
+    "exact": true,
+    "identity": "Online softmax gives exactly the same output as standard softmax (up to floating-point rounding; here the difference is below 1e-12). FlashAttention changes where the numbers live (tiles in on-chip SRAM instead of an L x L matrix in HBM), not the attention arithmetic.",
+    "sources": "research/notes/05-papers-architecture.md §2.C C1 [S22 Milakov & Gimelshein 2018, S23 FlashAttention, S24 FlashAttention-2 §3.1]"
+  }
+}

@@ -1,0 +1,1855 @@
+{
+  "meta": {
+    "script": "sim/rope_demo.py",
+    "generated_at": "2026-10-09T06:48:52+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T06:45:24+00:00",
+      "sha256": "36e36e01982d"
+    },
+    "constants_used": {
+      "models.M-dense.head_dim": 128,
+      "models.M-dense.max_position_embeddings": 262144,
+      "models.M-dense.model_id": "mistralai/Mistral-Medium-3.5-128B",
+      "models.M-dense.rope_original_max_position_embeddings": 4096,
+      "models.M-dense.rope_theta": 1000000.0,
+      "models.M-dense.rope_type": "yarn",
+      "models.M-dense.rope_yarn_attention_factor": 1.4158883083359672,
+      "models.M-dense.rope_yarn_beta_fast": 4.0,
+      "models.M-dense.rope_yarn_beta_slow": 1.0,
+      "models.M-dense.rope_yarn_factor": 64.0,
+      "models.M-dense.rope_yarn_mscale": 1.0,
+      "models.M-dense.rope_yarn_mscale_all_dim": 0.0,
+      "models.M-frontier.model_id": "moonshotai/Kimi-K3",
+      "models.M-frontier.positional_encoding": "none (NoPE MLA; KDA decay + short conv carry order)"
+    }
+  },
+  "label": "Illustrative toy inputs chosen so every step can be checked by hand with a calculator. They are not real model weights, activations or logits. Frequencies, angles and YaRN values are computed from M-dense's real config.",
+  "serves": {
+    "requirements": [
+      "R-X.5"
+    ],
+    "manuscript": "Part 10 (RoPE)"
+  },
+  "model": {
+    "id": "mistralai/Mistral-Medium-3.5-128B",
+    "constant": "models.M-dense.model_id"
+  },
+  "frequencies": {
+    "formula": "θ_i = base^(-2i/d), i = 0 .. d/2 - 1; pair i holds dims (2i, 2i+1) and turns by m·θ_i at position m",
+    "base": 1000000.0,
+    "d": 128,
+    "n_pairs": 64,
+    "pairs": [
+      {
+        "i": 0,
+        "dims": [
+          0,
+          1
+        ],
+        "exponent": {
+          "value": 0.0,
+          "display": "-2·0/128 = 0"
+        },
+        "theta": {
+          "value": 1.0,
+          "display": "1",
+          "text": "1,000,000^(0) = 1 rad/token"
+        },
+        "wavelength_tokens": {
+          "value": 6.283185307179586,
+          "display": "6.2832",
+          "text": "2π / θ_i: tokens for one full turn"
+        }
+      },
+      {
+        "i": 1,
+        "dims": [
+          2,
+          3
+        ],
+        "exponent": {
+          "value": -0.015625,
+          "display": "-2·1/128 = -0.015625"
+        },
+        "theta": {
+          "value": 0.8058421877614819,
+          "display": "0.80584",
+          "text": "1,000,000^(-0.015625) = 0.80584 rad/token"
+        },
+        "wavelength_tokens": {
+          "value": 7.79704190547954,
+          "display": "7.797",
+          "text": "2π / θ_i: tokens for one full turn"
+        }
+      },
+      {
+        "i": 2,
+        "dims": [
+          4,
+          5
+        ],
+        "exponent": {
+          "value": -0.03125,
+          "display": "-2·2/128 = -0.03125"
+        },
+        "theta": {
+          "value": 0.6493816315762113,
+          "display": "0.64938",
+          "text": "1,000,000^(-0.03125) = 0.64938 rad/token"
+        },
+        "wavelength_tokens": {
+          "value": 9.675643722673103,
+          "display": "9.6756",
+          "text": "2π / θ_i: tokens for one full turn"
+        }
+      },
+      {
+        "i": 31,
+        "dims": [
+          62,
+          63
+        ],
+        "exponent": {
+          "value": -0.484375,
+          "display": "-2·31/128 = -0.48438"
+        },
+        "theta": {
+          "value": 0.0012409377607517195,
+          "display": "0.0012409",
+          "text": "1,000,000^(-0.48438) = 0.0012409 rad/token"
+        },
+        "wavelength_tokens": {
+          "value": 5063.255794048396,
+          "display": "5063.3",
+          "text": "2π / θ_i: tokens for one full turn"
+        }
+      },
+      {
+        "i": 63,
+        "dims": [
+          126,
+          127
+        ],
+        "exponent": {
+          "value": -0.984375,
+          "display": "-2·63/128 = -0.98438"
+        },
+        "theta": {
+          "value": 1.2409377607517195e-06,
+          "display": "1.2409e-06",
+          "text": "1,000,000^(-0.98438) = 1.2409e-06 rad/token"
+        },
+        "wavelength_tokens": {
+          "value": 5063255.794048396,
+          "display": "5.0633e+06",
+          "text": "2π / θ_i: tokens for one full turn"
+        }
+      }
+    ],
+    "angles": [
+      {
+        "position": 0,
+        "pairs": [
+          {
+            "i": 0,
+            "angle_rad": {
+              "value": 0.0,
+              "display": "0"
+            },
+            "angle_mod_2pi": {
+              "value": 0.0,
+              "display": "0"
+            },
+            "turns": {
+              "value": 0.0,
+              "display": "0"
+            }
+          },
+          {
+            "i": 1,
+            "angle_rad": {
+              "value": 0.0,
+              "display": "0"
+            },
+            "angle_mod_2pi": {
+              "value": 0.0,
+              "display": "0"
+            },
+            "turns": {
+              "value": 0.0,
+              "display": "0"
+            }
+          },
+          {
+            "i": 2,
+            "angle_rad": {
+              "value": 0.0,
+              "display": "0"
+            },
+            "angle_mod_2pi": {
+              "value": 0.0,
+              "display": "0"
+            },
+            "turns": {
+              "value": 0.0,
+              "display": "0"
+            }
+          },
+          {
+            "i": 31,
+            "angle_rad": {
+              "value": 0.0,
+              "display": "0"
+            },
+            "angle_mod_2pi": {
+              "value": 0.0,
+              "display": "0"
+            },
+            "turns": {
+              "value": 0.0,
+              "display": "0"
+            }
+          },
+          {
+            "i": 63,
+            "angle_rad": {
+              "value": 0.0,
+              "display": "0"
+            },
+            "angle_mod_2pi": {
+              "value": 0.0,
+              "display": "0"
+            },
+            "turns": {
+              "value": 0.0,
+              "display": "0"
+            }
+          }
+        ]
+      },
+      {
+        "position": 1,
+        "pairs": [
+          {
+            "i": 0,
+            "angle_rad": {
+              "value": 1.0,
+              "display": "1"
+            },
+            "angle_mod_2pi": {
+              "value": 1.0,
+              "display": "1"
+            },
+            "turns": {
+              "value": 0.15915494309189535,
+              "display": "0.15915"
+            }
+          },
+          {
+            "i": 1,
+            "angle_rad": {
+              "value": 0.8058421877614819,
+              "display": "0.80584"
+            },
+            "angle_mod_2pi": {
+              "value": 0.8058421877614819,
+              "display": "0.80584"
+            },
+            "turns": {
+              "value": 0.1282537675342271,
+              "display": "0.12825"
+            }
+          },
+          {
+            "i": 2,
+            "angle_rad": {
+              "value": 0.6493816315762113,
+              "display": "0.64938"
+            },
+            "angle_mod_2pi": {
+              "value": 0.6493816315762113,
+              "display": "0.64938"
+            },
+            "turns": {
+              "value": 0.10335229661843406,
+              "display": "0.10335"
+            }
+          },
+          {
+            "i": 31,
+            "angle_rad": {
+              "value": 0.0012409377607517195,
+              "display": "0.0012409"
+            },
+            "angle_mod_2pi": {
+              "value": 0.0012409377607517195,
+              "display": "0.0012409"
+            },
+            "turns": {
+              "value": 0.00019750137869302395,
+              "display": "0.0001975"
+            }
+          },
+          {
+            "i": 63,
+            "angle_rad": {
+              "value": 1.2409377607517195e-06,
+              "display": "1.2409e-06"
+            },
+            "angle_mod_2pi": {
+              "value": 1.2409377607517195e-06,
+              "display": "1.2409e-06"
+            },
+            "turns": {
+              "value": 1.9750137869302395e-07,
+              "display": "1.975e-07"
+            }
+          }
+        ]
+      },
+      {
+        "position": 2,
+        "pairs": [
+          {
+            "i": 0,
+            "angle_rad": {
+              "value": 2.0,
+              "display": "2"
+            },
+            "angle_mod_2pi": {
+              "value": 2.0,
+              "display": "2"
+            },
+            "turns": {
+              "value": 0.3183098861837907,
+              "display": "0.31831"
+            }
+          },
+          {
+            "i": 1,
+            "angle_rad": {
+              "value": 1.6116843755229637,
+              "display": "1.6117"
+            },
+            "angle_mod_2pi": {
+              "value": 1.6116843755229637,
+              "display": "1.6117"
+            },
+            "turns": {
+              "value": 0.2565075350684542,
+              "display": "0.25651"
+            }
+          },
+          {
+            "i": 2,
+            "angle_rad": {
+              "value": 1.2987632631524226,
+              "display": "1.2988"
+            },
+            "angle_mod_2pi": {
+              "value": 1.2987632631524226,
+              "display": "1.2988"
+            },
+            "turns": {
+              "value": 0.20670459323686813,
+              "display": "0.2067"
+            }
+          },
+          {
+            "i": 31,
+            "angle_rad": {
+              "value": 0.002481875521503439,
+              "display": "0.0024819"
+            },
+            "angle_mod_2pi": {
+              "value": 0.002481875521503439,
+              "display": "0.0024819"
+            },
+            "turns": {
+              "value": 0.0003950027573860479,
+              "display": "0.000395"
+            }
+          },
+          {
+            "i": 63,
+            "angle_rad": {
+              "value": 2.481875521503439e-06,
+              "display": "2.4819e-06"
+            },
+            "angle_mod_2pi": {
+              "value": 2.481875521503439e-06,
+              "display": "2.4819e-06"
+            },
+            "turns": {
+              "value": 3.950027573860479e-07,
+              "display": "3.95e-07"
+            }
+          }
+        ]
+      },
+      {
+        "position": 100,
+        "pairs": [
+          {
+            "i": 0,
+            "angle_rad": {
+              "value": 100.0,
+              "display": "100"
+            },
+            "angle_mod_2pi": {
+              "value": 5.7522203923062065,
+              "display": "5.7522"
+            },
+            "turns": {
+              "value": 15.915494309189533,
+              "display": "15.915"
+            }
+          },
+          {
+            "i": 1,
+            "angle_rad": {
+              "value": 80.58421877614819,
+              "display": "80.584"
+            },
+            "angle_mod_2pi": {
+              "value": 5.185995089993156,
+              "display": "5.186"
+            },
+            "turns": {
+              "value": 12.82537675342271,
+              "display": "12.825"
+            }
+          },
+          {
+            "i": 2,
+            "angle_rad": {
+              "value": 64.93816315762113,
+              "display": "64.938"
+            },
+            "angle_mod_2pi": {
+              "value": 2.106310085825271,
+              "display": "2.1063"
+            },
+            "turns": {
+              "value": 10.335229661843407,
+              "display": "10.335"
+            }
+          },
+          {
+            "i": 31,
+            "angle_rad": {
+              "value": 0.12409377607517195,
+              "display": "0.12409"
+            },
+            "angle_mod_2pi": {
+              "value": 0.12409377607517195,
+              "display": "0.12409"
+            },
+            "turns": {
+              "value": 0.019750137869302395,
+              "display": "0.01975"
+            }
+          },
+          {
+            "i": 63,
+            "angle_rad": {
+              "value": 0.00012409377607517196,
+              "display": "0.00012409"
+            },
+            "angle_mod_2pi": {
+              "value": 0.00012409377607517196,
+              "display": "0.00012409"
+            },
+            "turns": {
+              "value": 1.9750137869302396e-05,
+              "display": "1.975e-05"
+            }
+          }
+        ]
+      },
+      {
+        "position": 4096,
+        "pairs": [
+          {
+            "i": 0,
+            "angle_rad": {
+              "value": 4096.0,
+              "display": "4096"
+            },
+            "angle_mod_2pi": {
+              "value": 5.646365026089363,
+              "display": "5.6464"
+            },
+            "turns": {
+              "value": 651.8986469044033,
+              "display": "651.9"
+            }
+          },
+          {
+            "i": 1,
+            "angle_rad": {
+              "value": 3300.7296010710297,
+              "display": "3300.7"
+            },
+            "angle_mod_2pi": {
+              "value": 2.057314801746948,
+              "display": "2.0573"
+            },
+            "turns": {
+              "value": 525.3274318201942,
+              "display": "525.33"
+            }
+          },
+          {
+            "i": 2,
+            "angle_rad": {
+              "value": 2659.8671629361615,
+              "display": "2659.9"
+            },
+            "angle_mod_2pi": {
+              "value": 2.0797779991965726,
+              "display": "2.0798"
+            },
+            "turns": {
+              "value": 423.3310069491059,
+              "display": "423.33"
+            }
+          },
+          {
+            "i": 31,
+            "angle_rad": {
+              "value": 5.082881068039043,
+              "display": "5.0829"
+            },
+            "angle_mod_2pi": {
+              "value": 5.082881068039043,
+              "display": "5.0829"
+            },
+            "turns": {
+              "value": 0.8089656471266261,
+              "display": "0.80897"
+            }
+          },
+          {
+            "i": 63,
+            "angle_rad": {
+              "value": 0.005082881068039043,
+              "display": "0.0050829"
+            },
+            "angle_mod_2pi": {
+              "value": 0.005082881068039043,
+              "display": "0.0050829"
+            },
+            "turns": {
+              "value": 0.0008089656471266261,
+              "display": "0.00080897"
+            }
+          }
+        ]
+      }
+    ],
+    "observation": "Pair 0 turns 1 radian per token (a full turn every 6.28 tokens); pair 63 turns 1.24e-06 radian per token (a full turn every 5,063,256 tokens). Fast pairs resolve nearby order, slow pairs resolve long distances."
+  },
+  "toy_2d": {
+    "theta_toy": {
+      "rad": 0.5235987755982988,
+      "deg": 30.0,
+      "note": "toy step of 30° per position so cos and sin are familiar values (0.5, 0.8660)"
+    },
+    "rotation": "rotate (x, y) by angle a: (x cos a - y sin a, x sin a + y cos a)",
+    "q": {
+      "value": [
+        2.0,
+        1.0
+      ],
+      "display": [
+        "2",
+        "1"
+      ]
+    },
+    "k": {
+      "value": [
+        1.0,
+        1.0
+      ],
+      "display": [
+        "1",
+        "1"
+      ]
+    },
+    "dot_unrotated": {
+      "value": 3.0,
+      "display": "3"
+    },
+    "cases": [
+      {
+        "m": 2,
+        "n": 1,
+        "m_minus_n": 1,
+        "q_angle": {
+          "rad": 1.0471975511965976,
+          "deg": 60.0,
+          "cos": {
+            "value": 0.5000000000000001,
+            "display": "0.5000"
+          },
+          "sin": {
+            "value": 0.8660254037844386,
+            "display": "0.8660"
+          }
+        },
+        "k_angle": {
+          "rad": 0.5235987755982988,
+          "deg": 30.0,
+          "cos": {
+            "value": 0.8660254037844387,
+            "display": "0.8660"
+          },
+          "sin": {
+            "value": 0.49999999999999994,
+            "display": "0.5000"
+          }
+        },
+        "q_rot": {
+          "value": [
+            0.13397459621556163,
+            2.232050807568877
+          ],
+          "display": [
+            "0.1340",
+            "2.2321"
+          ],
+          "text": [
+            "2·0.5000 - 1·0.8660 = 0.1340",
+            "2·0.8660 + 1·0.5000 = 2.2321"
+          ]
+        },
+        "k_rot": {
+          "value": [
+            0.36602540378443876,
+            1.3660254037844386
+          ],
+          "display": [
+            "0.3660",
+            "1.3660"
+          ],
+          "text": [
+            "1·0.8660 - 1·0.5000 = 0.3660",
+            "1·0.5000 + 1·0.8660 = 1.3660"
+          ]
+        },
+        "dot_terms": {
+          "value": [
+            0.04903810567665808,
+            3.0490381056766576
+          ],
+          "display": [
+            "0.0490",
+            "3.0490"
+          ]
+        },
+        "dot": {
+          "value": 3.0980762113533156,
+          "display": "3.0981",
+          "text": "0.1340·0.3660 + 2.2321·1.3660 = 3.0981"
+        },
+        "dot_via_relative_rotation": {
+          "value": 3.098076211353316,
+          "display": "3.0981"
+        }
+      },
+      {
+        "m": 5,
+        "n": 4,
+        "m_minus_n": 1,
+        "q_angle": {
+          "rad": 2.617993877991494,
+          "deg": 150.0,
+          "cos": {
+            "value": -0.8660254037844385,
+            "display": "-0.8660"
+          },
+          "sin": {
+            "value": 0.5000000000000003,
+            "display": "0.5000"
+          }
+        },
+        "k_angle": {
+          "rad": 2.0943951023931953,
+          "deg": 120.0,
+          "cos": {
+            "value": -0.4999999999999998,
+            "display": "-0.5000"
+          },
+          "sin": {
+            "value": 0.8660254037844387,
+            "display": "0.8660"
+          }
+        },
+        "q_rot": {
+          "value": [
+            -2.232050807568877,
+            0.13397459621556218
+          ],
+          "display": [
+            "-2.2321",
+            "0.1340"
+          ],
+          "text": [
+            "2·-0.8660 - 1·0.5000 = -2.2321",
+            "2·0.5000 + 1·-0.8660 = 0.1340"
+          ]
+        },
+        "k_rot": {
+          "value": [
+            -1.3660254037844384,
+            0.36602540378443893
+          ],
+          "display": [
+            "-1.3660",
+            "0.3660"
+          ],
+          "text": [
+            "1·-0.5000 - 1·0.8660 = -1.3660",
+            "1·0.8660 + 1·-0.5000 = 0.3660"
+          ]
+        },
+        "dot_terms": {
+          "value": [
+            3.049038105676657,
+            0.04903810567665831
+          ],
+          "display": [
+            "3.0490",
+            "0.0490"
+          ]
+        },
+        "dot": {
+          "value": 3.0980762113533156,
+          "display": "3.0981",
+          "text": "-2.2321·-1.3660 + 0.1340·0.3660 = 3.0981"
+        },
+        "dot_via_relative_rotation": {
+          "value": 3.098076211353316,
+          "display": "3.0981"
+        }
+      },
+      {
+        "m": 5,
+        "n": 1,
+        "m_minus_n": 4,
+        "q_angle": {
+          "rad": 2.617993877991494,
+          "deg": 150.0,
+          "cos": {
+            "value": -0.8660254037844385,
+            "display": "-0.8660"
+          },
+          "sin": {
+            "value": 0.5000000000000003,
+            "display": "0.5000"
+          }
+        },
+        "k_angle": {
+          "rad": 0.5235987755982988,
+          "deg": 30.0,
+          "cos": {
+            "value": 0.8660254037844387,
+            "display": "0.8660"
+          },
+          "sin": {
+            "value": 0.49999999999999994,
+            "display": "0.5000"
+          }
+        },
+        "q_rot": {
+          "value": [
+            -2.232050807568877,
+            0.13397459621556218
+          ],
+          "display": [
+            "-2.2321",
+            "0.1340"
+          ],
+          "text": [
+            "2·-0.8660 - 1·0.5000 = -2.2321",
+            "2·0.5000 + 1·-0.8660 = 0.1340"
+          ]
+        },
+        "k_rot": {
+          "value": [
+            0.36602540378443876,
+            1.3660254037844386
+          ],
+          "display": [
+            "0.3660",
+            "1.3660"
+          ],
+          "text": [
+            "1·0.8660 - 1·0.5000 = 0.3660",
+            "1·0.5000 + 1·0.8660 = 1.3660"
+          ]
+        },
+        "dot_terms": {
+          "value": [
+            -0.8169872981077809,
+            0.18301270189222044
+          ],
+          "display": [
+            "-0.8170",
+            "0.1830"
+          ]
+        },
+        "dot": {
+          "value": -0.6339745962155605,
+          "display": "-0.6340",
+          "text": "-2.2321·0.3660 + 0.1340·1.3660 = -0.6340"
+        },
+        "dot_via_relative_rotation": {
+          "value": -0.6339745962155605,
+          "display": "-0.6340"
+        }
+      }
+    ],
+    "same_offset_abs_diff": 0.0,
+    "relative_property_holds": true,
+    "contrast_differs": true,
+    "why": "(R_m q)·(R_n k) = q·(R_m^T R_n k) = q·(R_(n-m) k): rotating both vectors by their own positions leaves only the angle difference (n - m)·θ in the score, so attention sees relative position. RoPE is applied to Q and K only, never to V.",
+    "source": "research/notes/05-papers-architecture.md §2.A A3 [S3 Su et al., RoFormer]"
+  },
+  "full_head_check": {
+    "d": 128,
+    "seed": 7,
+    "vectors": "q, k ~ standard normal (toy)",
+    "mn_pairs": [
+      [
+        10,
+        3
+      ],
+      [
+        1010,
+        1003
+      ],
+      [
+        100007,
+        100000
+      ]
+    ],
+    "rope": {
+      "dots": [
+        -1.4210703413608847,
+        -1.421070341360894,
+        -1.4210703413437162
+      ],
+      "max_abs_diff": 1.7177814726210272e-11
+    },
+    "yarn": {
+      "dots": [
+        -1.4211534943697215,
+        -1.4211534943697295,
+        -1.4211534943525663
+      ],
+      "max_abs_diff": 1.716315978228522e-11
+    },
+    "note": "all 64 pairs of M-dense's head, with and without YaRN: the score depends only on m - n (differences come from float64 rounding of large angles)"
+  },
+  "yarn": {
+    "rope_type": "yarn",
+    "inputs": {
+      "base": 1000000.0,
+      "head_dim": 128,
+      "factor_s": 64.0,
+      "original_max_position_embeddings": 4096,
+      "beta_fast": 4.0,
+      "beta_slow": 1.0,
+      "mscale": 1.0,
+      "mscale_all_dim": 0.0,
+      "max_position_embeddings": 262144,
+      "constants": [
+        "models.M-dense.rope_theta",
+        "models.M-dense.head_dim",
+        "models.M-dense.rope_yarn_factor",
+        "models.M-dense.rope_original_max_position_embeddings",
+        "models.M-dense.rope_yarn_beta_fast",
+        "models.M-dense.rope_yarn_beta_slow",
+        "models.M-dense.rope_yarn_mscale",
+        "models.M-dense.rope_yarn_mscale_all_dim"
+      ]
+    },
+    "factor_check": {
+      "text": "262,144 / 4,096 = 64",
+      "equals_factor": true
+    },
+    "idea": "Pairs that turn many times within the original 4,096-token context (high frequency) already handle long text and keep their frequency. Pairs that turn less than once (low frequency) would meet angles never seen in training, so their frequency is divided by s = 64 (position interpolation). Pairs in between blend the two.",
+    "correction_range": {
+      "formula": "dim(r) = d · ln( L / (r · 2π) ) / (2 · ln base): the pair index whose rotation count over the original context L equals r",
+      "low": {
+        "r": 4.0,
+        "raw": {
+          "value": 23.5959476083381,
+          "display": "23.5959"
+        },
+        "rounded": 23,
+        "rule": "floor",
+        "text": "128 · ln(4096 / (4 · 2π)) / (2 · ln 1,000,000) = 23.5959 -> floor = 23"
+      },
+      "high": {
+        "r": 1.0,
+        "raw": {
+          "value": 30.017920849169702,
+          "display": "30.0179"
+        },
+        "rounded": 31,
+        "rule": "ceil",
+        "text": "128 · ln(4096 / (1 · 2π)) / (2 · ln 1,000,000) = 30.0179 -> ceil = 31"
+      },
+      "matches_note_01": true,
+      "rounding_note": "low is floored and high is ceiled: floor(23.60) = 23, ceil(30.02) = 31, the same values note 01 §2.3 derives"
+    },
+    "ramp": {
+      "formula": "ramp_i = clamp((i - low) / (high - low), 0, 1); θ'_i = θ_i / s · ramp_i + θ_i · (1 - ramp_i)",
+      "step": "1 / (31 - 23) = 0.125 per pair"
+    },
+    "regions": {
+      "original": {
+        "pairs": [
+          0,
+          23
+        ],
+        "count": 24,
+        "rule": "ramp = 0: θ' = θ"
+      },
+      "blend": {
+        "pairs": [
+          24,
+          30
+        ],
+        "count": 7,
+        "rule": "0 < ramp < 1"
+      },
+      "interpolated": {
+        "pairs": [
+          31,
+          63
+        ],
+        "count": 33,
+        "rule": "ramp = 1: θ' = θ / 64"
+      },
+      "note_01_wording": "note 01 §2.3 says 'pairs 0–22 keep original frequencies, 23–31 blend, 31–63 are divided by 64'. Computed exactly: pair 23 has ramp 0 (original) and pair 31 has ramp 1 (interpolated), so the strictly blended pairs are 24–30; 23 and 31 are the ends of the ramp."
+    },
+    "rotation_check": {
+      "text": "Pair 23 turns 4.549 times in 4096 tokens (> beta_fast = 4); pair 31 turns 0.809 times (< beta_slow = 1). The index cut-offs agree with the paper's rotation-count rule here."
+    },
+    "highlight": [
+      {
+        "i": 0,
+        "theta": {
+          "value": 1.0,
+          "display": "1"
+        },
+        "wavelength_tokens": {
+          "value": 6.283185307179586,
+          "display": "6.2832"
+        },
+        "rotations_in_original_context": {
+          "value": 651.8986469044033,
+          "display": "651.9"
+        },
+        "ramp": {
+          "value": 0.0,
+          "display": "0.0000"
+        },
+        "theta_yarn": {
+          "value": 1.0,
+          "display": "1"
+        },
+        "ratio_yarn_to_original": {
+          "value": 1.0,
+          "display": "1.000000"
+        },
+        "region": "original"
+      },
+      {
+        "i": 1,
+        "theta": {
+          "value": 0.8058421877614819,
+          "display": "0.80584"
+        },
+        "wavelength_tokens": {
+          "value": 7.79704190547954,
+          "display": "7.797"
+        },
+        "rotations_in_original_context": {
+          "value": 525.3274318201942,
+          "display": "525.3"
+        },
+        "ramp": {
+          "value": 0.0,
+          "display": "0.0000"
+        },
+        "theta_yarn": {
+          "value": 0.8058421877614819,
+          "display": "0.80584"
+        },
+        "ratio_yarn_to_original": {
+          "value": 1.0,
+          "display": "1.000000"
+        },
+        "region": "original"
+      },
+      {
+        "i": 2,
+        "theta": {
+          "value": 0.6493816315762113,
+          "display": "0.64938"
+        },
+        "wavelength_tokens": {
+          "value": 9.675643722673103,
+          "display": "9.6756"
+        },
+        "rotations_in_original_context": {
+          "value": 423.33100694910587,
+          "display": "423.3"
+        },
+        "ramp": {
+          "value": 0.0,
+          "display": "0.0000"
+        },
+        "theta_yarn": {
+          "value": 0.6493816315762113,
+          "display": "0.64938"
+        },
+        "ratio_yarn_to_original": {
+          "value": 1.0,
+          "display": "1.000000"
+        },
+        "region": "original"
+      },
+      {
+        "i": 22,
+        "theta": {
+          "value": 0.008659643233600654,
+          "display": "0.0086596"
+        },
+        "wavelength_tokens": {
+          "value": 725.5709199196485,
+          "display": "725.57"
+        },
+        "rotations_in_original_context": {
+          "value": 5.645209706659138,
+          "display": "5.645"
+        },
+        "ramp": {
+          "value": 0.0,
+          "display": "0.0000"
+        },
+        "theta_yarn": {
+          "value": 0.008659643233600654,
+          "display": "0.0086596"
+        },
+        "ratio_yarn_to_original": {
+          "value": 1.0,
+          "display": "1.000000"
+        },
+        "region": "original"
+      },
+      {
+        "i": 23,
+        "theta": {
+          "value": 0.006978305848598663,
+          "display": "0.0069783"
+        },
+        "wavelength_tokens": {
+          "value": 900.3883526316539,
+          "display": "900.39"
+        },
+        "rotations_in_original_context": {
+          "value": 4.549148140386553,
+          "display": "4.549"
+        },
+        "ramp": {
+          "value": 0.0,
+          "display": "0.0000"
+        },
+        "theta_yarn": {
+          "value": 0.006978305848598663,
+          "display": "0.0069783"
+        },
+        "ratio_yarn_to_original": {
+          "value": 1.0,
+          "display": "1.000000"
+        },
+        "region": "original"
+      },
+      {
+        "i": 24,
+        "theta": {
+          "value": 0.005623413251903491,
+          "display": "0.0056234"
+        },
+        "wavelength_tokens": {
+          "value": 1117.3259061216543,
+          "display": "1117.3"
+        },
+        "rotations_in_original_context": {
+          "value": 3.6658954899001763,
+          "display": "3.666"
+        },
+        "ramp": {
+          "value": 0.125,
+          "display": "0.1250"
+        },
+        "theta_yarn": {
+          "value": 0.004931469824423178,
+          "display": "0.0049315"
+        },
+        "ratio_yarn_to_original": {
+          "value": 0.8769531249999999,
+          "display": "0.876953"
+        },
+        "region": "blend"
+      },
+      {
+        "i": 27,
+        "theta": {
+          "value": 0.002942727176209282,
+          "display": "0.0029427"
+        },
+        "wavelength_tokens": {
+          "value": 2135.1572643147183,
+          "display": "2135.2"
+        },
+        "rotations_in_original_context": {
+          "value": 1.9183598643796465,
+          "display": "1.918"
+        },
+        "ramp": {
+          "value": 0.5,
+          "display": "0.5000"
+        },
+        "theta_yarn": {
+          "value": 0.001494353644168776,
+          "display": "0.0014944"
+        },
+        "ratio_yarn_to_original": {
+          "value": 0.5078125,
+          "display": "0.507812"
+        },
+        "region": "blend"
+      },
+      {
+        "i": 30,
+        "theta": {
+          "value": 0.001539926526059492,
+          "display": "0.0015399"
+        },
+        "wavelength_tokens": {
+          "value": 4080.185126271958,
+          "display": "4080.2"
+        },
+        "rotations_in_original_context": {
+          "value": 1.0038760186703812,
+          "display": "1.004"
+        },
+        "ramp": {
+          "value": 0.875,
+          "display": "0.8750"
+        },
+        "theta_yarn": {
+          "value": 0.00021354449873090613,
+          "display": "0.00021354"
+        },
+        "ratio_yarn_to_original": {
+          "value": 0.138671875,
+          "display": "0.138672"
+        },
+        "region": "blend"
+      },
+      {
+        "i": 31,
+        "theta": {
+          "value": 0.0012409377607517195,
+          "display": "0.0012409"
+        },
+        "wavelength_tokens": {
+          "value": 5063.255794048396,
+          "display": "5063.3"
+        },
+        "rotations_in_original_context": {
+          "value": 0.8089656471266262,
+          "display": "0.809"
+        },
+        "ramp": {
+          "value": 1.0,
+          "display": "1.0000"
+        },
+        "theta_yarn": {
+          "value": 1.9389652511745618e-05,
+          "display": "1.939e-05"
+        },
+        "ratio_yarn_to_original": {
+          "value": 0.015625,
+          "display": "0.015625"
+        },
+        "region": "interpolated"
+      },
+      {
+        "i": 32,
+        "theta": {
+          "value": 0.001,
+          "display": "0.001"
+        },
+        "wavelength_tokens": {
+          "value": 6283.185307179586,
+          "display": "6283.2"
+        },
+        "rotations_in_original_context": {
+          "value": 0.6518986469044034,
+          "display": "0.6519"
+        },
+        "ramp": {
+          "value": 1.0,
+          "display": "1.0000"
+        },
+        "theta_yarn": {
+          "value": 1.5625e-05,
+          "display": "1.5625e-05"
+        },
+        "ratio_yarn_to_original": {
+          "value": 0.015625,
+          "display": "0.015625"
+        },
+        "region": "interpolated"
+      },
+      {
+        "i": 63,
+        "theta": {
+          "value": 1.2409377607517195e-06,
+          "display": "1.2409e-06"
+        },
+        "wavelength_tokens": {
+          "value": 5063255.794048396,
+          "display": "5.0633e+06"
+        },
+        "rotations_in_original_context": {
+          "value": 0.0008089656471266262,
+          "display": "0.000809"
+        },
+        "ramp": {
+          "value": 1.0,
+          "display": "1.0000"
+        },
+        "theta_yarn": {
+          "value": 1.9389652511745618e-08,
+          "display": "1.939e-08"
+        },
+        "ratio_yarn_to_original": {
+          "value": 0.015625,
+          "display": "0.015625"
+        },
+        "region": "interpolated"
+      }
+    ],
+    "table": [
+      {
+        "i": 0,
+        "theta": 1.0,
+        "wavelength_tokens": 6.283185307179586,
+        "rotations_in_original_context": 651.8986469044033,
+        "ramp": 0.0,
+        "theta_yarn": 1.0,
+        "region": "original"
+      },
+      {
+        "i": 1,
+        "theta": 0.8058421877614819,
+        "wavelength_tokens": 7.79704190547954,
+        "rotations_in_original_context": 525.3274318201942,
+        "ramp": 0.0,
+        "theta_yarn": 0.8058421877614819,
+        "region": "original"
+      },
+      {
+        "i": 2,
+        "theta": 0.6493816315762113,
+        "wavelength_tokens": 9.675643722673103,
+        "rotations_in_original_context": 423.33100694910587,
+        "ramp": 0.0,
+        "theta_yarn": 0.6493816315762113,
+        "region": "original"
+      },
+      {
+        "i": 3,
+        "theta": 0.5232991146814947,
+        "wavelength_tokens": 12.00687165504539,
+        "rotations_in_original_context": 341.1379847871386,
+        "ramp": 0.0,
+        "theta_yarn": 0.5232991146814947,
+        "region": "original"
+      },
+      {
+        "i": 4,
+        "theta": 0.4216965034285822,
+        "wavelength_tokens": 14.899780425245321,
+        "rotations_in_original_context": 274.90337998941084,
+        "ramp": 0.0,
+        "theta_yarn": 0.4216965034285822,
+        "region": "original"
+      },
+      {
+        "i": 5,
+        "theta": 0.33982083289425596,
+        "wavelength_tokens": 18.489700156596232,
+        "rotations_in_original_context": 221.5287411536928,
+        "ramp": 0.0,
+        "theta_yarn": 0.33982083289425596,
+        "region": "original"
+      },
+      {
+        "i": 6,
+        "theta": 0.27384196342643613,
+        "wavelength_tokens": 22.944567109297246,
+        "rotations_in_original_context": 178.51720542333882,
+        "ramp": 0.0,
+        "theta_yarn": 0.27384196342643613,
+        "region": "original"
+      },
+      {
+        "i": 7,
+        "theta": 0.220673406908459,
+        "wavelength_tokens": 28.47277973002888,
+        "rotations_in_original_context": 143.85669537140922,
+        "ramp": 0.0,
+        "theta_yarn": 0.220673406908459,
+        "region": "original"
+      },
+      {
+        "i": 8,
+        "theta": 0.1778279410038923,
+        "wavelength_tokens": 35.33294752055899,
+        "rotations_in_original_context": 115.92579412223344,
+        "ramp": 0.0,
+        "theta_yarn": 0.1778279410038923,
+        "region": "original"
+      },
+      {
+        "i": 9,
+        "theta": 0.14330125702369628,
+        "wavelength_tokens": 43.84598877692049,
+        "rotations_in_original_context": 93.41789555344774,
+        "ramp": 0.0,
+        "theta_yarn": 0.14330125702369628,
+        "region": "original"
+      },
+      {
+        "i": 10,
+        "theta": 0.11547819846894582,
+        "wavelength_tokens": 54.410143130776746,
+        "rotations_in_original_context": 75.28008132886391,
+        "ramp": 0.0,
+        "theta_yarn": 0.11547819846894582,
+        "region": "original"
+      },
+      {
+        "i": 11,
+        "theta": 0.0930572040929699,
+        "wavelength_tokens": 67.51960117888665,
+        "rotations_in_original_context": 60.66386543291399,
+        "ramp": 0.0,
+        "theta_yarn": 0.0930572040929699,
+        "region": "original"
+      },
+      {
+        "i": 12,
+        "theta": 0.07498942093324558,
+        "wavelength_tokens": 83.78762269377677,
+        "rotations_in_original_context": 48.885502038527534,
+        "ramp": 0.0,
+        "theta_yarn": 0.07498942093324558,
+        "region": "original"
+      },
+      {
+        "i": 13,
+        "theta": 0.060429639023813285,
+        "wavelength_tokens": 103.9752248843253,
+        "rotations_in_original_context": 39.39399991254541,
+        "ramp": 0.0,
+        "theta_yarn": 0.060429639023813285,
+        "region": "original"
+      },
+      {
+        "i": 14,
+        "theta": 0.04869675251658631,
+        "wavelength_tokens": 129.0267827416111,
+        "rotations_in_original_context": 31.745347074201216,
+        "ramp": 0.0,
+        "theta_yarn": 0.04869675251658631,
+        "region": "original"
+      },
+      {
+        "i": 15,
+        "theta": 0.03924189758484536,
+        "wavelength_tokens": 160.1142068523735,
+        "rotations_in_original_context": 25.58173993752186,
+        "ramp": 0.0,
+        "theta_yarn": 0.03924189758484536,
+        "region": "original"
+      },
+      {
+        "i": 16,
+        "theta": 0.03162277660168379,
+        "wavelength_tokens": 198.69176531592203,
+        "rotations_in_original_context": 20.61484527799789,
+        "ramp": 0.0,
+        "theta_yarn": 0.03162277660168379,
+        "region": "original"
+      },
+      {
+        "i": 17,
+        "theta": 0.025482967479793464,
+        "wavelength_tokens": 246.56411433094647,
+        "rotations_in_original_context": 16.612312019186273,
+        "ramp": 0.0,
+        "theta_yarn": 0.025482967479793464,
+        "region": "original"
+      },
+      {
+        "i": 18,
+        "theta": 0.02053525026457146,
+        "wavelength_tokens": 305.9707199195757,
+        "rotations_in_original_context": 13.386901861317424,
+        "ramp": 0.0,
+        "theta_yarn": 0.02053525026457146,
+        "region": "original"
+      },
+      {
+        "i": 19,
+        "theta": 0.016548170999431813,
+        "wavelength_tokens": 379.69062003258983,
+        "rotations_in_original_context": 10.787730283272285,
+        "ramp": 0.0,
+        "theta_yarn": 0.016548170999431813,
+        "region": "original"
+      },
+      {
+        "i": 20,
+        "theta": 0.01333521432163324,
+        "wavelength_tokens": 471.1724278016739,
+        "rotations_in_original_context": 8.69320817245293,
+        "ramp": 0.0,
+        "theta_yarn": 0.01333521432163324,
+        "region": "original"
+      },
+      {
+        "i": 21,
+        "theta": 0.010746078283213174,
+        "wavelength_tokens": 584.6956574841605,
+        "rotations_in_original_context": 7.005353892355462,
+        "ramp": 0.0,
+        "theta_yarn": 0.010746078283213174,
+        "region": "original"
+      },
+      {
+        "i": 22,
+        "theta": 0.008659643233600654,
+        "wavelength_tokens": 725.5709199196485,
+        "rotations_in_original_context": 5.645209706659138,
+        "ramp": 0.0,
+        "theta_yarn": 0.008659643233600654,
+        "region": "original"
+      },
+      {
+        "i": 23,
+        "theta": 0.006978305848598663,
+        "wavelength_tokens": 900.3883526316539,
+        "rotations_in_original_context": 4.549148140386553,
+        "ramp": 0.0,
+        "theta_yarn": 0.006978305848598663,
+        "region": "original"
+      },
+      {
+        "i": 24,
+        "theta": 0.005623413251903491,
+        "wavelength_tokens": 1117.3259061216543,
+        "rotations_in_original_context": 3.6658954899001763,
+        "ramp": 0.125,
+        "theta_yarn": 0.004931469824423178,
+        "region": "blend"
+      },
+      {
+        "i": 25,
+        "theta": 0.004531583637600818,
+        "wavelength_tokens": 1386.5319079724916,
+        "rotations_in_original_context": 2.9541332416861072,
+        "ramp": 0.25,
+        "theta_yarn": 0.003416389226784992,
+        "region": "blend"
+      },
+      {
+        "i": 26,
+        "theta": 0.003651741272548377,
+        "wavelength_tokens": 1720.599801090193,
+        "rotations_in_original_context": 2.380565194419251,
+        "ramp": 0.375,
+        "theta_yarn": 0.0023037352168615737,
+        "region": "blend"
+      },
+      {
+        "i": 27,
+        "theta": 0.002942727176209282,
+        "wavelength_tokens": 2135.1572643147183,
+        "rotations_in_original_context": 1.9183598643796465,
+        "ramp": 0.5,
+        "theta_yarn": 0.001494353644168776,
+        "region": "blend"
+      },
+      {
+        "i": 28,
+        "theta": 0.0023713737056616554,
+        "wavelength_tokens": 2649.597274431474,
+        "rotations_in_original_context": 1.5458953100255137,
+        "ramp": 0.625,
+        "theta_yarn": 0.0009124230859674728,
+        "region": "blend"
+      },
+      {
+        "i": 29,
+        "theta": 0.0019109529749704406,
+        "wavelength_tokens": 3287.9853086268527,
+        "rotations_in_original_context": 1.2457476586811742,
+        "ramp": 0.75,
+        "theta_yarn": 0.000500132223918045,
+        "region": "blend"
+      },
+      {
+        "i": 30,
+        "theta": 0.001539926526059492,
+        "wavelength_tokens": 4080.185126271958,
+        "rotations_in_original_context": 1.0038760186703812,
+        "ramp": 0.875,
+        "theta_yarn": 0.00021354449873090613,
+        "region": "blend"
+      },
+      {
+        "i": 31,
+        "theta": 0.0012409377607517195,
+        "wavelength_tokens": 5063.255794048396,
+        "rotations_in_original_context": 0.8089656471266262,
+        "ramp": 1.0,
+        "theta_yarn": 1.9389652511745618e-05,
+        "region": "interpolated"
+      },
+      {
+        "i": 32,
+        "theta": 0.001,
+        "wavelength_tokens": 6283.185307179586,
+        "rotations_in_original_context": 0.6518986469044034,
+        "ramp": 1.0,
+        "theta_yarn": 1.5625e-05,
+        "region": "interpolated"
+      },
+      {
+        "i": 33,
+        "theta": 0.0008058421877614818,
+        "wavelength_tokens": 7797.041905479541,
+        "rotations_in_original_context": 0.5253274318201941,
+        "ramp": 1.0,
+        "theta_yarn": 1.2591284183773153e-05,
+        "region": "interpolated"
+      },
+      {
+        "i": 34,
+        "theta": 0.0006493816315762113,
+        "wavelength_tokens": 9675.643722673101,
+        "rotations_in_original_context": 0.42333100694910597,
+        "ramp": 1.0,
+        "theta_yarn": 1.0146587993378302e-05,
+        "region": "interpolated"
+      },
+      {
+        "i": 35,
+        "theta": 0.0005232991146814947,
+        "wavelength_tokens": 12006.87165504539,
+        "rotations_in_original_context": 0.3411379847871386,
+        "ramp": 1.0,
+        "theta_yarn": 8.176548666898355e-06,
+        "region": "interpolated"
+      },
+      {
+        "i": 36,
+        "theta": 0.00042169650342858224,
+        "wavelength_tokens": 14899.78042524532,
+        "rotations_in_original_context": 0.27490337998941083,
+        "ramp": 1.0,
+        "theta_yarn": 6.5890078660715975e-06,
+        "region": "interpolated"
+      },
+      {
+        "i": 37,
+        "theta": 0.00033982083289425596,
+        "wavelength_tokens": 18489.70015659623,
+        "rotations_in_original_context": 0.2215287411536928,
+        "ramp": 1.0,
+        "theta_yarn": 5.309700513972749e-06,
+        "region": "interpolated"
+      },
+      {
+        "i": 38,
+        "theta": 0.0002738419634264361,
+        "wavelength_tokens": 22944.567109297248,
+        "rotations_in_original_context": 0.17851720542333882,
+        "ramp": 1.0,
+        "theta_yarn": 4.278780678538064e-06,
+        "region": "interpolated"
+      },
+      {
+        "i": 39,
+        "theta": 0.00022067340690845897,
+        "wavelength_tokens": 28472.779730028884,
+        "rotations_in_original_context": 0.14385669537140922,
+        "ramp": 1.0,
+        "theta_yarn": 3.4480219829446715e-06,
+        "region": "interpolated"
+      },
+      {
+        "i": 40,
+        "theta": 0.00017782794100389227,
+        "wavelength_tokens": 35332.94752055899,
+        "rotations_in_original_context": 0.11592579412223343,
+        "ramp": 1.0,
+        "theta_yarn": 2.7785615781858167e-06,
+        "region": "interpolated"
+      },
+      {
+        "i": 41,
+        "theta": 0.00014330125702369627,
+        "wavelength_tokens": 43845.988776920494,
+        "rotations_in_original_context": 0.09341789555344773,
+        "ramp": 1.0,
+        "theta_yarn": 2.2390821409952543e-06,
+        "region": "interpolated"
+      },
+      {
+        "i": 42,
+        "theta": 0.00011547819846894582,
+        "wavelength_tokens": 54410.14313077675,
+        "rotations_in_original_context": 0.07528008132886392,
+        "ramp": 1.0,
+        "theta_yarn": 1.8043468510772785e-06,
+        "region": "interpolated"
+      },
+      {
+        "i": 43,
+        "theta": 9.30572040929699e-05,
+        "wavelength_tokens": 67519.60117888665,
+        "rotations_in_original_context": 0.06066386543291399,
+        "ramp": 1.0,
+        "theta_yarn": 1.4540188139526547e-06,
+        "region": "interpolated"
+      },
+      {
+        "i": 44,
+        "theta": 7.498942093324559e-05,
+        "wavelength_tokens": 83787.62269377676,
+        "rotations_in_original_context": 0.04888550203852753,
+        "ramp": 1.0,
+        "theta_yarn": 1.1717097020819623e-06,
+        "region": "interpolated"
+      },
+      {
+        "i": 45,
+        "theta": 6.042963902381328e-05,
+        "wavelength_tokens": 103975.2248843253,
+        "rotations_in_original_context": 0.039393999912545406,
+        "ramp": 1.0,
+        "theta_yarn": 9.442131097470825e-07,
+        "region": "interpolated"
+      },
+      {
+        "i": 46,
+        "theta": 4.869675251658631e-05,
+        "wavelength_tokens": 129026.78274161111,
+        "rotations_in_original_context": 0.031745347074201215,
+        "ramp": 1.0,
+        "theta_yarn": 7.608867580716611e-07,
+        "region": "interpolated"
+      },
+      {
+        "i": 47,
+        "theta": 3.924189758484536e-05,
+        "wavelength_tokens": 160114.20685237352,
+        "rotations_in_original_context": 0.02558173993752186,
+        "ramp": 1.0,
+        "theta_yarn": 6.131546497632087e-07,
+        "region": "interpolated"
+      },
+      {
+        "i": 48,
+        "theta": 3.1622776601683795e-05,
+        "wavelength_tokens": 198691.765315922,
+        "rotations_in_original_context": 0.020614845277997892,
+        "ramp": 1.0,
+        "theta_yarn": 4.941058844013093e-07,
+        "region": "interpolated"
+      },
+      {
+        "i": 49,
+        "theta": 2.5482967479793464e-05,
+        "wavelength_tokens": 246564.11433094647,
+        "rotations_in_original_context": 0.01661231201918627,
+        "ramp": 1.0,
+        "theta_yarn": 3.981713668717729e-07,
+        "region": "interpolated"
+      },
+      {
+        "i": 50,
+        "theta": 2.0535250264571462e-05,
+        "wavelength_tokens": 305970.7199195756,
+        "rotations_in_original_context": 0.013386901861317427,
+        "ramp": 1.0,
+        "theta_yarn": 3.208632853839291e-07,
+        "region": "interpolated"
+      },
+      {
+        "i": 51,
+        "theta": 1.6548170999431813e-05,
+        "wavelength_tokens": 379690.6200325898,
+        "rotations_in_original_context": 0.010787730283272286,
+        "ramp": 1.0,
+        "theta_yarn": 2.585651718661221e-07,
+        "region": "interpolated"
+      },
+      {
+        "i": 52,
+        "theta": 1.333521432163324e-05,
+        "wavelength_tokens": 471172.42780167394,
+        "rotations_in_original_context": 0.00869320817245293,
+        "ramp": 1.0,
+        "theta_yarn": 2.0836272377551938e-07,
+        "region": "interpolated"
+      },
+      {
+        "i": 53,
+        "theta": 1.0746078283213176e-05,
+        "wavelength_tokens": 584695.6574841605,
+        "rotations_in_original_context": 0.007005353892355463,
+        "ramp": 1.0,
+        "theta_yarn": 1.6790747317520587e-07,
+        "region": "interpolated"
+      },
+      {
+        "i": 54,
+        "theta": 8.659643233600654e-06,
+        "wavelength_tokens": 725570.9199196486,
+        "rotations_in_original_context": 0.0056452097066591374,
+        "ramp": 1.0,
+        "theta_yarn": 1.353069255250102e-07,
+        "region": "interpolated"
+      },
+      {
+        "i": 55,
+        "theta": 6.978305848598663e-06,
+        "wavelength_tokens": 900388.3526316539,
+        "rotations_in_original_context": 0.0045491481403865525,
+        "ramp": 1.0,
+        "theta_yarn": 1.0903602888435411e-07,
+        "region": "interpolated"
+      },
+      {
+        "i": 56,
+        "theta": 5.623413251903491e-06,
+        "wavelength_tokens": 1117325.9061216542,
+        "rotations_in_original_context": 0.003665895489900176,
+        "ramp": 1.0,
+        "theta_yarn": 8.786583206099205e-08,
+        "region": "interpolated"
+      },
+      {
+        "i": 57,
+        "theta": 4.531583637600818e-06,
+        "wavelength_tokens": 1386531.9079724916,
+        "rotations_in_original_context": 0.002954133241686107,
+        "ramp": 1.0,
+        "theta_yarn": 7.080599433751278e-08,
+        "region": "interpolated"
+      },
+      {
+        "i": 58,
+        "theta": 3.651741272548377e-06,
+        "wavelength_tokens": 1720599.801090193,
+        "rotations_in_original_context": 0.002380565194419251,
+        "ramp": 1.0,
+        "theta_yarn": 5.705845738356839e-08,
+        "region": "interpolated"
+      },
+      {
+        "i": 59,
+        "theta": 2.9427271762092816e-06,
+        "wavelength_tokens": 2135157.2643147185,
+        "rotations_in_original_context": 0.0019183598643796463,
+        "ramp": 1.0,
+        "theta_yarn": 4.5980112128270025e-08,
+        "region": "interpolated"
+      },
+      {
+        "i": 60,
+        "theta": 2.3713737056616552e-06,
+        "wavelength_tokens": 2649597.274431474,
+        "rotations_in_original_context": 0.0015458953100255138,
+        "ramp": 1.0,
+        "theta_yarn": 3.705271415096336e-08,
+        "region": "interpolated"
+      },
+      {
+        "i": 61,
+        "theta": 1.9109529749704404e-06,
+        "wavelength_tokens": 3287985.308626853,
+        "rotations_in_original_context": 0.0012457476586811742,
+        "ramp": 1.0,
+        "theta_yarn": 2.985864023391313e-08,
+        "region": "interpolated"
+      },
+      {
+        "i": 62,
+        "theta": 1.539926526059492e-06,
+        "wavelength_tokens": 4080185.1262719585,
+        "rotations_in_original_context": 0.0010038760186703811,
+        "ramp": 1.0,
+        "theta_yarn": 2.406135196967956e-08,
+        "region": "interpolated"
+      },
+      {
+        "i": 63,
+        "theta": 1.2409377607517195e-06,
+        "wavelength_tokens": 5063255.794048396,
+        "rotations_in_original_context": 0.0008089656471266262,
+        "ramp": 1.0,
+        "theta_yarn": 1.9389652511745618e-08,
+        "region": "interpolated"
+      }
+    ],
+    "attention_factor": {
+      "formula": "attention_factor = 0.1 · ln(s) + 1 (HF: used when mscale_all_dim is 0)",
+      "text": "0.1 · ln(64) + 1 = 0.1 · 4.15888 + 1 = 1.41589",
+      "value": 1.4158883083359672,
+      "display": "1.41589",
+      "constant_value": 1.4158883083359672,
+      "matches_constant": true,
+      "effect": "cos and sin tables are multiplied by 1.41589, so both q and k are scaled and every q·k score is multiplied by 1.41589^2 = 2.0047. In the paper's notation softmax(q·k / (t·sqrt(d))) with sqrt(1/t) = 0.1 ln(s) + 1, so 1/t = 2.0047.",
+      "history": "Mistral's original config had mscale_all_dim 1.0, which made the factor get_mscale(64,1)/get_mscale(64,1) = 1.0; they set it to 0 because it 'caused long-context performance degradation'."
+    },
+    "sources": [
+      "research/notes/05-papers-architecture.md §2.A A4 [S4 Peng et al., YaRN eqs. 10-15]",
+      "research/notes/01-models.md §2.3 (YaRN detail; HF _compute_yarn_parameters; Mistral commit c4be1980 set mscale_all_dim to 0)"
+    ]
+  },
+  "nope_contrast": {
+    "model": "moonshotai/Kimi-K3",
+    "positional_encoding": "none (NoPE MLA; KDA decay + short conv carry order)",
+    "constant": "models.M-frontier.positional_encoding",
+    "source": "https://github.com/MoonshotAI/Kimi-K3/blob/3cb39dfd32e51c3328e2e4b4af21341247d06c43/k3_tech_report.pdf",
+    "note": "M-frontier (Kimi K3) has no positional encoding: its MLA layers are NoPE (no rotation; the 64 'rope' dims are not rotated) and its KDA layers carry order through their decay and short convolution. The report says it extends to 1M tokens without a RoPE base change or YaRN.",
+    "note_source": "research/notes/01b-kimi-k3.md §1 item 2 and §2.4 (NoPE MLA; KDA decay and short convolution carry order)"
+  }
+}

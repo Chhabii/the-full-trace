@@ -1,0 +1,1669 @@
+{
+  "meta": {
+    "script": "sim/weights_memory.py",
+    "generated_at": "2026-10-09T07:29:51+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T07:25:09+00:00",
+      "sha256": "014362d7b1b4"
+    },
+    "constants_used": {
+      "autoscaling.llmd_measured_pod_ready_s": 135,
+      "extra.sims_s1.h_teach_gpus_per_node": 8,
+      "extra.sims_w01.k3_f32_stored_params": 11122432,
+      "extra.sims_w01.k3_index_total_size_bytes": 1560860324864,
+      "extra.sims_w01.k3_redhat_nvfp4_checkpoint_bytes": 1646073796144,
+      "extra.sims_w01.k3_safetensors_shards": 96,
+      "extra.sims_w02.k8s_probe_failure_threshold": 3,
+      "extra.sims_w02.k8s_probe_period_s": 10,
+      "extra.sims_w02.k8s_probe_timeout_s": 1,
+      "hardware.H-frontier.gb300_gpu_hbm": 288,
+      "hardware.H-frontier.gb300_gpu_tdp": 1400,
+      "hardware.H-frontier.gb300_nvl72_gpus": 72,
+      "hardware.H-teach.h100_sxm_hbm_capacity": 80,
+      "hardware.H-teach.h100_sxm_tdp": 700,
+      "hardware.H-teach.h200_variant.h200_sxm_hbm_capacity": 141,
+      "hardware.formats.fp8_e4m3_max": 448,
+      "hardware.formats.fp8_e5m2_max": 57344,
+      "hardware.formats.mxfp4_block_size": 32,
+      "hardware.formats.nvfp4_bits_per_value": 4.5,
+      "hardware.formats.nvfp4_block_size": 16,
+      "hardware.power.iea_dc_electricity_2024": 415,
+      "hypothetical.slo.p95_ttft_ms": 1500,
+      "models.M-dense.checkpoint_bytes_one_copy": 133600000000.0,
+      "models.M-dense.flops_per_token_matmul": 246800000000.0,
+      "models.M-dense.head_dim": 128,
+      "models.M-dense.hidden_size": 12288,
+      "models.M-dense.intermediate_size": 28672,
+      "models.M-dense.kv_bytes_per_token_bf16": 360448,
+      "models.M-dense.kv_bytes_per_token_fp8": 180224,
+      "models.M-dense.max_position_embeddings": 262144,
+      "models.M-dense.model_id": "mistralai/Mistral-Medium-3.5-128B",
+      "models.M-dense.num_attention_heads": 96,
+      "models.M-dense.num_hidden_layers": 88,
+      "models.M-dense.num_key_value_heads": 8,
+      "models.M-dense.text_params": 125025988608,
+      "models.M-dense.tie_word_embeddings": false,
+      "models.M-dense.torch_dtype": "bfloat16",
+      "models.M-dense.total_params": 127704210176,
+      "models.M-dense.vision_params": 2678221568,
+      "models.M-dense.vllm_recipe": {
+        "recommended_hw": "8x H200 (alt 4x B200, 2-8x MI300X)",
+        "tp": 8,
+        "eagle_num_speculative_tokens": 3,
+        "mi300x_tp8_1k_in_1k_out_conc32": {
+          "output_tok_s": 915,
+          "mean_ttft_ms": 2522,
+          "mean_tpot_ms": 26.1
+        },
+        "mi300x_tp1": {
+          "output_tok_s": 438,
+          "mean_ttft_ms": 5719,
+          "mean_tpot_ms": 55.2
+        }
+      },
+      "models.M-dense.vocab_size": 131072,
+      "models.M-dense.weight_quantization": "FP8 E4M3 per-tensor (static activation scale); vision tower, projector, lm_head unquantized",
+      "models.M-frontier.active_params": 104189614848,
+      "models.M-frontier.bytes_per_param_overall": 0.5615,
+      "models.M-frontier.checkpoint_bytes": 1560936091448,
+      "models.M-frontier.first_k_dense_replace": 1,
+      "models.M-frontier.h100_min_gpus_vllm_recipe": 32,
+      "models.M-frontier.hidden_size": 7168,
+      "models.M-frontier.model_id": "moonshotai/Kimi-K3",
+      "models.M-frontier.non_expert_bytes": 114404258816,
+      "models.M-frontier.num_experts": 896,
+      "models.M-frontier.num_experts_per_token": 16,
+      "models.M-frontier.num_hidden_layers": 93,
+      "models.M-frontier.routed_expert_bytes": 1446456066048,
+      "models.M-frontier.routed_expert_params": 2722740830208,
+      "models.M-frontier.text_params": 2779484478208,
+      "models.M-frontier.total_params": 2779931837184,
+      "models.M-frontier.trtllm_per_rank_weights_gb": {
+        "DEP16": 210,
+        "TEP8": 213,
+        "TEP16": 115
+      },
+      "models.M-frontier.vllm_min_hardware": "1x 8xB300 (or GB300 NVL72) node; 16x B200 also supported",
+      "models.M-frontier.vocab_size": 163840,
+      "software.vllm.gpu_memory_utilization": 0.92,
+      "software.vllm.max_cudagraph_capture_size": 512,
+      "software.vllm.max_num_seqs_h100_b200": 1024
+    }
+  },
+  "conventions": {
+    "sizes": "Bytes in 'value'; GB_1e9 and GiB_2pow30 next to it. Vendor HBM sizes are decimal GB.",
+    "classes": "Model and hardware inputs are class A. Block-scaling demo values are ILLUSTRATIVE. non_kv_overhead_per_gpu is HYPOTHETICAL (class C)."
+  },
+  "formats": {
+    "float": {
+      "FP32": {
+        "layout_sign_exponent_mantissa": "1/8/23",
+        "bits": 32,
+        "bytes": 4.0,
+        "exponent_bias": 127,
+        "max_normal": {
+          "formula": "(2 − 2^−23) × 2^(254 − 127)",
+          "value": 3.402823466e+38,
+          "unit": "value"
+        },
+        "min_normal": {
+          "formula": "2^(1 − 127)",
+          "value": 1.175494351e-38,
+          "unit": "value"
+        },
+        "relative_step": {
+          "formula": "2^−23: spacing between neighbours, relative to the value, for normal numbers",
+          "value": 1.192092896e-07,
+          "unit": "fraction"
+        },
+        "decimal_digits": {
+          "formula": "log10(2^24)",
+          "value": 7.224719896,
+          "unit": "digits"
+        },
+        "has_infinity": true
+      },
+      "BF16": {
+        "layout_sign_exponent_mantissa": "1/8/7",
+        "bits": 16,
+        "bytes": 2.0,
+        "exponent_bias": 127,
+        "max_normal": {
+          "formula": "(2 − 2^−7) × 2^(254 − 127)",
+          "value": 3.389531389e+38,
+          "unit": "value"
+        },
+        "min_normal": {
+          "formula": "2^(1 − 127)",
+          "value": 1.175494351e-38,
+          "unit": "value"
+        },
+        "relative_step": {
+          "formula": "2^−7: spacing between neighbours, relative to the value, for normal numbers",
+          "value": 0.0078125,
+          "unit": "fraction"
+        },
+        "decimal_digits": {
+          "formula": "log10(2^8)",
+          "value": 2.408239965,
+          "unit": "digits"
+        },
+        "has_infinity": true
+      },
+      "FP16": {
+        "layout_sign_exponent_mantissa": "1/5/10",
+        "bits": 16,
+        "bytes": 2.0,
+        "exponent_bias": 15,
+        "max_normal": {
+          "formula": "(2 − 2^−10) × 2^(30 − 15)",
+          "value": 65504,
+          "unit": "value"
+        },
+        "min_normal": {
+          "formula": "2^(1 − 15)",
+          "value": 6.103515625e-05,
+          "unit": "value"
+        },
+        "relative_step": {
+          "formula": "2^−10: spacing between neighbours, relative to the value, for normal numbers",
+          "value": 0.0009765625,
+          "unit": "fraction"
+        },
+        "decimal_digits": {
+          "formula": "log10(2^11)",
+          "value": 3.311329952,
+          "unit": "digits"
+        },
+        "has_infinity": true
+      },
+      "FP8_E4M3": {
+        "layout_sign_exponent_mantissa": "1/4/3",
+        "bits": 8,
+        "bytes": 1.0,
+        "exponent_bias": 7,
+        "max_normal": {
+          "formula": "(2 − 2^−2) × 2^(15 − 7)  (mantissa all ones at the top exponent is NaN)",
+          "value": 448,
+          "unit": "value"
+        },
+        "min_normal": {
+          "formula": "2^(1 − 7)",
+          "value": 0.015625,
+          "unit": "value"
+        },
+        "relative_step": {
+          "formula": "2^−3: spacing between neighbours, relative to the value, for normal numbers",
+          "value": 0.125,
+          "unit": "fraction"
+        },
+        "decimal_digits": {
+          "formula": "log10(2^4)",
+          "value": 1.204119983,
+          "unit": "digits"
+        },
+        "has_infinity": false
+      },
+      "FP8_E5M2": {
+        "layout_sign_exponent_mantissa": "1/5/2",
+        "bits": 8,
+        "bytes": 1.0,
+        "exponent_bias": 15,
+        "max_normal": {
+          "formula": "(2 − 2^−2) × 2^(30 − 15)",
+          "value": 57344,
+          "unit": "value"
+        },
+        "min_normal": {
+          "formula": "2^(1 − 15)",
+          "value": 6.103515625e-05,
+          "unit": "value"
+        },
+        "relative_step": {
+          "formula": "2^−2: spacing between neighbours, relative to the value, for normal numbers",
+          "value": 0.25,
+          "unit": "fraction"
+        },
+        "decimal_digits": {
+          "formula": "log10(2^3)",
+          "value": 0.903089987,
+          "unit": "digits"
+        },
+        "has_infinity": true
+      },
+      "FP4_E2M1": {
+        "layout_sign_exponent_mantissa": "1/2/1",
+        "bits": 4,
+        "bytes": 0.5,
+        "exponent_bias": 1,
+        "max_normal": {
+          "formula": "(2 − 2^−1) × 2^(3 − 1)  (no Inf, no NaN)",
+          "value": 6,
+          "unit": "value"
+        },
+        "min_normal": {
+          "formula": "2^(1 − 1)",
+          "value": 1,
+          "unit": "value"
+        },
+        "relative_step": {
+          "formula": "2^−1: spacing between neighbours, relative to the value, for normal numbers",
+          "value": 0.5,
+          "unit": "fraction"
+        },
+        "decimal_digits": {
+          "formula": "log10(2^2)",
+          "value": 0.6020599913,
+          "unit": "digits"
+        },
+        "has_infinity": false
+      }
+    },
+    "int": {
+      "INT8": {
+        "bits": 8,
+        "bytes": 1.0,
+        "min": -128,
+        "max": 127,
+        "note": "Integer codes need a separate scale (per tensor, per channel or per group) to represent real values."
+      },
+      "INT4": {
+        "bits": 4,
+        "bytes": 0.5,
+        "min": -8,
+        "max": 7,
+        "note": "Integer codes need a separate scale (per tensor, per channel or per group) to represent real values."
+      }
+    },
+    "e2m1_values": [
+      0.0,
+      0.5,
+      1.0,
+      1.5,
+      2.0,
+      3.0,
+      4.0,
+      6.0
+    ],
+    "block_scaled": {
+      "MXFP4": {
+        "element": "FP4 E2M1",
+        "block_size": {
+          "value": 32,
+          "unit": "values",
+          "from": "hardware.formats.mxfp4_block_size"
+        },
+        "scale": "E8M0: 8 exponent bits, bias 127, a power of two",
+        "bits_per_value": {
+          "formula": "4 + 8 / 32",
+          "value": 4.25,
+          "unit": "bits"
+        },
+        "bytes_per_param": {
+          "formula": "(32 × 0.5 B + 1 B) / 32",
+          "value": 0.53125,
+          "unit": "B/param"
+        },
+        "scale_overhead_vs_values": {
+          "formula": "(8 / 32) / 4",
+          "value": 0.0625,
+          "unit": "fraction"
+        }
+      },
+      "NVFP4": {
+        "element": "FP4 E2M1",
+        "block_size": {
+          "value": 16,
+          "unit": "values",
+          "from": "hardware.formats.nvfp4_block_size"
+        },
+        "scale": "FP8 E4M3 per block, plus one FP32 scale per tensor",
+        "bits_per_value": {
+          "formula": "4 + 8 / 16 (per-tensor FP32 scale not counted)",
+          "value": 4.5,
+          "unit": "bits",
+          "constant": 4.5,
+          "matches_constant": true
+        },
+        "bytes_per_param": {
+          "formula": "(16 × 0.5 B + 1 B) / 16",
+          "value": 0.5625,
+          "unit": "B/param"
+        },
+        "scale_overhead_vs_values": {
+          "formula": "(8 / 16) / 4",
+          "value": 0.125,
+          "unit": "fraction"
+        }
+      }
+    },
+    "ratios": {
+      "BF16_over_NVFP4_bytes": {
+        "formula": "2 B / NVFP4 bytes per param",
+        "value": 3.555555556,
+        "unit": "ratio"
+      },
+      "FP8_over_NVFP4_bytes": {
+        "formula": "1 B / NVFP4 bytes per param",
+        "value": 1.777777778,
+        "unit": "ratio"
+      },
+      "BF16_over_MXFP4_bytes": {
+        "formula": "2 B / MXFP4 bytes per param",
+        "value": 3.764705882,
+        "unit": "ratio"
+      }
+    },
+    "checks": {
+      "FP8_E4M3_max_matches_constant": true,
+      "FP8_E5M2_max_matches_constant": true
+    }
+  },
+  "block_scaling_demo": {
+    "label": "ILLUSTRATIVE",
+    "note": "A shortened block of 8 made-up values so every step can be checked by hand. Real blocks hold 32 (MXFP4) or 16 (NVFP4) values; the rules do not depend on the block length. NVFP4's per-tensor FP32 scale is set to 1 here because the demo has one block.",
+    "values": [
+      0.12,
+      -0.47,
+      0.89,
+      -1.31,
+      2.6,
+      0.05,
+      -0.73,
+      1.94
+    ],
+    "block_length": 8,
+    "amax": 2.6,
+    "e2m1_max": 6.0,
+    "mx": {
+      "rule": "shared_exp = floor(log2(amax)) − emax_elem; scale = 2^shared_exp; code = round_E2M1(value / scale)",
+      "emax_elem": 2,
+      "floor_log2_amax": 1,
+      "shared_exp": -1,
+      "e8m0_code": 126,
+      "scale": 0.5,
+      "rows": [
+        {
+          "value": 0.12,
+          "divided_by_scale": 0.24,
+          "e2m1": 0.0,
+          "dequantized": 0,
+          "abs_error": 0.12
+        },
+        {
+          "value": -0.47,
+          "divided_by_scale": -0.94,
+          "e2m1": -1.0,
+          "dequantized": -0.5,
+          "abs_error": 0.03
+        },
+        {
+          "value": 0.89,
+          "divided_by_scale": 1.78,
+          "e2m1": 2.0,
+          "dequantized": 1,
+          "abs_error": 0.11
+        },
+        {
+          "value": -1.31,
+          "divided_by_scale": -2.62,
+          "e2m1": -3.0,
+          "dequantized": -1.5,
+          "abs_error": 0.19
+        },
+        {
+          "value": 2.6,
+          "divided_by_scale": 5.2,
+          "e2m1": 6.0,
+          "dequantized": 3,
+          "abs_error": 0.4
+        },
+        {
+          "value": 0.05,
+          "divided_by_scale": 0.1,
+          "e2m1": 0.0,
+          "dequantized": 0,
+          "abs_error": 0.05
+        },
+        {
+          "value": -0.73,
+          "divided_by_scale": -1.46,
+          "e2m1": -1.5,
+          "dequantized": -0.75,
+          "abs_error": 0.02
+        },
+        {
+          "value": 1.94,
+          "divided_by_scale": 3.88,
+          "e2m1": 4.0,
+          "dequantized": 2,
+          "abs_error": 0.06
+        }
+      ],
+      "ties": 0,
+      "mse": {
+        "formula": "mean of (dequantized − value)²",
+        "value": 0.02875,
+        "unit": "value²"
+      },
+      "max_abs_error": {
+        "value": 0.4,
+        "unit": "value"
+      },
+      "block_max_maps_to": 6
+    },
+    "nv": {
+      "rule": "scale = round_E4M3(amax / 6); code = round_E2M1(value / scale)",
+      "scale_before_rounding": 0.4333333333,
+      "scale": 0.4375,
+      "rows": [
+        {
+          "value": 0.12,
+          "divided_by_scale": 0.2742857143,
+          "e2m1": 0.5,
+          "dequantized": 0.21875,
+          "abs_error": 0.09875
+        },
+        {
+          "value": -0.47,
+          "divided_by_scale": -1.074285714,
+          "e2m1": -1.0,
+          "dequantized": -0.4375,
+          "abs_error": 0.0325
+        },
+        {
+          "value": 0.89,
+          "divided_by_scale": 2.034285714,
+          "e2m1": 2.0,
+          "dequantized": 0.875,
+          "abs_error": 0.015
+        },
+        {
+          "value": -1.31,
+          "divided_by_scale": -2.994285714,
+          "e2m1": -3.0,
+          "dequantized": -1.3125,
+          "abs_error": 0.0025
+        },
+        {
+          "value": 2.6,
+          "divided_by_scale": 5.942857143,
+          "e2m1": 6.0,
+          "dequantized": 2.625,
+          "abs_error": 0.025
+        },
+        {
+          "value": 0.05,
+          "divided_by_scale": 0.1142857143,
+          "e2m1": 0.0,
+          "dequantized": 0,
+          "abs_error": 0.05
+        },
+        {
+          "value": -0.73,
+          "divided_by_scale": -1.668571429,
+          "e2m1": -1.5,
+          "dequantized": -0.65625,
+          "abs_error": 0.07375
+        },
+        {
+          "value": 1.94,
+          "divided_by_scale": 4.434285714,
+          "e2m1": 4.0,
+          "dequantized": 1.75,
+          "abs_error": 0.19
+        }
+      ],
+      "ties": 0,
+      "mse": {
+        "formula": "mean of (dequantized − value)²",
+        "value": 0.006962890625,
+        "unit": "value²"
+      },
+      "max_abs_error": {
+        "value": 0.19,
+        "unit": "value"
+      },
+      "block_max_maps_to": 6
+    },
+    "mse_ratio_mx_over_nv": {
+      "value": 4.129032258,
+      "unit": "ratio"
+    }
+  },
+  "m_frontier": {
+    "model": "moonshotai/Kimi-K3",
+    "params": {
+      "total": 2779931837184,
+      "text": 2779484478208,
+      "vision": 447358976,
+      "routed": 2722740830208,
+      "non_expert": 57191006976,
+      "active": 104189614848,
+      "embedding": 1174405120
+    },
+    "uniform_formats": {
+      "FP32": {
+        "bytes_per_param": {
+          "value": 4,
+          "unit": "B/param",
+          "from": "4 B"
+        },
+        "total": {
+          "formula": "total_params × bytes_per_param",
+          "terms": {
+            "params": {
+              "value": 2779931837184,
+              "unit": "params",
+              "from": "models.M-frontier.total_params"
+            }
+          },
+          "value": 11119727348736,
+          "unit": "B",
+          "MB_1e6": 11119727.35,
+          "GB_1e9": 11119.72735,
+          "MiB_2pow20": 10604598.38,
+          "GiB_2pow30": 10356.0531
+        },
+        "active": {
+          "formula": "active_params × bytes_per_param",
+          "terms": {
+            "params": {
+              "value": 104189614848,
+              "unit": "params",
+              "from": "models.M-frontier.active_params"
+            }
+          },
+          "value": 416758459392,
+          "unit": "B",
+          "MB_1e6": 416758.4594,
+          "GB_1e9": 416.7584594,
+          "MiB_2pow20": 397451.8389,
+          "GiB_2pow30": 388.1365614
+        }
+      },
+      "BF16": {
+        "bytes_per_param": {
+          "value": 2,
+          "unit": "B/param",
+          "from": "2 B"
+        },
+        "total": {
+          "formula": "total_params × bytes_per_param",
+          "terms": {
+            "params": {
+              "value": 2779931837184,
+              "unit": "params",
+              "from": "models.M-frontier.total_params"
+            }
+          },
+          "value": 5559863674368,
+          "unit": "B",
+          "MB_1e6": 5559863.674,
+          "GB_1e9": 5559.863674,
+          "MiB_2pow20": 5302299.189,
+          "GiB_2pow30": 5178.026552
+        },
+        "active": {
+          "formula": "active_params × bytes_per_param",
+          "terms": {
+            "params": {
+              "value": 104189614848,
+              "unit": "params",
+              "from": "models.M-frontier.active_params"
+            }
+          },
+          "value": 208379229696,
+          "unit": "B",
+          "MB_1e6": 208379.2297,
+          "GB_1e9": 208.3792297,
+          "MiB_2pow20": 198725.9194,
+          "GiB_2pow30": 194.0682807
+        }
+      },
+      "FP16": {
+        "bytes_per_param": {
+          "value": 2,
+          "unit": "B/param",
+          "from": "2 B"
+        },
+        "total": {
+          "formula": "total_params × bytes_per_param",
+          "terms": {
+            "params": {
+              "value": 2779931837184,
+              "unit": "params",
+              "from": "models.M-frontier.total_params"
+            }
+          },
+          "value": 5559863674368,
+          "unit": "B",
+          "MB_1e6": 5559863.674,
+          "GB_1e9": 5559.863674,
+          "MiB_2pow20": 5302299.189,
+          "GiB_2pow30": 5178.026552
+        },
+        "active": {
+          "formula": "active_params × bytes_per_param",
+          "terms": {
+            "params": {
+              "value": 104189614848,
+              "unit": "params",
+              "from": "models.M-frontier.active_params"
+            }
+          },
+          "value": 208379229696,
+          "unit": "B",
+          "MB_1e6": 208379.2297,
+          "GB_1e9": 208.3792297,
+          "MiB_2pow20": 198725.9194,
+          "GiB_2pow30": 194.0682807
+        }
+      },
+      "FP8": {
+        "bytes_per_param": {
+          "value": 1,
+          "unit": "B/param",
+          "from": "1 B"
+        },
+        "total": {
+          "formula": "total_params × bytes_per_param",
+          "terms": {
+            "params": {
+              "value": 2779931837184,
+              "unit": "params",
+              "from": "models.M-frontier.total_params"
+            }
+          },
+          "value": 2779931837184,
+          "unit": "B",
+          "MB_1e6": 2779931.837,
+          "GB_1e9": 2779.931837,
+          "MiB_2pow20": 2651149.594,
+          "GiB_2pow30": 2589.013276
+        },
+        "active": {
+          "formula": "active_params × bytes_per_param",
+          "terms": {
+            "params": {
+              "value": 104189614848,
+              "unit": "params",
+              "from": "models.M-frontier.active_params"
+            }
+          },
+          "value": 104189614848,
+          "unit": "B",
+          "MB_1e6": 104189.6148,
+          "GB_1e9": 104.1896148,
+          "MiB_2pow20": 99362.95972,
+          "GiB_2pow30": 97.03414035
+        }
+      },
+      "INT8": {
+        "bytes_per_param": {
+          "value": 1,
+          "unit": "B/param",
+          "from": "1 B (scales not counted)"
+        },
+        "total": {
+          "formula": "total_params × bytes_per_param",
+          "terms": {
+            "params": {
+              "value": 2779931837184,
+              "unit": "params",
+              "from": "models.M-frontier.total_params"
+            }
+          },
+          "value": 2779931837184,
+          "unit": "B",
+          "MB_1e6": 2779931.837,
+          "GB_1e9": 2779.931837,
+          "MiB_2pow20": 2651149.594,
+          "GiB_2pow30": 2589.013276
+        },
+        "active": {
+          "formula": "active_params × bytes_per_param",
+          "terms": {
+            "params": {
+              "value": 104189614848,
+              "unit": "params",
+              "from": "models.M-frontier.active_params"
+            }
+          },
+          "value": 104189614848,
+          "unit": "B",
+          "MB_1e6": 104189.6148,
+          "GB_1e9": 104.1896148,
+          "MiB_2pow20": 99362.95972,
+          "GiB_2pow30": 97.03414035
+        }
+      },
+      "INT4_no_scales": {
+        "bytes_per_param": {
+          "value": 0.5,
+          "unit": "B/param",
+          "from": "0.5 B"
+        },
+        "total": {
+          "formula": "total_params × bytes_per_param",
+          "terms": {
+            "params": {
+              "value": 2779931837184,
+              "unit": "params",
+              "from": "models.M-frontier.total_params"
+            }
+          },
+          "value": 1389965918592,
+          "unit": "B",
+          "MB_1e6": 1389965.919,
+          "GB_1e9": 1389.965919,
+          "MiB_2pow20": 1325574.797,
+          "GiB_2pow30": 1294.506638
+        },
+        "active": {
+          "formula": "active_params × bytes_per_param",
+          "terms": {
+            "params": {
+              "value": 104189614848,
+              "unit": "params",
+              "from": "models.M-frontier.active_params"
+            }
+          },
+          "value": 52094807424,
+          "unit": "B",
+          "MB_1e6": 52094.80742,
+          "GB_1e9": 52.09480742,
+          "MiB_2pow20": 49681.47986,
+          "GiB_2pow30": 48.51707017
+        }
+      },
+      "MXFP4": {
+        "bytes_per_param": {
+          "value": 0.53125,
+          "unit": "B/param",
+          "from": "(32 × 0.5 B + 1 B) / 32"
+        },
+        "total": {
+          "formula": "total_params × bytes_per_param",
+          "terms": {
+            "params": {
+              "value": 2779931837184,
+              "unit": "params",
+              "from": "models.M-frontier.total_params"
+            }
+          },
+          "value": 1476838788504,
+          "unit": "B",
+          "MB_1e6": 1476838.789,
+          "GB_1e9": 1476.838789,
+          "MiB_2pow20": 1408423.222,
+          "GiB_2pow30": 1375.413303
+        },
+        "active": {
+          "formula": "active_params × bytes_per_param",
+          "terms": {
+            "params": {
+              "value": 104189614848,
+              "unit": "params",
+              "from": "models.M-frontier.active_params"
+            }
+          },
+          "value": 55350732888,
+          "unit": "B",
+          "MB_1e6": 55350.73289,
+          "GB_1e9": 55.35073289,
+          "MiB_2pow20": 52786.57235,
+          "GiB_2pow30": 51.54938706
+        }
+      },
+      "NVFP4": {
+        "bytes_per_param": {
+          "value": 0.5625,
+          "unit": "B/param",
+          "from": "(16 × 0.5 B + 1 B) / 16"
+        },
+        "total": {
+          "formula": "total_params × bytes_per_param",
+          "terms": {
+            "params": {
+              "value": 2779931837184,
+              "unit": "params",
+              "from": "models.M-frontier.total_params"
+            }
+          },
+          "value": 1563711658416,
+          "unit": "B",
+          "MB_1e6": 1563711.658,
+          "GB_1e9": 1563.711658,
+          "MiB_2pow20": 1491271.647,
+          "GiB_2pow30": 1456.319968
+        },
+        "active": {
+          "formula": "active_params × bytes_per_param",
+          "terms": {
+            "params": {
+              "value": 104189614848,
+              "unit": "params",
+              "from": "models.M-frontier.active_params"
+            }
+          },
+          "value": 58606658352,
+          "unit": "B",
+          "MB_1e6": 58606.65835,
+          "GB_1e9": 58.60665835,
+          "MiB_2pow20": 55891.66484,
+          "GiB_2pow30": 54.58170395
+        }
+      }
+    },
+    "released_checkpoint": {
+      "routed_experts": {
+        "formula": "routed_expert_params × MXFP4 bytes per param",
+        "terms": {
+          "params": {
+            "value": 2722740830208,
+            "unit": "params",
+            "from": "models.M-frontier.routed_expert_params"
+          },
+          "bytes_per_param": {
+            "value": 0.53125,
+            "unit": "B/param",
+            "from": "(32 × 0.5 B + 1 B E8M0) / 32"
+          }
+        },
+        "value": 1446456066048,
+        "unit": "B",
+        "MB_1e6": 1446456.066,
+        "GB_1e9": 1446.456066,
+        "MiB_2pow20": 1379448,
+        "GiB_2pow30": 1347.117188,
+        "constant": 1446456066048,
+        "matches_constant": true
+      },
+      "non_expert": {
+        "formula": "(total − routed) params × 2 B (BF16) + F32 params × 2 B extra",
+        "terms": {
+          "non_expert_params": {
+            "formula": "total − routed",
+            "value": 57191006976,
+            "unit": "params"
+          },
+          "f32_params": {
+            "value": 11122432,
+            "unit": "params",
+            "from": "extra.sims_w01.k3_f32_stored_params"
+          }
+        },
+        "value": 114404258816,
+        "unit": "B",
+        "MB_1e6": 114404.2588,
+        "GB_1e9": 114.4042588,
+        "MiB_2pow20": 109104.4033,
+        "GiB_2pow30": 106.5472689,
+        "constant": 114404258816,
+        "matches_constant": true,
+        "note": "Attention, expert router, latent MoE projections, shared experts, the dense FFN of layer 0, embedding, lm_head, norms and the vision tower stay in BF16."
+      },
+      "tensor_data_total": {
+        "formula": "routed experts + non-expert",
+        "value": 1560860324864,
+        "unit": "B",
+        "MB_1e6": 1560860.325,
+        "GB_1e9": 1560.860325,
+        "MiB_2pow20": 1488552.403,
+        "GiB_2pow30": 1453.664456,
+        "constant": 1560860324864,
+        "matches_constant": true
+      },
+      "file_total": {
+        "formula": "sum of the safetensors file sizes",
+        "terms": {
+          "files": {
+            "value": 96,
+            "unit": "files",
+            "from": "extra.sims_w01.k3_safetensors_shards"
+          }
+        },
+        "value": 1560936091448,
+        "unit": "B",
+        "MB_1e6": 1560936.091,
+        "GB_1e9": 1560.936091,
+        "MiB_2pow20": 1488624.66,
+        "GiB_2pow30": 1453.735019
+      },
+      "file_headers": {
+        "formula": "file total − tensor data (safetensors JSON headers)",
+        "value": 75766584,
+        "unit": "B",
+        "MB_1e6": 75.766584,
+        "GB_1e9": 0.075766584,
+        "MiB_2pow20": 72.2566452,
+        "GiB_2pow30": 0.07056313008
+      },
+      "file_header_per_shard": {
+        "formula": "file headers / shards",
+        "value": 789235.25,
+        "unit": "B",
+        "MB_1e6": 0.78923525,
+        "GB_1e9": 0.00078923525,
+        "MiB_2pow20": 0.7526733875,
+        "GiB_2pow30": 0.000735032605
+      },
+      "bytes_per_param_overall": {
+        "formula": "file total / total_params",
+        "value": 0.5615015701,
+        "unit": "B/param",
+        "constant": 0.5615
+      },
+      "routed_share_of_params": {
+        "value": 0.9794271909,
+        "unit": "fraction"
+      },
+      "routed_share_of_bytes": {
+        "value": 0.926659377,
+        "unit": "fraction"
+      },
+      "non_expert_share_of_bytes": {
+        "value": 0.0732920838,
+        "unit": "fraction"
+      },
+      "e8m0_scale_bytes": {
+        "formula": "routed_expert_params / 32 × 1 B",
+        "value": 85085650944,
+        "unit": "B",
+        "MB_1e6": 85085.65094,
+        "GB_1e9": 85.08565094,
+        "MiB_2pow20": 81144,
+        "GiB_2pow30": 79.2421875
+      },
+      "scale_share_of_routed_bytes": {
+        "formula": "1 / (16 + 1)",
+        "value": 0.05882352941,
+        "unit": "fraction"
+      },
+      "checkpoint_vs_all_bf16": {
+        "value": 0.2807507851,
+        "unit": "fraction"
+      }
+    },
+    "active": {
+      "params": {
+        "per_expert_per_layer": {
+          "formula": "routed_expert_params / (num_experts × MoE layers)",
+          "terms": {
+            "num_experts": {
+              "value": 896,
+              "unit": "experts",
+              "from": "models.M-frontier.num_experts"
+            },
+            "moe_layers": {
+              "formula": "num_hidden_layers − first_k_dense_replace",
+              "value": 92,
+              "unit": "layers"
+            }
+          },
+          "value": 33030144,
+          "unit": "params"
+        },
+        "routed_active": {
+          "formula": "experts_per_token × MoE layers × per_expert",
+          "terms": {
+            "experts_per_token": {
+              "value": 16,
+              "unit": "experts",
+              "from": "models.M-frontier.num_experts_per_token"
+            }
+          },
+          "value": 48620371968,
+          "unit": "params"
+        },
+        "non_routed_active": {
+          "formula": "active_params − routed_active",
+          "value": 55569242880,
+          "unit": "params"
+        },
+        "check_non_routed_active": {
+          "formula": "total − routed − vision − embedding (the lookup table is not a matmul)",
+          "value": 55569242880,
+          "matches": true
+        },
+        "active_share_of_total_params": {
+          "value": 0.03747919767,
+          "unit": "fraction"
+        }
+      },
+      "bytes_in_released_format": {
+        "formula": "routed_active × MXFP4 bytes + non_routed_active × 2 B",
+        "value": 136968058368,
+        "unit": "B",
+        "MB_1e6": 136968.0584,
+        "GB_1e9": 136.9680584,
+        "MiB_2pow20": 130622.9194,
+        "GiB_2pow30": 127.5614448,
+        "note": "F32-stored parameters (22 MB extra) are not added."
+      },
+      "active_bytes_share_of_checkpoint": {
+        "value": 0.08774738384,
+        "unit": "fraction"
+      },
+      "non_routed_share_of_active_bytes": {
+        "value": 0.8114190059,
+        "unit": "fraction"
+      }
+    },
+    "variants": {
+      "nvfp4_routed_bf16_rest": {
+        "formula": "routed × NVFP4 bytes per param + non-expert bytes",
+        "value": 1645945975808,
+        "unit": "B",
+        "MB_1e6": 1645945.976,
+        "GB_1e9": 1645.945976,
+        "MiB_2pow20": 1569696.403,
+        "GiB_2pow30": 1532.906644
+      },
+      "published_nvfp4_conversion": {
+        "value": 1646073796144,
+        "unit": "B",
+        "MB_1e6": 1646073.796,
+        "GB_1e9": 1646.073796,
+        "MiB_2pow20": 1569818.302,
+        "GiB_2pow30": 1533.025686,
+        "note": "RedHatAI/Kimi-K3-NVFP4 file total (third-party conversion; recipe not stated)"
+      },
+      "relative_difference": {
+        "value": 7.765164375e-05,
+        "unit": "fraction"
+      },
+      "nvfp4_over_released": {
+        "value": 1.054460836,
+        "unit": "ratio"
+      }
+    }
+  },
+  "m_dense": {
+    "see": "kv_math:m_dense.weights.* (FP32, BF16, FP8, INT8, INT4_no_scales, MXFP4, NVFP4, released_fp8_checkpoint); not recomputed here",
+    "tp": 8,
+    "per_gpu_share": {
+      "see": "kv_math:capacity_h_teach_m_dense.cases.fp8_weights_bf16_kv.steps_per_gpu.3_minus_weights_per_gpu"
+    }
+  },
+  "gpus_for_weights": {
+    "m_frontier_released": {
+      "bytes": {
+        "value": 1560936091448,
+        "unit": "B",
+        "MB_1e6": 1560936.091,
+        "GB_1e9": 1560.936091,
+        "MiB_2pow20": 1488624.66,
+        "GiB_2pow30": 1453.735019
+      },
+      "H100_80GB": {
+        "hbm": {
+          "value": 80,
+          "unit": "GB",
+          "from": "hardware.H-teach.h100_sxm_hbm_capacity"
+        },
+        "ratio": {
+          "formula": "weight bytes / HBM per GPU",
+          "value": 19.51170114,
+          "unit": "GPUs"
+        },
+        "gpus_weights_only": {
+          "formula": "ceil(weight bytes / HBM)",
+          "value": 20,
+          "unit": "GPUs"
+        },
+        "gpus_at_gpu_memory_utilization": {
+          "formula": "ceil(weight bytes / (HBM × gpu_memory_utilization))",
+          "value": 22,
+          "unit": "GPUs"
+        }
+      },
+      "H200_141GB": {
+        "hbm": {
+          "value": 141,
+          "unit": "GB",
+          "from": "hardware.H-teach.h200_variant.h200_sxm_hbm_capacity"
+        },
+        "ratio": {
+          "formula": "weight bytes / HBM per GPU",
+          "value": 11.07046873,
+          "unit": "GPUs"
+        },
+        "gpus_weights_only": {
+          "formula": "ceil(weight bytes / HBM)",
+          "value": 12,
+          "unit": "GPUs"
+        },
+        "gpus_at_gpu_memory_utilization": {
+          "formula": "ceil(weight bytes / (HBM × gpu_memory_utilization))",
+          "value": 13,
+          "unit": "GPUs"
+        }
+      },
+      "GB300_288GB": {
+        "hbm": {
+          "value": 288,
+          "unit": "GB",
+          "from": "hardware.H-frontier.gb300_gpu_hbm"
+        },
+        "ratio": {
+          "formula": "weight bytes / HBM per GPU",
+          "value": 5.419916984,
+          "unit": "GPUs"
+        },
+        "gpus_weights_only": {
+          "formula": "ceil(weight bytes / HBM)",
+          "value": 6,
+          "unit": "GPUs"
+        },
+        "gpus_at_gpu_memory_utilization": {
+          "formula": "ceil(weight bytes / (HBM × gpu_memory_utilization))",
+          "value": 6,
+          "unit": "GPUs"
+        }
+      }
+    },
+    "m_frontier_all_bf16": {
+      "bytes": {
+        "value": 5559863674368,
+        "unit": "B",
+        "MB_1e6": 5559863.674,
+        "GB_1e9": 5559.863674,
+        "MiB_2pow20": 5302299.189,
+        "GiB_2pow30": 5178.026552
+      },
+      "H100_80GB": {
+        "hbm": {
+          "value": 80,
+          "unit": "GB",
+          "from": "hardware.H-teach.h100_sxm_hbm_capacity"
+        },
+        "ratio": {
+          "formula": "weight bytes / HBM per GPU",
+          "value": 69.49829593,
+          "unit": "GPUs"
+        },
+        "gpus_weights_only": {
+          "formula": "ceil(weight bytes / HBM)",
+          "value": 70,
+          "unit": "GPUs"
+        },
+        "gpus_at_gpu_memory_utilization": {
+          "formula": "ceil(weight bytes / (HBM × gpu_memory_utilization))",
+          "value": 76,
+          "unit": "GPUs"
+        }
+      },
+      "H200_141GB": {
+        "hbm": {
+          "value": 141,
+          "unit": "GB",
+          "from": "hardware.H-teach.h200_variant.h200_sxm_hbm_capacity"
+        },
+        "ratio": {
+          "formula": "weight bytes / HBM per GPU",
+          "value": 39.43165727,
+          "unit": "GPUs"
+        },
+        "gpus_weights_only": {
+          "formula": "ceil(weight bytes / HBM)",
+          "value": 40,
+          "unit": "GPUs"
+        },
+        "gpus_at_gpu_memory_utilization": {
+          "formula": "ceil(weight bytes / (HBM × gpu_memory_utilization))",
+          "value": 43,
+          "unit": "GPUs"
+        }
+      },
+      "GB300_288GB": {
+        "hbm": {
+          "value": 288,
+          "unit": "GB",
+          "from": "hardware.H-frontier.gb300_gpu_hbm"
+        },
+        "ratio": {
+          "formula": "weight bytes / HBM per GPU",
+          "value": 19.3050822,
+          "unit": "GPUs"
+        },
+        "gpus_weights_only": {
+          "formula": "ceil(weight bytes / HBM)",
+          "value": 20,
+          "unit": "GPUs"
+        },
+        "gpus_at_gpu_memory_utilization": {
+          "formula": "ceil(weight bytes / (HBM × gpu_memory_utilization))",
+          "value": 21,
+          "unit": "GPUs"
+        }
+      }
+    },
+    "m_dense_released_fp8": {
+      "bytes": {
+        "value": 133605832192,
+        "unit": "B",
+        "MB_1e6": 133605.8322,
+        "GB_1e9": 133.6058322,
+        "MiB_2pow20": 127416.4507,
+        "GiB_2pow30": 124.4301276
+      },
+      "H100_80GB": {
+        "hbm": {
+          "value": 80,
+          "unit": "GB",
+          "from": "hardware.H-teach.h100_sxm_hbm_capacity"
+        },
+        "ratio": {
+          "formula": "weight bytes / HBM per GPU",
+          "value": 1.670072902,
+          "unit": "GPUs"
+        },
+        "gpus_weights_only": {
+          "formula": "ceil(weight bytes / HBM)",
+          "value": 2,
+          "unit": "GPUs"
+        },
+        "gpus_at_gpu_memory_utilization": {
+          "formula": "ceil(weight bytes / (HBM × gpu_memory_utilization))",
+          "value": 2,
+          "unit": "GPUs"
+        }
+      },
+      "H200_141GB": {
+        "hbm": {
+          "value": 141,
+          "unit": "GB",
+          "from": "hardware.H-teach.h200_variant.h200_sxm_hbm_capacity"
+        },
+        "ratio": {
+          "formula": "weight bytes / HBM per GPU",
+          "value": 0.9475590936,
+          "unit": "GPUs"
+        },
+        "gpus_weights_only": {
+          "formula": "ceil(weight bytes / HBM)",
+          "value": 1,
+          "unit": "GPUs"
+        },
+        "gpus_at_gpu_memory_utilization": {
+          "formula": "ceil(weight bytes / (HBM × gpu_memory_utilization))",
+          "value": 2,
+          "unit": "GPUs"
+        }
+      },
+      "GB300_288GB": {
+        "hbm": {
+          "value": 288,
+          "unit": "GB",
+          "from": "hardware.H-frontier.gb300_gpu_hbm"
+        },
+        "ratio": {
+          "formula": "weight bytes / HBM per GPU",
+          "value": 0.4639091396,
+          "unit": "GPUs"
+        },
+        "gpus_weights_only": {
+          "formula": "ceil(weight bytes / HBM)",
+          "value": 1,
+          "unit": "GPUs"
+        },
+        "gpus_at_gpu_memory_utilization": {
+          "formula": "ceil(weight bytes / (HBM × gpu_memory_utilization))",
+          "value": 1,
+          "unit": "GPUs"
+        }
+      }
+    },
+    "m_dense_bf16": {
+      "bytes": {
+        "value": 250051977216,
+        "unit": "B",
+        "MB_1e6": 250051.9772,
+        "GB_1e9": 250.0519772,
+        "MiB_2pow20": 238468.1484,
+        "GiB_2pow30": 232.8790512
+      },
+      "H100_80GB": {
+        "hbm": {
+          "value": 80,
+          "unit": "GB",
+          "from": "hardware.H-teach.h100_sxm_hbm_capacity"
+        },
+        "ratio": {
+          "formula": "weight bytes / HBM per GPU",
+          "value": 3.125649715,
+          "unit": "GPUs"
+        },
+        "gpus_weights_only": {
+          "formula": "ceil(weight bytes / HBM)",
+          "value": 4,
+          "unit": "GPUs"
+        },
+        "gpus_at_gpu_memory_utilization": {
+          "formula": "ceil(weight bytes / (HBM × gpu_memory_utilization))",
+          "value": 4,
+          "unit": "GPUs"
+        }
+      },
+      "H200_141GB": {
+        "hbm": {
+          "value": 141,
+          "unit": "GB",
+          "from": "hardware.H-teach.h200_variant.h200_sxm_hbm_capacity"
+        },
+        "ratio": {
+          "formula": "weight bytes / HBM per GPU",
+          "value": 1.773418278,
+          "unit": "GPUs"
+        },
+        "gpus_weights_only": {
+          "formula": "ceil(weight bytes / HBM)",
+          "value": 2,
+          "unit": "GPUs"
+        },
+        "gpus_at_gpu_memory_utilization": {
+          "formula": "ceil(weight bytes / (HBM × gpu_memory_utilization))",
+          "value": 2,
+          "unit": "GPUs"
+        }
+      },
+      "GB300_288GB": {
+        "hbm": {
+          "value": 288,
+          "unit": "GB",
+          "from": "hardware.H-frontier.gb300_gpu_hbm"
+        },
+        "ratio": {
+          "formula": "weight bytes / HBM per GPU",
+          "value": 0.868236032,
+          "unit": "GPUs"
+        },
+        "gpus_weights_only": {
+          "formula": "ceil(weight bytes / HBM)",
+          "value": 1,
+          "unit": "GPUs"
+        },
+        "gpus_at_gpu_memory_utilization": {
+          "formula": "ceil(weight bytes / (HBM × gpu_memory_utilization))",
+          "value": 1,
+          "unit": "GPUs"
+        }
+      }
+    },
+    "gpu_memory_utilization": {
+      "value": 0.92,
+      "unit": "fraction",
+      "from": "software.vllm.gpu_memory_utilization"
+    },
+    "documented_minimums": {
+      "m_frontier_h100_vllm_recipe": {
+        "value": 32,
+        "unit": "GPUs",
+        "from": "models.M-frontier.h100_min_gpus_vllm_recipe"
+      },
+      "m_frontier_vllm_min_hardware": "1x 8xB300 (or GB300 NVL72) node; 16x B200 also supported",
+      "m_dense_vllm_recipe": "8x H200 (alt 4x B200, 2-8x MI300X)"
+    }
+  },
+  "dep16_layout": {
+    "ranks": 16,
+    "per_rank_documented": {
+      "value": 210000000000,
+      "unit": "B",
+      "MB_1e6": 210000,
+      "GB_1e9": 210,
+      "MiB_2pow20": 200271.6064,
+      "GiB_2pow30": 195.5777407,
+      "note": "TensorRT-LLM DEP16 guide: 210 GB per rank"
+    },
+    "routed_per_rank": {
+      "formula": "routed bytes / 16",
+      "value": 90403504128,
+      "unit": "B",
+      "MB_1e6": 90403.50413,
+      "GB_1e9": 90.40350413,
+      "MiB_2pow20": 86215.5,
+      "GiB_2pow30": 84.19482422
+    },
+    "non_expert_per_rank": {
+      "formula": "non-expert bytes, replicated on every rank",
+      "value": 114404258816,
+      "unit": "B",
+      "MB_1e6": 114404.2588,
+      "GB_1e9": 114.4042588,
+      "MiB_2pow20": 109104.4033,
+      "GiB_2pow30": 106.5472689
+    },
+    "worker_total_in_hbm": {
+      "formula": "16 × per-rank (documented)",
+      "value": 3360000000000,
+      "unit": "B",
+      "MB_1e6": 3360000,
+      "GB_1e9": 3360,
+      "MiB_2pow20": 3204345.703,
+      "GiB_2pow30": 3129.243851
+    },
+    "worker_total_over_checkpoint": {
+      "value": 2.152554495,
+      "unit": "ratio"
+    },
+    "replicated_bytes": {
+      "formula": "(16 − 1) × non-expert bytes",
+      "value": 1716063882240,
+      "unit": "B",
+      "MB_1e6": 1716063.882,
+      "GB_1e9": 1716.063882,
+      "MiB_2pow20": 1636566.05,
+      "GiB_2pow30": 1598.209033
+    },
+    "tep8_ranks": 8,
+    "tep8_per_rank_documented": {
+      "value": 213000000000,
+      "unit": "B",
+      "MB_1e6": 213000,
+      "GB_1e9": 213,
+      "MiB_2pow20": 203132.6294,
+      "GiB_2pow30": 198.3717084,
+      "note": "TensorRT-LLM: 213 GB per rank"
+    }
+  },
+  "memory_budget": {
+    "left_free_by_engine_H100_80GB": {
+      "formula": "HBM × (1 − gpu_memory_utilization)",
+      "value": 6400000000.0,
+      "unit": "B",
+      "MB_1e6": 6400.0,
+      "GB_1e9": 6.4,
+      "MiB_2pow20": 6103.515625,
+      "GiB_2pow30": 5.960464478
+    },
+    "left_free_by_engine_GB300_288GB": {
+      "formula": "HBM × (1 − gpu_memory_utilization)",
+      "value": 23040000000.0,
+      "unit": "B",
+      "MB_1e6": 23040.0,
+      "GB_1e9": 23.04,
+      "MiB_2pow20": 21972.65625,
+      "GiB_2pow30": 21.45767212
+    },
+    "non_kv_overhead_per_gpu": {
+      "see": "kv_math:capacity_h_teach_m_dense.cases.fp8_weights_bf16_kv.steps_per_gpu.4_minus_non_kv_overhead (HYPOTHETICAL, not recomputed here)"
+    },
+    "k3_block_scales": {
+      "formula": "routed_expert_params / 32 × 1 B",
+      "value": 85085650944,
+      "unit": "B",
+      "MB_1e6": 85085.65094,
+      "GB_1e9": 85.08565094,
+      "MiB_2pow20": 81144,
+      "GiB_2pow30": 79.2421875
+    },
+    "k3_file_headers": {
+      "formula": "file total − tensor data (safetensors JSON headers)",
+      "value": 75766584,
+      "unit": "B",
+      "MB_1e6": 75.766584,
+      "GB_1e9": 0.075766584,
+      "MiB_2pow20": 72.2566452,
+      "GiB_2pow30": 0.07056313008
+    },
+    "k3_dep16_replication": {
+      "formula": "(16 − 1) × non-expert bytes",
+      "value": 1716063882240,
+      "unit": "B",
+      "MB_1e6": 1716063.882,
+      "GB_1e9": 1716.063882,
+      "MiB_2pow20": 1636566.05,
+      "GiB_2pow30": 1598.209033
+    },
+    "kv_cache": {
+      "see": "kv_math:capacity_h_teach_m_dense.cases.fp8_weights_bf16_kv.steps_per_gpu.* and kv_math:capacity_h_frontier_k3_dep16.steps_per_rank.* (not recomputed here)"
+    }
+  },
+  "cuda_graphs": {
+    "rule": "[1, 2, 4] + range(8, 256, 8) + range(256, max + 1, 16); max = min(max_num_seqs × 1 × 2, 512)",
+    "max_capture_size": {
+      "formula": "min(1024 × 1 × 2, 512)",
+      "value": 512,
+      "unit": "tokens"
+    },
+    "sizes": [
+      1,
+      2,
+      4,
+      8,
+      16,
+      24,
+      32,
+      40,
+      48,
+      56,
+      64,
+      72,
+      80,
+      88,
+      96,
+      104,
+      112,
+      120,
+      128,
+      136,
+      144,
+      152,
+      160,
+      168,
+      176,
+      184,
+      192,
+      200,
+      208,
+      216,
+      224,
+      232,
+      240,
+      248,
+      256,
+      272,
+      288,
+      304,
+      320,
+      336,
+      352,
+      368,
+      384,
+      400,
+      416,
+      432,
+      448,
+      464,
+      480,
+      496,
+      512
+    ],
+    "count": {
+      "value": 51,
+      "unit": "graphs",
+      "note": "Derived from the code rule (H100 serve defaults, no speculative decoding), not observed in a log."
+    },
+    "padding_example_37": 40
+  },
+  "control_loops": {
+    "readiness_removal_bound": {
+      "formula": "periodSeconds × failureThreshold",
+      "terms": {
+        "period": {
+          "value": 10,
+          "unit": "s",
+          "from": "extra.sims_w02.k8s_probe_period_s"
+        },
+        "failure_threshold": {
+          "value": 3,
+          "unit": "probes",
+          "from": "extra.sims_w02.k8s_probe_failure_threshold"
+        },
+        "timeout": {
+          "value": 1,
+          "unit": "s",
+          "from": "extra.sims_w02.k8s_probe_timeout_s"
+        }
+      },
+      "value": 30,
+      "unit": "s",
+      "note": "Kubernetes defaults. A server that stops answering fails one probe per period; after failureThreshold failures the kubelet marks it not Ready."
+    },
+    "pod_ready_over_ttft_slo": {
+      "formula": "measured pod-ready time / p95 TTFT target",
+      "terms": {
+        "pod_ready": {
+          "value": 135,
+          "unit": "s",
+          "from": "autoscaling.llmd_measured_pod_ready_s"
+        },
+        "p95_ttft": {
+          "value": 1.5,
+          "unit": "s",
+          "from": "hypothetical.slo.p95_ttft_ms"
+        }
+      },
+      "value": 90,
+      "unit": "ratio"
+    }
+  },
+  "power": {
+    "h_teach_node_gpus": {
+      "formula": "GPUs per node × H100 SXM TDP",
+      "value": 5600,
+      "unit": "W",
+      "kW": 5.6,
+      "note": "GPUs only; CPUs, NICs, switches and fans not counted."
+    },
+    "gb300_rack_gpus": {
+      "formula": "GPUs per rack × GB300 GPU power (up to)",
+      "value": 100800,
+      "unit": "W",
+      "kW": 100.8,
+      "note": "GPUs only, upper bound; rack total not shown (no verified primary figure)."
+    },
+    "per_gpu_ratio_gb300_over_h100": {
+      "value": 2,
+      "unit": "ratio"
+    },
+    "rack_over_node": {
+      "value": 18,
+      "unit": "ratio"
+    },
+    "iea_2024_average_power": {
+      "formula": "TWh per year × 10^12 Wh/TWh / 8,760 h / 10^9 W/GW",
+      "value": 47.37442922,
+      "unit": "GW"
+    },
+    "gb300_racks_per_gw_gpu_only": {
+      "formula": "10^9 W / rack GPU power",
+      "value": 9920.634921,
+      "unit": "racks"
+    }
+  }
+}

@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite it as below."
+type: dataset
+title: "The Full Trace: How One ChatGPT-Style Request Is Served, End to End, at Global Scale"
+authors:
+  - name: "Chhabii"
+version: "1.0.0"
+date-released: "2026-10-11"
+license: CC-BY-4.0
+url: "https://www.youtube.com/watch?v=W4LuFlwm8i4"
+repository: "https://github.com/Chhabii/the-full-trace"
+keywords:
+  - LLM inference
+  - LLM serving
+  - system design
+  - KV cache
+  - GPU

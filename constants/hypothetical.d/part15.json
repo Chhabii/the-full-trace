@@ -1,0 +1,47 @@
+{
+  "streaming_ref": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Part 15 (Streaming back to pixels) reference-system values for the token stream from the model server to the browser (RA-47 to RA-50). What real providers use is not public (class D).",
+    "event_types": {
+      "value": ["message.start", "reasoning.status", "output_text.delta", "tool.status", "citation", "artifact", "message.done", "error"],
+      "unit": "SSE event types",
+      "note": "The client-facing event vocabulary of this reference system (RA-47: explicit event types). Illustrative; not the format of any real provider."
+    },
+    "per_hop_stream_buffer_bytes": {
+      "value": 16384,
+      "unit": "bytes per stream per proxy hop",
+      "note": "RA-49 bound on the application buffer that each proxy hop keeps for one response stream. At 100 tokens/s one client event is about 50 bytes, so 16 KiB holds a few seconds of stream; a larger buffer only hides a stalled client longer."
+    },
+    "slow_client_stall_limit_s": {
+      "value": 30,
+      "unit": "s",
+      "note": "When a stream's buffer stays full (the client reads nothing) for this long, the edge resets the stream; the cancellation travels down (RA-49) and the message is stored as interrupted (RA-59). Longer than a normal mobile handoff, far shorter than the 120 s top-level deadline."
+    },
+    "in_region_hop_forward_ms": {
+      "value": 0.25,
+      "unit": "ms per hop",
+      "note": "Time one in-region proxy or service hop adds to forward one small stream event (parse a frame, run filters, write a frame), plus the in-zone network. Assumption; a real deployment measures it from traces (RA-52)."
+    },
+    "display_refresh_hz": {
+      "value": 60,
+      "unit": "Hz",
+      "note": "Refresh rate of the reference user's laptop display. Many phones and laptops run at 90-120 Hz; 60 Hz is the common lower case."
+    },
+    "quic_dcid_bytes": {
+      "value": 8,
+      "unit": "bytes",
+      "note": "Length of the destination connection ID that the edge chooses for its QUIC connections (RFC 9000 allows 0-20 bytes). 8 bytes leaves room for a server ID that the L4 balancer reads (RA-01)."
+    },
+    "quic_packet_number_bytes": {
+      "value": 2,
+      "unit": "bytes",
+      "note": "Encoded packet number length in 1-RTT packets (RFC 9000 allows 1-4 bytes); 2 bytes covers the packets in flight on one connection."
+    },
+    "quic_request_stream_id": {
+      "value": 44,
+      "unit": "stream ID",
+      "note": "The HTTP/3 request stream of your request on the warm connection: client-initiated bidirectional streams use IDs 0, 4, 8, ..., so 44 is the 12th request on this connection (page loads, uploads and earlier turns)."
+    }
+  }
+}

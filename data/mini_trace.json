@@ -1,0 +1,1415 @@
+{
+  "meta": {
+    "script": "sim/mini/run.py",
+    "generated_at": "2026-10-09T12:58:31+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T12:31:14+00:00",
+      "sha256": "7760cf964886"
+    },
+    "constants_used": {
+      "extra.sims_w09.dynamo_decode_active_request_weight": 0.0,
+      "hardware.H-teach.h100_sxm_bf16_dense": 989.5,
+      "hardware.H-teach.h100_sxm_fp8_dense": 1979,
+      "hardware.H-teach.h100_sxm_hbm_bandwidth": 3.35,
+      "hypothetical.async_work_ref.event_append_ms": 5,
+      "hypothetical.backend.default_max_tokens": 4096,
+      "hypothetical.backend.transaction_ms": 5,
+      "hypothetical.context_budget_ref.prompt_budget_tokens": 131072,
+      "hypothetical.epp_calibration.peak_prefill_tokens_per_s": 16000,
+      "hypothetical.gpu_step_model.hbm_bandwidth_efficiency": 0.8,
+      "hypothetical.gpu_step_model.per_layer_overhead_us": 40,
+      "hypothetical.gpu_step_model.per_step_overhead_ms": 0.5,
+      "hypothetical.memory_ref.record_texts": [
+        "Reports figures in EUR.",
+        "Prefers results as a table."
+      ],
+      "hypothetical.observability_ref.auth_verify_ms": 2,
+      "hypothetical.observability_ref.conversation_read_ms": 6,
+      "hypothetical.observability_ref.rag_chunk_fetch_ms": 5,
+      "hypothetical.observability_ref.rag_index_search_ms": 25,
+      "hypothetical.reference_request.user_text": "Here is our Q3 report and a photo of last week's whiteboard plan. Using our pricing policy, check the current list prices of our three main competitors, compute our gross margin at each of their price points, and plot it. Cite your sources.",
+      "hypothetical.reference_request.web_pages_fetched": 3,
+      "hypothetical.retrieval_ref.hnsw_ef_search": 100,
+      "hypothetical.serving_assumptions.prefill_mfu": 0.5,
+      "hypothetical.slo.top_level_deadline_s": 120,
+      "hypothetical.storage_ref.in_region_commit_ms": 2,
+      "hypothetical.super_trace_ref.model_router_ms": 1,
+      "hypothetical.super_trace_ref.tool_dispatch_ms": 2,
+      "hypothetical.timeout_budget_ref.conversation_read_cap_s": 1.0,
+      "hypothetical.timeout_budget_ref.final_write_reserve_s": 2.0,
+      "hypothetical.timeout_budget_ref.memory_read_cap_s": 0.5,
+      "hypothetical.timeout_budget_ref.memory_read_expected_s": 0.02,
+      "hypothetical.timeout_budget_ref.retrieval_cap_s": 3.0,
+      "hypothetical.timeout_budget_ref.tool_pass_cap_s": 40,
+      "hypothetical.tool_call_story.competitor_names": [
+        "AlderSoft",
+        "Birchline",
+        "Cedar Systems"
+      ],
+      "hypothetical.tool_call_story.competitor_prices_eur": [
+        42.0,
+        55.0,
+        38.0
+      ],
+      "hypothetical.tool_call_story.pass1_preamble": "I will check the current list prices first.",
+      "hypothetical.tool_call_story.recency_days": 90,
+      "hypothetical.tool_call_story.search_queries": [
+        "AlderSoft list price per seat 2026",
+        "Birchline pricing plans list price per user",
+        "Cedar Systems pricing per seat per month"
+      ],
+      "hypothetical.tool_call_story.unit_cost_eur": 17.6,
+      "hypothetical.tool_exec_limits.max_parallel_calls_per_pass": 4,
+      "hypothetical.tool_exec_limits.run_python_deadline_margin_s": 5,
+      "hypothetical.tool_exec_limits.tool_calls_per_user_per_minute": 60,
+      "hypothetical.tool_exec_limits.web_search_deadline_s": 20,
+      "hypothetical.tool_loop.max_tool_iterations": 8,
+      "models.M-dense.head_dim": 128,
+      "models.M-dense.hidden_size": 12288,
+      "models.M-dense.intermediate_size": 28672,
+      "models.M-dense.max_position_embeddings": 262144,
+      "models.M-dense.num_attention_heads": 96,
+      "models.M-dense.num_hidden_layers": 88,
+      "models.M-dense.num_key_value_heads": 8,
+      "models.M-dense.text_params": 125025988608,
+      "models.M-dense.tie_word_embeddings": false,
+      "models.M-dense.torch_dtype": "bfloat16",
+      "models.M-dense.total_params": 127704210176,
+      "models.M-dense.vision_params": 2678221568,
+      "models.M-dense.vllm_recipe": {
+        "recommended_hw": "8x H200 (alt 4x B200, 2-8x MI300X)",
+        "tp": 8,
+        "eagle_num_speculative_tokens": 3,
+        "mi300x_tp8_1k_in_1k_out_conc32": {
+          "output_tok_s": 915,
+          "mean_ttft_ms": 2522,
+          "mean_tpot_ms": 26.1
+        },
+        "mi300x_tp1": {
+          "output_tok_s": 438,
+          "mean_ttft_ms": 5719,
+          "mean_tpot_ms": 55.2
+        }
+      },
+      "models.M-dense.vocab_size": 131072,
+      "models.M-vision.image_mean": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "models.M-vision.image_std": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "models.M-vision.in_patch_limit": 65536,
+      "models.M-vision.merge_kernel_size": 2,
+      "models.M-vision.patch_limit_on_one_side": 512,
+      "models.M-vision.patch_size": 14,
+      "models.M-vision.resize_rule": "scale = min(1, sqrt(65536/((W//14)*(H//14))), 7168/W, 7168/H); bicubic; zero-pad right/bottom to multiple of 28; tokens = (H'/28)*(W'/28)",
+      "retrieval_and_data.bm25_b": 0.75,
+      "retrieval_and_data.bm25_k1": 1.2,
+      "retrieval_and_data.rrf_k": 60,
+      "routing.dynamo.disk_hit_credit": 0.25,
+      "routing.dynamo.host_hit_credit": 0.75,
+      "routing.dynamo.overlap_score_credit_gpu": 1.0,
+      "routing.dynamo.prefill_load_scale": 1.0,
+      "routing.llm_d.prefix_affinity_max_ttft_penalty_ms": 18000,
+      "routing.llm_d.prefix_affinity_threshold": 0.8,
+      "routing.llm_d.token_load_queue_threshold_tokens": 4194304,
+      "software.vllm.block_size_tokens": 16
+    }
+  },
+  "label": "illustrative toy input of the miniature, chosen for this demo; not a measured or sourced value",
+  "fake_model": "FAKE MODEL: a deterministic script reads the context and emits fixed tokens and tool calls; it has no weights and is not a language model",
+  "clock": "virtual time: real asyncio code on an event loop whose clock jumps to the next timer, so times are simulated and deterministic",
+  "tokenizer": "TOY tokenizer: one token per word, number or punctuation mark; IDs from CRC-32; not a real tokenizer",
+  "config": {
+    "engine": {
+      "block_size": 16,
+      "num_blocks": 1024,
+      "budget": 512,
+      "max_seqs": 32,
+      "note": "block size = the vLLM default (constants); pool, token budget and sequence cap are reduced toy values so that a reduced prompt still splits into chunks and the counters stay readable"
+    },
+    "background": {
+      "rates_per_s": [
+        6.0,
+        3.0,
+        1.5
+      ],
+      "prompt_tokens": [
+        200,
+        600
+      ],
+      "output_tokens": [
+        40,
+        200
+      ],
+      "tenants": 7,
+      "warmup_s": 2.0,
+      "seed": 24,
+      "note": "seeded background requests of other tenants on each replica (illustrative load)"
+    },
+    "image": {
+      "file_id": "file_photo_reduced",
+      "width_px": 448,
+      "height_px": 336,
+      "note": "the reference photo (4032 x 3024) scaled by 1/9 per side, so the reduced prompt stays small"
+    },
+    "replicas": 3,
+    "policy": "llmd",
+    "system_prompt": "You are an assistant for the employees of one company. Use the workspace sources and the tools. Cite every source by its number in brackets. Today is 2026-10-09.",
+    "history_turns": 1
+  },
+  "status": "complete",
+  "context": {
+    "system_tokens": 38,
+    "tool_schema_tokens": 430,
+    "history_tokens": 34,
+    "memory_tokens": 13,
+    "chunk_tokens": 138,
+    "visual_tokens": 192,
+    "question_tokens": 51,
+    "prompt_tokens": 906,
+    "prompt_budget_tokens": 131072,
+    "framing_tokens": 10
+  },
+  "images": [
+    {
+      "file_id": "file_photo_reduced",
+      "visual_tokens": 192,
+      "patches": 768,
+      "token_grid_hw": [
+        12,
+        16
+      ],
+      "signed_url": "objstore://signed/file_photo_reduced"
+    }
+  ],
+  "route": {
+    "deployment": "mini-frontier (FAKE MODEL)",
+    "rule": "image input",
+    "rules_checked": [
+      "image input",
+      "context length",
+      "default"
+    ],
+    "prompt_tokens": 906
+  },
+  "passes": [
+    {
+      "pass": 1,
+      "replica": "r1",
+      "prompt_tokens": 906,
+      "cached_tokens": 0,
+      "uncached_tokens": 906,
+      "cached_fraction": 0.0,
+      "output_tokens": 100,
+      "reasoning_tokens": 24,
+      "visible_tokens": 9,
+      "held_back_tokens": 64,
+      "queued_ms": 7.969,
+      "ttft_ms": 45.065,
+      "start_ms": 182.82,
+      "end_ms": 1257.662,
+      "duration_ms": 1074.842,
+      "finish_reason": "tool_calls",
+      "forced_final": false,
+      "calls": [
+        "web_search"
+      ],
+      "rerendered_equals_emitted": true
+    },
+    {
+      "pass": 2,
+      "replica": "r1",
+      "prompt_tokens": 1186,
+      "cached_tokens": 992,
+      "uncached_tokens": 194,
+      "cached_fraction": 0.8364,
+      "output_tokens": 282,
+      "reasoning_tokens": 28,
+      "visible_tokens": 0,
+      "held_back_tokens": 251,
+      "queued_ms": 5.014,
+      "ttft_ms": 16.002,
+      "start_ms": 2864.962,
+      "end_ms": 5786.144,
+      "duration_ms": 2921.182,
+      "finish_reason": "tool_calls",
+      "forced_final": false,
+      "calls": [
+        "run_python"
+      ],
+      "rerendered_equals_emitted": true
+    },
+    {
+      "pass": 3,
+      "replica": "r1",
+      "prompt_tokens": 1593,
+      "cached_tokens": 1456,
+      "uncached_tokens": 137,
+      "cached_fraction": 0.914,
+      "output_tokens": 152,
+      "reasoning_tokens": 19,
+      "visible_tokens": 130,
+      "held_back_tokens": 0,
+      "queued_ms": 2.114,
+      "ttft_ms": 12.832,
+      "start_ms": 7093.144,
+      "end_ms": 8676.3,
+      "duration_ms": 1583.155,
+      "finish_reason": "stop",
+      "forced_final": false,
+      "calls": [],
+      "rerendered_equals_emitted": true
+    }
+  ],
+  "tools": [
+    {
+      "call_id": "call_1_1",
+      "pass": 1,
+      "tool": "web_search",
+      "state": "succeeded",
+      "start_ms": 1259.662,
+      "end_ms": 2864.962,
+      "duration_ms": 1605.3,
+      "deadline_s": 20.0,
+      "error": null
+    },
+    {
+      "call_id": "call_2_1",
+      "pass": 2,
+      "tool": "run_python",
+      "state": "succeeded",
+      "start_ms": 5788.144,
+      "end_ms": 7093.144,
+      "duration_ms": 1305.0,
+      "deadline_s": 35.0,
+      "error": null
+    }
+  ],
+  "spans": [
+    {
+      "name": "handle_chat",
+      "parent": null,
+      "start_ms": 0.0,
+      "end_ms": 8678.3,
+      "duration_ms": 8678.3,
+      "attrs": {
+        "request_id": "turn4"
+      }
+    },
+    {
+      "name": "auth",
+      "parent": "handle_chat",
+      "start_ms": 0.0,
+      "end_ms": 2.0,
+      "duration_ms": 2.0
+    },
+    {
+      "name": "store.user_message",
+      "parent": "handle_chat",
+      "start_ms": 2.0,
+      "end_ms": 4.0,
+      "duration_ms": 2.0
+    },
+    {
+      "name": "context.history",
+      "parent": "handle_chat",
+      "start_ms": 2.0,
+      "end_ms": 8.0,
+      "duration_ms": 6.0
+    },
+    {
+      "name": "context.memory",
+      "parent": "handle_chat",
+      "start_ms": 2.0,
+      "end_ms": 22.0,
+      "duration_ms": 20.0
+    },
+    {
+      "name": "media.preprocess",
+      "parent": "handle_chat",
+      "start_ms": 2.0,
+      "end_ms": 7.0,
+      "duration_ms": 5.0
+    },
+    {
+      "name": "rag.retrieve",
+      "parent": "handle_chat",
+      "start_ms": 2.0,
+      "end_ms": 182.82,
+      "duration_ms": 180.82
+    },
+    {
+      "name": "model_routing",
+      "parent": "handle_chat",
+      "start_ms": 182.82,
+      "end_ms": 182.82,
+      "duration_ms": 0.0
+    },
+    {
+      "name": "inference.pass1",
+      "parent": "handle_chat",
+      "start_ms": 182.82,
+      "end_ms": 1257.662,
+      "duration_ms": 1074.842,
+      "attrs": {
+        "replica": "r1",
+        "prompt_tokens": 906,
+        "cached_tokens": 0,
+        "output_tokens": 100
+      }
+    },
+    {
+      "name": "tools.pass1",
+      "parent": "handle_chat",
+      "start_ms": 1257.662,
+      "end_ms": 2864.962,
+      "duration_ms": 1607.3,
+      "attrs": {
+        "calls": 1
+      }
+    },
+    {
+      "name": "inference.pass2",
+      "parent": "handle_chat",
+      "start_ms": 2864.962,
+      "end_ms": 5786.144,
+      "duration_ms": 2921.182,
+      "attrs": {
+        "replica": "r1",
+        "prompt_tokens": 1186,
+        "cached_tokens": 992,
+        "output_tokens": 282
+      }
+    },
+    {
+      "name": "tools.pass2",
+      "parent": "handle_chat",
+      "start_ms": 5786.144,
+      "end_ms": 7093.144,
+      "duration_ms": 1307.0,
+      "attrs": {
+        "calls": 1
+      }
+    },
+    {
+      "name": "inference.pass3",
+      "parent": "handle_chat",
+      "start_ms": 7093.144,
+      "end_ms": 8676.3,
+      "duration_ms": 1583.155,
+      "attrs": {
+        "replica": "r1",
+        "prompt_tokens": 1593,
+        "cached_tokens": 1456,
+        "output_tokens": 152
+      }
+    },
+    {
+      "name": "store.finalize",
+      "parent": "handle_chat",
+      "start_ms": 8676.3,
+      "end_ms": 8678.3,
+      "duration_ms": 2.0
+    }
+  ],
+  "t_ms": {
+    "auth_done": 2.0,
+    "user_message_stored": 4.0,
+    "message_start_sent": 2.0,
+    "history_done": 8.0,
+    "memory_done": 22.0,
+    "media_done": 7.0,
+    "rag_done": 182.82,
+    "pass1_start": 182.82,
+    "pass1_first_token": 227.885,
+    "pass1_first_text": 497.994,
+    "pass1_end": 1257.662,
+    "search_start": 1259.662,
+    "search_end": 2864.962,
+    "pass2_start": 2864.962,
+    "pass2_first_token": 2880.964,
+    "pass2_end": 5786.144,
+    "sandbox_start": 5788.144,
+    "sandbox_end": 7093.144,
+    "pass3_start": 7093.144,
+    "pass3_first_token": 7105.976,
+    "answer_first_text": 7332.751,
+    "pass3_end": 8676.3,
+    "final_write_done": 8678.3,
+    "message_done": 8678.3
+  },
+  "phases": {
+    "before_inference_ms": 182.82,
+    "inference_ms": 5579.179,
+    "tools_ms": 2914.3,
+    "after_inference_ms": 2.0,
+    "total_ms": 8678.3
+  },
+  "sse": {
+    "counts": {
+      "message_start": 1,
+      "reasoning_status": 3,
+      "output_text_delta": 139,
+      "tool_status": 4,
+      "artifact": 1,
+      "citation": 5,
+      "message_done": 1
+    },
+    "total_frames": 154,
+    "first_frames": [
+      "event: message.start\ndata: {\"request_id\":\"turn4\"}\n\n",
+      "event: reasoning.status\ndata: {\"status\":\"thinking\"}\n\n",
+      "event: output_text.delta\ndata: {\"delta\":\"I\"}\n\n"
+    ],
+    "events": [
+      {
+        "t_ms": 2.0,
+        "event": "message.start",
+        "data": {
+          "request_id": "turn4"
+        }
+      },
+      {
+        "t_ms": 1247.707,
+        "event": "tool.status",
+        "data": {
+          "call_id": "call_1_1",
+          "tool": "web_search",
+          "status": "called"
+        }
+      },
+      {
+        "t_ms": 2864.962,
+        "event": "tool.status",
+        "data": {
+          "call_id": "call_1_1",
+          "tool": "web_search",
+          "status": "done"
+        }
+      },
+      {
+        "t_ms": 5766.107,
+        "event": "tool.status",
+        "data": {
+          "call_id": "call_2_1",
+          "tool": "run_python",
+          "status": "called"
+        }
+      },
+      {
+        "t_ms": 7093.144,
+        "event": "tool.status",
+        "data": {
+          "call_id": "call_2_1",
+          "tool": "run_python",
+          "status": "done"
+        }
+      },
+      {
+        "t_ms": 7093.144,
+        "event": "artifact",
+        "data": {
+          "file_id": "file_9c41d2e07b",
+          "mime_type": "image/png"
+        }
+      },
+      {
+        "t_ms": 8676.3,
+        "event": "citation",
+        "data": {
+          "source_id": 1,
+          "kind": "workspace chunk",
+          "ref": "c03",
+          "resolved": true
+        }
+      },
+      {
+        "t_ms": 8676.3,
+        "event": "citation",
+        "data": {
+          "source_id": 4,
+          "kind": "workspace chunk",
+          "ref": "c06",
+          "resolved": true
+        }
+      },
+      {
+        "t_ms": 8676.3,
+        "event": "citation",
+        "data": {
+          "source_id": 5,
+          "kind": "web page",
+          "ref": "https://aldersoft.example/pricing",
+          "resolved": true
+        }
+      },
+      {
+        "t_ms": 8676.3,
+        "event": "citation",
+        "data": {
+          "source_id": 6,
+          "kind": "web page",
+          "ref": "https://birchline.example/pricing",
+          "resolved": true
+        }
+      },
+      {
+        "t_ms": 8676.3,
+        "event": "citation",
+        "data": {
+          "source_id": 7,
+          "kind": "web page",
+          "ref": "https://www.cedarsystems.example/pricing",
+          "resolved": true
+        }
+      },
+      {
+        "t_ms": 8678.3,
+        "event": "message.done",
+        "data": {
+          "status": "complete",
+          "passes": 3
+        }
+      },
+      {
+        "t_ms": 227.885,
+        "event": "reasoning.status",
+        "data": {
+          "status": "thinking"
+        }
+      }
+    ]
+  },
+  "answer_text": "I will check the current list prices first.\n\nGross margin at each competitor's list price, at our unit cost of 17.60 EUR per seat-month [4]:\n\n| Competitor | List price | Gross margin |\n|---|---|---|\n| AlderSoft | 42.00 EUR [5] | 58.1% |\n| Birchline | 55.00 EUR [6] | 68.0% |\n| Cedar Systems | 38.00 EUR [7] | 53.7% |\n\nOur policy allows a price match only while the gross margin stays above 60% [1]. Only a match with Birchline stays above that floor. Chart: file_9c41d2e07b",
+  "stored_rows": [
+    {
+      "id": "msg_1",
+      "role": "user",
+      "text": "Here is our Q3 report and a photo of last week's whiteboard plan. Using our pricing policy, check the current list prices of our three main competitors, compute our gross margin at each of their price points, and plot it. Cite your sources.",
+      "idempotency_key": "idem-7f3a"
+    },
+    {
+      "id": "msg_2",
+      "role": "assistant",
+      "text": "I will check the current list prices first.\n\nGross margin at each competitor's list price, at our unit cost of 17.60 EUR per seat-month [4]:\n\n| Competitor | List price | Gross margin |\n|---|---|---|\n| AlderSoft | 42.00 EUR [5] | 58.1% |\n| Birchline | 55.00 EUR [6] | 68.0% |\n| Cedar Systems | 38.00 EUR [7] | 53.7% |\n\nOur policy allows a price match only while the gross margin stays above 60% [1]. Only a match with Birchline stays above that floor. Chart: file_9c41d2e07b",
+      "status": "complete",
+      "citations": [
+        {
+          "source_id": 1,
+          "kind": "workspace chunk",
+          "ref": "c03",
+          "resolved": true
+        },
+        {
+          "source_id": 4,
+          "kind": "workspace chunk",
+          "ref": "c06",
+          "resolved": true
+        },
+        {
+          "source_id": 5,
+          "kind": "web page",
+          "ref": "https://aldersoft.example/pricing",
+          "resolved": true
+        },
+        {
+          "source_id": 6,
+          "kind": "web page",
+          "ref": "https://birchline.example/pricing",
+          "resolved": true
+        },
+        {
+          "source_id": 7,
+          "kind": "web page",
+          "ref": "https://www.cedarsystems.example/pricing",
+          "resolved": true
+        }
+      ]
+    }
+  ],
+  "citations": [
+    {
+      "source_id": 1,
+      "kind": "workspace chunk",
+      "ref": "c03",
+      "resolved": true
+    },
+    {
+      "source_id": 4,
+      "kind": "workspace chunk",
+      "ref": "c06",
+      "resolved": true
+    },
+    {
+      "source_id": 5,
+      "kind": "web page",
+      "ref": "https://aldersoft.example/pricing",
+      "resolved": true
+    },
+    {
+      "source_id": 6,
+      "kind": "web page",
+      "ref": "https://birchline.example/pricing",
+      "resolved": true
+    },
+    {
+      "source_id": 7,
+      "kind": "web page",
+      "ref": "https://www.cedarsystems.example/pricing",
+      "resolved": true
+    }
+  ],
+  "usage_events": [
+    {
+      "type": "usage",
+      "event_id": "turn4:pass1",
+      "prompt_tokens": 906,
+      "cached_tokens": 0,
+      "output_tokens": 100
+    },
+    {
+      "type": "usage",
+      "event_id": "turn4:pass2",
+      "prompt_tokens": 1186,
+      "cached_tokens": 992,
+      "output_tokens": 282
+    },
+    {
+      "type": "usage",
+      "event_id": "turn4:pass3",
+      "prompt_tokens": 1593,
+      "cached_tokens": 1456,
+      "output_tokens": 152
+    }
+  ],
+  "routing": [
+    {
+      "label": "pass 1",
+      "policy": "llmd",
+      "isl_tokens": 906,
+      "winner": "r1",
+      "match_blocks": {
+        "r1": 0,
+        "r2": 0,
+        "r3": 0
+      },
+      "load": {
+        "r1": {
+          "waiting_requests": 0,
+          "running_sequences": 9,
+          "active_prefill_tokens": 0,
+          "active_decode_blocks": 294
+        },
+        "r2": {
+          "waiting_requests": 0,
+          "running_sequences": 4,
+          "active_prefill_tokens": 0,
+          "active_decode_blocks": 107
+        },
+        "r3": {
+          "waiting_requests": 0,
+          "running_sequences": 4,
+          "active_prefill_tokens": 0,
+          "active_decode_blocks": 93
+        }
+      },
+      "filter": "no endpoint reaches the threshold: keep all",
+      "sticky": [],
+      "ties": [
+        "r1",
+        "r2",
+        "r3"
+      ],
+      "match_ratio": {
+        "r1": 0.0,
+        "r2": 0.0,
+        "r3": 0.0
+      },
+      "score": {
+        "r1": 0.9997825622558594,
+        "r2": 0.9997825622558594,
+        "r3": 0.9997825622558594
+      }
+    },
+    {
+      "label": "pass 2",
+      "policy": "llmd",
+      "isl_tokens": 1186,
+      "winner": "r1",
+      "match_blocks": {
+        "r1": 62,
+        "r2": 0,
+        "r3": 0
+      },
+      "load": {
+        "r1": {
+          "waiting_requests": 0,
+          "running_sequences": 8,
+          "active_prefill_tokens": 0,
+          "active_decode_blocks": 250
+        },
+        "r2": {
+          "waiting_requests": 0,
+          "running_sequences": 2,
+          "active_prefill_tokens": 0,
+          "active_decode_blocks": 47
+        },
+        "r3": {
+          "waiting_requests": 0,
+          "running_sequences": 1,
+          "active_prefill_tokens": 0,
+          "active_decode_blocks": 35
+        }
+      },
+      "filter": "keep only the sticky endpoints",
+      "sticky": [
+        "r1"
+      ],
+      "ties": [
+        "r1"
+      ],
+      "match_ratio": {
+        "r1": 0.8266666666666667,
+        "r2": 0.0,
+        "r3": 0.0
+      },
+      "score": {
+        "r1": 0.9999504089355469,
+        "r2": 0.9997138977050781,
+        "r3": 0.9997138977050781
+      }
+    },
+    {
+      "label": "pass 3",
+      "policy": "llmd",
+      "isl_tokens": 1593,
+      "winner": "r1",
+      "match_blocks": {
+        "r1": 91,
+        "r2": 0,
+        "r3": 0
+      },
+      "load": {
+        "r1": {
+          "waiting_requests": 0,
+          "running_sequences": 6,
+          "active_prefill_tokens": 0,
+          "active_decode_blocks": 169
+        },
+        "r2": {
+          "waiting_requests": 0,
+          "running_sequences": 2,
+          "active_prefill_tokens": 0,
+          "active_decode_blocks": 66
+        },
+        "r3": {
+          "waiting_requests": 0,
+          "running_sequences": 1,
+          "active_prefill_tokens": 0,
+          "active_decode_blocks": 37
+        }
+      },
+      "filter": "keep only the sticky endpoints",
+      "sticky": [
+        "r1"
+      ],
+      "ties": [
+        "r1"
+      ],
+      "match_ratio": {
+        "r1": 0.91,
+        "r2": 0.0,
+        "r3": 0.0
+      },
+      "score": {
+        "r1": 0.9999656677246094,
+        "r2": 0.9996185302734375,
+        "r3": 0.9996185302734375
+      }
+    }
+  ],
+  "meanwhile_search": {
+    "replica": "r1",
+    "window_ms": 1605.3,
+    "steps": 155,
+    "tokens_for_others": 1398,
+    "sequences_finished": 8,
+    "sequences_admitted": 9,
+    "max_running": 11,
+    "min_free_blocks": 670
+  },
+  "pass1_chunks": [
+    503,
+    403
+  ],
+  "pass1_first_step": {
+    "replica": "r1",
+    "t_ms": 190.789,
+    "step_ms": 20.0001,
+    "mine": [
+      [
+        "turn4-p1",
+        503,
+        "prefill chunk"
+      ]
+    ],
+    "batch_sequences": 10,
+    "batched_tokens": 512,
+    "decodes": 9,
+    "prefill_tokens": 503,
+    "running": 10,
+    "waiting": 0,
+    "free_blocks_end": 672,
+    "kv_usage_end": 0.3431
+  },
+  "engine_steps_with_your_request": {
+    "count": 535,
+    "first": [
+      {
+        "replica": "r1",
+        "t_ms": 190.789,
+        "step_ms": 20.0001,
+        "mine": [
+          [
+            "turn4-p1",
+            503,
+            "prefill chunk"
+          ]
+        ],
+        "batch_sequences": 10,
+        "batched_tokens": 512,
+        "decodes": 9,
+        "prefill_tokens": 503,
+        "running": 10,
+        "waiting": 0,
+        "free_blocks_end": 672,
+        "kv_usage_end": 0.3431
+      },
+      {
+        "replica": "r1",
+        "t_ms": 210.789,
+        "step_ms": 17.0957,
+        "mine": [
+          [
+            "turn4-p1",
+            403,
+            "prefill"
+          ]
+        ],
+        "batch_sequences": 10,
+        "batched_tokens": 412,
+        "decodes": 9,
+        "prefill_tokens": 403,
+        "running": 10,
+        "waiting": 0,
+        "free_blocks_end": 672,
+        "kv_usage_end": 0.3431
+      },
+      {
+        "replica": "r1",
+        "t_ms": 227.885,
+        "step_ms": 9.9866,
+        "mine": [
+          [
+            "turn4-p1",
+            1,
+            "decode"
+          ]
+        ],
+        "batch_sequences": 10,
+        "batched_tokens": 10,
+        "decodes": 10,
+        "prefill_tokens": 0,
+        "running": 10,
+        "waiting": 0,
+        "free_blocks_end": 672,
+        "kv_usage_end": 0.3431
+      }
+    ],
+    "mean_step_ms": 10.4002,
+    "max_batch_sequences": 12,
+    "mean_batch_sequences": 6.46
+  },
+  "engines_before": {
+    "r1": {
+      "vllm:num_requests_running": 10,
+      "vllm:num_requests_waiting": 0,
+      "vllm:kv_cache_usage_perc": 0.2913,
+      "vllm:prefix_cache_queries": 6351,
+      "vllm:prefix_cache_hits": 0,
+      "vllm:num_preemptions": 0,
+      "free_blocks": 725
+    },
+    "r2": {
+      "vllm:num_requests_running": 3,
+      "vllm:num_requests_waiting": 0,
+      "vllm:kv_cache_usage_perc": 0.0665,
+      "vllm:prefix_cache_queries": 3648,
+      "vllm:prefix_cache_hits": 0,
+      "vllm:num_preemptions": 0,
+      "free_blocks": 955
+    },
+    "r3": {
+      "vllm:num_requests_running": 3,
+      "vllm:num_requests_waiting": 0,
+      "vllm:kv_cache_usage_perc": 0.0733,
+      "vllm:prefix_cache_queries": 1972,
+      "vllm:prefix_cache_hits": 0,
+      "vllm:num_preemptions": 0,
+      "free_blocks": 948
+    }
+  },
+  "engines_after": {
+    "r1": {
+      "vllm:num_requests_running": 8,
+      "vllm:num_requests_waiting": 0,
+      "vllm:kv_cache_usage_perc": 0.2141,
+      "vllm:prefix_cache_queries": 31059,
+      "vllm:prefix_cache_hits": 2448,
+      "vllm:num_preemptions": 0,
+      "free_blocks": 804,
+      "yours_running": 0,
+      "yours_blocks": 0
+    },
+    "r2": {
+      "vllm:num_requests_running": 4,
+      "vllm:num_requests_waiting": 0,
+      "vllm:kv_cache_usage_perc": 0.1085,
+      "vllm:prefix_cache_queries": 14317,
+      "vllm:prefix_cache_hits": 0,
+      "vllm:num_preemptions": 0,
+      "free_blocks": 912,
+      "yours_running": 0,
+      "yours_blocks": 0
+    },
+    "r3": {
+      "vllm:num_requests_running": 1,
+      "vllm:num_requests_waiting": 0,
+      "vllm:kv_cache_usage_perc": 0.0352,
+      "vllm:prefix_cache_queries": 5874,
+      "vllm:prefix_cache_hits": 0,
+      "vllm:num_preemptions": 0,
+      "free_blocks": 987,
+      "yours_running": 0,
+      "yours_blocks": 0
+    }
+  },
+  "background_requests": 117,
+  "output_tokens_total": 534,
+  "rerendered_all_equal": true,
+  "full_reference_prompt_tokens": [
+    23322,
+    29816,
+    30395
+  ],
+  "comparison": {
+    "stage1_one_replica": {
+      "status": "complete",
+      "reason": null,
+      "passes": [
+        {
+          "pass": 1,
+          "replica": "r1",
+          "prompt_tokens": 906,
+          "cached_tokens": 0,
+          "uncached_tokens": 906,
+          "cached_fraction": 0.0,
+          "output_tokens": 100,
+          "reasoning_tokens": 24,
+          "visible_tokens": 9,
+          "held_back_tokens": 64,
+          "queued_ms": 3.168,
+          "ttft_ms": 40.723,
+          "start_ms": 182.82,
+          "end_ms": 1250.282,
+          "duration_ms": 1067.462,
+          "finish_reason": "tool_calls",
+          "forced_final": false,
+          "calls": [
+            "web_search"
+          ],
+          "rerendered_equals_emitted": true
+        },
+        {
+          "pass": 2,
+          "replica": "r1",
+          "prompt_tokens": 1186,
+          "cached_tokens": 656,
+          "uncached_tokens": 530,
+          "cached_fraction": 0.5531,
+          "output_tokens": 282,
+          "reasoning_tokens": 28,
+          "visible_tokens": 0,
+          "held_back_tokens": 251,
+          "queued_ms": 9.988,
+          "ttft_ms": 40.651,
+          "start_ms": 2857.582,
+          "end_ms": 6007.312,
+          "duration_ms": 3149.73,
+          "finish_reason": "tool_calls",
+          "forced_final": false,
+          "calls": [
+            "run_python"
+          ],
+          "rerendered_equals_emitted": true
+        },
+        {
+          "pass": 3,
+          "replica": "r1",
+          "prompt_tokens": 1593,
+          "cached_tokens": 0,
+          "uncached_tokens": 1593,
+          "cached_fraction": 0.0,
+          "output_tokens": 152,
+          "reasoning_tokens": 19,
+          "visible_tokens": 130,
+          "held_back_tokens": 0,
+          "queued_ms": 4.367,
+          "ttft_ms": 85.359,
+          "start_ms": 7314.312,
+          "end_ms": 9057.662,
+          "duration_ms": 1743.35,
+          "finish_reason": "stop",
+          "forced_final": false,
+          "calls": [],
+          "rerendered_equals_emitted": true
+        }
+      ],
+      "total_ms": 9059.662,
+      "first_text_ms": 499.704,
+      "answer_first_text_ms": 7620.919,
+      "replicas": [
+        "r1",
+        "r1",
+        "r1"
+      ],
+      "cached_tokens": [
+        0,
+        656,
+        0
+      ],
+      "ttft_ms": [
+        40.723,
+        40.651,
+        85.359
+      ],
+      "replicas_text": "r1 / r1 / r1",
+      "cached_text": "0 / 656 / 0",
+      "ttft_text": "40.7 / 40.7 / 85.4",
+      "background_requests": 137,
+      "policy": "single",
+      "evictions": {
+        "r1": 3437
+      }
+    },
+    "stage2_round_robin": {
+      "status": "complete",
+      "reason": null,
+      "passes": [
+        {
+          "pass": 1,
+          "replica": "r1",
+          "prompt_tokens": 906,
+          "cached_tokens": 0,
+          "uncached_tokens": 906,
+          "cached_fraction": 0.0,
+          "output_tokens": 100,
+          "reasoning_tokens": 24,
+          "visible_tokens": 9,
+          "held_back_tokens": 64,
+          "queued_ms": 7.969,
+          "ttft_ms": 45.065,
+          "start_ms": 182.82,
+          "end_ms": 1257.662,
+          "duration_ms": 1074.842,
+          "finish_reason": "tool_calls",
+          "forced_final": false,
+          "calls": [
+            "web_search"
+          ],
+          "rerendered_equals_emitted": true
+        },
+        {
+          "pass": 2,
+          "replica": "r2",
+          "prompt_tokens": 1186,
+          "cached_tokens": 0,
+          "uncached_tokens": 1186,
+          "cached_fraction": 0.0,
+          "output_tokens": 282,
+          "reasoning_tokens": 28,
+          "visible_tokens": 0,
+          "held_back_tokens": 251,
+          "queued_ms": 1.383,
+          "ttft_ms": 52.294,
+          "start_ms": 2864.962,
+          "end_ms": 5762.272,
+          "duration_ms": 2897.309,
+          "finish_reason": "tool_calls",
+          "forced_final": false,
+          "calls": [
+            "run_python"
+          ],
+          "rerendered_equals_emitted": true
+        },
+        {
+          "pass": 3,
+          "replica": "r3",
+          "prompt_tokens": 1593,
+          "cached_tokens": 0,
+          "uncached_tokens": 1593,
+          "cached_fraction": 0.0,
+          "output_tokens": 152,
+          "reasoning_tokens": 19,
+          "visible_tokens": 130,
+          "held_back_tokens": 0,
+          "queued_ms": 1.138,
+          "ttft_ms": 71.986,
+          "start_ms": 7069.272,
+          "end_ms": 8643.57,
+          "duration_ms": 1574.298,
+          "finish_reason": "stop",
+          "forced_final": false,
+          "calls": [],
+          "rerendered_equals_emitted": true
+        }
+      ],
+      "total_ms": 8645.57,
+      "first_text_ms": 497.994,
+      "answer_first_text_ms": 7348.79,
+      "replicas": [
+        "r1",
+        "r2",
+        "r3"
+      ],
+      "cached_tokens": [
+        0,
+        0,
+        0
+      ],
+      "ttft_ms": [
+        45.065,
+        52.294,
+        71.986
+      ],
+      "replicas_text": "r1 / r2 / r3",
+      "cached_text": "0 / 0 / 0",
+      "ttft_text": "45.1 / 52.3 / 72.0",
+      "background_requests": 117,
+      "policy": "round_robin",
+      "evictions": {
+        "r1": 1183,
+        "r2": 173,
+        "r3": 0
+      }
+    },
+    "stage2_llmd": {
+      "status": "complete",
+      "reason": null,
+      "passes": [
+        {
+          "pass": 1,
+          "replica": "r1",
+          "prompt_tokens": 906,
+          "cached_tokens": 0,
+          "uncached_tokens": 906,
+          "cached_fraction": 0.0,
+          "output_tokens": 100,
+          "reasoning_tokens": 24,
+          "visible_tokens": 9,
+          "held_back_tokens": 64,
+          "queued_ms": 7.969,
+          "ttft_ms": 45.065,
+          "start_ms": 182.82,
+          "end_ms": 1257.662,
+          "duration_ms": 1074.842,
+          "finish_reason": "tool_calls",
+          "forced_final": false,
+          "calls": [
+            "web_search"
+          ],
+          "rerendered_equals_emitted": true
+        },
+        {
+          "pass": 2,
+          "replica": "r1",
+          "prompt_tokens": 1186,
+          "cached_tokens": 992,
+          "uncached_tokens": 194,
+          "cached_fraction": 0.8364,
+          "output_tokens": 282,
+          "reasoning_tokens": 28,
+          "visible_tokens": 0,
+          "held_back_tokens": 251,
+          "queued_ms": 5.014,
+          "ttft_ms": 16.002,
+          "start_ms": 2864.962,
+          "end_ms": 5786.144,
+          "duration_ms": 2921.182,
+          "finish_reason": "tool_calls",
+          "forced_final": false,
+          "calls": [
+            "run_python"
+          ],
+          "rerendered_equals_emitted": true
+        },
+        {
+          "pass": 3,
+          "replica": "r1",
+          "prompt_tokens": 1593,
+          "cached_tokens": 1456,
+          "uncached_tokens": 137,
+          "cached_fraction": 0.914,
+          "output_tokens": 152,
+          "reasoning_tokens": 19,
+          "visible_tokens": 130,
+          "held_back_tokens": 0,
+          "queued_ms": 2.114,
+          "ttft_ms": 12.832,
+          "start_ms": 7093.144,
+          "end_ms": 8676.3,
+          "duration_ms": 1583.155,
+          "finish_reason": "stop",
+          "forced_final": false,
+          "calls": [],
+          "rerendered_equals_emitted": true
+        }
+      ],
+      "total_ms": 8678.3,
+      "first_text_ms": 497.994,
+      "answer_first_text_ms": 7332.751,
+      "replicas": [
+        "r1",
+        "r1",
+        "r1"
+      ],
+      "cached_tokens": [
+        0,
+        992,
+        1456
+      ],
+      "ttft_ms": [
+        45.065,
+        16.002,
+        12.832
+      ],
+      "replicas_text": "r1 / r1 / r1",
+      "cached_text": "0 / 992 / 1,456",
+      "ttft_text": "45.1 / 16.0 / 12.8",
+      "background_requests": 117,
+      "policy": "llmd",
+      "evictions": {
+        "r1": 1231,
+        "r2": 83,
+        "r3": 0
+      }
+    },
+    "stage2_dynamo": {
+      "status": "complete",
+      "reason": null,
+      "passes": [
+        {
+          "pass": 1,
+          "replica": "r3",
+          "prompt_tokens": 906,
+          "cached_tokens": 0,
+          "uncached_tokens": 906,
+          "cached_fraction": 0.0,
+          "output_tokens": 100,
+          "reasoning_tokens": 24,
+          "visible_tokens": 9,
+          "held_back_tokens": 64,
+          "queued_ms": 6.094,
+          "ttft_ms": 42.767,
+          "start_ms": 182.82,
+          "end_ms": 1205.428,
+          "duration_ms": 1022.608,
+          "finish_reason": "tool_calls",
+          "forced_final": false,
+          "calls": [
+            "web_search"
+          ],
+          "rerendered_equals_emitted": true
+        },
+        {
+          "pass": 2,
+          "replica": "r3",
+          "prompt_tokens": 1186,
+          "cached_tokens": 992,
+          "uncached_tokens": 194,
+          "cached_fraction": 0.8364,
+          "output_tokens": 282,
+          "reasoning_tokens": 28,
+          "visible_tokens": 0,
+          "held_back_tokens": 251,
+          "queued_ms": 4.243,
+          "ttft_ms": 15.144,
+          "start_ms": 2812.728,
+          "end_ms": 5621.436,
+          "duration_ms": 2808.708,
+          "finish_reason": "tool_calls",
+          "forced_final": false,
+          "calls": [
+            "run_python"
+          ],
+          "rerendered_equals_emitted": true
+        },
+        {
+          "pass": 3,
+          "replica": "r3",
+          "prompt_tokens": 1593,
+          "cached_tokens": 1456,
+          "uncached_tokens": 137,
+          "cached_fraction": 0.914,
+          "output_tokens": 152,
+          "reasoning_tokens": 19,
+          "visible_tokens": 130,
+          "held_back_tokens": 0,
+          "queued_ms": 3.86,
+          "ttft_ms": 14.523,
+          "start_ms": 6928.436,
+          "end_ms": 8445.225,
+          "duration_ms": 1516.789,
+          "finish_reason": "stop",
+          "forced_final": false,
+          "calls": [],
+          "rerendered_equals_emitted": true
+        }
+      ],
+      "total_ms": 8447.225,
+      "first_text_ms": 483.337,
+      "answer_first_text_ms": 7150.714,
+      "replicas": [
+        "r3",
+        "r3",
+        "r3"
+      ],
+      "cached_tokens": [
+        0,
+        992,
+        1456
+      ],
+      "ttft_ms": [
+        42.767,
+        15.144,
+        14.523
+      ],
+      "replicas_text": "r3 / r3 / r3",
+      "cached_text": "0 / 992 / 1,456",
+      "ttft_text": "42.8 / 15.1 / 14.5",
+      "background_requests": 115,
+      "policy": "dynamo",
+      "evictions": {
+        "r1": 1093,
+        "r2": 62,
+        "r3": 0
+      }
+    }
+  }
+}

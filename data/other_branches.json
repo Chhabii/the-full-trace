@@ -1,0 +1,1719 @@
+{
+  "meta": {
+    "script": "sim/other_branches.py",
+    "generated_at": "2026-10-09T13:03:07+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T12:31:14+00:00",
+      "sha256": "7760cf964886"
+    },
+    "constants_used": {
+      "extra.sims_w20.chameleon_image_px": 512,
+      "extra.sims_w20.chameleon_image_tokens": 1024,
+      "extra.sims_w20.flux_dev_card_steps": 50,
+      "extra.sims_w20.flux_double_blocks": 19,
+      "extra.sims_w20.flux_head_dim": 128,
+      "extra.sims_w20.flux_heads": 24,
+      "extra.sims_w20.flux_in_channels": 64,
+      "extra.sims_w20.flux_latent_pack": 2,
+      "extra.sims_w20.flux_params": 12000000000.0,
+      "extra.sims_w20.flux_schnell_steps": 4,
+      "extra.sims_w20.flux_single_blocks": 38,
+      "extra.sims_w20.flux_text_tokens": 512,
+      "extra.sims_w20.flux_vae_scale_factor": 8,
+      "extra.sims_w20.mimi_codebook_size": 2048,
+      "extra.sims_w20.mimi_codebooks": 8,
+      "extra.sims_w20.mimi_frame_hz": 12.5,
+      "extra.sims_w20.mimi_sample_rate_hz": 24000,
+      "extra.sims_w20.moshi_theoretical_latency_ms": 160,
+      "extra.sims_w20.opus_fullband_hz": 48000,
+      "extra.sims_w20.opus_recommended_frame_ms": 20,
+      "extra.sims_w20.whisper_segment_s": 30,
+      "extra.sims_w20.whisper_stride_ms": 10,
+      "hardware.H-frontier.gb300_gpu_bf16_dense": 2.5,
+      "hardware.H-frontier.gb300_gpu_hbm_bandwidth": 8,
+      "hardware.H-teach.h100_roofline_ridge_bf16": 295,
+      "hardware.H-teach.h100_sxm_bf16_dense": 989.5,
+      "hardware.interconnect.nvlink5_per_gpu": 1800,
+      "hypothetical.agent_task_ref.checkpoint_bytes": 24000,
+      "hypothetical.agent_task_ref.client_disconnect_per_min": 0.01,
+      "hypothetical.agent_task_ref.compaction_trigger_tokens": 48000,
+      "hypothetical.agent_task_ref.fetch_wait_s": 4,
+      "hypothetical.agent_task_ref.passes": 40,
+      "hypothetical.agent_task_ref.raised_max_passes": 64,
+      "hypothetical.agent_task_ref.searches_per_pass": 2,
+      "hypothetical.agent_task_ref.task_usd_budget": 3.0,
+      "hypothetical.billing_ref.price_cached_input_usd_per_mtok": 0.2,
+      "hypothetical.billing_ref.price_input_usd_per_mtok": 2.0,
+      "hypothetical.billing_ref.price_output_usd_per_mtok": 8.0,
+      "hypothetical.billing_ref.price_web_search_usd_per_1000_queries": 10.0,
+      "hypothetical.cancellation_ref.in_region_hops_to_engine": 4,
+      "hypothetical.context_budget_ref.compaction_summary_tokens": 1200,
+      "hypothetical.context_budget_ref.prompt_budget_tokens": 131072,
+      "hypothetical.fleet_price_ref.gb300_gpu_hour_usd": 6.0,
+      "hypothetical.gpu_step_model.hbm_bandwidth_efficiency": 0.8,
+      "hypothetical.gpu_step_model.per_layer_overhead_us": 40,
+      "hypothetical.gpu_step_model.per_step_overhead_ms": 0.5,
+      "hypothetical.image_gen_ref.ar_pixels_per_token_side": 16,
+      "hypothetical.image_gen_ref.cfg_passes_per_step": 1,
+      "hypothetical.image_gen_ref.encode_and_put_ms": 60,
+      "hypothetical.image_gen_ref.image_px": 1024,
+      "hypothetical.image_gen_ref.max_batch_images": 4,
+      "hypothetical.image_gen_ref.output_check_ms": 120,
+      "hypothetical.image_gen_ref.prompt_check_ms": 30,
+      "hypothetical.image_gen_ref.signed_url_ttl_s": 300,
+      "hypothetical.image_gen_ref.steps": 28,
+      "hypothetical.image_gen_ref.vae_decode_ms": 150,
+      "hypothetical.rollout_ref.drain_timeout_s": 300,
+      "hypothetical.serving_assumptions.kv_transfer_software_overhead_ms": 2.0,
+      "hypothetical.serving_assumptions.prefill_mfu": 0.5,
+      "hypothetical.slo.top_level_deadline_s": 120,
+      "hypothetical.streaming_ref.in_region_hop_forward_ms": 0.25,
+      "hypothetical.tool_loop.system_prompt_tokens": 1200,
+      "hypothetical.tp_comm_ref.nvlink_busbw_efficiency": 0.8,
+      "hypothetical.tp_comm_ref.nvlink_step_latency_us": 2.0,
+      "hypothetical.voice_ref.asr_finalize_ms": 100,
+      "hypothetical.voice_ref.barge_in_at_playback_s": 3.0,
+      "hypothetical.voice_ref.barge_in_min_speech_ms": 200,
+      "hypothetical.voice_ref.downlink_jitter_buffer_ms": 60,
+      "hypothetical.voice_ref.endpoint_silence_ms": 500,
+      "hypothetical.voice_ref.llm_ttft_ms": 350,
+      "hypothetical.voice_ref.native_turn_detect_ms": 300,
+      "hypothetical.voice_ref.opus_bitrate_kbps": 32,
+      "hypothetical.voice_ref.speech_words_per_minute": 150,
+      "hypothetical.voice_ref.tokens_per_word": 1.3,
+      "hypothetical.voice_ref.tts_first_audio_ms": 200,
+      "hypothetical.voice_ref.tts_first_phrase_tokens": 12,
+      "hypothetical.voice_ref.tts_lookahead_cap_s": 2.0,
+      "hypothetical.voice_ref.tts_realtime_factor": 4,
+      "hypothetical.voice_ref.uplink_jitter_buffer_ms": 40,
+      "hypothetical.workload_profiles.c_final_output_tokens": 900,
+      "hypothetical.workload_profiles.c_first_prompt_tokens": 4000,
+      "hypothetical.workload_profiles.c_output_tokens_per_tool_pass": 300,
+      "hypothetical.workload_profiles.c_tokens_added_per_pass": 2500,
+      "models.M-frontier.active_params": 104189614848,
+      "models.M-frontier.ep_bytes_per_token_all_moe_layers": 15830000.0,
+      "models.M-frontier.first_k_dense_replace": 1,
+      "models.M-frontier.kda_conv_state_shape_per_layer": [
+        36864,
+        3
+      ],
+      "models.M-frontier.kda_head_k_dim": 128,
+      "models.M-frontier.kda_head_v_dim": 128,
+      "models.M-frontier.kda_num_heads": 96,
+      "models.M-frontier.kda_recurrent_state_dtype": "float32",
+      "models.M-frontier.kda_recurrent_state_shape_per_layer": [
+        96,
+        128,
+        128
+      ],
+      "models.M-frontier.kda_short_conv_kernel": 4,
+      "models.M-frontier.kv_lora_rank": 512,
+      "models.M-frontier.max_position_embeddings": 1048576,
+      "models.M-frontier.num_attention_heads": 96,
+      "models.M-frontier.num_experts": 896,
+      "models.M-frontier.num_experts_per_token": 16,
+      "models.M-frontier.num_hidden_layers": 93,
+      "models.M-frontier.num_kda_layers": 69,
+      "models.M-frontier.num_mla_layers": 24,
+      "models.M-frontier.qk_nope_head_dim": 128,
+      "models.M-frontier.qk_rope_head_dim": 64,
+      "models.M-frontier.torch_dtype": "bfloat16",
+      "models.M-frontier.trtllm_per_rank_weights_gb": {
+        "DEP16": 210,
+        "TEP8": 213,
+        "TEP16": 115
+      },
+      "models.M-frontier.v_head_dim": 128,
+      "routing.dynamo.conditional_disagg_max_effective_isl": 2048,
+      "routing.dynamo.conditional_disagg_ratio": 0.7
+    }
+  },
+  "image": {
+    "label": "HYPOTHETICAL image branch (class C sizes) on the public FLUX.1 [dev] shape; compute model at MFU, not a benchmark",
+    "latent": {
+      "latent_side": {
+        "value": 128,
+        "unit": "latent positions per side",
+        "formula": "px ÷ vae_scale_factor",
+        "arithmetic": "1024 ÷ 8 = 128"
+      },
+      "token_side": {
+        "value": 64,
+        "unit": "tokens per side",
+        "formula": "latent side ÷ 2 (2×2 packing)",
+        "arithmetic": "128 ÷ 2 = 64"
+      },
+      "image_tokens": {
+        "value": 4096,
+        "unit": "tokens",
+        "formula": "token side²",
+        "arithmetic": "64² = 4096"
+      },
+      "text_tokens": {
+        "value": 512,
+        "unit": "tokens"
+      },
+      "sequence_tokens": {
+        "value": 4608,
+        "unit": "tokens",
+        "formula": "image tokens + text tokens",
+        "arithmetic": "4096 + 512 = 4608"
+      },
+      "latent_channels": {
+        "value": 16,
+        "unit": "channels",
+        "formula": "in_channels ÷ 4",
+        "arithmetic": "64 ÷ 4 = 16"
+      }
+    },
+    "flops": {
+      "layers": {
+        "value": 57,
+        "unit": "blocks",
+        "formula": "double + single blocks",
+        "arithmetic": "19 + 38 = 57"
+      },
+      "d_model": {
+        "value": 3072,
+        "unit": "dims",
+        "formula": "heads × head_dim",
+        "arithmetic": "24 × 128 = 3072"
+      },
+      "linear_per_pass": {
+        "value": 110592000000000.0,
+        "unit": "FLOP",
+        "formula": "2 × params × sequence tokens",
+        "arithmetic": "2 × 1.2e+10 × 4608 = 1.106e+14"
+      },
+      "attention_per_pass": {
+        "value": 14872398004224,
+        "unit": "FLOP",
+        "formula": "4 × layers × sequence² × d_model",
+        "arithmetic": "4 × 57 × 4608² × 3072 = 1.487e+13"
+      },
+      "per_pass": {
+        "value": 125464398004224.0,
+        "unit": "FLOP",
+        "formula": "linear + attention",
+        "arithmetic": "1.106e+14 + 1.487e+13 = 1.255e+14"
+      },
+      "attention_share": {
+        "value": 0.11853879061152704,
+        "unit": "fraction"
+      },
+      "per_step": {
+        "value": 125464398004224.0,
+        "unit": "FLOP",
+        "formula": "per pass × CFG passes",
+        "arithmetic": "1.255e+14 × 1 = 1.255e+14"
+      },
+      "rate": {
+        "value": 494750000000000.0,
+        "unit": "FLOP/s",
+        "formula": "H100 BF16 dense × MFU",
+        "arithmetic": "9.895e+14 × 0.5 = 4.948e+14"
+      }
+    },
+    "per_image": {
+      "schnell_4": {
+        "steps": 4,
+        "flops": {
+          "value": 501857592016896.0,
+          "unit": "FLOP",
+          "formula": "FLOPs per step × steps",
+          "arithmetic": "1.255e+14 × 4 = 5.019e+14"
+        },
+        "gpu_s": {
+          "value": 1.014366027320659,
+          "unit": "GPU-s",
+          "formula": "FLOPs ÷ (BF16 dense peak × MFU)",
+          "arithmetic": "5.019e+14 ÷ (9.895e+14 × 0.5) = 1.014"
+        }
+      },
+      "reference_28": {
+        "steps": 28,
+        "flops": {
+          "value": 3513003144118272.0,
+          "unit": "FLOP",
+          "formula": "FLOPs per step × steps",
+          "arithmetic": "1.255e+14 × 28 = 3.513e+15"
+        },
+        "gpu_s": {
+          "value": 7.100562191244612,
+          "unit": "GPU-s",
+          "formula": "FLOPs ÷ (BF16 dense peak × MFU)",
+          "arithmetic": "3.513e+15 ÷ (9.895e+14 × 0.5) = 7.101"
+        }
+      },
+      "dev_card_50": {
+        "steps": 50,
+        "flops": {
+          "value": 6273219900211200.0,
+          "unit": "FLOP",
+          "formula": "FLOPs per step × steps",
+          "arithmetic": "1.255e+14 × 50 = 6.273e+15"
+        },
+        "gpu_s": {
+          "value": 12.679575341508237,
+          "unit": "GPU-s",
+          "formula": "FLOPs ÷ (BF16 dense peak × MFU)",
+          "arithmetic": "6.273e+15 ÷ (9.895e+14 × 0.5) = 12.680"
+        }
+      }
+    },
+    "intensity": {
+      "weight_bytes": {
+        "value": 24000000000.0,
+        "unit": "B",
+        "formula": "params × 2 B (BF16)",
+        "arithmetic": "1.2e+10 × 2 = 2.4e+10"
+      },
+      "diffusion_flop_per_byte": {
+        "value": 5227.683250176,
+        "unit": "FLOP/B",
+        "formula": "FLOPs per pass ÷ weight bytes",
+        "arithmetic": "1.255e+14 ÷ 2.4e+10 = 5,228"
+      },
+      "text_decode_b1_flop_per_byte": {
+        "value": 1.0,
+        "unit": "FLOP/B",
+        "formula": "2 FLOPs per parameter ÷ 2 B per parameter (one token, batch 1)",
+        "arithmetic": "2 ÷ 2 = 1"
+      },
+      "h100_ridge": {
+        "value": 295,
+        "unit": "FLOP/B"
+      },
+      "over_ridge": {
+        "value": 17.720960170088137,
+        "unit": "×",
+        "formula": "intensity ÷ ridge",
+        "arithmetic": "5,228 ÷ 295 = 17.7"
+      }
+    },
+    "vs_text": {
+      "workload_a_gpu_s": {
+        "value": 0.17495258412688014,
+        "unit": "GPU-s",
+        "note": "data/request_cost.json workloads.A (Part 14)"
+      },
+      "image_over_chat": {
+        "value": 40.58563768395156,
+        "unit": "×",
+        "formula": "image GPU-s ÷ short-chat GPU-s",
+        "arithmetic": "7.101 ÷ 0.1750 = 40.6"
+      }
+    },
+    "batching": {
+      "1": {
+        "denoise_s": {
+          "value": 7.100562191244612,
+          "unit": "s",
+          "formula": "b × one-image denoise time (compute-bound)",
+          "arithmetic": "1 × 7.101 = 7.101"
+        },
+        "images_per_gpu_s": {
+          "value": 0.14083391893011735,
+          "unit": "images per GPU-s",
+          "formula": "b ÷ (b × t1)",
+          "arithmetic": "1 ÷ 7.101 = 0.1408"
+        }
+      },
+      "2": {
+        "denoise_s": {
+          "value": 14.201124382489224,
+          "unit": "s",
+          "formula": "b × one-image denoise time (compute-bound)",
+          "arithmetic": "2 × 7.101 = 14.201"
+        },
+        "images_per_gpu_s": {
+          "value": 0.14083391893011735,
+          "unit": "images per GPU-s",
+          "formula": "b ÷ (b × t1)",
+          "arithmetic": "1 ÷ 7.101 = 0.1408"
+        }
+      },
+      "3": {
+        "denoise_s": {
+          "value": 21.301686573733836,
+          "unit": "s",
+          "formula": "b × one-image denoise time (compute-bound)",
+          "arithmetic": "3 × 7.101 = 21.302"
+        },
+        "images_per_gpu_s": {
+          "value": 0.14083391893011735,
+          "unit": "images per GPU-s",
+          "formula": "b ÷ (b × t1)",
+          "arithmetic": "1 ÷ 7.101 = 0.1408"
+        }
+      },
+      "4": {
+        "denoise_s": {
+          "value": 28.40224876497845,
+          "unit": "s",
+          "formula": "b × one-image denoise time (compute-bound)",
+          "arithmetic": "4 × 7.101 = 28.402"
+        },
+        "images_per_gpu_s": {
+          "value": 0.14083391893011735,
+          "unit": "images per GPU-s",
+          "formula": "b ÷ (b × t1)",
+          "arithmetic": "1 ÷ 7.101 = 0.1408"
+        }
+      }
+    },
+    "wall": {
+      "prompt_check_ms": {
+        "value": 30,
+        "unit": "ms"
+      },
+      "denoise_ms": {
+        "value": 7100.562191244612,
+        "unit": "ms"
+      },
+      "vae_decode_ms": {
+        "value": 150,
+        "unit": "ms"
+      },
+      "output_check_ms": {
+        "value": 120,
+        "unit": "ms"
+      },
+      "encode_and_put_ms": {
+        "value": 60,
+        "unit": "ms"
+      },
+      "total_ms": {
+        "value": 7460.562191244612,
+        "unit": "ms",
+        "formula": "prompt check + denoise + VAE decode + output check + encode and PUT",
+        "arithmetic": "30 + 7101 + 150 + 120 + 60 = 7461"
+      },
+      "signed_url_ttl_s": {
+        "value": 300,
+        "unit": "s"
+      }
+    },
+    "autoregressive": {
+      "chameleon_check_tokens": {
+        "value": 1024,
+        "unit": "tokens",
+        "formula": "(512 ÷ 16)²",
+        "arithmetic": "(512 ÷ 16)² = 1024",
+        "matches_paper": true
+      },
+      "tokens_1024": {
+        "value": 4096,
+        "unit": "tokens",
+        "formula": "(px ÷ 16)²",
+        "arithmetic": "(1024 ÷ 16)² = 4096"
+      },
+      "decode_s": {
+        "value": 193.486848,
+        "unit": "s",
+        "formula": "tokens × decode step of Part 14.2",
+        "arithmetic": "4096 × 47.2 ms = 193.5",
+        "step_ms": 47.238
+      },
+      "kv_bytes_m_dense": {
+        "value": 1476395008,
+        "unit": "B",
+        "formula": "tokens × M-dense KV bytes per token (illustrative shape)",
+        "arithmetic": "4096 × 360448 = 1.476e+09",
+        "GB_1e9": 1.476395008
+      },
+      "decode_steps_over_diffusion_steps": {
+        "value": 146.28571428571428,
+        "unit": "×",
+        "formula": "tokens ÷ denoising steps",
+        "arithmetic": "4096 ÷ 28 = 146"
+      }
+    }
+  },
+  "voice": {
+    "label": "HYPOTHETICAL voice budget (class C); codec and model rates are published values",
+    "opus": {
+      "frame_ms": {
+        "value": 20,
+        "unit": "ms"
+      },
+      "packets_per_s": {
+        "value": 50.0,
+        "unit": "packets/s",
+        "formula": "1,000 ms ÷ frame ms",
+        "arithmetic": "1000 ÷ 20 = 50"
+      },
+      "samples_per_frame_48k": {
+        "value": 960,
+        "unit": "samples",
+        "formula": "48,000 Hz × frame s",
+        "arithmetic": "48000 × 0.02 = 960"
+      },
+      "payload_bytes": {
+        "value": 80.0,
+        "unit": "B per packet",
+        "formula": "bitrate ÷ 8 × frame s",
+        "arithmetic": "32000 ÷ 8 × 0.02 = 80"
+      },
+      "header_bytes": {
+        "value": 40,
+        "unit": "B per packet",
+        "formula": "IPv4 20 + UDP 8 + RTP 12",
+        "arithmetic": "20 + 8 + 12 = 40"
+      },
+      "wire_kbps": {
+        "value": 48.0,
+        "unit": "kbit/s",
+        "formula": "(payload + headers) × 8 × packets/s",
+        "arithmetic": "(80 + 40) × 8 × 50 = 48,000 bit/s"
+      },
+      "header_share": {
+        "value": 0.3333333333333333,
+        "unit": "fraction"
+      }
+    },
+    "whisper": {
+      "mel_frames_per_s": {
+        "value": 100.0,
+        "unit": "frames/s",
+        "formula": "1,000 ms ÷ stride",
+        "arithmetic": "1000 ÷ 10 = 100"
+      },
+      "mel_frames_per_segment": {
+        "value": 3000.0,
+        "unit": "frames",
+        "formula": "segment s × frames/s",
+        "arithmetic": "30 × 100 = 3000"
+      },
+      "encoder_positions": {
+        "value": 1500.0,
+        "unit": "positions",
+        "formula": "mel frames ÷ 2 (stride-2 convolution)",
+        "arithmetic": "3000 ÷ 2 = 1500"
+      },
+      "encoder_positions_per_s": {
+        "value": 50.0,
+        "unit": "positions/s",
+        "formula": "positions ÷ segment s",
+        "arithmetic": "1500 ÷ 30 = 50"
+      }
+    },
+    "mimi": {
+      "frame_ms": {
+        "value": 80.0,
+        "unit": "ms",
+        "formula": "1,000 ÷ frame rate",
+        "arithmetic": "1000 ÷ 12.5 = 80"
+      },
+      "samples_per_frame": {
+        "value": 1920.0,
+        "unit": "samples",
+        "formula": "24,000 Hz ÷ 12.5",
+        "arithmetic": "24000 ÷ 12.5 = 1920"
+      },
+      "tokens_per_s": {
+        "value": 100.0,
+        "unit": "audio tokens/s per stream",
+        "formula": "frames/s × codebooks",
+        "arithmetic": "12.5 × 8 = 100"
+      },
+      "bits_per_token": {
+        "value": 11,
+        "unit": "bits",
+        "formula": "log2(codebook size)",
+        "arithmetic": "log2(2048) = 11"
+      },
+      "bitrate_bps": {
+        "value": 1100.0,
+        "unit": "bit/s",
+        "formula": "tokens/s × bits",
+        "arithmetic": "100 × 11 = 1100"
+      },
+      "temporal_steps_per_s": {
+        "value": 12.5,
+        "unit": "Temporal Transformer passes/s"
+      },
+      "model_latency_frames": {
+        "value": 2.0,
+        "unit": "frames",
+        "formula": "160 ms ÷ 80 ms",
+        "arithmetic": "160 ÷ 80 = 2"
+      }
+    },
+    "rates": {
+      "speech_text_tokens_per_s": {
+        "value": 3.25,
+        "unit": "text tokens/s",
+        "formula": "words/min ÷ 60 × tokens/word",
+        "arithmetic": "150 ÷ 60 × 1.3 = 3.25"
+      },
+      "llm_step_ms": {
+        "value": 47.238,
+        "unit": "ms",
+        "note": "decode step of Part 14.2 at the fleet design point"
+      },
+      "llm_tokens_per_s": {
+        "value": 21.16939751894661,
+        "unit": "tokens/s",
+        "formula": "1 ÷ decode step",
+        "arithmetic": "1 ÷ 0.0472 s = 21.2"
+      },
+      "llm_over_speech": {
+        "value": 6.513660775060496,
+        "unit": "×",
+        "formula": "text model rate ÷ speech rate",
+        "arithmetic": "21.2 ÷ 3.25 = 6.5"
+      },
+      "audio_over_text_tokens": {
+        "value": 30.76923076923077,
+        "unit": "×",
+        "formula": "Mimi tokens/s ÷ speech text tokens/s",
+        "arithmetic": "100 ÷ 3.25 = 31"
+      }
+    },
+    "network": {
+      "rtt_ms": {
+        "value": 64.47877682,
+        "unit": "ms"
+      },
+      "one_way_ms": {
+        "value": 32.23938841,
+        "unit": "ms",
+        "formula": "RTT ÷ 2",
+        "arithmetic": "64.5 ÷ 2 = 32.2"
+      }
+    },
+    "cascaded": {
+      "stages": {
+        "capture_frame": {
+          "value": 20,
+          "unit": "ms",
+          "note": "one Opus frame of audio buffered before it is sent"
+        },
+        "uplink_network": {
+          "value": 32.23938841,
+          "unit": "ms",
+          "note": "one way, user → PoP → ap_south (data/network_latency.json)"
+        },
+        "uplink_jitter_buffer": {
+          "value": 40,
+          "unit": "ms",
+          "note": "server jitter buffer"
+        },
+        "endpoint_silence": {
+          "value": 500,
+          "unit": "ms",
+          "note": "VAD waits for silence to end the turn"
+        },
+        "asr_finalize": {
+          "value": 100,
+          "unit": "ms",
+          "note": "streaming ASR emits the last words"
+        },
+        "llm_ttft": {
+          "value": 350,
+          "unit": "ms",
+          "note": "first text token"
+        },
+        "llm_first_phrase": {
+          "value": 566.856,
+          "unit": "ms",
+          "note": "first phrase tokens × decode step of Part 14.2"
+        },
+        "tts_first_audio": {
+          "value": 200,
+          "unit": "ms",
+          "note": "streaming TTS first audio frame"
+        },
+        "downlink_network": {
+          "value": 32.23938841,
+          "unit": "ms",
+          "note": "one way back"
+        },
+        "downlink_jitter_buffer": {
+          "value": 60,
+          "unit": "ms",
+          "note": "browser playout buffer"
+        }
+      },
+      "order": [
+        "capture_frame",
+        "uplink_network",
+        "uplink_jitter_buffer",
+        "endpoint_silence",
+        "asr_finalize",
+        "llm_ttft",
+        "llm_first_phrase",
+        "tts_first_audio",
+        "downlink_network",
+        "downlink_jitter_buffer"
+      ],
+      "total_ms": {
+        "value": 1901.33477682,
+        "unit": "ms",
+        "formula": "sum of stages",
+        "arithmetic": "20.0 + 32.2 + 40.0 + 500.0 + 100.0 + 350.0 + 566.9 + 200.0 + 32.2 + 60.0 = 1901"
+      }
+    },
+    "native": {
+      "stages": {
+        "capture_frame": {
+          "value": 20,
+          "unit": "ms",
+          "note": "one Opus frame"
+        },
+        "uplink_network": {
+          "value": 32.23938841,
+          "unit": "ms",
+          "note": "one way"
+        },
+        "uplink_jitter_buffer": {
+          "value": 40,
+          "unit": "ms",
+          "note": "server jitter buffer"
+        },
+        "turn_detect": {
+          "value": 300,
+          "unit": "ms",
+          "note": "semantic turn detector"
+        },
+        "model_first_audio": {
+          "value": 160,
+          "unit": "ms",
+          "note": "Moshi's theoretical latency: one 80 ms Mimi frame + acoustic delay of 1 frame"
+        },
+        "downlink_network": {
+          "value": 32.23938841,
+          "unit": "ms",
+          "note": "one way back"
+        },
+        "downlink_jitter_buffer": {
+          "value": 60,
+          "unit": "ms",
+          "note": "browser playout buffer"
+        }
+      },
+      "order": [
+        "capture_frame",
+        "uplink_network",
+        "uplink_jitter_buffer",
+        "turn_detect",
+        "model_first_audio",
+        "downlink_network",
+        "downlink_jitter_buffer"
+      ],
+      "total_ms": {
+        "value": 644.4787768199999,
+        "unit": "ms",
+        "formula": "sum of stages",
+        "arithmetic": "20.0 + 32.2 + 40.0 + 300.0 + 160.0 + 32.2 + 60.0 = 644"
+      }
+    },
+    "native_saves_ms": {
+      "value": 1256.856,
+      "unit": "ms"
+    },
+    "barge_in": {
+      "at_playback_s": {
+        "value": 3.0,
+        "unit": "s"
+      },
+      "detect_ms": {
+        "value": 272.23938841,
+        "unit": "ms",
+        "formula": "min speech + uplink one way + uplink jitter buffer",
+        "arithmetic": "200 + 32.2 + 40 = 272.2"
+      },
+      "cancel_hops_ms": {
+        "value": 1.0,
+        "unit": "ms",
+        "formula": "hops × per-hop forward",
+        "arithmetic": "4 × 0.25 = 1.0"
+      },
+      "stop_ms": {
+        "value": 365.47877682,
+        "unit": "ms",
+        "formula": "detect + cancel + downlink one way + playout buffer",
+        "arithmetic": "272.2 + 1.0 + 32.2 + 60 = 365.5"
+      },
+      "heard_s": {
+        "value": 3.36547877682,
+        "unit": "s",
+        "formula": "barge-in moment + stop time",
+        "arithmetic": "3.0 + 0.365 = 3.365"
+      },
+      "tts_unbounded_generated_s": {
+        "value": 12.0,
+        "unit": "s",
+        "formula": "playback s × real-time factor (no cap)",
+        "arithmetic": "3.0 × 4 = 12"
+      },
+      "generated_s": {
+        "value": 5.0,
+        "unit": "s",
+        "formula": "playback s + lookahead cap",
+        "arithmetic": "3.0 + 2.0 = 5.0"
+      },
+      "discarded_s": {
+        "value": 1.6345212231800001,
+        "unit": "s",
+        "formula": "generated − heard",
+        "arithmetic": "5.0 − 3.365 = 1.635"
+      },
+      "kept_text_tokens": {
+        "value": 10.937806024664999,
+        "unit": "text tokens",
+        "formula": "heard s × speech tokens/s",
+        "arithmetic": "3.365 × 3.25 = 10.9"
+      }
+    }
+  },
+  "agent": {
+    "label": "HYPOTHETICAL deep-research task (class C); token sizes from workload C; GPU times are the Part 14 model",
+    "rows_with_compaction": [
+      {
+        "pass": 1,
+        "kind": "tool",
+        "prompt": 4000,
+        "cached": 1200,
+        "new": 2800,
+        "output": 300,
+        "cum_usd": 0.02824
+      },
+      {
+        "pass": 2,
+        "kind": "tool",
+        "prompt": 6500,
+        "cached": 4300,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.055900000000000005
+      },
+      {
+        "pass": 3,
+        "kind": "tool",
+        "prompt": 9000,
+        "cached": 6800,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.08406000000000001
+      },
+      {
+        "pass": 4,
+        "kind": "tool",
+        "prompt": 11500,
+        "cached": 9300,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.11272000000000001
+      },
+      {
+        "pass": 5,
+        "kind": "tool",
+        "prompt": 14000,
+        "cached": 11800,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.14188
+      },
+      {
+        "pass": 6,
+        "kind": "tool",
+        "prompt": 16500,
+        "cached": 14300,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.17154
+      },
+      {
+        "pass": 7,
+        "kind": "tool",
+        "prompt": 19000,
+        "cached": 16800,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.2017
+      },
+      {
+        "pass": 8,
+        "kind": "tool",
+        "prompt": 21500,
+        "cached": 19300,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.23235999999999998
+      },
+      {
+        "pass": 9,
+        "kind": "tool",
+        "prompt": 24000,
+        "cached": 21800,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.26352
+      },
+      {
+        "pass": 10,
+        "kind": "tool",
+        "prompt": 26500,
+        "cached": 24300,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.29518
+      },
+      {
+        "pass": 11,
+        "kind": "tool",
+        "prompt": 29000,
+        "cached": 26800,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.32734
+      },
+      {
+        "pass": 12,
+        "kind": "tool",
+        "prompt": 31500,
+        "cached": 29300,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.36000000000000004
+      },
+      {
+        "pass": 13,
+        "kind": "tool",
+        "prompt": 34000,
+        "cached": 31800,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.39316000000000006
+      },
+      {
+        "pass": 14,
+        "kind": "tool",
+        "prompt": 36500,
+        "cached": 34300,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.4268200000000001
+      },
+      {
+        "pass": 15,
+        "kind": "tool",
+        "prompt": 39000,
+        "cached": 36800,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.4609800000000001
+      },
+      {
+        "pass": 16,
+        "kind": "tool",
+        "prompt": 41500,
+        "cached": 39300,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.49564000000000014
+      },
+      {
+        "pass": 17,
+        "kind": "tool",
+        "prompt": 44000,
+        "cached": 41800,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.5308000000000002
+      },
+      {
+        "pass": 18,
+        "kind": "tool",
+        "prompt": 46500,
+        "cached": 44300,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.5664600000000002
+      },
+      {
+        "pass": 19,
+        "kind": "compaction",
+        "prompt": 49000,
+        "cached": 46800,
+        "new": 2200,
+        "output": 1200,
+        "cum_usd": 0.5898200000000002
+      },
+      {
+        "pass": 20,
+        "kind": "tool",
+        "prompt": 7700,
+        "cached": 1200,
+        "new": 6500,
+        "output": 300,
+        "cum_usd": 0.6254600000000002
+      },
+      {
+        "pass": 21,
+        "kind": "tool",
+        "prompt": 10200,
+        "cached": 8000,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.6538600000000002
+      },
+      {
+        "pass": 22,
+        "kind": "tool",
+        "prompt": 12700,
+        "cached": 10500,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.6827600000000003
+      },
+      {
+        "pass": 23,
+        "kind": "tool",
+        "prompt": 15200,
+        "cached": 13000,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.7121600000000002
+      },
+      {
+        "pass": 24,
+        "kind": "tool",
+        "prompt": 17700,
+        "cached": 15500,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.7420600000000003
+      },
+      {
+        "pass": 25,
+        "kind": "tool",
+        "prompt": 20200,
+        "cached": 18000,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.7724600000000003
+      },
+      {
+        "pass": 26,
+        "kind": "tool",
+        "prompt": 22700,
+        "cached": 20500,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.8033600000000003
+      },
+      {
+        "pass": 27,
+        "kind": "tool",
+        "prompt": 25200,
+        "cached": 23000,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.8347600000000003
+      },
+      {
+        "pass": 28,
+        "kind": "tool",
+        "prompt": 27700,
+        "cached": 25500,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.8666600000000003
+      },
+      {
+        "pass": 29,
+        "kind": "tool",
+        "prompt": 30200,
+        "cached": 28000,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.8990600000000003
+      },
+      {
+        "pass": 30,
+        "kind": "tool",
+        "prompt": 32700,
+        "cached": 30500,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.9319600000000003
+      },
+      {
+        "pass": 31,
+        "kind": "tool",
+        "prompt": 35200,
+        "cached": 33000,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.9653600000000003
+      },
+      {
+        "pass": 32,
+        "kind": "tool",
+        "prompt": 37700,
+        "cached": 35500,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.9992600000000004
+      },
+      {
+        "pass": 33,
+        "kind": "tool",
+        "prompt": 40200,
+        "cached": 38000,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 1.0336600000000005
+      },
+      {
+        "pass": 34,
+        "kind": "tool",
+        "prompt": 42700,
+        "cached": 40500,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 1.0685600000000004
+      },
+      {
+        "pass": 35,
+        "kind": "tool",
+        "prompt": 45200,
+        "cached": 43000,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 1.1039600000000005
+      },
+      {
+        "pass": 36,
+        "kind": "tool",
+        "prompt": 47700,
+        "cached": 45500,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 1.1398600000000005
+      },
+      {
+        "pass": 37,
+        "kind": "compaction",
+        "prompt": 50200,
+        "cached": 48000,
+        "new": 2200,
+        "output": 1200,
+        "cum_usd": 1.1634600000000006
+      },
+      {
+        "pass": 38,
+        "kind": "tool",
+        "prompt": 7700,
+        "cached": 1200,
+        "new": 6500,
+        "output": 300,
+        "cum_usd": 1.1991000000000007
+      },
+      {
+        "pass": 39,
+        "kind": "tool",
+        "prompt": 10200,
+        "cached": 8000,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 1.2275000000000007
+      },
+      {
+        "pass": 40,
+        "kind": "tool",
+        "prompt": 12700,
+        "cached": 10500,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 1.2564000000000006
+      },
+      {
+        "pass": 41,
+        "kind": "tool",
+        "prompt": 15200,
+        "cached": 13000,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 1.2858000000000007
+      },
+      {
+        "pass": 42,
+        "kind": "final",
+        "prompt": 17700,
+        "cached": 15500,
+        "new": 2200,
+        "output": 900,
+        "cum_usd": 1.3005000000000007
+      }
+    ],
+    "rows_without_compaction": [
+      {
+        "pass": 1,
+        "kind": "tool",
+        "prompt": 4000,
+        "cached": 1200,
+        "new": 2800,
+        "output": 300,
+        "cum_usd": 0.02824
+      },
+      {
+        "pass": 2,
+        "kind": "tool",
+        "prompt": 6500,
+        "cached": 4300,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.055900000000000005
+      },
+      {
+        "pass": 3,
+        "kind": "tool",
+        "prompt": 9000,
+        "cached": 6800,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.08406000000000001
+      },
+      {
+        "pass": 4,
+        "kind": "tool",
+        "prompt": 11500,
+        "cached": 9300,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.11272000000000001
+      },
+      {
+        "pass": 5,
+        "kind": "tool",
+        "prompt": 14000,
+        "cached": 11800,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.14188
+      },
+      {
+        "pass": 6,
+        "kind": "tool",
+        "prompt": 16500,
+        "cached": 14300,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.17154
+      },
+      {
+        "pass": 7,
+        "kind": "tool",
+        "prompt": 19000,
+        "cached": 16800,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.2017
+      },
+      {
+        "pass": 8,
+        "kind": "tool",
+        "prompt": 21500,
+        "cached": 19300,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.23235999999999998
+      },
+      {
+        "pass": 9,
+        "kind": "tool",
+        "prompt": 24000,
+        "cached": 21800,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.26352
+      },
+      {
+        "pass": 10,
+        "kind": "tool",
+        "prompt": 26500,
+        "cached": 24300,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.29518
+      },
+      {
+        "pass": 11,
+        "kind": "tool",
+        "prompt": 29000,
+        "cached": 26800,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.32734
+      },
+      {
+        "pass": 12,
+        "kind": "tool",
+        "prompt": 31500,
+        "cached": 29300,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.36000000000000004
+      },
+      {
+        "pass": 13,
+        "kind": "tool",
+        "prompt": 34000,
+        "cached": 31800,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.39316000000000006
+      },
+      {
+        "pass": 14,
+        "kind": "tool",
+        "prompt": 36500,
+        "cached": 34300,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.4268200000000001
+      },
+      {
+        "pass": 15,
+        "kind": "tool",
+        "prompt": 39000,
+        "cached": 36800,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.4609800000000001
+      },
+      {
+        "pass": 16,
+        "kind": "tool",
+        "prompt": 41500,
+        "cached": 39300,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.49564000000000014
+      },
+      {
+        "pass": 17,
+        "kind": "tool",
+        "prompt": 44000,
+        "cached": 41800,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.5308000000000002
+      },
+      {
+        "pass": 18,
+        "kind": "tool",
+        "prompt": 46500,
+        "cached": 44300,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.5664600000000002
+      },
+      {
+        "pass": 19,
+        "kind": "tool",
+        "prompt": 49000,
+        "cached": 46800,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.6026200000000002
+      },
+      {
+        "pass": 20,
+        "kind": "tool",
+        "prompt": 51500,
+        "cached": 49300,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.6392800000000002
+      },
+      {
+        "pass": 21,
+        "kind": "tool",
+        "prompt": 54000,
+        "cached": 51800,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.6764400000000002
+      },
+      {
+        "pass": 22,
+        "kind": "tool",
+        "prompt": 56500,
+        "cached": 54300,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.7141000000000002
+      },
+      {
+        "pass": 23,
+        "kind": "tool",
+        "prompt": 59000,
+        "cached": 56800,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.7522600000000002
+      },
+      {
+        "pass": 24,
+        "kind": "tool",
+        "prompt": 61500,
+        "cached": 59300,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.7909200000000002
+      },
+      {
+        "pass": 25,
+        "kind": "tool",
+        "prompt": 64000,
+        "cached": 61800,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.8300800000000002
+      },
+      {
+        "pass": 26,
+        "kind": "tool",
+        "prompt": 66500,
+        "cached": 64300,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.8697400000000002
+      },
+      {
+        "pass": 27,
+        "kind": "tool",
+        "prompt": 69000,
+        "cached": 66800,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.9099000000000002
+      },
+      {
+        "pass": 28,
+        "kind": "tool",
+        "prompt": 71500,
+        "cached": 69300,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.9505600000000002
+      },
+      {
+        "pass": 29,
+        "kind": "tool",
+        "prompt": 74000,
+        "cached": 71800,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 0.9917200000000002
+      },
+      {
+        "pass": 30,
+        "kind": "tool",
+        "prompt": 76500,
+        "cached": 74300,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 1.0333800000000002
+      },
+      {
+        "pass": 31,
+        "kind": "tool",
+        "prompt": 79000,
+        "cached": 76800,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 1.0755400000000002
+      },
+      {
+        "pass": 32,
+        "kind": "tool",
+        "prompt": 81500,
+        "cached": 79300,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 1.1182
+      },
+      {
+        "pass": 33,
+        "kind": "tool",
+        "prompt": 84000,
+        "cached": 81800,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 1.1613600000000002
+      },
+      {
+        "pass": 34,
+        "kind": "tool",
+        "prompt": 86500,
+        "cached": 84300,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 1.2050200000000002
+      },
+      {
+        "pass": 35,
+        "kind": "tool",
+        "prompt": 89000,
+        "cached": 86800,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 1.2491800000000002
+      },
+      {
+        "pass": 36,
+        "kind": "tool",
+        "prompt": 91500,
+        "cached": 89300,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 1.29384
+      },
+      {
+        "pass": 37,
+        "kind": "tool",
+        "prompt": 94000,
+        "cached": 91800,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 1.3390000000000002
+      },
+      {
+        "pass": 38,
+        "kind": "tool",
+        "prompt": 96500,
+        "cached": 94300,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 1.3846600000000002
+      },
+      {
+        "pass": 39,
+        "kind": "tool",
+        "prompt": 99000,
+        "cached": 96800,
+        "new": 2200,
+        "output": 300,
+        "cum_usd": 1.4308200000000002
+      },
+      {
+        "pass": 40,
+        "kind": "final",
+        "prompt": 101500,
+        "cached": 99300,
+        "new": 2200,
+        "output": 900,
+        "cum_usd": 1.4622800000000002
+      }
+    ],
+    "with_compaction": {
+      "uncached_tokens": 101600,
+      "cached_tokens": 986500,
+      "output_tokens": 15000,
+      "queries": 78,
+      "input_tokens": 1088100,
+      "usd": {
+        "uncached": 0.2032,
+        "cached": 0.1973,
+        "output": 0.12,
+        "search": 0.78,
+        "total": 1.3005
+      },
+      "arithmetic": "101,600 × 2.0/M + 986,500 × 0.2/M + 15,000 × 8.0/M + 78 × 10.0/1000 = 1.3005",
+      "budget_usd": 3.0,
+      "budget_exceeded_at_pass": null,
+      "within_budget": true,
+      "max_prompt": 50200,
+      "passes_total": 42,
+      "compactions": 2
+    },
+    "without_compaction": {
+      "uncached_tokens": 88600,
+      "cached_tokens": 2021400,
+      "output_tokens": 12600,
+      "queries": 78,
+      "input_tokens": 2110000,
+      "usd": {
+        "uncached": 0.1772,
+        "cached": 0.40428,
+        "output": 0.1008,
+        "search": 0.78,
+        "total": 1.46228
+      },
+      "arithmetic": "88,600 × 2.0/M + 2,021,400 × 0.2/M + 12,600 × 8.0/M + 78 × 10.0/1000 = 1.4623",
+      "budget_usd": 3.0,
+      "budget_exceeded_at_pass": null,
+      "within_budget": true,
+      "max_prompt": 101500,
+      "passes_total": 40,
+      "compactions": 0
+    },
+    "compaction_saves_usd": {
+      "value": 0.16178000000000003,
+      "unit": "USD"
+    },
+    "compaction_saves_fraction": {
+      "value": 0.11063544601581099,
+      "unit": "fraction"
+    },
+    "first_compaction_pass": 19,
+    "uncompacted_cap": {
+      "first_pass_over_cap": {
+        "value": 52,
+        "unit": "pass",
+        "formula": "⌊(cap − first) ÷ added⌋ + 2",
+        "arithmetic": "⌊(131072 − 4000) ÷ 2500⌋ + 2 = 52"
+      },
+      "prompt_at_that_pass": {
+        "value": 131500,
+        "unit": "tokens",
+        "formula": "first + (pass − 1) × added",
+        "arithmetic": "4000 + 51 × 2500 = 131,500"
+      },
+      "cap": {
+        "value": 131072,
+        "unit": "tokens"
+      },
+      "raised_limit": {
+        "value": 64,
+        "unit": "passes"
+      }
+    },
+    "gpu": {
+      "input_tokens": 1088100,
+      "new_tokens": 101600,
+      "output_tokens": 15000,
+      "gpu_s": {
+        "prefill": 19.676136610529287,
+        "decode": 17.367319001573463,
+        "vision": 0.0,
+        "total": 37.04345561210275
+      },
+      "gpu_time_s": {
+        "prefill": 2.459517076316161,
+        "decode": 708.5699999999998,
+        "vision": 0.0
+      },
+      "kv_peak_GB": 1.87047936,
+      "kv_GB_s": 882.7517750703042,
+      "non_gpu_s": 218.6067,
+      "wall_s": 929.6362170763159,
+      "usd": {
+        "gpu": 0.06173909268683791,
+        "other": 0.0,
+        "total": 0.06173909268683791
+      }
+    },
+    "gpu_usd_over_list_usd": {
+      "value": 0.04747335077803761,
+      "unit": "fraction"
+    },
+    "tool_wait_per_pass_s": {
+      "value": 5.6053,
+      "unit": "s",
+      "formula": "search p50 + fetch wait",
+      "arithmetic": "1.61 + 4 = 5.61"
+    },
+    "wall_min": {
+      "value": 15.493936951271932,
+      "unit": "min",
+      "formula": "wall s ÷ 60",
+      "arithmetic": "930 ÷ 60 = 15.5"
+    },
+    "workload_c_wall_s": {
+      "value": 121.70320680050688,
+      "unit": "s"
+    },
+    "reference_request_usd": {
+      "value": 0.1087044,
+      "unit": "USD"
+    },
+    "task_over_reference_usd": {
+      "value": 11.96363716648084,
+      "unit": "×"
+    },
+    "tokens_total": {
+      "value": 1103100,
+      "unit": "tokens",
+      "formula": "input + output"
+    },
+    "hold_open": {
+      "top_level_deadline_s": {
+        "value": 120,
+        "unit": "s"
+      },
+      "drain_timeout_s": {
+        "value": 300,
+        "unit": "s"
+      },
+      "wall_over_deadline": {
+        "value": 7.746968475635966,
+        "unit": "×"
+      },
+      "wall_over_drain": {
+        "value": 3.0987873902543863,
+        "unit": "×"
+      },
+      "connection_survives": {
+        "value": 0.8557994051731316,
+        "unit": "probability",
+        "formula": "(1 − p)^minutes",
+        "arithmetic": "(1 − 0.01)^15.5 = 0.856"
+      },
+      "connection_breaks": {
+        "value": 0.14420059482686842,
+        "unit": "probability"
+      },
+      "idle_state_GB_s": {
+        "value": 250.75133086187518,
+        "unit": "GB·s",
+        "formula": "Σ state bytes × tool wait over tool passes"
+      },
+      "idle_mean_GB": {
+        "value": 1.1470432098461538,
+        "unit": "GB",
+        "formula": "idle GB·s ÷ total idle s"
+      },
+      "idle_share_of_rank_pool": {
+        "value": 0.022639740835607804,
+        "unit": "fraction",
+        "formula": "mean idle bytes ÷ KV pool per rank",
+        "arithmetic": "1.147 GB ÷ 50.7 GB = 0.0226"
+      },
+      "idle_seconds": {
+        "value": 218.6067,
+        "unit": "s",
+        "formula": "tool passes × wait",
+        "arithmetic": "39 × 5.61 = 219"
+      },
+      "decode_GB_s": {
+        "value": 882.7517750703042,
+        "unit": "GB·s"
+      }
+    },
+    "checkpoints": {
+      "count": {
+        "value": 42,
+        "unit": "checkpoints",
+        "formula": "one per pass"
+      },
+      "bytes_total": {
+        "value": 1008000,
+        "unit": "B",
+        "formula": "count × bytes",
+        "arithmetic": "42 × 24,000 = 1,008,000"
+      },
+      "per_minute": {
+        "value": 2.71073776355803,
+        "unit": "writes/min"
+      }
+    }
+  }
+}

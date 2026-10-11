@@ -1,0 +1,565 @@
+{
+  "meta": {
+    "script": "sim/bandwidth_orders.py",
+    "generated_at": "2026-10-09T13:56:01+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T12:31:14+00:00",
+      "sha256": "7760cf964886"
+    },
+    "constants_used": {
+      "extra.sims_s1.dgx_h100_data_nvme_drives_per_node": 8,
+      "extra.sims_s1.h_teach_gpus_per_node": 8,
+      "hardware.H-frontier.gb300_nvl72_nic_per_gpu": 800,
+      "hardware.formats.mxfp4_block_size": 32,
+      "hardware.formats.nvfp4_bits_per_value": 4.5,
+      "hardware.formats.nvfp4_block_size": 16,
+      "hardware.interconnect.ib_ndr_port": 400,
+      "hardware.interconnect.pcie_gen5_x16_per_direction": 63,
+      "hardware.memory_tiers.nvme_gen5_seq_read": 14,
+      "hypothetical.reference_request.output_tokens_visible": 450,
+      "hypothetical.serving_assumptions.object_store_read_gbps_per_node": 100,
+      "hypothetical.serving_assumptions.reference_context_tokens": 32768,
+      "hypothetical.serving_assumptions.stream_rate_example_tokens_per_s": 100,
+      "models.M-dense.checkpoint_bytes_one_copy": 133600000000.0,
+      "models.M-dense.flops_per_token_matmul": 246800000000.0,
+      "models.M-dense.head_dim": 128,
+      "models.M-dense.hidden_size": 12288,
+      "models.M-dense.intermediate_size": 28672,
+      "models.M-dense.kv_bytes_per_token_bf16": 360448,
+      "models.M-dense.kv_bytes_per_token_fp8": 180224,
+      "models.M-dense.max_position_embeddings": 262144,
+      "models.M-dense.model_id": "mistralai/Mistral-Medium-3.5-128B",
+      "models.M-dense.num_attention_heads": 96,
+      "models.M-dense.num_hidden_layers": 88,
+      "models.M-dense.num_key_value_heads": 8,
+      "models.M-dense.text_params": 125025988608,
+      "models.M-dense.tie_word_embeddings": false,
+      "models.M-dense.torch_dtype": "bfloat16",
+      "models.M-dense.total_params": 127704210176,
+      "models.M-dense.vision_params": 2678221568,
+      "models.M-dense.vllm_recipe": {
+        "recommended_hw": "8x H200 (alt 4x B200, 2-8x MI300X)",
+        "tp": 8,
+        "eagle_num_speculative_tokens": 3,
+        "mi300x_tp8_1k_in_1k_out_conc32": {
+          "output_tok_s": 915,
+          "mean_ttft_ms": 2522,
+          "mean_tpot_ms": 26.1
+        },
+        "mi300x_tp1": {
+          "output_tok_s": 438,
+          "mean_ttft_ms": 5719,
+          "mean_tpot_ms": 55.2
+        }
+      },
+      "models.M-dense.vocab_size": 131072,
+      "models.M-dense.weight_quantization": "FP8 E4M3 per-tensor (static activation scale); vision tower, projector, lm_head unquantized",
+      "models.M-frontier.active_params": 104189614848,
+      "models.M-frontier.checkpoint_bytes": 1560936091448,
+      "models.M-frontier.kda_conv_state_shape_per_layer": [
+        36864,
+        3
+      ],
+      "models.M-frontier.kda_head_k_dim": 128,
+      "models.M-frontier.kda_head_v_dim": 128,
+      "models.M-frontier.kda_num_heads": 96,
+      "models.M-frontier.kda_recurrent_state_dtype": "float32",
+      "models.M-frontier.kda_recurrent_state_shape_per_layer": [
+        96,
+        128,
+        128
+      ],
+      "models.M-frontier.kda_short_conv_kernel": 4,
+      "models.M-frontier.kv_lora_rank": 512,
+      "models.M-frontier.max_position_embeddings": 1048576,
+      "models.M-frontier.num_attention_heads": 96,
+      "models.M-frontier.num_hidden_layers": 93,
+      "models.M-frontier.num_kda_layers": 69,
+      "models.M-frontier.num_mla_layers": 24,
+      "models.M-frontier.qk_nope_head_dim": 128,
+      "models.M-frontier.qk_rope_head_dim": 64,
+      "models.M-frontier.torch_dtype": "bfloat16",
+      "models.M-frontier.trtllm_per_rank_weights_gb": {
+        "DEP16": 210,
+        "TEP8": 213,
+        "TEP16": 115
+      },
+      "models.M-frontier.v_head_dim": 128,
+      "models.M-frontier.vllm_pd_validated_topology": "TEP8 prefill -> DEP16 decode, NIXL",
+      "software.vllm.stream_interval_tokens": 1
+    }
+  },
+  "conventions": {
+    "bandwidth": "B/s per direction. Gb/s rates are divided by 8 bits per byte. Times are lower bounds at the rated link speed.",
+    "classes": "object_store is HYPOTHETICAL (class C). The SSE event text is ILLUSTRATIVE."
+  },
+  "links": {
+    "object_store": {
+      "per_direction": {
+        "value": 12500000000,
+        "unit": "B/s",
+        "GB_per_s": 12.5,
+        "from": "hypothetical.serving_assumptions.object_store_read_gbps_per_node"
+      },
+      "scope": "per node (one front-end port shared by the node's GPUs)",
+      "class": "C",
+      "label": "HYPOTHETICAL"
+    },
+    "local_nvme_gen5": {
+      "per_direction": {
+        "value": 14000000000,
+        "unit": "B/s",
+        "GB_per_s": 14,
+        "from": "hardware.memory_tiers.nvme_gen5_seq_read"
+      },
+      "scope": "per drive; one drive per GPU",
+      "class": "A",
+      "drives_per_gpu": {
+        "formula": "data drives per node / GPUs per node (DGX H100)",
+        "value": 1,
+        "unit": "drives/GPU"
+      }
+    },
+    "peer_nic_400g": {
+      "per_direction": {
+        "value": 50000000000,
+        "unit": "B/s",
+        "GB_per_s": 50,
+        "from": "hardware.interconnect.ib_ndr_port"
+      },
+      "scope": "per GPU (one 400 Gb/s NIC per GPU, DGX H100)",
+      "class": "A"
+    },
+    "peer_nic_800g_gb300": {
+      "per_direction": {
+        "value": 100000000000,
+        "unit": "B/s",
+        "GB_per_s": 100,
+        "from": "hardware.H-frontier.gb300_nvl72_nic_per_gpu"
+      },
+      "scope": "per GPU (GB300 NVL72)",
+      "class": "A"
+    },
+    "pcie_gen5_x16_into_hbm": {
+      "per_direction": {
+        "value": 63000000000,
+        "unit": "B/s",
+        "GB_per_s": 63,
+        "from": "hardware.interconnect.pcie_gen5_x16_per_direction"
+      },
+      "scope": "per GPU (host memory → HBM)",
+      "class": "A",
+      "note": "H100 path. GB300 GPUs attach to the Grace CPU by NVLink-C2C; that rate is not shown (verification backlog V-026)."
+    }
+  },
+  "payloads": {
+    "m_dense_checkpoint": {
+      "formula": "released FP8 checkpoint (kv_math:m_dense.weights.released_fp8_checkpoint)",
+      "value": 133605832192,
+      "unit": "B",
+      "MB_1e6": 133605.8322,
+      "GB_1e9": 133.6058322,
+      "MiB_2pow20": 127416.4507,
+      "GiB_2pow30": 124.4301276
+    },
+    "m_dense_share_per_gpu": {
+      "formula": "checkpoint / TP (8)",
+      "value": 16700729024,
+      "unit": "B",
+      "MB_1e6": 16700.72902,
+      "GB_1e9": 16.70072902,
+      "MiB_2pow20": 15927.05634,
+      "GiB_2pow30": 15.55376595,
+      "same_as": "kv_math:capacity_h_teach_m_dense.cases.fp8_weights_bf16_kv.steps_per_gpu.3_minus_weights_per_gpu"
+    },
+    "m_frontier_checkpoint": {
+      "formula": "released checkpoint, sum of the safetensors files",
+      "value": 1560936091448,
+      "unit": "B",
+      "MB_1e6": 1560936.091,
+      "GB_1e9": 1560.936091,
+      "MiB_2pow20": 1488624.66,
+      "GiB_2pow30": 1453.735019,
+      "from": "models.M-frontier.checkpoint_bytes"
+    },
+    "m_frontier_share_dep16_rank": {
+      "value": 210000000000,
+      "unit": "B",
+      "MB_1e6": 210000,
+      "GB_1e9": 210,
+      "MiB_2pow20": 200271.6064,
+      "GiB_2pow30": 195.5777407,
+      "note": "TensorRT-LLM DEP16 per-rank weights"
+    },
+    "m_frontier_share_tep8_rank": {
+      "value": 213000000000,
+      "unit": "B",
+      "MB_1e6": 213000,
+      "GB_1e9": 213,
+      "MiB_2pow20": 203132.6294,
+      "GiB_2pow30": 198.3717084,
+      "note": "TensorRT-LLM TEP8 per-rank weights"
+    },
+    "dep16_ranks": 16,
+    "m_dense_tp": 8
+  },
+  "load_times": {
+    "whole_checkpoint_one_link": {
+      "m_dense": {
+        "object_store": {
+          "formula": "checkpoint bytes / link bandwidth",
+          "value": 10688.46658,
+          "unit": "ms",
+          "s": 10.68846658
+        },
+        "local_nvme_gen5": {
+          "formula": "checkpoint bytes / link bandwidth",
+          "value": 9543.273728,
+          "unit": "ms",
+          "s": 9.543273728
+        },
+        "peer_nic_400g": {
+          "formula": "checkpoint bytes / link bandwidth",
+          "value": 2672.116644,
+          "unit": "ms",
+          "s": 2.672116644
+        },
+        "peer_nic_800g_gb300": {
+          "formula": "checkpoint bytes / link bandwidth",
+          "value": 1336.058322,
+          "unit": "ms",
+          "s": 1.336058322
+        },
+        "pcie_gen5_x16_into_hbm": {
+          "formula": "checkpoint bytes / link bandwidth",
+          "value": 2120.727495,
+          "unit": "ms",
+          "s": 2.120727495
+        }
+      },
+      "m_frontier": {
+        "object_store": {
+          "formula": "checkpoint bytes / link bandwidth",
+          "value": 124874.8873,
+          "unit": "ms",
+          "s": 124.8748873
+        },
+        "local_nvme_gen5": {
+          "formula": "checkpoint bytes / link bandwidth",
+          "value": 111495.4351,
+          "unit": "ms",
+          "s": 111.4954351
+        },
+        "peer_nic_400g": {
+          "formula": "checkpoint bytes / link bandwidth",
+          "value": 31218.72183,
+          "unit": "ms",
+          "s": 31.21872183
+        },
+        "peer_nic_800g_gb300": {
+          "formula": "checkpoint bytes / link bandwidth",
+          "value": 15609.36091,
+          "unit": "ms",
+          "s": 15.60936091
+        },
+        "pcie_gen5_x16_into_hbm": {
+          "formula": "checkpoint bytes / link bandwidth",
+          "value": 24776.76336,
+          "unit": "ms",
+          "s": 24.77676336
+        }
+      }
+    },
+    "per_gpu_share_own_link": {
+      "m_dense_tp8_gpu": {
+        "local_nvme_gen5": {
+          "formula": "one GPU's bytes / its own link",
+          "value": 1192.909216,
+          "unit": "ms",
+          "s": 1.192909216
+        },
+        "peer_nic_400g": {
+          "formula": "one GPU's bytes / its own link",
+          "value": 334.0145805,
+          "unit": "ms",
+          "s": 0.3340145805
+        },
+        "peer_nic_800g_gb300": {
+          "formula": "one GPU's bytes / its own link",
+          "value": 167.0072902,
+          "unit": "ms",
+          "s": 0.1670072902
+        },
+        "pcie_gen5_x16_into_hbm": {
+          "formula": "one GPU's bytes / its own link",
+          "value": 265.0909369,
+          "unit": "ms",
+          "s": 0.2650909369
+        }
+      },
+      "m_frontier_dep16_rank": {
+        "local_nvme_gen5": {
+          "formula": "one GPU's bytes / its own link",
+          "value": 15000,
+          "unit": "ms",
+          "s": 15
+        },
+        "peer_nic_400g": {
+          "formula": "one GPU's bytes / its own link",
+          "value": 4200,
+          "unit": "ms",
+          "s": 4.2
+        },
+        "peer_nic_800g_gb300": {
+          "formula": "one GPU's bytes / its own link",
+          "value": 2100,
+          "unit": "ms",
+          "s": 2.1
+        }
+      }
+    },
+    "m_dense_node_from_object_store": {
+      "formula": "whole checkpoint / one node port (8 GPUs share it)",
+      "value": 10688.46658,
+      "unit": "ms",
+      "s": 10.68846658
+    }
+  },
+  "fan_out_dep16_worker": {
+    "each_rank_reads_its_share": {
+      "bytes_from_store": {
+        "formula": "16 ranks × per-rank bytes",
+        "value": 3360000000000,
+        "unit": "B",
+        "MB_1e6": 3360000,
+        "GB_1e9": 3360,
+        "MiB_2pow20": 3204345.703,
+        "GiB_2pow30": 3129.243851
+      },
+      "time_one_port": {
+        "formula": "bytes / one 100 Gb/s port",
+        "value": 268800,
+        "unit": "ms",
+        "s": 268.8
+      }
+    },
+    "worker_reads_checkpoint_once": {
+      "bytes_from_store": {
+        "formula": "one checkpoint; ranks share over the fabric",
+        "value": 1560936091448,
+        "unit": "B",
+        "MB_1e6": 1560936.091,
+        "GB_1e9": 1560.936091,
+        "MiB_2pow20": 1488624.66,
+        "GiB_2pow30": 1453.735019
+      },
+      "time_one_port": {
+        "value": 124874.8873,
+        "unit": "ms",
+        "s": 124.8748873
+      }
+    },
+    "peer_to_peer_from_running_replica": {
+      "bytes_from_store": {
+        "value": 0,
+        "unit": "B",
+        "MB_1e6": 0,
+        "GB_1e9": 0,
+        "MiB_2pow20": 0,
+        "GiB_2pow30": 0,
+        "note": "weights come HBM → HBM from a running replica over RDMA"
+      },
+      "time_per_rank_800g": {
+        "value": 2100,
+        "unit": "ms",
+        "s": 2.1
+      }
+    },
+    "store_bytes_ratio_each_rank_over_once": {
+      "value": 2.152554495,
+      "unit": "ratio"
+    }
+  },
+  "three_flows": {
+    "user_stream": {
+      "sse_event_example": "event: output_text.delta\ndata: {\"delta\":\" the\"}\n\n",
+      "label": "ILLUSTRATIVE event text",
+      "sse_event_from": "data/sse_framing.json typical_delta.text (Part 15.3)",
+      "bytes_per_event": {
+        "formula": "UTF-8 length of the example event",
+        "value": 49,
+        "unit": "B"
+      },
+      "tokens_per_event": {
+        "value": 1,
+        "unit": "tokens",
+        "from": "software.vllm.stream_interval_tokens"
+      },
+      "rate_tokens_per_s": {
+        "value": 100,
+        "unit": "tokens/s",
+        "from": "hypothetical.serving_assumptions.stream_rate_example_tokens_per_s"
+      },
+      "bytes_per_s": {
+        "formula": "tokens/s ÷ tokens per event × bytes per event",
+        "value": 4900,
+        "unit": "B/s"
+      },
+      "answer_tokens": {
+        "value": 450,
+        "unit": "tokens",
+        "from": "hypothetical.reference_request.output_tokens_visible"
+      },
+      "answer_bytes": {
+        "formula": "answer tokens × bytes per event",
+        "value": 22050,
+        "unit": "B"
+      },
+      "answer_duration": {
+        "formula": "answer tokens / tokens per s",
+        "value": 4500,
+        "unit": "ms",
+        "s": 4.5
+      },
+      "share_of_400g_nic": {
+        "formula": "stream bytes/s ÷ NIC bytes/s",
+        "value": 9.8e-08,
+        "unit": "fraction"
+      },
+      "note": "Application bytes only. HTTP/2 or HTTP/3 framing, TLS records and packet headers add more per event, and they do not change the order of magnitude."
+    },
+    "kv_transfer": {
+      "context_tokens": {
+        "value": 32768,
+        "unit": "tokens",
+        "from": "hypothetical.serving_assumptions.reference_context_tokens"
+      },
+      "m_dense_bf16_bytes": {
+        "formula": "32,768 tokens × 360,448 B/token",
+        "value": 11811160064,
+        "unit": "B",
+        "MB_1e6": 11811.16006,
+        "GB_1e9": 11.81116006,
+        "MiB_2pow20": 11264,
+        "GiB_2pow30": 11
+      },
+      "m_dense_bf16_per_gpu": {
+        "formula": "total / TP (8)",
+        "value": 1476395008,
+        "unit": "B",
+        "MB_1e6": 1476.395008,
+        "GB_1e9": 1.476395008,
+        "MiB_2pow20": 1408,
+        "GiB_2pow30": 1.375
+      },
+      "m_dense_time_per_gpu_400g": {
+        "formula": "per-GPU bytes / 400 Gb/s (8 flows in parallel)",
+        "value": 29.52790016,
+        "unit": "ms",
+        "s": 0.02952790016
+      },
+      "m_frontier_bf16_mla_bytes": {
+        "formula": "MLA KV + KDA state",
+        "value": 1355341824,
+        "unit": "B",
+        "MB_1e6": 1355.341824,
+        "GB_1e9": 1.355341824,
+        "MiB_2pow20": 1292.554688,
+        "GiB_2pow30": 1.262260437
+      },
+      "m_frontier_time_one_rank_800g": {
+        "formula": "bytes into one decode rank / 800 Gb/s (racks apart; inside one rack the path is NVLink)",
+        "value": 13.55341824,
+        "unit": "ms",
+        "s": 0.01355341824
+      },
+      "see": "disagg_transfer:transfer_times.* for NVLink and other links"
+    },
+    "weight_loading": {
+      "m_dense_bytes": {
+        "formula": "released FP8 checkpoint (kv_math:m_dense.weights.released_fp8_checkpoint)",
+        "value": 133605832192,
+        "unit": "B",
+        "MB_1e6": 133605.8322,
+        "GB_1e9": 133.6058322,
+        "MiB_2pow20": 127416.4507,
+        "GiB_2pow30": 124.4301276
+      },
+      "m_frontier_bytes": {
+        "formula": "released checkpoint, sum of the safetensors files",
+        "value": 1560936091448,
+        "unit": "B",
+        "MB_1e6": 1560936.091,
+        "GB_1e9": 1560.936091,
+        "MiB_2pow20": 1488624.66,
+        "GiB_2pow30": 1453.735019,
+        "from": "models.M-frontier.checkpoint_bytes"
+      },
+      "m_dense_time_object_store": {
+        "value": 10688.46658,
+        "unit": "ms",
+        "s": 10.68846658
+      },
+      "m_frontier_time_object_store": {
+        "value": 124874.8873,
+        "unit": "ms",
+        "s": 124.8748873
+      },
+      "m_dense_time_one_nvme": {
+        "value": 9543.273728,
+        "unit": "ms",
+        "s": 9.543273728
+      },
+      "m_frontier_time_one_nvme": {
+        "value": 111495.4351,
+        "unit": "ms",
+        "s": 111.4954351
+      }
+    },
+    "orders_of_magnitude": {
+      "stream_bytes_per_s": {
+        "bytes": 4900,
+        "log10": 3.69019608
+      },
+      "stream_bytes_per_answer": {
+        "bytes": 22050,
+        "log10": 4.343408594
+      },
+      "kv_bytes_m_dense": {
+        "bytes": 11811160064,
+        "log10": 10.07229256
+      },
+      "kv_bytes_m_frontier": {
+        "bytes": 1355341824,
+        "log10": 9.13204884
+      },
+      "weight_bytes_m_dense": {
+        "bytes": 133605832192,
+        "log10": 11.12582542
+      },
+      "weight_bytes_m_frontier": {
+        "bytes": 1560936091448,
+        "log10": 12.19338512
+      }
+    },
+    "ratios": {
+      "kv_m_dense_over_stream_answer": {
+        "value": 535653.5176,
+        "unit": "ratio"
+      },
+      "weights_m_dense_over_kv_m_dense": {
+        "value": 11.31182978,
+        "unit": "ratio"
+      },
+      "weights_m_frontier_over_stream_answer": {
+        "value": 70790752.45,
+        "unit": "ratio"
+      },
+      "nic_over_stream_rate": {
+        "value": 10204081.63,
+        "unit": "ratio"
+      }
+    }
+  }
+}

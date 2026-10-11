@@ -1,0 +1,94 @@
+{
+  "meta": {
+    "script": "sim/bottleneck_cases.py",
+    "generated_at": "2026-10-09T11:33:46+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T10:57:26+00:00",
+      "sha256": "aad2d87c549f"
+    },
+    "constants_used": {
+      "hypothetical.capacity_targets.prefill_utilization_target": 0.6,
+      "hypothetical.diagnosis_ref.slow_tool_factor": 3,
+      "hypothetical.epp_calibration.peak_prefill_tokens_per_s": 16000,
+      "hypothetical.pool_queueing.extra_passes_per_tool_request": 2,
+      "hypothetical.pool_queueing.mean_tool_time_s": 3,
+      "hypothetical.rollout_ref.canary_weights_pct": [
+        1,
+        5,
+        25,
+        50,
+        100
+      ],
+      "hypothetical.traffic.mean_prompt_tokens": 3000,
+      "hypothetical.traffic.prefix_cache_hit_fraction": 0.6,
+      "hypothetical.traffic.tool_use_fraction": 0.25
+    }
+  },
+  "label": "MODEL: worked cases from earlier data and HYPOTHETICAL inputs",
+  "queueing_at_admission": {
+    "servers": 8,
+    "rho_before": 0.8,
+    "rho_after": 0.95,
+    "Wq_before_s": 0.021452105880094514,
+    "Wq_after_s": 0.15828161823931558,
+    "wait_ratio": 7.378372040676234,
+    "load_ratio": 1.1874999999999998,
+    "note": "rows of capacity_math:queueing_models.mmc (M/M/c MODEL, Part 09.5)"
+  },
+  "prefix_miss_after_deploy": {
+    "prompt_tokens": 3000,
+    "hit_fraction": 0.6,
+    "warm_prefill_tokens": {
+      "value": 1200.0,
+      "arithmetic": "3,000 × (1 − 0.6) = 1,200 tokens"
+    },
+    "cold_prefill_tokens": 3000,
+    "factor": {
+      "value": 2.5,
+      "arithmetic": "3,000 / 1,200 = 2.5"
+    },
+    "warm_prefill_ms": 75.0,
+    "cold_prefill_ms": 187.5,
+    "rate_tokens_per_s": 16000,
+    "utilization_before": 0.6,
+    "utilization_cold": {
+      "value": 1.5,
+      "arithmetic": "0.6 × 2.5 = 1.50"
+    },
+    "backlog_growth_tokens_per_s": 8000.0,
+    "wait_after_60s_s": 30.0,
+    "canary_stage_pct": 25,
+    "pool_prefill_load_factor": {
+      "value": 1.375,
+      "arithmetic": "0.75 × 1 + 0.25 × 2.5 = 1.375"
+    },
+    "hit_rate_metric_before": 0.6,
+    "hit_rate_metric_cold": 0.0,
+    "note": "MODEL: every request of a cold replica misses its whole prompt until the cache refills"
+  },
+  "slow_tool": {
+    "factor": 3,
+    "web_search_p50_ms": {
+      "before": 1605.3,
+      "after": 4815.9,
+      "source": "web_search_budget:latency.monte_carlo.tool_step_ms.p50 (Part 7.2; the web.search span of reference_trace)"
+    },
+    "tool_step_p99_ms_before": 4967.2,
+    "query_timeout_ms": 2500,
+    "one_query_p50_after_ms": 1349.6999999999998,
+    "one_query_p50_after_over_timeout": 0.5398799999999999,
+    "open_streams_W_s": {
+      "before": 22.13,
+      "after": 25.13,
+      "arithmetic_after": "20 + 1.5 × 0.42 + 0.25 × 2 × 9 = 25.13 s"
+    },
+    "open_streams": {
+      "before": 33195.0,
+      "after": 37695.0,
+      "added": 4500.0,
+      "arithmetic": "1,500 /s × (25.13 − 22.13) s = 4,500 streams"
+    },
+    "engine_metrics_change": "none: vllm:num_requests_waiting, vllm:time_to_first_token_seconds and vllm:kv_cache_usage_perc stay flat"
+  }
+}

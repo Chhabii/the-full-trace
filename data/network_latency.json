@@ -1,0 +1,2319 @@
+{
+  "meta": {
+    "script": "sim/network_latency.py",
+    "generated_at": "2026-10-09T07:22:20+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T07:18:49+00:00",
+      "sha256": "4c406fd7f850"
+    },
+    "constants_used": {
+      "extra.sims_w02.earth_mean_radius_km": 6371.0088,
+      "extra.sims_w02.fiber_refractive_index_g652": 1.468,
+      "extra.sims_w02.k8s_probe_failure_threshold": 3,
+      "extra.sims_w02.k8s_probe_period_s": 10,
+      "extra.sims_w02.quic_initial_window_cap_bytes": 14720,
+      "extra.sims_w02.quic_initial_window_max_datagrams": 10,
+      "extra.sims_w02.quic_initial_window_min_datagrams": 2,
+      "extra.sims_w02.rtt_to_request_sent_tcp_tls12": 3,
+      "extra.sims_w02.rtt_to_request_sent_tcp_tls13_0rtt": 1,
+      "extra.sims_w02.rtt_to_request_sent_tcp_tls13_resumed": 2,
+      "extra.sims_w02.speed_of_light_vacuum_km_s": 299792.458,
+      "hypothetical.edge.nearest_pop": {
+        "city": "Nairobi",
+        "lat": -1.2921,
+        "lon": 36.8219
+      },
+      "hypothetical.edge.user_to_pop_rtt_ms": 20,
+      "hypothetical.reference_regions.ap_northeast": {
+        "city": "Tokyo",
+        "lat": 35.6762,
+        "lon": 139.6503
+      },
+      "hypothetical.reference_regions.ap_south": {
+        "city": "Mumbai",
+        "lat": 19.076,
+        "lon": 72.8777
+      },
+      "hypothetical.reference_regions.eu_west": {
+        "city": "Dublin",
+        "lat": 53.3498,
+        "lon": -6.2603
+      },
+      "hypothetical.reference_regions.us_east": {
+        "city": "Ashburn, Virginia",
+        "lat": 39.0438,
+        "lon": -77.4874
+      },
+      "hypothetical.reference_regions.user_location": {
+        "city": "Nairobi",
+        "lat": -1.2921,
+        "lon": 36.8219
+      },
+      "hypothetical.reference_request.image": {
+        "format": "JPEG",
+        "width_px": 4032,
+        "height_px": 3024,
+        "bytes": 2900000,
+        "source": "phone photo of a whiteboard"
+      },
+      "hypothetical.reference_request.pdf": {
+        "name": "q3-report.pdf",
+        "pages": 18,
+        "bytes": 2100000,
+        "layout": "two-column, 6 tables, 4 figures",
+        "text_layer_pages": 16,
+        "scanned_pages": 2
+      },
+      "hypothetical.reference_request.user_text": "Here is our Q3 report and a photo of last week's whiteboard plan. Using our pricing policy, check the current list prices of our three main competitors, compute our gross margin at each of their price points, and plot it. Cite your sources.",
+      "network.physical.fiber_delay_one_way": 4.9,
+      "network.physical.fiber_speed": 204220,
+      "network.protocols.http2_initial_window_bytes": 65535,
+      "network.protocols.quic_anti_amplification_factor": 3,
+      "network.protocols.quic_min_initial_bytes": 1200,
+      "network.protocols.rtt_to_request_sent_quic": 1,
+      "network.protocols.rtt_to_request_sent_quic_0rtt": 0,
+      "network.protocols.rtt_to_request_sent_reused_connection": 0,
+      "network.protocols.rtt_to_request_sent_tcp_tls13": 2
+    }
+  },
+  "description": "Great-circle distances (V-005), fiber delay lower bounds, round trips per connection path, edge and reuse savings, failover penalty, flow-control and slow-start bounds, and the illustrative request envelope for the Nairobi reference user.",
+  "serves": [
+    "R-II.1",
+    "R-II.4",
+    "R-II.6",
+    "V-005",
+    "R-XXII (reused by Part 22)"
+  ],
+  "conventions": {
+    "class": "Distances and fiber delays are physics on hypothetical coordinates (class C inputs). RTT counts are class A (derived from the RFC message flows).",
+    "lower_bound": "Every fiber delay is a lower bound: real cable paths are longer than the great circle and routers, amplifiers and queues add delay. No sourced route factor exists, so none is applied.",
+    "earth_radius": {
+      "value": 6371.0088,
+      "unit": "km",
+      "from": "extra.sims_w02.earth_mean_radius_km"
+    },
+    "fiber_speed": {
+      "value": 204220,
+      "unit": "km/s",
+      "from": "network.physical.fiber_speed"
+    },
+    "fiber_speed_check": {
+      "formula": "c / n = 299,792.458 km/s / 1.468",
+      "value": 204218.2956,
+      "unit": "km/s",
+      "constant": 204220,
+      "relative_difference_vs_constant": -8.345704011e-06,
+      "note": "The constant 204,220 km/s is c / 1.468 rounded; the difference is below 0.001%."
+    },
+    "fiber_delay_per_km": {
+      "formula": "1e6 / 204,220 km/s",
+      "value": 4.896680051,
+      "unit": "us/km",
+      "constant": 4.9,
+      "relative_difference_vs_constant": -0.0006775406275
+    },
+    "fiber_rtt_per_1000_km": {
+      "formula": "2 × 1,000 km / fiber speed",
+      "value": 9.793360102,
+      "unit": "ms"
+    },
+    "rtt_model": "RTT(user→PoP) is hypothetical; RTT(PoP→region) is the great-circle fiber RTT; RTT(user→region without an edge) is their sum.",
+    "zero_server_time": true
+  },
+  "locations": {
+    "user": {
+      "city": "Nairobi",
+      "lat": -1.2921,
+      "lon": 36.8219,
+      "from": "hypothetical.reference_regions.user_location"
+    },
+    "pop": {
+      "city": "Nairobi",
+      "lat": -1.2921,
+      "lon": 36.8219,
+      "from": "hypothetical.edge.nearest_pop"
+    },
+    "regions": {
+      "us_east": {
+        "city": "Ashburn, Virginia",
+        "lat": 39.0438,
+        "lon": -77.4874,
+        "from": "hypothetical.reference_regions.us_east"
+      },
+      "eu_west": {
+        "city": "Dublin",
+        "lat": 53.3498,
+        "lon": -6.2603,
+        "from": "hypothetical.reference_regions.eu_west"
+      },
+      "ap_south": {
+        "city": "Mumbai",
+        "lat": 19.076,
+        "lon": 72.8777,
+        "from": "hypothetical.reference_regions.ap_south"
+      },
+      "ap_northeast": {
+        "city": "Tokyo",
+        "lat": 35.6762,
+        "lon": 139.6503,
+        "from": "hypothetical.reference_regions.ap_northeast"
+      }
+    }
+  },
+  "distances": {
+    "user_to_pop": {
+      "formula": "h = sin²(Δφ/2) + cos φ1 · cos φ2 · sin²(Δλ/2);  c = 2 · atan2(√h, √(1 − h));  d = R · c",
+      "steps": {
+        "phi1_rad": -0.02255139927,
+        "phi2_rad": -0.02255139927,
+        "dphi_rad": 0,
+        "dlambda_rad": 0,
+        "h": 0,
+        "central_angle_rad": 0
+      },
+      "distance": {
+        "formula": "6371.0088 km × 0.000000 rad",
+        "value": 0,
+        "unit": "km"
+      },
+      "one_way": {
+        "formula": "0 km / 204,220 km/s",
+        "value": 0,
+        "unit": "ms",
+        "s": 0
+      },
+      "rtt": {
+        "formula": "2 × one-way",
+        "value": 0,
+        "unit": "ms",
+        "s": 0
+      },
+      "note": "The PoP sits in the user's metro (hypothetical), so the fiber part is ~0 and the access-network RTT dominates."
+    },
+    "pop_to_region": {
+      "us_east": {
+        "formula": "h = sin²(Δφ/2) + cos φ1 · cos φ2 · sin²(Δλ/2);  c = 2 · atan2(√h, √(1 − h));  d = R · c",
+        "steps": {
+          "phi1_rad": -0.02255139927,
+          "phi2_rad": 0.6814428625,
+          "dphi_rad": 0.7039942618,
+          "dlambda_rad": -1.995073651,
+          "h": 0.6669232471,
+          "central_angle_rad": 1.911177578
+        },
+        "distance": {
+          "formula": "6371.0088 km × 1.911178 rad",
+          "value": 12176.12917,
+          "unit": "km"
+        },
+        "one_way": {
+          "formula": "12,176 km / 204,220 km/s",
+          "value": 59.6226088,
+          "unit": "ms",
+          "s": 0.0596226088
+        },
+        "rtt": {
+          "formula": "2 × one-way",
+          "value": 119.2452176,
+          "unit": "ms",
+          "s": 0.1192452176
+        }
+      },
+      "eu_west": {
+        "formula": "h = sin²(Δφ/2) + cos φ1 · cos φ2 · sin²(Δλ/2);  c = 2 · atan2(√h, √(1 − h));  d = R · c",
+        "steps": {
+          "phi1_rad": -0.02255139927,
+          "phi2_rad": 0.9311296653,
+          "dphi_rad": 0.9536810645,
+          "dlambda_rad": -0.751926239,
+          "h": 0.2911105843,
+          "central_angle_rad": 1.139797128
+        },
+        "distance": {
+          "formula": "6371.0088 km × 1.139797 rad",
+          "value": 7261.657534,
+          "unit": "km"
+        },
+        "one_way": {
+          "formula": "7,262 km / 204,220 km/s",
+          "value": 35.55801358,
+          "unit": "ms",
+          "s": 0.03555801358
+        },
+        "rtt": {
+          "formula": "2 × one-way",
+          "value": 71.11602717,
+          "unit": "ms",
+          "s": 0.07111602717
+        }
+      },
+      "ap_south": {
+        "formula": "h = sin²(Δφ/2) + cos φ1 · cos φ2 · sin²(Δλ/2);  c = 2 · atan2(√h, √(1 − h));  d = R · c",
+        "steps": {
+          "phi1_rad": -0.02255139927,
+          "phi2_rad": 0.3329390081,
+          "dphi_rad": 0.3554904074,
+          "dlambda_rad": 0.6292924244,
+          "h": 0.1217573823,
+          "central_angle_rad": 0.7128742156
+        },
+        "distance": {
+          "formula": "6371.0088 km × 0.712874 rad",
+          "value": 4541.727901,
+          "unit": "km"
+        },
+        "one_way": {
+          "formula": "4,542 km / 204,220 km/s",
+          "value": 22.23938841,
+          "unit": "ms",
+          "s": 0.02223938841
+        },
+        "rtt": {
+          "formula": "2 × one-way",
+          "value": 44.47877682,
+          "unit": "ms",
+          "s": 0.04447877682
+        }
+      },
+      "ap_northeast": {
+        "formula": "h = sin²(Δφ/2) + cos φ1 · cos φ2 · sin²(Δλ/2);  c = 2 · atan2(√h, √(1 − h));  d = R · c",
+        "steps": {
+          "phi1_rad": -0.02255139927,
+          "phi2_rad": 0.6226671546,
+          "dphi_rad": 0.6452185539,
+          "dlambda_rad": 1.794694145,
+          "h": 0.5967336396,
+          "central_angle_rad": 1.765491299
+        },
+        "distance": {
+          "formula": "6371.0088 km × 1.765491 rad",
+          "value": 11247.9606,
+          "unit": "km"
+        },
+        "one_way": {
+          "formula": "11,248 km / 204,220 km/s",
+          "value": 55.07766428,
+          "unit": "ms",
+          "s": 0.05507766428
+        },
+        "rtt": {
+          "formula": "2 × one-way",
+          "value": 110.1553286,
+          "unit": "ms",
+          "s": 0.1101553286
+        }
+      }
+    },
+    "user_to_region": {
+      "us_east": {
+        "formula": "h = sin²(Δφ/2) + cos φ1 · cos φ2 · sin²(Δλ/2);  c = 2 · atan2(√h, √(1 − h));  d = R · c",
+        "steps": {
+          "phi1_rad": -0.02255139927,
+          "phi2_rad": 0.6814428625,
+          "dphi_rad": 0.7039942618,
+          "dlambda_rad": -1.995073651,
+          "h": 0.6669232471,
+          "central_angle_rad": 1.911177578
+        },
+        "distance": {
+          "formula": "6371.0088 km × 1.911178 rad",
+          "value": 12176.12917,
+          "unit": "km"
+        },
+        "one_way": {
+          "formula": "12,176 km / 204,220 km/s",
+          "value": 59.6226088,
+          "unit": "ms",
+          "s": 0.0596226088
+        },
+        "rtt": {
+          "formula": "2 × one-way",
+          "value": 119.2452176,
+          "unit": "ms",
+          "s": 0.1192452176
+        }
+      },
+      "eu_west": {
+        "formula": "h = sin²(Δφ/2) + cos φ1 · cos φ2 · sin²(Δλ/2);  c = 2 · atan2(√h, √(1 − h));  d = R · c",
+        "steps": {
+          "phi1_rad": -0.02255139927,
+          "phi2_rad": 0.9311296653,
+          "dphi_rad": 0.9536810645,
+          "dlambda_rad": -0.751926239,
+          "h": 0.2911105843,
+          "central_angle_rad": 1.139797128
+        },
+        "distance": {
+          "formula": "6371.0088 km × 1.139797 rad",
+          "value": 7261.657534,
+          "unit": "km"
+        },
+        "one_way": {
+          "formula": "7,262 km / 204,220 km/s",
+          "value": 35.55801358,
+          "unit": "ms",
+          "s": 0.03555801358
+        },
+        "rtt": {
+          "formula": "2 × one-way",
+          "value": 71.11602717,
+          "unit": "ms",
+          "s": 0.07111602717
+        }
+      },
+      "ap_south": {
+        "formula": "h = sin²(Δφ/2) + cos φ1 · cos φ2 · sin²(Δλ/2);  c = 2 · atan2(√h, √(1 − h));  d = R · c",
+        "steps": {
+          "phi1_rad": -0.02255139927,
+          "phi2_rad": 0.3329390081,
+          "dphi_rad": 0.3554904074,
+          "dlambda_rad": 0.6292924244,
+          "h": 0.1217573823,
+          "central_angle_rad": 0.7128742156
+        },
+        "distance": {
+          "formula": "6371.0088 km × 0.712874 rad",
+          "value": 4541.727901,
+          "unit": "km"
+        },
+        "one_way": {
+          "formula": "4,542 km / 204,220 km/s",
+          "value": 22.23938841,
+          "unit": "ms",
+          "s": 0.02223938841
+        },
+        "rtt": {
+          "formula": "2 × one-way",
+          "value": 44.47877682,
+          "unit": "ms",
+          "s": 0.04447877682
+        }
+      },
+      "ap_northeast": {
+        "formula": "h = sin²(Δφ/2) + cos φ1 · cos φ2 · sin²(Δλ/2);  c = 2 · atan2(√h, √(1 − h));  d = R · c",
+        "steps": {
+          "phi1_rad": -0.02255139927,
+          "phi2_rad": 0.6226671546,
+          "dphi_rad": 0.6452185539,
+          "dlambda_rad": 1.794694145,
+          "h": 0.5967336396,
+          "central_angle_rad": 1.765491299
+        },
+        "distance": {
+          "formula": "6371.0088 km × 1.765491 rad",
+          "value": 11247.9606,
+          "unit": "km"
+        },
+        "one_way": {
+          "formula": "11,248 km / 204,220 km/s",
+          "value": 55.07766428,
+          "unit": "ms",
+          "s": 0.05507766428
+        },
+        "rtt": {
+          "formula": "2 × one-way",
+          "value": 110.1553286,
+          "unit": "ms",
+          "s": 0.1101553286
+        }
+      }
+    },
+    "region_to_region": {
+      "us_east__eu_west": {
+        "formula": "h = sin²(Δφ/2) + cos φ1 · cos φ2 · sin²(Δλ/2);  c = 2 · atan2(√h, √(1 − h));  d = R · c",
+        "steps": {
+          "phi1_rad": 0.6814428625,
+          "phi2_rad": 0.9311296653,
+          "dphi_rad": 0.2496868028,
+          "dlambda_rad": 1.243147412,
+          "h": 0.1727120545,
+          "central_angle_rad": 0.857174836
+        },
+        "distance": {
+          "formula": "6371.0088 km × 0.857175 rad",
+          "value": 5461.068423,
+          "unit": "km"
+        },
+        "one_way": {
+          "formula": "5,461 km / 204,220 km/s",
+          "value": 26.7411048,
+          "unit": "ms",
+          "s": 0.0267411048
+        },
+        "rtt": {
+          "formula": "2 × one-way",
+          "value": 53.48220961,
+          "unit": "ms",
+          "s": 0.05348220961
+        },
+        "cities": "Ashburn, Virginia – Dublin"
+      },
+      "us_east__ap_south": {
+        "formula": "h = sin²(Δφ/2) + cos φ1 · cos φ2 · sin²(Δλ/2);  c = 2 · atan2(√h, √(1 − h));  d = R · c",
+        "steps": {
+          "phi1_rad": 0.6814428625,
+          "phi2_rad": 0.3329390081,
+          "dphi_rad": -0.3485038544,
+          "dlambda_rad": 2.624366075,
+          "h": 0.7160656524,
+          "central_angle_rad": 2.017651131
+        },
+        "distance": {
+          "formula": "6371.0088 km × 2.017651 rad",
+          "value": 12854.47311,
+          "unit": "km"
+        },
+        "one_way": {
+          "formula": "12,854 km / 204,220 km/s",
+          "value": 62.94424204,
+          "unit": "ms",
+          "s": 0.06294424204
+        },
+        "rtt": {
+          "formula": "2 × one-way",
+          "value": 125.8884841,
+          "unit": "ms",
+          "s": 0.1258884841
+        },
+        "cities": "Ashburn, Virginia – Mumbai"
+      },
+      "us_east__ap_northeast": {
+        "formula": "h = sin²(Δφ/2) + cos φ1 · cos φ2 · sin²(Δλ/2);  c = 2 · atan2(√h, √(1 − h));  d = R · c",
+        "steps": {
+          "phi1_rad": 0.6814428625,
+          "phi2_rad": 0.6226671546,
+          "dphi_rad": -0.05877570789,
+          "dlambda_rad": 3.789767795,
+          "h": 0.5677902784,
+          "central_angle_rad": 1.706795733
+        },
+        "distance": {
+          "formula": "6371.0088 km × 1.706796 rad",
+          "value": 10874.01064,
+          "unit": "km"
+        },
+        "one_way": {
+          "formula": "10,874 km / 204,220 km/s",
+          "value": 53.24655097,
+          "unit": "ms",
+          "s": 0.05324655097
+        },
+        "rtt": {
+          "formula": "2 × one-way",
+          "value": 106.4931019,
+          "unit": "ms",
+          "s": 0.1064931019
+        },
+        "cities": "Ashburn, Virginia – Tokyo"
+      },
+      "eu_west__ap_south": {
+        "formula": "h = sin²(Δφ/2) + cos φ1 · cos φ2 · sin²(Δλ/2);  c = 2 · atan2(√h, √(1 − h));  d = R · c",
+        "steps": {
+          "phi1_rad": 0.9311296653,
+          "phi2_rad": 0.3329390081,
+          "dphi_rad": -0.5981906572,
+          "dlambda_rad": 1.381218663,
+          "h": 0.3157409688,
+          "central_angle_rad": 1.193381942
+        },
+        "distance": {
+          "formula": "6371.0088 km × 1.193382 rad",
+          "value": 7603.046857,
+          "unit": "km"
+        },
+        "one_way": {
+          "formula": "7,603 km / 204,220 km/s",
+          "value": 37.22968787,
+          "unit": "ms",
+          "s": 0.03722968787
+        },
+        "rtt": {
+          "formula": "2 × one-way",
+          "value": 74.45937574,
+          "unit": "ms",
+          "s": 0.07445937574
+        },
+        "cities": "Dublin – Mumbai"
+      },
+      "eu_west__ap_northeast": {
+        "formula": "h = sin²(Δφ/2) + cos φ1 · cos φ2 · sin²(Δλ/2);  c = 2 · atan2(√h, √(1 − h));  d = R · c",
+        "steps": {
+          "phi1_rad": 0.9311296653,
+          "phi2_rad": 0.6226671546,
+          "dphi_rad": -0.3084625107,
+          "dlambda_rad": 2.546620384,
+          "h": 0.4668377092,
+          "central_angle_rad": 1.504423022
+        },
+        "distance": {
+          "formula": "6371.0088 km × 1.504423 rad",
+          "value": 9584.692314,
+          "unit": "km"
+        },
+        "one_way": {
+          "formula": "9,585 km / 204,220 km/s",
+          "value": 46.93317165,
+          "unit": "ms",
+          "s": 0.04693317165
+        },
+        "rtt": {
+          "formula": "2 × one-way",
+          "value": 93.8663433,
+          "unit": "ms",
+          "s": 0.0938663433
+        },
+        "cities": "Dublin – Tokyo"
+      },
+      "ap_south__ap_northeast": {
+        "formula": "h = sin²(Δφ/2) + cos φ1 · cos φ2 · sin²(Δλ/2);  c = 2 · atan2(√h, √(1 − h));  d = R · c",
+        "steps": {
+          "phi1_rad": 0.3329390081,
+          "phi2_rad": 0.6226671546,
+          "dphi_rad": 0.2897281465,
+          "dlambda_rad": 1.16540172,
+          "h": 0.253311267,
+          "central_angle_rad": 1.054827862
+        },
+        "distance": {
+          "formula": "6371.0088 km × 1.054828 rad",
+          "value": 6720.31759,
+          "unit": "km"
+        },
+        "one_way": {
+          "formula": "6,720 km / 204,220 km/s",
+          "value": 32.90724508,
+          "unit": "ms",
+          "s": 0.03290724508
+        },
+        "rtt": {
+          "formula": "2 × one-way",
+          "value": 65.81449016,
+          "unit": "ms",
+          "s": 0.06581449016
+        },
+        "cities": "Mumbai – Tokyo"
+      }
+    },
+    "ranking_from_user": [
+      "ap_south",
+      "eu_west",
+      "ap_northeast",
+      "us_east"
+    ],
+    "nearest_region": "ap_south",
+    "second_nearest_region": "eu_west"
+  },
+  "rtt": {
+    "user_to_pop": {
+      "terms": {
+        "access_rtt": {
+          "value": 20,
+          "unit": "ms",
+          "from": "hypothetical.edge.user_to_pop_rtt_ms"
+        }
+      },
+      "value": 20,
+      "unit": "ms",
+      "s": 0.02,
+      "label": "HYPOTHETICAL",
+      "note": "Access network: device → Wi-Fi or mobile → ISP → PoP in the same metro."
+    },
+    "backbone_pop_to_region": {
+      "us_east": {
+        "formula": "fiber RTT on the great circle (lower bound)",
+        "value": 119.2452176,
+        "unit": "ms",
+        "s": 0.1192452176
+      },
+      "eu_west": {
+        "formula": "fiber RTT on the great circle (lower bound)",
+        "value": 71.11602717,
+        "unit": "ms",
+        "s": 0.07111602717
+      },
+      "ap_south": {
+        "formula": "fiber RTT on the great circle (lower bound)",
+        "value": 44.47877682,
+        "unit": "ms",
+        "s": 0.04447877682
+      },
+      "ap_northeast": {
+        "formula": "fiber RTT on the great circle (lower bound)",
+        "value": 110.1553286,
+        "unit": "ms",
+        "s": 0.1101553286
+      }
+    },
+    "direct_user_to_region": {
+      "us_east": {
+        "formula": "access 20 ms + fiber 119.2 ms",
+        "value": 139.2452176,
+        "unit": "ms",
+        "s": 0.1392452176,
+        "note": "Used only for the comparison 'no edge PoP': the connection ends in the region."
+      },
+      "eu_west": {
+        "formula": "access 20 ms + fiber 71.1 ms",
+        "value": 91.11602717,
+        "unit": "ms",
+        "s": 0.09111602717,
+        "note": "Used only for the comparison 'no edge PoP': the connection ends in the region."
+      },
+      "ap_south": {
+        "formula": "access 20 ms + fiber 44.5 ms",
+        "value": 64.47877682,
+        "unit": "ms",
+        "s": 0.06447877682,
+        "note": "Used only for the comparison 'no edge PoP': the connection ends in the region."
+      },
+      "ap_northeast": {
+        "formula": "access 20 ms + fiber 110.2 ms",
+        "value": 130.1553286,
+        "unit": "ms",
+        "s": 0.1301553286,
+        "note": "Used only for the comparison 'no edge PoP': the connection ends in the region."
+      }
+    }
+  },
+  "connection_paths": {
+    "tcp_tls12_new": {
+      "label": "new TCP + TLS 1.2 (comparison only)",
+      "stack": "TCP + TLS 1.2 + HTTP/2",
+      "early_data": false,
+      "rtts_to_request_sent": {
+        "value": 3,
+        "unit": "RTT",
+        "from": "extra.sims_w02.rtt_to_request_sent_tcp_tls12"
+      },
+      "rtts_to_first_byte": {
+        "formula": "request sent + 1 RTT (zero server time)",
+        "value": 4,
+        "unit": "RTT"
+      },
+      "allowed_for_chat_post": true,
+      "chat_post_uses": "tcp_tls12_new",
+      "to_pop": {
+        "request_sent": {
+          "formula": "3 × 20 ms",
+          "value": 60,
+          "unit": "ms",
+          "s": 0.06
+        },
+        "first_byte_from_pop": {
+          "formula": "(3 + 1) × 20 ms",
+          "value": 80,
+          "unit": "ms",
+          "s": 0.08
+        }
+      },
+      "via_pop": {
+        "us_east": {
+          "first_byte_from_region": {
+            "formula": "(3 + 1) × 20 + 119.2 (warm PoP→region connection)",
+            "value": 199.2452176,
+            "unit": "ms",
+            "s": 0.1992452176
+          }
+        },
+        "eu_west": {
+          "first_byte_from_region": {
+            "formula": "(3 + 1) × 20 + 71.1 (warm PoP→region connection)",
+            "value": 151.1160272,
+            "unit": "ms",
+            "s": 0.1511160272
+          }
+        },
+        "ap_south": {
+          "first_byte_from_region": {
+            "formula": "(3 + 1) × 20 + 44.5 (warm PoP→region connection)",
+            "value": 124.4787768,
+            "unit": "ms",
+            "s": 0.1244787768
+          }
+        },
+        "ap_northeast": {
+          "first_byte_from_region": {
+            "formula": "(3 + 1) × 20 + 110.2 (warm PoP→region connection)",
+            "value": 190.1553286,
+            "unit": "ms",
+            "s": 0.1901553286
+          }
+        }
+      },
+      "direct_to_region": {
+        "us_east": {
+          "request_sent": {
+            "formula": "3 × 139.2 ms",
+            "value": 417.7356528,
+            "unit": "ms",
+            "s": 0.4177356528
+          },
+          "first_byte_from_region": {
+            "formula": "(3 + 1) × 139.2 ms",
+            "value": 556.9808704,
+            "unit": "ms",
+            "s": 0.5569808704
+          }
+        },
+        "eu_west": {
+          "request_sent": {
+            "formula": "3 × 91.1 ms",
+            "value": 273.3480815,
+            "unit": "ms",
+            "s": 0.2733480815
+          },
+          "first_byte_from_region": {
+            "formula": "(3 + 1) × 91.1 ms",
+            "value": 364.4641087,
+            "unit": "ms",
+            "s": 0.3644641087
+          }
+        },
+        "ap_south": {
+          "request_sent": {
+            "formula": "3 × 64.5 ms",
+            "value": 193.4363305,
+            "unit": "ms",
+            "s": 0.1934363305
+          },
+          "first_byte_from_region": {
+            "formula": "(3 + 1) × 64.5 ms",
+            "value": 257.9151073,
+            "unit": "ms",
+            "s": 0.2579151073
+          }
+        },
+        "ap_northeast": {
+          "request_sent": {
+            "formula": "3 × 130.2 ms",
+            "value": 390.4659858,
+            "unit": "ms",
+            "s": 0.3904659858
+          },
+          "first_byte_from_region": {
+            "formula": "(3 + 1) × 130.2 ms",
+            "value": 520.6213144,
+            "unit": "ms",
+            "s": 0.5206213144
+          }
+        }
+      },
+      "edge_termination_saving": {
+        "us_east": {
+          "formula": "3 handshake RTT × 119.2 ms backbone RTT",
+          "value": 357.7356528,
+          "unit": "ms",
+          "s": 0.3577356528,
+          "check_equals_direct_minus_via_pop": true
+        },
+        "eu_west": {
+          "formula": "3 handshake RTT × 71.1 ms backbone RTT",
+          "value": 213.3480815,
+          "unit": "ms",
+          "s": 0.2133480815,
+          "check_equals_direct_minus_via_pop": true
+        },
+        "ap_south": {
+          "formula": "3 handshake RTT × 44.5 ms backbone RTT",
+          "value": 133.4363305,
+          "unit": "ms",
+          "s": 0.1334363305,
+          "check_equals_direct_minus_via_pop": true
+        },
+        "ap_northeast": {
+          "formula": "3 handshake RTT × 110.2 ms backbone RTT",
+          "value": 330.4659858,
+          "unit": "ms",
+          "s": 0.3304659858,
+          "check_equals_direct_minus_via_pop": true
+        }
+      }
+    },
+    "tcp_tls13_new": {
+      "label": "new TCP + TLS 1.3 + HTTP/2",
+      "stack": "TCP + TLS 1.3 + HTTP/2",
+      "early_data": false,
+      "rtts_to_request_sent": {
+        "value": 2,
+        "unit": "RTT",
+        "from": "network.protocols.rtt_to_request_sent_tcp_tls13"
+      },
+      "rtts_to_first_byte": {
+        "formula": "request sent + 1 RTT (zero server time)",
+        "value": 3,
+        "unit": "RTT"
+      },
+      "allowed_for_chat_post": true,
+      "chat_post_uses": "tcp_tls13_new",
+      "to_pop": {
+        "request_sent": {
+          "formula": "2 × 20 ms",
+          "value": 40,
+          "unit": "ms",
+          "s": 0.04
+        },
+        "first_byte_from_pop": {
+          "formula": "(2 + 1) × 20 ms",
+          "value": 60,
+          "unit": "ms",
+          "s": 0.06
+        }
+      },
+      "via_pop": {
+        "us_east": {
+          "first_byte_from_region": {
+            "formula": "(2 + 1) × 20 + 119.2 (warm PoP→region connection)",
+            "value": 179.2452176,
+            "unit": "ms",
+            "s": 0.1792452176
+          }
+        },
+        "eu_west": {
+          "first_byte_from_region": {
+            "formula": "(2 + 1) × 20 + 71.1 (warm PoP→region connection)",
+            "value": 131.1160272,
+            "unit": "ms",
+            "s": 0.1311160272
+          }
+        },
+        "ap_south": {
+          "first_byte_from_region": {
+            "formula": "(2 + 1) × 20 + 44.5 (warm PoP→region connection)",
+            "value": 104.4787768,
+            "unit": "ms",
+            "s": 0.1044787768
+          }
+        },
+        "ap_northeast": {
+          "first_byte_from_region": {
+            "formula": "(2 + 1) × 20 + 110.2 (warm PoP→region connection)",
+            "value": 170.1553286,
+            "unit": "ms",
+            "s": 0.1701553286
+          }
+        }
+      },
+      "direct_to_region": {
+        "us_east": {
+          "request_sent": {
+            "formula": "2 × 139.2 ms",
+            "value": 278.4904352,
+            "unit": "ms",
+            "s": 0.2784904352
+          },
+          "first_byte_from_region": {
+            "formula": "(2 + 1) × 139.2 ms",
+            "value": 417.7356528,
+            "unit": "ms",
+            "s": 0.4177356528
+          }
+        },
+        "eu_west": {
+          "request_sent": {
+            "formula": "2 × 91.1 ms",
+            "value": 182.2320543,
+            "unit": "ms",
+            "s": 0.1822320543
+          },
+          "first_byte_from_region": {
+            "formula": "(2 + 1) × 91.1 ms",
+            "value": 273.3480815,
+            "unit": "ms",
+            "s": 0.2733480815
+          }
+        },
+        "ap_south": {
+          "request_sent": {
+            "formula": "2 × 64.5 ms",
+            "value": 128.9575536,
+            "unit": "ms",
+            "s": 0.1289575536
+          },
+          "first_byte_from_region": {
+            "formula": "(2 + 1) × 64.5 ms",
+            "value": 193.4363305,
+            "unit": "ms",
+            "s": 0.1934363305
+          }
+        },
+        "ap_northeast": {
+          "request_sent": {
+            "formula": "2 × 130.2 ms",
+            "value": 260.3106572,
+            "unit": "ms",
+            "s": 0.2603106572
+          },
+          "first_byte_from_region": {
+            "formula": "(2 + 1) × 130.2 ms",
+            "value": 390.4659858,
+            "unit": "ms",
+            "s": 0.3904659858
+          }
+        }
+      },
+      "edge_termination_saving": {
+        "us_east": {
+          "formula": "2 handshake RTT × 119.2 ms backbone RTT",
+          "value": 238.4904352,
+          "unit": "ms",
+          "s": 0.2384904352,
+          "check_equals_direct_minus_via_pop": true
+        },
+        "eu_west": {
+          "formula": "2 handshake RTT × 71.1 ms backbone RTT",
+          "value": 142.2320543,
+          "unit": "ms",
+          "s": 0.1422320543,
+          "check_equals_direct_minus_via_pop": true
+        },
+        "ap_south": {
+          "formula": "2 handshake RTT × 44.5 ms backbone RTT",
+          "value": 88.95755364,
+          "unit": "ms",
+          "s": 0.08895755364,
+          "check_equals_direct_minus_via_pop": true
+        },
+        "ap_northeast": {
+          "formula": "2 handshake RTT × 110.2 ms backbone RTT",
+          "value": 220.3106572,
+          "unit": "ms",
+          "s": 0.2203106572,
+          "check_equals_direct_minus_via_pop": true
+        }
+      }
+    },
+    "tcp_tls13_resumed": {
+      "label": "TCP + TLS 1.3 resumed (PSK, no early data)",
+      "stack": "TCP + TLS 1.3 + HTTP/2",
+      "early_data": false,
+      "rtts_to_request_sent": {
+        "value": 2,
+        "unit": "RTT",
+        "from": "extra.sims_w02.rtt_to_request_sent_tcp_tls13_resumed"
+      },
+      "rtts_to_first_byte": {
+        "formula": "request sent + 1 RTT (zero server time)",
+        "value": 3,
+        "unit": "RTT"
+      },
+      "allowed_for_chat_post": true,
+      "chat_post_uses": "tcp_tls13_resumed",
+      "to_pop": {
+        "request_sent": {
+          "formula": "2 × 20 ms",
+          "value": 40,
+          "unit": "ms",
+          "s": 0.04
+        },
+        "first_byte_from_pop": {
+          "formula": "(2 + 1) × 20 ms",
+          "value": 60,
+          "unit": "ms",
+          "s": 0.06
+        }
+      },
+      "via_pop": {
+        "us_east": {
+          "first_byte_from_region": {
+            "formula": "(2 + 1) × 20 + 119.2 (warm PoP→region connection)",
+            "value": 179.2452176,
+            "unit": "ms",
+            "s": 0.1792452176
+          }
+        },
+        "eu_west": {
+          "first_byte_from_region": {
+            "formula": "(2 + 1) × 20 + 71.1 (warm PoP→region connection)",
+            "value": 131.1160272,
+            "unit": "ms",
+            "s": 0.1311160272
+          }
+        },
+        "ap_south": {
+          "first_byte_from_region": {
+            "formula": "(2 + 1) × 20 + 44.5 (warm PoP→region connection)",
+            "value": 104.4787768,
+            "unit": "ms",
+            "s": 0.1044787768
+          }
+        },
+        "ap_northeast": {
+          "first_byte_from_region": {
+            "formula": "(2 + 1) × 20 + 110.2 (warm PoP→region connection)",
+            "value": 170.1553286,
+            "unit": "ms",
+            "s": 0.1701553286
+          }
+        }
+      },
+      "direct_to_region": {
+        "us_east": {
+          "request_sent": {
+            "formula": "2 × 139.2 ms",
+            "value": 278.4904352,
+            "unit": "ms",
+            "s": 0.2784904352
+          },
+          "first_byte_from_region": {
+            "formula": "(2 + 1) × 139.2 ms",
+            "value": 417.7356528,
+            "unit": "ms",
+            "s": 0.4177356528
+          }
+        },
+        "eu_west": {
+          "request_sent": {
+            "formula": "2 × 91.1 ms",
+            "value": 182.2320543,
+            "unit": "ms",
+            "s": 0.1822320543
+          },
+          "first_byte_from_region": {
+            "formula": "(2 + 1) × 91.1 ms",
+            "value": 273.3480815,
+            "unit": "ms",
+            "s": 0.2733480815
+          }
+        },
+        "ap_south": {
+          "request_sent": {
+            "formula": "2 × 64.5 ms",
+            "value": 128.9575536,
+            "unit": "ms",
+            "s": 0.1289575536
+          },
+          "first_byte_from_region": {
+            "formula": "(2 + 1) × 64.5 ms",
+            "value": 193.4363305,
+            "unit": "ms",
+            "s": 0.1934363305
+          }
+        },
+        "ap_northeast": {
+          "request_sent": {
+            "formula": "2 × 130.2 ms",
+            "value": 260.3106572,
+            "unit": "ms",
+            "s": 0.2603106572
+          },
+          "first_byte_from_region": {
+            "formula": "(2 + 1) × 130.2 ms",
+            "value": 390.4659858,
+            "unit": "ms",
+            "s": 0.3904659858
+          }
+        }
+      },
+      "edge_termination_saving": {
+        "us_east": {
+          "formula": "2 handshake RTT × 119.2 ms backbone RTT",
+          "value": 238.4904352,
+          "unit": "ms",
+          "s": 0.2384904352,
+          "check_equals_direct_minus_via_pop": true
+        },
+        "eu_west": {
+          "formula": "2 handshake RTT × 71.1 ms backbone RTT",
+          "value": 142.2320543,
+          "unit": "ms",
+          "s": 0.1422320543,
+          "check_equals_direct_minus_via_pop": true
+        },
+        "ap_south": {
+          "formula": "2 handshake RTT × 44.5 ms backbone RTT",
+          "value": 88.95755364,
+          "unit": "ms",
+          "s": 0.08895755364,
+          "check_equals_direct_minus_via_pop": true
+        },
+        "ap_northeast": {
+          "formula": "2 handshake RTT × 110.2 ms backbone RTT",
+          "value": 220.3106572,
+          "unit": "ms",
+          "s": 0.2203106572,
+          "check_equals_direct_minus_via_pop": true
+        }
+      }
+    },
+    "tcp_tls13_0rtt": {
+      "label": "TCP + TLS 1.3 with 0-RTT early data",
+      "stack": "TCP + TLS 1.3 + HTTP/2",
+      "early_data": true,
+      "rtts_to_request_sent": {
+        "value": 1,
+        "unit": "RTT",
+        "from": "extra.sims_w02.rtt_to_request_sent_tcp_tls13_0rtt"
+      },
+      "rtts_to_first_byte": {
+        "formula": "request sent + 1 RTT (zero server time)",
+        "value": 2,
+        "unit": "RTT"
+      },
+      "allowed_for_chat_post": false,
+      "chat_post_uses": "tcp_tls13_resumed",
+      "to_pop": {
+        "request_sent": {
+          "formula": "1 × 20 ms",
+          "value": 20,
+          "unit": "ms",
+          "s": 0.02
+        },
+        "first_byte_from_pop": {
+          "formula": "(1 + 1) × 20 ms",
+          "value": 40,
+          "unit": "ms",
+          "s": 0.04
+        }
+      },
+      "via_pop": {
+        "us_east": {
+          "first_byte_from_region": {
+            "formula": "(1 + 1) × 20 + 119.2 (warm PoP→region connection)",
+            "value": 159.2452176,
+            "unit": "ms",
+            "s": 0.1592452176
+          }
+        },
+        "eu_west": {
+          "first_byte_from_region": {
+            "formula": "(1 + 1) × 20 + 71.1 (warm PoP→region connection)",
+            "value": 111.1160272,
+            "unit": "ms",
+            "s": 0.1111160272
+          }
+        },
+        "ap_south": {
+          "first_byte_from_region": {
+            "formula": "(1 + 1) × 20 + 44.5 (warm PoP→region connection)",
+            "value": 84.47877682,
+            "unit": "ms",
+            "s": 0.08447877682
+          }
+        },
+        "ap_northeast": {
+          "first_byte_from_region": {
+            "formula": "(1 + 1) × 20 + 110.2 (warm PoP→region connection)",
+            "value": 150.1553286,
+            "unit": "ms",
+            "s": 0.1501553286
+          }
+        }
+      },
+      "direct_to_region": {
+        "us_east": {
+          "request_sent": {
+            "formula": "1 × 139.2 ms",
+            "value": 139.2452176,
+            "unit": "ms",
+            "s": 0.1392452176
+          },
+          "first_byte_from_region": {
+            "formula": "(1 + 1) × 139.2 ms",
+            "value": 278.4904352,
+            "unit": "ms",
+            "s": 0.2784904352
+          }
+        },
+        "eu_west": {
+          "request_sent": {
+            "formula": "1 × 91.1 ms",
+            "value": 91.11602717,
+            "unit": "ms",
+            "s": 0.09111602717
+          },
+          "first_byte_from_region": {
+            "formula": "(1 + 1) × 91.1 ms",
+            "value": 182.2320543,
+            "unit": "ms",
+            "s": 0.1822320543
+          }
+        },
+        "ap_south": {
+          "request_sent": {
+            "formula": "1 × 64.5 ms",
+            "value": 64.47877682,
+            "unit": "ms",
+            "s": 0.06447877682
+          },
+          "first_byte_from_region": {
+            "formula": "(1 + 1) × 64.5 ms",
+            "value": 128.9575536,
+            "unit": "ms",
+            "s": 0.1289575536
+          }
+        },
+        "ap_northeast": {
+          "request_sent": {
+            "formula": "1 × 130.2 ms",
+            "value": 130.1553286,
+            "unit": "ms",
+            "s": 0.1301553286
+          },
+          "first_byte_from_region": {
+            "formula": "(1 + 1) × 130.2 ms",
+            "value": 260.3106572,
+            "unit": "ms",
+            "s": 0.2603106572
+          }
+        }
+      },
+      "edge_termination_saving": {
+        "us_east": {
+          "formula": "1 handshake RTT × 119.2 ms backbone RTT",
+          "value": 119.2452176,
+          "unit": "ms",
+          "s": 0.1192452176,
+          "check_equals_direct_minus_via_pop": true
+        },
+        "eu_west": {
+          "formula": "1 handshake RTT × 71.1 ms backbone RTT",
+          "value": 71.11602717,
+          "unit": "ms",
+          "s": 0.07111602717,
+          "check_equals_direct_minus_via_pop": true
+        },
+        "ap_south": {
+          "formula": "1 handshake RTT × 44.5 ms backbone RTT",
+          "value": 44.47877682,
+          "unit": "ms",
+          "s": 0.04447877682,
+          "check_equals_direct_minus_via_pop": true
+        },
+        "ap_northeast": {
+          "formula": "1 handshake RTT × 110.2 ms backbone RTT",
+          "value": 110.1553286,
+          "unit": "ms",
+          "s": 0.1101553286,
+          "check_equals_direct_minus_via_pop": true
+        }
+      }
+    },
+    "quic_new": {
+      "label": "new QUIC + HTTP/3",
+      "stack": "QUIC (TLS 1.3 inside) + HTTP/3",
+      "early_data": false,
+      "rtts_to_request_sent": {
+        "value": 1,
+        "unit": "RTT",
+        "from": "network.protocols.rtt_to_request_sent_quic"
+      },
+      "rtts_to_first_byte": {
+        "formula": "request sent + 1 RTT (zero server time)",
+        "value": 2,
+        "unit": "RTT"
+      },
+      "allowed_for_chat_post": true,
+      "chat_post_uses": "quic_new",
+      "to_pop": {
+        "request_sent": {
+          "formula": "1 × 20 ms",
+          "value": 20,
+          "unit": "ms",
+          "s": 0.02
+        },
+        "first_byte_from_pop": {
+          "formula": "(1 + 1) × 20 ms",
+          "value": 40,
+          "unit": "ms",
+          "s": 0.04
+        }
+      },
+      "via_pop": {
+        "us_east": {
+          "first_byte_from_region": {
+            "formula": "(1 + 1) × 20 + 119.2 (warm PoP→region connection)",
+            "value": 159.2452176,
+            "unit": "ms",
+            "s": 0.1592452176
+          }
+        },
+        "eu_west": {
+          "first_byte_from_region": {
+            "formula": "(1 + 1) × 20 + 71.1 (warm PoP→region connection)",
+            "value": 111.1160272,
+            "unit": "ms",
+            "s": 0.1111160272
+          }
+        },
+        "ap_south": {
+          "first_byte_from_region": {
+            "formula": "(1 + 1) × 20 + 44.5 (warm PoP→region connection)",
+            "value": 84.47877682,
+            "unit": "ms",
+            "s": 0.08447877682
+          }
+        },
+        "ap_northeast": {
+          "first_byte_from_region": {
+            "formula": "(1 + 1) × 20 + 110.2 (warm PoP→region connection)",
+            "value": 150.1553286,
+            "unit": "ms",
+            "s": 0.1501553286
+          }
+        }
+      },
+      "direct_to_region": {
+        "us_east": {
+          "request_sent": {
+            "formula": "1 × 139.2 ms",
+            "value": 139.2452176,
+            "unit": "ms",
+            "s": 0.1392452176
+          },
+          "first_byte_from_region": {
+            "formula": "(1 + 1) × 139.2 ms",
+            "value": 278.4904352,
+            "unit": "ms",
+            "s": 0.2784904352
+          }
+        },
+        "eu_west": {
+          "request_sent": {
+            "formula": "1 × 91.1 ms",
+            "value": 91.11602717,
+            "unit": "ms",
+            "s": 0.09111602717
+          },
+          "first_byte_from_region": {
+            "formula": "(1 + 1) × 91.1 ms",
+            "value": 182.2320543,
+            "unit": "ms",
+            "s": 0.1822320543
+          }
+        },
+        "ap_south": {
+          "request_sent": {
+            "formula": "1 × 64.5 ms",
+            "value": 64.47877682,
+            "unit": "ms",
+            "s": 0.06447877682
+          },
+          "first_byte_from_region": {
+            "formula": "(1 + 1) × 64.5 ms",
+            "value": 128.9575536,
+            "unit": "ms",
+            "s": 0.1289575536
+          }
+        },
+        "ap_northeast": {
+          "request_sent": {
+            "formula": "1 × 130.2 ms",
+            "value": 130.1553286,
+            "unit": "ms",
+            "s": 0.1301553286
+          },
+          "first_byte_from_region": {
+            "formula": "(1 + 1) × 130.2 ms",
+            "value": 260.3106572,
+            "unit": "ms",
+            "s": 0.2603106572
+          }
+        }
+      },
+      "edge_termination_saving": {
+        "us_east": {
+          "formula": "1 handshake RTT × 119.2 ms backbone RTT",
+          "value": 119.2452176,
+          "unit": "ms",
+          "s": 0.1192452176,
+          "check_equals_direct_minus_via_pop": true
+        },
+        "eu_west": {
+          "formula": "1 handshake RTT × 71.1 ms backbone RTT",
+          "value": 71.11602717,
+          "unit": "ms",
+          "s": 0.07111602717,
+          "check_equals_direct_minus_via_pop": true
+        },
+        "ap_south": {
+          "formula": "1 handshake RTT × 44.5 ms backbone RTT",
+          "value": 44.47877682,
+          "unit": "ms",
+          "s": 0.04447877682,
+          "check_equals_direct_minus_via_pop": true
+        },
+        "ap_northeast": {
+          "formula": "1 handshake RTT × 110.2 ms backbone RTT",
+          "value": 110.1553286,
+          "unit": "ms",
+          "s": 0.1101553286,
+          "check_equals_direct_minus_via_pop": true
+        }
+      }
+    },
+    "quic_0rtt": {
+      "label": "QUIC + HTTP/3 with 0-RTT early data",
+      "stack": "QUIC (TLS 1.3 inside) + HTTP/3",
+      "early_data": true,
+      "rtts_to_request_sent": {
+        "value": 0,
+        "unit": "RTT",
+        "from": "network.protocols.rtt_to_request_sent_quic_0rtt"
+      },
+      "rtts_to_first_byte": {
+        "formula": "request sent + 1 RTT (zero server time)",
+        "value": 1,
+        "unit": "RTT"
+      },
+      "allowed_for_chat_post": false,
+      "chat_post_uses": "quic_new",
+      "to_pop": {
+        "request_sent": {
+          "formula": "0 × 20 ms",
+          "value": 0,
+          "unit": "ms",
+          "s": 0
+        },
+        "first_byte_from_pop": {
+          "formula": "(0 + 1) × 20 ms",
+          "value": 20,
+          "unit": "ms",
+          "s": 0.02
+        }
+      },
+      "via_pop": {
+        "us_east": {
+          "first_byte_from_region": {
+            "formula": "(0 + 1) × 20 + 119.2 (warm PoP→region connection)",
+            "value": 139.2452176,
+            "unit": "ms",
+            "s": 0.1392452176
+          }
+        },
+        "eu_west": {
+          "first_byte_from_region": {
+            "formula": "(0 + 1) × 20 + 71.1 (warm PoP→region connection)",
+            "value": 91.11602717,
+            "unit": "ms",
+            "s": 0.09111602717
+          }
+        },
+        "ap_south": {
+          "first_byte_from_region": {
+            "formula": "(0 + 1) × 20 + 44.5 (warm PoP→region connection)",
+            "value": 64.47877682,
+            "unit": "ms",
+            "s": 0.06447877682
+          }
+        },
+        "ap_northeast": {
+          "first_byte_from_region": {
+            "formula": "(0 + 1) × 20 + 110.2 (warm PoP→region connection)",
+            "value": 130.1553286,
+            "unit": "ms",
+            "s": 0.1301553286
+          }
+        }
+      },
+      "direct_to_region": {
+        "us_east": {
+          "request_sent": {
+            "formula": "0 × 139.2 ms",
+            "value": 0,
+            "unit": "ms",
+            "s": 0
+          },
+          "first_byte_from_region": {
+            "formula": "(0 + 1) × 139.2 ms",
+            "value": 139.2452176,
+            "unit": "ms",
+            "s": 0.1392452176
+          }
+        },
+        "eu_west": {
+          "request_sent": {
+            "formula": "0 × 91.1 ms",
+            "value": 0,
+            "unit": "ms",
+            "s": 0
+          },
+          "first_byte_from_region": {
+            "formula": "(0 + 1) × 91.1 ms",
+            "value": 91.11602717,
+            "unit": "ms",
+            "s": 0.09111602717
+          }
+        },
+        "ap_south": {
+          "request_sent": {
+            "formula": "0 × 64.5 ms",
+            "value": 0,
+            "unit": "ms",
+            "s": 0
+          },
+          "first_byte_from_region": {
+            "formula": "(0 + 1) × 64.5 ms",
+            "value": 64.47877682,
+            "unit": "ms",
+            "s": 0.06447877682
+          }
+        },
+        "ap_northeast": {
+          "request_sent": {
+            "formula": "0 × 130.2 ms",
+            "value": 0,
+            "unit": "ms",
+            "s": 0
+          },
+          "first_byte_from_region": {
+            "formula": "(0 + 1) × 130.2 ms",
+            "value": 130.1553286,
+            "unit": "ms",
+            "s": 0.1301553286
+          }
+        }
+      },
+      "edge_termination_saving": {
+        "us_east": {
+          "formula": "0 handshake RTT × 119.2 ms backbone RTT",
+          "value": 0,
+          "unit": "ms",
+          "s": 0,
+          "check_equals_direct_minus_via_pop": true
+        },
+        "eu_west": {
+          "formula": "0 handshake RTT × 71.1 ms backbone RTT",
+          "value": 0,
+          "unit": "ms",
+          "s": 0,
+          "check_equals_direct_minus_via_pop": true
+        },
+        "ap_south": {
+          "formula": "0 handshake RTT × 44.5 ms backbone RTT",
+          "value": 0,
+          "unit": "ms",
+          "s": 0,
+          "check_equals_direct_minus_via_pop": true
+        },
+        "ap_northeast": {
+          "formula": "0 handshake RTT × 110.2 ms backbone RTT",
+          "value": 0,
+          "unit": "ms",
+          "s": 0,
+          "check_equals_direct_minus_via_pop": true
+        }
+      }
+    },
+    "reused": {
+      "label": "reused open connection (HTTP/2 or HTTP/3)",
+      "stack": "any",
+      "early_data": false,
+      "rtts_to_request_sent": {
+        "value": 0,
+        "unit": "RTT",
+        "from": "network.protocols.rtt_to_request_sent_reused_connection"
+      },
+      "rtts_to_first_byte": {
+        "formula": "request sent + 1 RTT (zero server time)",
+        "value": 1,
+        "unit": "RTT"
+      },
+      "allowed_for_chat_post": true,
+      "chat_post_uses": "reused",
+      "to_pop": {
+        "request_sent": {
+          "formula": "0 × 20 ms",
+          "value": 0,
+          "unit": "ms",
+          "s": 0
+        },
+        "first_byte_from_pop": {
+          "formula": "(0 + 1) × 20 ms",
+          "value": 20,
+          "unit": "ms",
+          "s": 0.02
+        }
+      },
+      "via_pop": {
+        "us_east": {
+          "first_byte_from_region": {
+            "formula": "(0 + 1) × 20 + 119.2 (warm PoP→region connection)",
+            "value": 139.2452176,
+            "unit": "ms",
+            "s": 0.1392452176
+          }
+        },
+        "eu_west": {
+          "first_byte_from_region": {
+            "formula": "(0 + 1) × 20 + 71.1 (warm PoP→region connection)",
+            "value": 91.11602717,
+            "unit": "ms",
+            "s": 0.09111602717
+          }
+        },
+        "ap_south": {
+          "first_byte_from_region": {
+            "formula": "(0 + 1) × 20 + 44.5 (warm PoP→region connection)",
+            "value": 64.47877682,
+            "unit": "ms",
+            "s": 0.06447877682
+          }
+        },
+        "ap_northeast": {
+          "first_byte_from_region": {
+            "formula": "(0 + 1) × 20 + 110.2 (warm PoP→region connection)",
+            "value": 130.1553286,
+            "unit": "ms",
+            "s": 0.1301553286
+          }
+        }
+      },
+      "direct_to_region": {
+        "us_east": {
+          "request_sent": {
+            "formula": "0 × 139.2 ms",
+            "value": 0,
+            "unit": "ms",
+            "s": 0
+          },
+          "first_byte_from_region": {
+            "formula": "(0 + 1) × 139.2 ms",
+            "value": 139.2452176,
+            "unit": "ms",
+            "s": 0.1392452176
+          }
+        },
+        "eu_west": {
+          "request_sent": {
+            "formula": "0 × 91.1 ms",
+            "value": 0,
+            "unit": "ms",
+            "s": 0
+          },
+          "first_byte_from_region": {
+            "formula": "(0 + 1) × 91.1 ms",
+            "value": 91.11602717,
+            "unit": "ms",
+            "s": 0.09111602717
+          }
+        },
+        "ap_south": {
+          "request_sent": {
+            "formula": "0 × 64.5 ms",
+            "value": 0,
+            "unit": "ms",
+            "s": 0
+          },
+          "first_byte_from_region": {
+            "formula": "(0 + 1) × 64.5 ms",
+            "value": 64.47877682,
+            "unit": "ms",
+            "s": 0.06447877682
+          }
+        },
+        "ap_northeast": {
+          "request_sent": {
+            "formula": "0 × 130.2 ms",
+            "value": 0,
+            "unit": "ms",
+            "s": 0
+          },
+          "first_byte_from_region": {
+            "formula": "(0 + 1) × 130.2 ms",
+            "value": 130.1553286,
+            "unit": "ms",
+            "s": 0.1301553286
+          }
+        }
+      },
+      "edge_termination_saving": {
+        "us_east": {
+          "formula": "0 handshake RTT × 119.2 ms backbone RTT",
+          "value": 0,
+          "unit": "ms",
+          "s": 0,
+          "check_equals_direct_minus_via_pop": true
+        },
+        "eu_west": {
+          "formula": "0 handshake RTT × 71.1 ms backbone RTT",
+          "value": 0,
+          "unit": "ms",
+          "s": 0,
+          "check_equals_direct_minus_via_pop": true
+        },
+        "ap_south": {
+          "formula": "0 handshake RTT × 44.5 ms backbone RTT",
+          "value": 0,
+          "unit": "ms",
+          "s": 0,
+          "check_equals_direct_minus_via_pop": true
+        },
+        "ap_northeast": {
+          "formula": "0 handshake RTT × 110.2 ms backbone RTT",
+          "value": 0,
+          "unit": "ms",
+          "s": 0,
+          "check_equals_direct_minus_via_pop": true
+        }
+      }
+    }
+  },
+  "reuse_saving": {
+    "reference_path": "reused",
+    "note": "The reference request uses an already-open HTTP/3 connection to the PoP (reference architecture §12 step 2).",
+    "tcp_tls12_new": {
+      "rtts_saved": 3,
+      "at_pop": {
+        "formula": "3 × 20 ms",
+        "value": 60,
+        "unit": "ms"
+      },
+      "direct_to_nearest_region": {
+        "formula": "3 × 64.5 ms",
+        "value": 193.4363305,
+        "unit": "ms"
+      }
+    },
+    "tcp_tls13_new": {
+      "rtts_saved": 2,
+      "at_pop": {
+        "formula": "2 × 20 ms",
+        "value": 40,
+        "unit": "ms"
+      },
+      "direct_to_nearest_region": {
+        "formula": "2 × 64.5 ms",
+        "value": 128.9575536,
+        "unit": "ms"
+      }
+    },
+    "tcp_tls13_resumed": {
+      "rtts_saved": 2,
+      "at_pop": {
+        "formula": "2 × 20 ms",
+        "value": 40,
+        "unit": "ms"
+      },
+      "direct_to_nearest_region": {
+        "formula": "2 × 64.5 ms",
+        "value": 128.9575536,
+        "unit": "ms"
+      }
+    },
+    "quic_new": {
+      "rtts_saved": 1,
+      "at_pop": {
+        "formula": "1 × 20 ms",
+        "value": 20,
+        "unit": "ms"
+      },
+      "direct_to_nearest_region": {
+        "formula": "1 × 64.5 ms",
+        "value": 64.47877682,
+        "unit": "ms"
+      }
+    }
+  },
+  "ttft_network_floor": {
+    "scope": "Network part of TTFT only: request out and first token back, zero server time, no loss, DNS cached. Every later token arrives with the same one-way offset, so the gap between tokens is unchanged.",
+    "reused": {
+      "us_east": {
+        "via_pop": {
+          "formula": "(0 + 1) × 20 + 119.2 (warm PoP→region connection)",
+          "value": 139.2452176,
+          "unit": "ms",
+          "s": 0.1392452176
+        },
+        "direct": {
+          "formula": "(0 + 1) × 139.2 ms",
+          "value": 139.2452176,
+          "unit": "ms",
+          "s": 0.1392452176
+        }
+      },
+      "eu_west": {
+        "via_pop": {
+          "formula": "(0 + 1) × 20 + 71.1 (warm PoP→region connection)",
+          "value": 91.11602717,
+          "unit": "ms",
+          "s": 0.09111602717
+        },
+        "direct": {
+          "formula": "(0 + 1) × 91.1 ms",
+          "value": 91.11602717,
+          "unit": "ms",
+          "s": 0.09111602717
+        }
+      },
+      "ap_south": {
+        "via_pop": {
+          "formula": "(0 + 1) × 20 + 44.5 (warm PoP→region connection)",
+          "value": 64.47877682,
+          "unit": "ms",
+          "s": 0.06447877682
+        },
+        "direct": {
+          "formula": "(0 + 1) × 64.5 ms",
+          "value": 64.47877682,
+          "unit": "ms",
+          "s": 0.06447877682
+        }
+      },
+      "ap_northeast": {
+        "via_pop": {
+          "formula": "(0 + 1) × 20 + 110.2 (warm PoP→region connection)",
+          "value": 130.1553286,
+          "unit": "ms",
+          "s": 0.1301553286
+        },
+        "direct": {
+          "formula": "(0 + 1) × 130.2 ms",
+          "value": 130.1553286,
+          "unit": "ms",
+          "s": 0.1301553286
+        }
+      }
+    },
+    "quic_new": {
+      "us_east": {
+        "via_pop": {
+          "formula": "(1 + 1) × 20 + 119.2 (warm PoP→region connection)",
+          "value": 159.2452176,
+          "unit": "ms",
+          "s": 0.1592452176
+        },
+        "direct": {
+          "formula": "(1 + 1) × 139.2 ms",
+          "value": 278.4904352,
+          "unit": "ms",
+          "s": 0.2784904352
+        }
+      },
+      "eu_west": {
+        "via_pop": {
+          "formula": "(1 + 1) × 20 + 71.1 (warm PoP→region connection)",
+          "value": 111.1160272,
+          "unit": "ms",
+          "s": 0.1111160272
+        },
+        "direct": {
+          "formula": "(1 + 1) × 91.1 ms",
+          "value": 182.2320543,
+          "unit": "ms",
+          "s": 0.1822320543
+        }
+      },
+      "ap_south": {
+        "via_pop": {
+          "formula": "(1 + 1) × 20 + 44.5 (warm PoP→region connection)",
+          "value": 84.47877682,
+          "unit": "ms",
+          "s": 0.08447877682
+        },
+        "direct": {
+          "formula": "(1 + 1) × 64.5 ms",
+          "value": 128.9575536,
+          "unit": "ms",
+          "s": 0.1289575536
+        }
+      },
+      "ap_northeast": {
+        "via_pop": {
+          "formula": "(1 + 1) × 20 + 110.2 (warm PoP→region connection)",
+          "value": 150.1553286,
+          "unit": "ms",
+          "s": 0.1501553286
+        },
+        "direct": {
+          "formula": "(1 + 1) × 130.2 ms",
+          "value": 260.3106572,
+          "unit": "ms",
+          "s": 0.2603106572
+        }
+      }
+    },
+    "tcp_tls13_new": {
+      "us_east": {
+        "via_pop": {
+          "formula": "(2 + 1) × 20 + 119.2 (warm PoP→region connection)",
+          "value": 179.2452176,
+          "unit": "ms",
+          "s": 0.1792452176
+        },
+        "direct": {
+          "formula": "(2 + 1) × 139.2 ms",
+          "value": 417.7356528,
+          "unit": "ms",
+          "s": 0.4177356528
+        }
+      },
+      "eu_west": {
+        "via_pop": {
+          "formula": "(2 + 1) × 20 + 71.1 (warm PoP→region connection)",
+          "value": 131.1160272,
+          "unit": "ms",
+          "s": 0.1311160272
+        },
+        "direct": {
+          "formula": "(2 + 1) × 91.1 ms",
+          "value": 273.3480815,
+          "unit": "ms",
+          "s": 0.2733480815
+        }
+      },
+      "ap_south": {
+        "via_pop": {
+          "formula": "(2 + 1) × 20 + 44.5 (warm PoP→region connection)",
+          "value": 104.4787768,
+          "unit": "ms",
+          "s": 0.1044787768
+        },
+        "direct": {
+          "formula": "(2 + 1) × 64.5 ms",
+          "value": 193.4363305,
+          "unit": "ms",
+          "s": 0.1934363305
+        }
+      },
+      "ap_northeast": {
+        "via_pop": {
+          "formula": "(2 + 1) × 20 + 110.2 (warm PoP→region connection)",
+          "value": 170.1553286,
+          "unit": "ms",
+          "s": 0.1701553286
+        },
+        "direct": {
+          "formula": "(2 + 1) × 130.2 ms",
+          "value": 390.4659858,
+          "unit": "ms",
+          "s": 0.3904659858
+        }
+      }
+    }
+  },
+  "failover": {
+    "scenario": "The nearest region (ap_south) is saturated. Global traffic management sends new requests to the next healthy region (eu_west). The client connection still ends at the Nairobi PoP; only the backbone leg changes.",
+    "nearest_region": "ap_south",
+    "failover_region": "eu_west",
+    "nearest_ttft_network_floor": {
+      "value": 64.47877682,
+      "unit": "ms",
+      "s": 0.06447877682
+    },
+    "alternatives": {
+      "eu_west": {
+        "ttft_network_floor": {
+          "value": 91.11602717,
+          "unit": "ms",
+          "s": 0.09111602717
+        },
+        "penalty_vs_nearest": {
+          "formula": "91.1 − 64.5",
+          "value": 26.63725035,
+          "unit": "ms",
+          "s": 0.02663725035
+        },
+        "ratio_vs_nearest": {
+          "value": 1.413116558,
+          "unit": "x"
+        }
+      },
+      "ap_northeast": {
+        "ttft_network_floor": {
+          "value": 130.1553286,
+          "unit": "ms",
+          "s": 0.1301553286
+        },
+        "penalty_vs_nearest": {
+          "formula": "130.2 − 64.5",
+          "value": 65.67655178,
+          "unit": "ms",
+          "s": 0.06567655178
+        },
+        "ratio_vs_nearest": {
+          "value": 2.018576267,
+          "unit": "x"
+        }
+      },
+      "us_east": {
+        "ttft_network_floor": {
+          "value": 139.2452176,
+          "unit": "ms",
+          "s": 0.1392452176
+        },
+        "penalty_vs_nearest": {
+          "formula": "139.2 − 64.5",
+          "value": 74.76644078,
+          "unit": "ms",
+          "s": 0.07476644078
+        },
+        "ratio_vs_nearest": {
+          "value": 2.159551165,
+          "unit": "x"
+        }
+      }
+    },
+    "home_region_round_trip": {
+      "pair": "eu_west__ap_south",
+      "rtt": {
+        "formula": "2 × one-way",
+        "value": 74.45937574,
+        "unit": "ms",
+        "s": 0.07445937574
+      },
+      "note": "Each synchronous call from the failover region back to data homed in the nearest region (for example a conversation-database write) adds this RTT."
+    },
+    "class": "C (hypothetical regions and PoP); fiber lower bounds"
+  },
+  "detour_example": {
+    "label": "illustrative (a hypothetical policy path, not a measured route)",
+    "path": "user → Dublin → Mumbai",
+    "direct_distance": {
+      "value": 4541.727901,
+      "unit": "km"
+    },
+    "detour_distance": {
+      "formula": "7,262 + 7,603 km",
+      "value": 14864.70439,
+      "unit": "km"
+    },
+    "direct_fiber_rtt": {
+      "value": 44.47877682,
+      "unit": "ms"
+    },
+    "detour_fiber_rtt": {
+      "value": 145.5754029,
+      "unit": "ms"
+    },
+    "rtt_to_detour_city_itself": {
+      "value": 71.11602717,
+      "unit": "ms"
+    },
+    "detour_over_direct": {
+      "value": 3.272918307,
+      "unit": "x"
+    }
+  },
+  "ttft_timer_reference_request": {
+    "region": "ap_south",
+    "request_reaches_pop": {
+      "formula": "20 ms / 2 (one way)",
+      "value": 10,
+      "unit": "ms",
+      "s": 0.01
+    },
+    "request_reaches_region": {
+      "formula": "(20 + 44.5) ms / 2 (one way)",
+      "value": 32.23938841,
+      "unit": "ms",
+      "s": 0.03223938841
+    },
+    "first_byte_back_floor": {
+      "formula": "20 + 44.5 ms",
+      "value": 64.47877682,
+      "unit": "ms",
+      "s": 0.06447877682
+    },
+    "note": "Zero processing time: these are network floors, not predictions of TTFT."
+  },
+  "health_checks": {
+    "k8s_readiness_default_detection": {
+      "formula": "failure threshold 3 × period 10 s",
+      "terms": {
+        "period": {
+          "value": 10,
+          "unit": "s",
+          "from": "extra.sims_w02.k8s_probe_period_s"
+        },
+        "failure_threshold": {
+          "value": 3,
+          "unit": "probes",
+          "from": "extra.sims_w02.k8s_probe_failure_threshold"
+        }
+      },
+      "value": 30,
+      "unit": "s",
+      "note": "Approximate time for a dead pod to fail enough probes with the default settings; EndpointSlice and proxy propagation come on top (no measured figure)."
+    }
+  },
+  "quic_amplification": {
+    "server_budget_before_validation": {
+      "formula": "3 × 1200 bytes",
+      "terms": {
+        "factor": {
+          "value": 3,
+          "unit": "x",
+          "from": "network.protocols.quic_anti_amplification_factor"
+        },
+        "client_initial": {
+          "value": 1200,
+          "unit": "bytes",
+          "from": "network.protocols.quic_min_initial_bytes"
+        }
+      },
+      "value": 3600,
+      "unit": "bytes"
+    },
+    "note": "Until the server validates the client's address, it sends at most this many bytes per 1,200-byte client Initial. A larger first flight (long certificate chain) waits one more RTT."
+  },
+  "flow_control": {
+    "initial_window": {
+      "value": 65535,
+      "unit": "bytes",
+      "from": "network.protocols.http2_initial_window_bytes"
+    },
+    "legs": {
+      "user_to_pop": {
+        "rtt": {
+          "value": 20,
+          "unit": "ms"
+        },
+        "max_rate_with_initial_window": {
+          "formula": "65,535 B / 20.0 ms",
+          "value": 3276750,
+          "unit": "B/s",
+          "MB_per_s": 3.27675
+        }
+      },
+      "pop_to_nearest_region": {
+        "rtt": {
+          "value": 44.47877682,
+          "unit": "ms"
+        },
+        "max_rate_with_initial_window": {
+          "formula": "65,535 B / 44.5 ms",
+          "value": 1473399.331,
+          "unit": "B/s",
+          "MB_per_s": 1.473399331
+        }
+      },
+      "direct_to_nearest_region": {
+        "rtt": {
+          "value": 64.47877682,
+          "unit": "ms"
+        },
+        "max_rate_with_initial_window": {
+          "formula": "65,535 B / 64.5 ms",
+          "value": 1016380.943,
+          "unit": "B/s",
+          "MB_per_s": 1.016380943
+        }
+      }
+    },
+    "photo_rounds_at_initial_window": {
+      "formula": "ceil(2,900,000 / 65,535)",
+      "value": 45,
+      "unit": "RTT",
+      "note": "If the receiver never raised the window (it does, with WINDOW_UPDATE)."
+    }
+  },
+  "slow_start_uploads": {
+    "initial_window": {
+      "formula": "min(10 × 1200, max(2 × 1200, 14,720))",
+      "terms": {
+        "max_datagram_size": {
+          "value": 1200,
+          "unit": "bytes",
+          "from": "network.protocols.quic_min_initial_bytes"
+        }
+      },
+      "value": 12000,
+      "unit": "bytes",
+      "note": "Assumes the 1,200-byte minimum datagram size."
+    },
+    "model": "Ideal slow start: the window doubles every RTT; no loss; flow-control windows never bind. Round k sends iw · 2^(k−1) bytes, so k rounds send iw · (2^k − 1).",
+    "files": {
+      "photo": {
+        "bytes": {
+          "value": 2900000,
+          "unit": "B"
+        },
+        "rounds": {
+          "formula": "ceil(log2(2,900,000 / 12,000 + 1))",
+          "value": 8,
+          "unit": "RTT"
+        },
+        "bytes_sendable_in_rounds": {
+          "value": 3060000,
+          "unit": "B"
+        },
+        "time_if_connection_ends_at_pop": {
+          "formula": "8 × 20 ms",
+          "value": 160,
+          "unit": "ms"
+        },
+        "time_if_connection_ends_in_nearest_region": {
+          "formula": "8 × 64.5 ms",
+          "value": 515.8302146,
+          "unit": "ms"
+        }
+      },
+      "pdf": {
+        "bytes": {
+          "value": 2100000,
+          "unit": "B"
+        },
+        "rounds": {
+          "formula": "ceil(log2(2,100,000 / 12,000 + 1))",
+          "value": 8,
+          "unit": "RTT"
+        },
+        "bytes_sendable_in_rounds": {
+          "value": 3060000,
+          "unit": "B"
+        },
+        "time_if_connection_ends_at_pop": {
+          "formula": "8 × 20 ms",
+          "value": 160,
+          "unit": "ms"
+        },
+        "time_if_connection_ends_in_nearest_region": {
+          "formula": "8 × 64.5 ms",
+          "value": 515.8302146,
+          "unit": "ms"
+        }
+      }
+    }
+  },
+  "request_envelope": {
+    "label": "ILLUSTRATIVE: a conceptual envelope filled with the reference request; not any real private API. IDs are opaque example strings.",
+    "ids": {
+      "conversation_id": "conv_6f1d2a9c3b7e4058",
+      "message_id": "msg_01JA4Q7Z3K9W2T6R8Y5U0P1M4N",
+      "parent_message_id": "msg_01JA4Q2B8D5F7H1J3L6N9Q0S2V",
+      "image_file_id": "file_9c2e71b04d5a48f3",
+      "pdf_file_id": "file_3a8f60d2c1e94b7a",
+      "idempotency_key": "4b7e2c91-0d3a-4f6e-9a58-2c1b7d3e8f40",
+      "request_id": "req_7Hq2Lm9Xv4Bn"
+    },
+    "pretty_json": "{\n  \"conversation_id\": \"conv_6f1d2a9c3b7e4058\",\n  \"message_id\": \"msg_01JA4Q7Z3K9W2T6R8Y5U0P1M4N\",\n  \"parent_message_id\": \"msg_01JA4Q2B8D5F7H1J3L6N9Q0S2V\",\n  \"model\": \"assistant-frontier\",\n  \"input\": [\n    {\n      \"role\": \"user\",\n      \"content\": [\n        {\n          \"type\": \"text\",\n          \"text\": \"Here is our Q3 report and a photo of last week's whiteboard plan. Using our pricing policy, check the current list prices of our three main competitors, compute our gross margin at each of their price points, and plot it. Cite your sources.\"\n        }\n      ]\n    }\n  ],\n  \"attachments\": [\n    {\n      \"file_id\": \"file_9c2e71b04d5a48f3\",\n      \"kind\": \"image\"\n    },\n    {\n      \"file_id\": \"file_3a8f60d2c1e94b7a\",\n      \"kind\": \"document\",\n      \"name\": \"q3-report.pdf\"\n    }\n  ],\n  \"tools\": [\n    \"web_search\",\n    \"code_execution\",\n    \"workspace_search\"\n  ],\n  \"settings\": {\n    \"memory\": true,\n    \"locale\": \"en-KE\",\n    \"timezone\": \"Africa/Nairobi\"\n  },\n  \"stream\": true\n}",
+    "headers_text": ":method: POST\n:scheme: https\n:authority: chat.example\n:path: /api/conversation\ncontent-type: application/json\naccept: text/event-stream\nauthorization: Bearer <short-lived access token>\nidempotency-key: \"4b7e2c91-0d3a-4f6e-9a58-2c1b7d3e8f40\"\nx-request-id: req_7Hq2Lm9Xv4Bn",
+    "json_bytes": {
+      "formula": "UTF-8 bytes of the compact JSON",
+      "value": 764,
+      "unit": "B"
+    },
+    "gzip_bytes": {
+      "formula": "gzip level 6 of the compact JSON (includes the 18-byte gzip frame)",
+      "value": 510,
+      "unit": "B"
+    },
+    "gzip_saving": {
+      "value": 254,
+      "unit": "B"
+    },
+    "gzip_ratio": {
+      "value": 0.667539267,
+      "unit": "ratio"
+    },
+    "photo_bytes": {
+      "value": 2900000,
+      "unit": "B",
+      "from": "hypothetical.reference_request.image"
+    },
+    "pdf_bytes": {
+      "value": 2100000,
+      "unit": "B",
+      "from": "hypothetical.reference_request.pdf"
+    },
+    "photo_over_envelope": {
+      "value": 3795.811518,
+      "unit": "x"
+    },
+    "user_text_chars": {
+      "value": 240,
+      "unit": "characters"
+    }
+  }
+}

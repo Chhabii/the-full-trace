@@ -1,0 +1,283 @@
+{
+  "_about": "Part 07 (web search and browsing) class C values. Every value is HYPOTHETICAL and chosen to agree with RA-12, RA-13, RA-19, RA-28, RA-29. Author w07, 2026-10-09.",
+  "web_search_provider": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "The external search provider of Option A (RA-28), as seen from the orchestrator in ap_south.",
+    "per_query_latency_p50_ms": {
+      "value": 450,
+      "unit": "ms",
+      "note": "Median time from request sent to full JSON response for one query, including the network path to the provider. Public search APIs do not publish latency; a few hundred ms is a realistic order."
+    },
+    "per_query_latency_p95_ms": {
+      "value": 1200,
+      "unit": "ms",
+      "note": "95th percentile per query. With p50 it fixes a lognormal latency model in sim/web_search_budget.py."
+    },
+    "request_timeout_ms": {
+      "value": 2500,
+      "unit": "ms",
+      "note": "Per-attempt timeout on one provider call; about 2x p95, so a timeout means a real fault, not a slow tail."
+    },
+    "results_per_query": {
+      "value": 5,
+      "unit": "results",
+      "note": "count requested per query. Public APIs allow up to 20 (Brave, Tavily); 5 keeps the tool result small. For the reference request 3 x 5 = 15 raw results dedupe to 8 unique."
+    },
+    "price_usd_per_1000_queries": {
+      "value": 5,
+      "unit": "USD per 1,000 queries",
+      "note": "Contract price of the hypothetical provider. The public anchor is one vendor's list price of 10 USD per 1,000 searches for its own tool (retrieval_and_data.anthropic_web_search_price_per_1000)."
+    },
+    "contracted_qps_per_region": {
+      "value": 4000,
+      "unit": "queries/s",
+      "note": "Quota agreed with the provider for each of the 4 serving regions. Above it the provider returns 429."
+    },
+    "mean_queries_per_search": {
+      "value": 2,
+      "unit": "queries per web_search call",
+      "note": "Fleet mean. The reference request uses 3."
+    },
+    "mean_pages_fetched_per_search": {
+      "value": 2,
+      "unit": "pages per web_search call",
+      "note": "Fleet mean of fetch_top actually fetched. The reference request fetches 3."
+    },
+    "search_cache_hit_fraction": {
+      "value": 0.3,
+      "unit": "fraction of queries",
+      "note": "Share of normalized queries answered from the tenant-scoped search-result cache (RA-19) within their TTL."
+    }
+  },
+  "web_search_pipeline": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Orchestrator-side steps around the provider call.",
+    "cache_lookup_ms": {
+      "value": 1,
+      "unit": "ms",
+      "note": "One Redis GET per normalized query inside the region (RA-19); the 3 lookups run in parallel."
+    },
+    "rerank_latency_ms": {
+      "value": 25,
+      "unit": "ms",
+      "note": "M-rerank scores the 8 unique snippets (about 80 tokens each) against the user's question in one small batch."
+    },
+    "breaker_window_calls": {
+      "value": 20,
+      "unit": "calls",
+      "note": "Circuit breaker on the provider (RA-13): failure rate measured over the last 20 calls per orchestrator pod."
+    },
+    "breaker_min_calls": {
+      "value": 10,
+      "unit": "calls",
+      "note": "The breaker does not open before 10 calls are in the window."
+    },
+    "breaker_failure_rate_to_open": {
+      "value": 0.5,
+      "unit": "fraction",
+      "note": "Open when at least half of the calls in the window failed or timed out."
+    },
+    "breaker_open_duration_s": {
+      "value": 30,
+      "unit": "s",
+      "note": "Time in the open state before half-open trials."
+    },
+    "breaker_half_open_trials": {
+      "value": 3,
+      "unit": "calls",
+      "note": "Trial calls allowed in half-open; all 3 must succeed to close."
+    }
+  },
+  "web_fetch": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Limits and latencies of the egress service that fetches pages (RA-29), running in ap_south.",
+    "allowed_schemes": {
+      "value": [
+        "http",
+        "https"
+      ],
+      "unit": "list",
+      "note": "Protocol allowlist; file, ftp, gopher, data and all others are rejected before DNS."
+    },
+    "allowed_ports": {
+      "value": [
+        80,
+        443
+      ],
+      "unit": "list",
+      "note": "Only the default web ports; blocks probes of internal services on other ports."
+    },
+    "max_redirects": {
+      "value": 5,
+      "unit": "hops",
+      "note": "Each hop is parsed and checked again; the sixth redirect fails the fetch."
+    },
+    "connect_timeout_ms": {
+      "value": 2000,
+      "unit": "ms",
+      "note": "TCP plus TLS handshake limit per connection."
+    },
+    "total_timeout_ms": {
+      "value": 6000,
+      "unit": "ms",
+      "note": "Wall-clock limit for one page, from DNS to the last body byte, redirects included."
+    },
+    "max_response_bytes": {
+      "value": 5000000,
+      "unit": "bytes",
+      "note": "Body limit after decompression; the fetcher stops reading at this size and keeps what it has."
+    },
+    "allowed_content_types": {
+      "value": [
+        "text/html",
+        "application/xhtml+xml",
+        "text/plain"
+      ],
+      "unit": "list",
+      "note": "Media types passed to text extraction. PDF and images are out of scope for this tool in this reference system."
+    },
+    "dns_resolve_ms": {
+      "value": 15,
+      "unit": "ms",
+      "note": "Recursive resolution through the egress service's own resolver, cache miss."
+    },
+    "origin_rtt_ms": {
+      "value": 40,
+      "unit": "ms",
+      "note": "Round trip from the egress service in ap_south to the CDN edge in front of a typical vendor website."
+    },
+    "server_time_p50_ms": {
+      "value": 200,
+      "unit": "ms",
+      "note": "Origin time to first byte after the request, median."
+    },
+    "server_time_p95_ms": {
+      "value": 1200,
+      "unit": "ms",
+      "note": "Origin time to first byte, 95th percentile (dynamic pricing pages are often slow)."
+    },
+    "page_html_bytes_reference": {
+      "value": 450000,
+      "unit": "bytes",
+      "note": "Mean HTML size of one pricing page (markup, inline scripts and styles; no sub-resources fetched)."
+    },
+    "download_mbps": {
+      "value": 50,
+      "unit": "Mb/s",
+      "note": "Effective per-connection download rate after TCP slow start for a page of this size."
+    },
+    "extract_ms_per_page": {
+      "value": 40,
+      "unit": "ms",
+      "note": "CPU time to parse HTML, drop boilerplate and hidden elements, and keep the main text."
+    }
+  },
+  "web_cache_ttl": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "TTLs of the search-result and page-text caches per query class (RA-19). The orchestrator assigns the class from the query and the recency_days argument.",
+    "reference_docs_s": {
+      "value": 86400,
+      "unit": "s",
+      "note": "Static documentation, standards, encyclopedic pages: change rarely."
+    },
+    "general_s": {
+      "value": 21600,
+      "unit": "s",
+      "note": "Default class for queries with no time words."
+    },
+    "product_pricing_s": {
+      "value": 3600,
+      "unit": "s",
+      "note": "Prices and plans: change without notice, and a stale price gives a wrong number in an answer."
+    },
+    "news_s": {
+      "value": 600,
+      "unit": "s",
+      "note": "News and 'latest' queries."
+    },
+    "weather_s": {
+      "value": 900,
+      "unit": "s",
+      "note": "Forecasts update a few times per hour at most."
+    },
+    "stock_quote_s": {
+      "value": 0,
+      "unit": "s",
+      "note": "Not cached; quotes come from a market-data API, not from web search."
+    },
+    "empty_result_s": {
+      "value": 300,
+      "unit": "s",
+      "note": "Negative cache for queries with zero results, so a burst of the same failing query does not hit the provider."
+    },
+    "fetched_page_default_s": {
+      "value": 3600,
+      "unit": "s",
+      "note": "Page text when the origin sends no Cache-Control or Expires; never longer than the query class TTL."
+    }
+  },
+  "own_index_sizing": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Illustrative inputs for the Option B sizing arithmetic (7.3). Not a claim about any real search engine.",
+    "indexed_pages": {
+      "value": 5000000000,
+      "unit": "pages",
+      "note": "A large general web index for illustration."
+    },
+    "mean_recrawl_interval_days": {
+      "value": 30,
+      "unit": "days",
+      "note": "Average over all pages; news pages recrawl in minutes, archives in months."
+    },
+    "raw_html_bytes_per_page": {
+      "value": 100000,
+      "unit": "bytes",
+      "note": "HTML only, compressed transfer not counted."
+    },
+    "text_tokens_per_page": {
+      "value": 1500,
+      "unit": "tokens",
+      "note": "Main text after boilerplate removal."
+    },
+    "postings_bytes_per_token": {
+      "value": 1.5,
+      "unit": "bytes",
+      "note": "Positional postings with delta and variable-byte coding; a few bytes per posting is the textbook order."
+    },
+    "passages_per_page": {
+      "value": 4,
+      "unit": "passages",
+      "note": "Embedded passages per page for dense retrieval."
+    },
+    "render_fraction": {
+      "value": 0.2,
+      "unit": "fraction of fetches",
+      "note": "Pages whose main text needs JavaScript, so a headless browser renders them."
+    },
+    "raw_parse_cpu_s": {
+      "value": 0.05,
+      "unit": "CPU-s per page",
+      "note": "Raw fetch and HTML parse."
+    },
+    "render_cpu_s": {
+      "value": 2.0,
+      "unit": "CPU-s per page",
+      "note": "Headless browser with sub-resource fetches and script execution. Estimate; no public ratio exists."
+    }
+  },
+  "web_story": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Part 07 additions to the reference story. Competitor names, queries, recency_days and current prices are hypothetical.tool_call_story (Part 06).",
+    "birchline_previous_eur_per_seat_month": {
+      "value": 49,
+      "unit": "EUR per seat per month",
+      "note": "Birchline's price before its August 2026 increase; a stale comparison page still shows it (7.7)."
+    }
+  }
+}

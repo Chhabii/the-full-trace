@@ -1,0 +1,3000 @@
+{
+  "_about": "Curated values taken from research notes 03, 04 and 06 (which have no constants JSON of their own). Every value is copied exactly from the note's Numbers table. 'source' is a global source ID from docs/sources.md or a code citation repo@commit:path#Lx-Ly. Line numbers are on main and are re-pinned to release tags in Phase 3 (backlog V-014). Draft v1, 2026-10-09.",
+  "engine_vllm": {
+    "_class": "A",
+    "version": {
+      "value": "v0.31.0",
+      "unit": "release",
+      "source": "SRC-039",
+      "accessed": "2026-10-09",
+      "note": "released 2026-10-05; Model Runner V2 is the default worker"
+    },
+    "block_size_tokens": {
+      "value": 16,
+      "unit": "tokens",
+      "source": "vllm@8cbd5d0:vllm/config/cache.py#L72",
+      "accessed": "2026-10-09",
+      "note": "FlashAttention backend. FlashMLA uses 64."
+    },
+    "block_size_flashmla_tokens": {
+      "value": 64,
+      "unit": "tokens",
+      "source": "research/notes/03-engines.md §2.2",
+      "accessed": "2026-10-09"
+    },
+    "gpu_memory_utilization": {
+      "value": 0.92,
+      "unit": "fraction",
+      "source": "vllm@8cbd5d0:vllm/config/cache.py#L102",
+      "accessed": "2026-10-09"
+    },
+    "max_num_batched_tokens_h100": {
+      "value": 8192,
+      "unit": "tokens/step",
+      "source": "vllm@8cbd5d0:vllm/engine/arg_utils.py#L2914-L2923",
+      "accessed": "2026-10-09",
+      "note": "vllm serve default on H100/H200"
+    },
+    "max_num_batched_tokens_b200": {
+      "value": 16384,
+      "unit": "tokens/step",
+      "source": "vllm@8cbd5d0:vllm/engine/arg_utils.py#L2904-L2913",
+      "accessed": "2026-10-09",
+      "note": "GPUs with >= 160 GiB"
+    },
+    "max_num_seqs_h100_b200": {
+      "value": 1024,
+      "unit": "sequences",
+      "source": "vllm@8cbd5d0:vllm/engine/arg_utils.py#L2904-L2923",
+      "accessed": "2026-10-09"
+    },
+    "prefix_caching_hash_algo": {
+      "value": "sha256",
+      "unit": "name",
+      "source": "vllm@8cbd5d0:vllm/config/cache.py#L143",
+      "accessed": "2026-10-09"
+    },
+    "stream_interval_tokens": {
+      "value": 1,
+      "unit": "tokens",
+      "source": "vllm@8cbd5d0:vllm/config/scheduler.py#L213",
+      "accessed": "2026-10-09"
+    },
+    "max_cudagraph_capture_size": {
+      "value": 512,
+      "unit": "batch size",
+      "source": "vllm@8cbd5d0:vllm/config/vllm.py#L2347-L2360",
+      "accessed": "2026-10-09",
+      "note": "min(2 × max_num_seqs × (1 + num_spec_tokens), 512); 1024 on SM100"
+    },
+    "custom_allreduce_max_bytes": {
+      "value": 8388608,
+      "unit": "bytes",
+      "source": "SRC-291",
+      "accessed": "2026-10-09",
+      "note": "custom_all_reduce.py#L141 (8 MiB)"
+    },
+    "sampling_eps_greedy": {
+      "value": 1e-05,
+      "unit": "temperature",
+      "source": "research/notes/03-engines.md §5 (vllm/v1/sample/sampler.py)",
+      "accessed": "2026-10-09"
+    },
+    "nixl_kv_lease_duration_s": {
+      "value": 30,
+      "unit": "s",
+      "source": "SRC-042",
+      "accessed": "2026-10-09",
+      "note": "NixlConnector kv_lease_duration default; P-side blocks are held until read, extended by heartbeats while D queues (docs/features/nixl_connector_usage.md#L125-L132; note 03 §2.10)"
+    }
+  },
+  "engine_sglang": {
+    "_class": "A",
+    "version": {
+      "value": "v0.5.21",
+      "unit": "release",
+      "source": "SRC-048",
+      "accessed": "2026-10-09",
+      "note": "released 2026-10-02"
+    },
+    "page_size_tokens": {
+      "value": 1,
+      "unit": "tokens",
+      "source": "research/notes/03-engines.md §5 (overrides.py#L1303)",
+      "accessed": "2026-10-09"
+    },
+    "router_cache_threshold": {
+      "value": 0.3,
+      "unit": "fraction",
+      "source": "research/notes/03-engines.md §5 (main.rs#L149-L171)",
+      "accessed": "2026-10-09"
+    },
+    "router_balance_abs_threshold": {
+      "value": 64,
+      "unit": "requests",
+      "source": "research/notes/03-engines.md §5",
+      "accessed": "2026-10-09"
+    },
+    "router_balance_rel_threshold": {
+      "value": 1.5,
+      "unit": "ratio",
+      "source": "research/notes/03-engines.md §5",
+      "accessed": "2026-10-09"
+    }
+  },
+  "engine_trtllm": {
+    "_class": "A",
+    "tokens_per_block": {
+      "value": 32,
+      "unit": "tokens",
+      "source": "SRC-059",
+      "accessed": "2026-10-09"
+    },
+    "max_num_tokens": {
+      "value": 8192,
+      "unit": "tokens",
+      "source": "SRC-058",
+      "accessed": "2026-10-09"
+    }
+  },
+  "routing_dynamo": {
+    "_class": "A",
+    "overlap_score_credit_gpu": {
+      "value": 1.0,
+      "unit": "credit per overlapping block",
+      "source": "SRC-288",
+      "accessed": "2026-10-09",
+      "note": "config.rs#L79-L92; stable at tag v1.5.1"
+    },
+    "host_hit_credit": {
+      "value": 0.75,
+      "unit": "credit",
+      "source": "SRC-288",
+      "accessed": "2026-10-09"
+    },
+    "disk_hit_credit": {
+      "value": 0.25,
+      "unit": "credit",
+      "source": "SRC-288",
+      "accessed": "2026-10-09"
+    },
+    "prefill_load_scale": {
+      "value": 1.0,
+      "unit": "scale",
+      "source": "SRC-288",
+      "accessed": "2026-10-09"
+    },
+    "router_temperature": {
+      "value": 0.0,
+      "unit": "temperature",
+      "source": "SRC-288",
+      "accessed": "2026-10-09"
+    },
+    "conditional_disagg_max_effective_isl": {
+      "value": 2048,
+      "unit": "tokens",
+      "source": "SRC-288",
+      "accessed": "2026-10-09",
+      "note": "prefill locally when effective ISL < 2048 and < 0.7 of ISL"
+    },
+    "conditional_disagg_ratio": {
+      "value": 0.7,
+      "unit": "fraction of ISL",
+      "source": "SRC-288",
+      "accessed": "2026-10-09"
+    }
+  },
+  "routing_llmd": {
+    "_class": "A",
+    "prefix_affinity_threshold": {
+      "value": 0.8,
+      "unit": "fraction of prefix matched",
+      "source": "SRC-284",
+      "accessed": "2026-10-09",
+      "note": "prefixcacheaffinity/plugin.go#L99"
+    },
+    "prefix_affinity_max_ttft_penalty_ms": {
+      "value": 18000,
+      "unit": "ms",
+      "source": "SRC-284",
+      "accessed": "2026-10-09"
+    },
+    "token_load_queue_threshold_tokens": {
+      "value": 4194304,
+      "unit": "tokens",
+      "source": "SRC-284",
+      "accessed": "2026-10-09",
+      "note": "128 requests × 32K"
+    },
+    "saturation_queue_depth_threshold": {
+      "value": 5,
+      "unit": "requests",
+      "source": "SRC-284",
+      "accessed": "2026-10-09"
+    },
+    "saturation_kv_util_threshold": {
+      "value": 0.8,
+      "unit": "fraction",
+      "source": "SRC-284",
+      "accessed": "2026-10-09"
+    },
+    "flow_control_request_ttl_s": {
+      "value": 60,
+      "unit": "s",
+      "source": "SRC-284",
+      "accessed": "2026-10-09"
+    },
+    "epp_metrics_tick_ms": {
+      "value": 50,
+      "unit": "ms",
+      "source": "SRC-284",
+      "accessed": "2026-10-09"
+    },
+    "speculative_prefix_ttl_s": {
+      "value": 2,
+      "unit": "s",
+      "source": "SRC-284",
+      "accessed": "2026-10-09"
+    }
+  },
+  "kv_systems": {
+    "_class": "A",
+    "lmcache_chunk_tokens": {
+      "value": 256,
+      "unit": "tokens",
+      "source": "SRC-293",
+      "accessed": "2026-10-09"
+    },
+    "mooncake_te_bw_4x200g_gbs": {
+      "value": 87,
+      "unit": "GB/s",
+      "source": "SRC-103",
+      "accessed": "2026-10-09",
+      "note": "40 GB transfer, 4×200 Gbps RoCE (FAST 2025 §5.4.1)"
+    },
+    "mooncake_te_bw_8x400g_gbs": {
+      "value": 190,
+      "unit": "GB/s",
+      "source": "SRC-103",
+      "accessed": "2026-10-09",
+      "note": "40 GB transfer, 8×400 Gbps RoCE"
+    },
+    "mooncake_min_network_gbps": {
+      "value": 100,
+      "unit": "Gbps",
+      "source": "SRC-103",
+      "accessed": "2026-10-09"
+    }
+  },
+  "collectives": {
+    "_class": "A",
+    "busbw_factor_allreduce": {
+      "value": "2(n-1)/n",
+      "unit": "formula",
+      "source": "SRC-298",
+      "accessed": "2026-10-09"
+    },
+    "busbw_factor_allgather_reducescatter_alltoall": {
+      "value": "(n-1)/n",
+      "unit": "formula",
+      "source": "SRC-298",
+      "accessed": "2026-10-09"
+    }
+  },
+  "autoscaling": {
+    "_class": "A",
+    "hpa_sync_period_s": {
+      "value": 15,
+      "unit": "s",
+      "source": "SRC-305",
+      "accessed": "2026-10-09"
+    },
+    "hpa_tolerance": {
+      "value": 0.1,
+      "unit": "ratio",
+      "source": "SRC-305",
+      "accessed": "2026-10-09"
+    },
+    "hpa_scale_down_stabilization_s": {
+      "value": 300,
+      "unit": "s",
+      "source": "SRC-305",
+      "accessed": "2026-10-09"
+    },
+    "keda_polling_interval_s": {
+      "value": 30,
+      "unit": "s",
+      "source": "SRC-304",
+      "accessed": "2026-10-09"
+    },
+    "keda_cooldown_period_s": {
+      "value": 300,
+      "unit": "s",
+      "source": "SRC-304",
+      "accessed": "2026-10-09"
+    },
+    "llmd_measured_pod_ready_s": {
+      "value": 135,
+      "unit": "s",
+      "source": "SRC-285",
+      "accessed": "2026-10-09",
+      "note": "~2 min 15 s; ~100 s with a torch-compile cache (llm-d SLO-aware KEDA guide)"
+    }
+  },
+  "network_protocols": {
+    "_class": "A",
+    "_note": "RTT counts are derived from the RFC message flows (note 06): one-way delay = 0.5 RTT, no loss, zero server time, DNS excluded.",
+    "rtt_to_request_sent_tcp_tls13": {
+      "value": 2,
+      "unit": "RTT",
+      "source": "research/notes/06-network-security-ops.md §5",
+      "accessed": "2026-10-09",
+      "note": "first response byte at 3 RTT"
+    },
+    "rtt_to_request_sent_quic": {
+      "value": 1,
+      "unit": "RTT",
+      "source": "research/notes/06-network-security-ops.md §5",
+      "accessed": "2026-10-09",
+      "note": "first response byte at 2 RTT"
+    },
+    "rtt_to_request_sent_quic_0rtt": {
+      "value": 0,
+      "unit": "RTT",
+      "source": "research/notes/06-network-security-ops.md §5",
+      "accessed": "2026-10-09",
+      "note": "first response byte at 1 RTT; replayable"
+    },
+    "rtt_to_request_sent_reused_connection": {
+      "value": 0,
+      "unit": "RTT",
+      "source": "research/notes/06-network-security-ops.md §5",
+      "accessed": "2026-10-09"
+    },
+    "http2_initial_window_bytes": {
+      "value": 65535,
+      "unit": "bytes",
+      "source": "research/notes/06-network-security-ops.md §5 (RFC 9113)",
+      "accessed": "2026-10-09"
+    },
+    "quic_min_initial_bytes": {
+      "value": 1200,
+      "unit": "bytes",
+      "source": "research/notes/06-network-security-ops.md §5 (RFC 9000)",
+      "accessed": "2026-10-09"
+    },
+    "quic_anti_amplification_factor": {
+      "value": 3,
+      "unit": "x",
+      "source": "research/notes/06-network-security-ops.md §5 (RFC 9000)",
+      "accessed": "2026-10-09"
+    },
+    "tls13_max_ticket_lifetime_s": {
+      "value": 604800,
+      "unit": "s",
+      "source": "research/notes/06-network-security-ops.md §5 (RFC 9846)",
+      "accessed": "2026-10-09"
+    },
+    "sse_keepalive_s": {
+      "value": 15,
+      "unit": "s",
+      "source": "research/notes/06-network-security-ops.md §5 (WHATWG HTML)",
+      "accessed": "2026-10-09"
+    },
+    "nginx_proxy_read_timeout_s": {
+      "value": 60,
+      "unit": "s",
+      "source": "research/notes/06-network-security-ops.md §5",
+      "accessed": "2026-10-09"
+    },
+    "cloud_metadata_ipv4": {
+      "value": "169.254.169.254",
+      "unit": "IPv4",
+      "source": "research/notes/06-network-security-ops.md §5",
+      "accessed": "2026-10-09"
+    },
+    "firecracker_boot_ms": {
+      "value": 125,
+      "unit": "ms",
+      "source": "research/notes/06-network-security-ops.md §5 (NSDI 2020)",
+      "accessed": "2026-10-09",
+      "note": "paper claim, minimal kernel config, 2020"
+    },
+    "firecracker_memory_overhead_mb": {
+      "value": 5,
+      "unit": "MB",
+      "source": "research/notes/06-network-security-ops.md §5 (NSDI 2020)",
+      "accessed": "2026-10-09"
+    },
+    "retry_amplification_5_layers_3_retries": {
+      "value": 243,
+      "unit": "x",
+      "source": "research/notes/06-network-security-ops.md §5",
+      "accessed": "2026-10-09",
+      "note": "3^5"
+    }
+  },
+  "sims_s1": {
+    "_class": "A unless a leaf says hypothetical",
+    "_about": "Values the s1 sim scripts (sim/weights_kv_math.py, kv_tiers.py, disagg_transfer.py, preemption_costs.py) need that were not in constants.json. Each is copied exactly from the cited research note. Leaves with \"hypothetical\": true are reference choices (class C) from the s1 brief of 2026-10-09; they belong in constants/hypothetical.json.",
+    "mimo_v2_6_pro_model_id": {
+      "value": "XiaomiMiMo/MiMo-V2.6-Pro-RL",
+      "unit": "HF id",
+      "source": "https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Pro-RL",
+      "accessed": "2026-10-09",
+      "note": "config sha 73875d00b30a; copied from research/notes/01-models.md §2.7 (source 41)"
+    },
+    "mimo_v2_6_pro_num_hidden_layers": {
+      "value": 70,
+      "unit": "layers",
+      "source": "https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Pro-RL",
+      "accessed": "2026-10-09",
+      "note": "copied from research/notes/01-models.md §2.7: '70 layers (60 SWA window 128 + 10 global)'"
+    },
+    "mimo_v2_6_pro_swa_layers": {
+      "value": 60,
+      "unit": "layers",
+      "source": "https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Pro-RL",
+      "accessed": "2026-10-09",
+      "note": "copied from research/notes/01-models.md §2.7"
+    },
+    "mimo_v2_6_pro_global_layers": {
+      "value": 10,
+      "unit": "layers",
+      "source": "https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Pro-RL",
+      "accessed": "2026-10-09",
+      "note": "copied from research/notes/01-models.md §2.7 (first layer is global)"
+    },
+    "mimo_v2_6_pro_sliding_window": {
+      "value": 128,
+      "unit": "tokens",
+      "source": "https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Pro-RL",
+      "accessed": "2026-10-09",
+      "note": "copied from research/notes/01-models.md §2.7"
+    },
+    "mimo_v2_6_pro_num_key_value_heads": {
+      "value": 8,
+      "unit": "heads",
+      "source": "https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Pro-RL",
+      "accessed": "2026-10-09",
+      "note": "same in SWA and global layers: 'GQA 128 Q / 8 KV both' (research/notes/01-models.md §2.1.1 table and §2.7)"
+    },
+    "mimo_v2_6_pro_qk_head_dim": {
+      "value": 192,
+      "unit": "dims",
+      "source": "https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Pro-RL",
+      "accessed": "2026-10-09",
+      "note": "copied from research/notes/01-models.md §2.7: 'QK head 192 / V head 128'"
+    },
+    "mimo_v2_6_pro_v_head_dim": {
+      "value": 128,
+      "unit": "dims",
+      "source": "https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Pro-RL",
+      "accessed": "2026-10-09",
+      "note": "copied from research/notes/01-models.md §2.7"
+    },
+    "h_teach_gpus_per_node": {
+      "value": 8,
+      "unit": "GPUs",
+      "source": "https://docs.nvidia.com/dgx-basepod/reference-architecture-infrastructure-foundation-enterprise-ai/latest/core-components.html",
+      "accessed": "2026-10-09",
+      "note": "HGX/DGX H100: '8 GPUs, 4 third-generation NVSwitch chips'; copied from research/notes/02-hardware.md §2.1 (S4, S9)"
+    },
+    "dgx_h100_compute_nics_per_node": {
+      "value": 8,
+      "unit": "NICs",
+      "source": "https://docs.nvidia.com/dgx-basepod/reference-architecture-infrastructure-foundation-enterprise-ai/latest/core-components.html",
+      "accessed": "2026-10-09",
+      "note": "'8 x single-port ConnectX-7 at 400 Gb/s NDR ... one per GPU'; copied from research/notes/02-hardware.md §2.1 (S9, search summary; verify wording before quoting)"
+    },
+    "dgx_h100_data_nvme_drives_per_node": {
+      "value": 8,
+      "unit": "drives",
+      "source": "https://docs.nvidia.com/dgx-basepod/reference-architecture-infrastructure-foundation-enterprise-ai/latest/core-components.html",
+      "accessed": "2026-10-09",
+      "note": "'Local storage 8 x 3.84 TB NVMe U.2 plus 2 x 1.92 TB M.2'; copied from research/notes/02-hardware.md §2.1 (S9). The PCIe generation of these drives is not stated."
+    },
+    "mooncake_roce_nic_gbps_per_gpu": {
+      "value": 200,
+      "unit": "Gb/s",
+      "source": "SRC-103",
+      "accessed": "2026-10-09",
+      "note": "Mooncake FAST '25 production network: 'A800 GPU <-> 100/200 Gbps NIC each; H800 GPU <-> 200/400 Gbps NIC each; RoCEv2'; copied from research/notes/04-distributed-stack.md §2.4.4"
+    },
+    "mooncake_te_4x200g_nic_count": {
+      "value": 4,
+      "unit": "NICs",
+      "source": "SRC-103",
+      "accessed": "2026-10-09",
+      "note": "'87 GB/s on 4x200 Gbps' (FAST '25 §5.4.1); copied from research/notes/04-distributed-stack.md §2.4.4"
+    },
+    "mooncake_te_8x400g_nic_count": {
+      "value": 8,
+      "unit": "NICs",
+      "source": "SRC-103",
+      "accessed": "2026-10-09",
+      "note": "'190 GB/s on 8x400 Gbps RoCE' (FAST '25 §5.4.1); copied from research/notes/04-distributed-stack.md §2.4.4"
+    },
+    "mooncake_eq2_example": {
+      "_note": "Mooncake FAST '25 §2.2 Eq. 1-2 and Table 1 worked example (LLaMA3-70B on 8x A800, prefix 8192), copied from research/notes/04-distributed-stack.md §2.4.3. Used only to check the Eq. 2 implementation.",
+      "layers_l": {
+        "value": 80,
+        "unit": "layers",
+        "source": "SRC-103",
+        "accessed": "2026-10-09",
+        "note": "LLaMA3-70B, Mooncake Table 1"
+      },
+      "hidden_d": {
+        "value": 8192,
+        "unit": "dims",
+        "source": "SRC-103",
+        "accessed": "2026-10-09",
+        "note": "LLaMA3-70B, Mooncake Table 1"
+      },
+      "gqa": {
+        "value": 8,
+        "unit": "ratio (query heads per KV head)",
+        "source": "SRC-103",
+        "accessed": "2026-10-09",
+        "note": "LLaMA3-70B, Mooncake Table 1"
+      },
+      "bytes_per_element_s": {
+        "value": 2,
+        "unit": "B",
+        "source": "SRC-103",
+        "accessed": "2026-10-09",
+        "note": "BF16"
+      },
+      "a": {
+        "value": 4,
+        "unit": "dimensionless",
+        "source": "SRC-103",
+        "accessed": "2026-10-09",
+        "note": "flops(n) = l x (a n^2 d + b n d^2), Mooncake Table 1"
+      },
+      "b": {
+        "value": 22,
+        "unit": "dimensionless",
+        "source": "SRC-103",
+        "accessed": "2026-10-09",
+        "note": "Mooncake Table 1"
+      },
+      "gpu_tflops": {
+        "value": 312,
+        "unit": "TFLOPS",
+        "source": "SRC-103",
+        "accessed": "2026-10-09",
+        "note": "A800; 'G = 8 x 312 TFLOPS'"
+      },
+      "gpus": {
+        "value": 8,
+        "unit": "GPUs",
+        "source": "SRC-103",
+        "accessed": "2026-10-09",
+        "note": "8x A800"
+      },
+      "prefix_tokens_p": {
+        "value": 8192,
+        "unit": "tokens",
+        "source": "SRC-103",
+        "accessed": "2026-10-09"
+      },
+      "published_min_bandwidth": {
+        "value": 6,
+        "unit": "GB/s",
+        "source": "SRC-103",
+        "accessed": "2026-10-09",
+        "note": "'minimum B ~ 6 GB/s' (approximate, as printed)"
+      }
+    }
+  },
+  "sims_s2": {
+    "_about": "Values copied exactly from research notes for sim/kv_allocator_sim.py, sim/prefix_cache_demo.py and sim/paging_waste.py (sim agent s2, 2026-10-09). They appear under extra.sims_s2.",
+    "_class": "A",
+    "pagedattention_token_states_pct_orca_max": {
+      "value": 20.4,
+      "unit": "%",
+      "source": "SRC-098",
+      "accessed": "2026-10-09",
+      "note": "research/notes/05-papers-architecture.md D2: PagedAttention paper Figure 2 (experiment of section 6.2); share of KV memory holding actual token states"
+    },
+    "pagedattention_token_states_pct_orca_pow2": {
+      "value": 26.8,
+      "unit": "%",
+      "source": "SRC-098",
+      "accessed": "2026-10-09",
+      "note": "research/notes/05-papers-architecture.md D2: Figure 2, Orca (Pow2)"
+    },
+    "pagedattention_token_states_pct_orca_oracle": {
+      "value": 38.2,
+      "unit": "%",
+      "source": "SRC-098",
+      "accessed": "2026-10-09",
+      "note": "research/notes/05-papers-architecture.md D2: Figure 2, Orca (Oracle)"
+    },
+    "pagedattention_token_states_pct_vllm": {
+      "value": 96.3,
+      "unit": "%",
+      "source": "SRC-098",
+      "accessed": "2026-10-09",
+      "note": "research/notes/05-papers-architecture.md D2: Figure 2, vLLM"
+    },
+    "k3_prefix_example_matched_tokens": {
+      "value": 2800,
+      "unit": "tokens",
+      "source": "SRC-380",
+      "accessed": "2026-10-09",
+      "note": "research/notes/01b-kimi-k3.md §2.11 (Moonshot report §5.4): a 'request whose first 2800 tokens match … hits at B = 2560 = 5 × 512'"
+    },
+    "k3_prefix_example_hit_tokens_reported": {
+      "value": 2560,
+      "unit": "tokens",
+      "source": "SRC-380",
+      "accessed": "2026-10-09",
+      "note": "research/notes/01b-kimi-k3.md §2.11; used only to check the computed value"
+    },
+    "vllm_k3_prefix_cache_retention_interval_example": {
+      "value": "32K",
+      "unit": "tokens",
+      "source": "SRC-343",
+      "accessed": "2026-10-09",
+      "note": "research/notes/01b-kimi-k3.md §2.11: VLLM_PREFIX_CACHE_RETENTION_INTERVAL, e.g. 32K; prompt-end states always kept (vLLM Kimi K3 day-0 blog)"
+    },
+    "vllm_none_hash_seed_string": {
+      "value": "vllm-none-hash",
+      "unit": "string",
+      "source": "vllm@8cbd5d0:vllm/v1/core/kv_cache_utils.py#L123",
+      "accessed": "2026-10-09",
+      "note": "research/notes/03-engines.md §5: NONE_HASH seed for cryptographic hashes"
+    },
+    "vllm_xxhash_digest_bits": {
+      "value": 128,
+      "unit": "bits",
+      "source": "vllm@8cbd5d0:vllm/config/cache.py#L143-L159",
+      "accessed": "2026-10-09",
+      "note": "research/notes/03-engines.md §2.2: xxhash / xxhash_cbor are 128-bit and non-cryptographic"
+    },
+    "trtllm_copy_on_partial_reuse_default": {
+      "value": true,
+      "unit": "bool",
+      "source": "SRC-058",
+      "accessed": "2026-10-09",
+      "note": "research/notes/03-engines.md §2.17: 'partially matched blocks are not reused directly, instead a new block is created and the matched tokens are copied into the new block'"
+    }
+  },
+  "sims_w02": {
+    "_about": "Values copied exactly from research notes 02, 06 and 07 for sim/network_latency.py and manuscript Part 02 (author w02, 2026-10-09). They appear under extra.sims_w02.",
+    "_class": "A",
+    "rtt_to_request_sent_tcp_tls13_resumed": {
+      "value": 2,
+      "unit": "RTT",
+      "source": "SRC-136",
+      "accessed": "2026-10-09",
+      "note": "research/notes/06-network-security-ops.md §2.2 RTT table: TCP + TLS 1.3 resumed (PSK, no early data); first response byte at 3 RTT; resumption does not remove the TLS round trip"
+    },
+    "rtt_to_request_sent_tcp_tls13_0rtt": {
+      "value": 1,
+      "unit": "RTT",
+      "source": "SRC-136",
+      "accessed": "2026-10-09",
+      "note": "research/notes/06-network-security-ops.md §2.2 RTT table: TCP + TLS 1.3 with 0-RTT; first response byte at 2 RTT; replay caveat"
+    },
+    "rtt_to_request_sent_tcp_tls12": {
+      "value": 3,
+      "unit": "RTT",
+      "source": "SRC-137",
+      "accessed": "2026-10-09",
+      "note": "research/notes/06-network-security-ops.md §2.2 RTT table (for comparison): TCP + TLS 1.2 full; first response byte at 4 RTT"
+    },
+    "tcp_initial_window_segments": {
+      "value": 10,
+      "unit": "segments",
+      "source": "SRC-144",
+      "accessed": "2026-10-09",
+      "note": "research/notes/06-network-security-ops.md §2.2: RFC 6928 sets IW10 (10 segments)"
+    },
+    "quic_initial_window_cap_bytes": {
+      "value": 14720,
+      "unit": "bytes",
+      "source": "SRC-142",
+      "accessed": "2026-10-09",
+      "note": "research/notes/06-network-security-ops.md §2.2: initial window = min(10 * max_datagram_size, max(2 * max_datagram_size, 14,720 bytes))"
+    },
+    "quic_initial_window_max_datagrams": {
+      "value": 10,
+      "unit": "datagrams",
+      "source": "SRC-142",
+      "accessed": "2026-10-09",
+      "note": "research/notes/06-network-security-ops.md §2.2: the 10 in min(10 * max_datagram_size, ...)"
+    },
+    "quic_initial_window_min_datagrams": {
+      "value": 2,
+      "unit": "datagrams",
+      "source": "SRC-142",
+      "accessed": "2026-10-09",
+      "note": "research/notes/06-network-security-ops.md §2.2: the 2 in max(2 * max_datagram_size, 14,720)"
+    },
+    "quic_loss_reduction_factor": {
+      "value": 0.5,
+      "unit": "ratio",
+      "source": "SRC-142",
+      "accessed": "2026-10-09",
+      "note": "research/notes/06-network-security-ops.md §2.2: kLossReductionFactor 0.5 (NewReno-style default)"
+    },
+    "cubic_c": {
+      "value": 0.4,
+      "unit": "dimensionless",
+      "source": "SRC-143",
+      "accessed": "2026-10-09",
+      "note": "research/notes/06-network-security-ops.md §2.2: RFC 9438 sec 5.1 'C SHOULD be set to 0.4'"
+    },
+    "cubic_beta": {
+      "value": 0.7,
+      "unit": "ratio",
+      "source": "SRC-143",
+      "accessed": "2026-10-09",
+      "note": "research/notes/06-network-security-ops.md §2.2: beta_cubic SHOULD be 0.7 (window becomes 0.7 * W_max after loss)"
+    },
+    "http2_recommended_min_max_concurrent_streams": {
+      "value": 100,
+      "unit": "streams",
+      "source": "SRC-138",
+      "accessed": "2026-10-09",
+      "note": "research/notes/06-network-security-ops.md §2.2: RFC 9113 sec 6.5.2 recommends SETTINGS_MAX_CONCURRENT_STREAMS no smaller than 100"
+    },
+    "http2_initial_max_frame_size_bytes": {
+      "value": 16384,
+      "unit": "bytes",
+      "source": "SRC-138",
+      "accessed": "2026-10-09",
+      "note": "research/notes/06-network-security-ops.md §2.2: SETTINGS_MAX_FRAME_SIZE initial 2^14"
+    },
+    "http1_sse_connections_per_browser": {
+      "value": 6,
+      "unit": "connections",
+      "source": "SRC-154",
+      "accessed": "2026-10-09",
+      "note": "research/notes/06-network-security-ops.md §2.3: MDN, SSE over HTTP/1.1 limited to a very low number (6) per browser; browser dependent"
+    },
+    "dns_udp_message_limit_bytes": {
+      "value": 512,
+      "unit": "bytes",
+      "source": "SRC-129",
+      "accessed": "2026-10-09",
+      "note": "research/notes/06-network-security-ops.md §2.1: RFC 1035 sec 2.3.4; larger answers need EDNS(0) or TCP"
+    },
+    "earth_mean_radius_km": {
+      "value": 6371.0088,
+      "unit": "km",
+      "source": "research/notes/02-hardware.md §2.8",
+      "accessed": "2026-10-09",
+      "note": "mean Earth radius used for the haversine great-circle distance in note 02 §2.8"
+    },
+    "k8s_probe_period_s": {
+      "value": 10,
+      "unit": "s",
+      "source": "SRC-200",
+      "accessed": "2026-10-09",
+      "note": "research/notes/06-network-security-ops.md §2.4: Kubernetes probe default periodSeconds"
+    },
+    "k8s_probe_timeout_s": {
+      "value": 1,
+      "unit": "s",
+      "source": "SRC-200",
+      "accessed": "2026-10-09",
+      "note": "research/notes/06-network-security-ops.md §2.4: Kubernetes probe default timeoutSeconds"
+    },
+    "k8s_probe_failure_threshold": {
+      "value": 3,
+      "unit": "probes",
+      "source": "SRC-200",
+      "accessed": "2026-10-09",
+      "note": "research/notes/06-network-security-ops.md §2.4: Kubernetes probe default failureThreshold"
+    },
+    "endpointslice_default_max_endpoints": {
+      "value": 100,
+      "unit": "endpoints",
+      "source": "SRC-156",
+      "accessed": "2026-10-09",
+      "note": "research/notes/06-network-security-ops.md §2.4: default max endpoints per EndpointSlice (raisable to 1000)"
+    },
+    "ddos_managed_rule_mitigation_avg_s": {
+      "value": 3,
+      "unit": "s",
+      "source": "SRC-158",
+      "accessed": "2026-10-09",
+      "note": "research/notes/06-network-security-ops.md §2.4: Cloudflare (vendor example): L3/4 and HTTP managed rules mitigate in 'up to three seconds on average'"
+    },
+    "s3_multipart_suggested_from_mb": {
+      "value": 100,
+      "unit": "MB",
+      "source": "SRC-227",
+      "accessed": "2026-10-09",
+      "note": "research/notes/07-data-retrieval.md F2: AWS suggests multipart upload from about 100 MB"
+    },
+    "fiber_refractive_index_g652": {
+      "value": 1.468,
+      "unit": "dimensionless",
+      "source": "SRC-036",
+      "accessed": "2026-10-09",
+      "note": "research/notes/02-hardware.md §2.8: standard single-mode fiber (ITU G.652); confirmed in 08-verification V-001 (S39)"
+    },
+    "speed_of_light_vacuum_km_s": {
+      "value": 299792.458,
+      "unit": "km/s",
+      "source": "research/notes/02-hardware.md §2.8",
+      "accessed": "2026-10-09",
+      "note": "exact by definition of the metre; note 02 §2.8 computes 299,792.458 / 1.468 = 204,220 km/s"
+    }
+  },
+  "sims_w01": {
+    "_about": "Values copied exactly from research notes for sim/weights_memory.py and sim/bandwidth_orders.py (manuscript Parts 00-01, author w01, 2026-10-09). They appear under extra.sims_w01.",
+    "_class": "A",
+    "k3_safetensors_shards": {
+      "value": 96,
+      "unit": "files",
+      "source": "SRC-378",
+      "accessed": "2026-10-09",
+      "note": "research/notes/01b-kimi-k3.md §2.1 (files row): '96 safetensors shards' at commit f831ab66"
+    },
+    "k3_index_total_size_bytes": {
+      "value": 1560860324864,
+      "unit": "bytes",
+      "source": "SRC-378",
+      "accessed": "2026-10-09",
+      "note": "research/notes/01b-kimi-k3.md §2.12: safetensors index 'total_size' (tensor data only, no file headers)"
+    },
+    "k3_f32_stored_params": {
+      "value": 11122432,
+      "unit": "params",
+      "source": "SRC-379",
+      "accessed": "2026-10-09",
+      "note": "research/notes/01b-kimi-k3.md §2.12: '11,122,432 params are stored F32' (KDA A_log, dt_bias, conv weights, o_norm); everything else outside the routed experts is BF16"
+    },
+    "k3_redhat_nvfp4_checkpoint_bytes": {
+      "value": 1646073796144,
+      "unit": "bytes",
+      "source": "SRC-391",
+      "accessed": "2026-10-09",
+      "note": "research/notes/01b-kimi-k3.md §2.12: RedHatAI/Kimi-K3-NVFP4 safetensors total (third-party conversion; its recipe is not stated in the note)"
+    },
+    "endpointslice_max_endpoints_limit": {
+      "value": 1000,
+      "unit": "endpoints",
+      "source": "SRC-156",
+      "accessed": "2026-10-09",
+      "note": "research/notes/06-network-security-ops.md §2.4 and §5: kube-controller-manager --max-endpoints-per-slice can raise the default 100 up to 1000"
+    },
+    "xds_missing_resource_wait_s": {
+      "value": 15,
+      "unit": "s",
+      "source": "SRC-155",
+      "accessed": "2026-10-09",
+      "note": "research/notes/06-network-security-ops.md §2.4: the xDS doc recommends a client-side 15 s timeout to conclude that a requested state-of-the-world resource does not exist"
+    }
+  },
+  "sims_w04": {
+    "_class": "A",
+    "_about": "Values sim/tokenize_demo.py and sim/image_patches.py (manuscript part 04, author w04, 2026-10-09) need that were not in constants.json. Each is copied exactly from the cited research note; most serve as cross-checks of the real tokenizer run.",
+    "k3_tiktoken_model_bytes": {
+      "value": 2795286,
+      "unit": "bytes",
+      "source": "SRC-378",
+      "accessed": "2026-10-09",
+      "note": "research/notes/01b-kimi-k3.md §2.10: `tiktoken.model` (2,795,286 bytes, sha256 b6c497a7…)"
+    },
+    "k3_tiktoken_model_sha256_prefix": {
+      "value": "b6c497a7",
+      "unit": "hex prefix",
+      "source": "SRC-378",
+      "accessed": "2026-10-09",
+      "note": "research/notes/01b-kimi-k3.md §2.10"
+    },
+    "k3_base_ranks": {
+      "value": 163584,
+      "unit": "tokens",
+      "source": "SRC-378",
+      "accessed": "2026-10-09",
+      "note": "research/notes/01b-kimi-k3.md §2.10: 163,584 base ranks"
+    },
+    "k3_special_slots": {
+      "value": 256,
+      "unit": "tokens",
+      "source": "SRC-378",
+      "accessed": "2026-10-09",
+      "note": "research/notes/01b-kimi-k3.md §2.10: TikTokenTokenizer adds 256 special slots (ids 163,584-163,839)"
+    },
+    "k3_user_typed_end_of_msg_ids": {
+      "value": [
+        27,
+        91,
+        517,
+        5118,
+        14222,
+        91,
+        29
+      ],
+      "unit": "token ids",
+      "source": "SRC-378",
+      "accessed": "2026-10-09",
+      "note": "research/notes/01b-kimi-k3.md §2.10: a user typing \"<|end_of_msg|>\" yields 7 plain tokens (text segments use disallowed_special=())"
+    },
+    "k3_hello_world_ids": {
+      "value": [
+        19180,
+        11,
+        2695,
+        0
+      ],
+      "unit": "token ids",
+      "source": "SRC-378",
+      "accessed": "2026-10-09",
+      "note": "research/notes/01b-kimi-k3.md §2.10: \"Hello, world!\""
+    },
+    "k3_unbelievable_ids": {
+      "value": [
+        83462
+      ],
+      "unit": "token ids",
+      "source": "SRC-378",
+      "accessed": "2026-10-09",
+      "note": "research/notes/01b-kimi-k3.md §2.10: \" unbelievable\" is 1 token"
+    },
+    "mistral_medium_repo_sha": {
+      "value": "22b2b868a156",
+      "unit": "git sha prefix",
+      "source": "SRC-329",
+      "accessed": "2026-10-09",
+      "note": "research/notes/01-models.md §2.3: repo sha 22b2b868a156"
+    },
+    "mistral_tokenizer_json_bytes": {
+      "value": 17077420,
+      "unit": "bytes",
+      "source": "SRC-329",
+      "accessed": "2026-10-09",
+      "note": "research/notes/01-models.md §2.6: tokenizer.json (17,077,420 B, sha256 prefix 2ba5b3330fd84d53)"
+    },
+    "mistral_tokenizer_json_sha256_prefix": {
+      "value": "2ba5b3330fd84d53",
+      "unit": "hex prefix",
+      "source": "SRC-329",
+      "accessed": "2026-10-09",
+      "note": "research/notes/01-models.md §2.6"
+    },
+    "mistral_special_ids": {
+      "value": 1000,
+      "unit": "tokens",
+      "source": "SRC-329",
+      "accessed": "2026-10-09",
+      "note": "research/notes/01-models.md §2.6: 131,072 incl. 1,000 special IDs 0-999"
+    },
+    "mistral_merges": {
+      "value": 269443,
+      "unit": "merges",
+      "source": "SRC-329",
+      "accessed": "2026-10-09",
+      "note": "research/notes/01-models.md §2.6: 269,443 merges"
+    },
+    "mistral_hello_world_ids": {
+      "value": [
+        22177,
+        1044,
+        4304,
+        1033
+      ],
+      "unit": "token ids",
+      "source": "SRC-329",
+      "accessed": "2026-10-09",
+      "note": "research/notes/01-models.md §2.6: \"Hello, world!\" (tokenizers 0.23.2, add_special_tokens=False)"
+    },
+    "mistral_sample_prompt_ids_without_model_settings": {
+      "value": [
+        1,
+        17,
+        4568,
+        1584,
+        1261,
+        20351,
+        27089,
+        1046,
+        18,
+        3,
+        7493,
+        1395,
+        1032,
+        1049,
+        1055,
+        1364,
+        1032,
+        1050,
+        1051,
+        1063,
+        4
+      ],
+      "unit": "token ids",
+      "source": "SRC-329",
+      "accessed": "2026-10-09",
+      "note": "research/notes/01-models.md §2.6: Mistral prompt (system 'You are a helpful assistant.', user 'What is 17 * 23?', without MODEL_SETTINGS) -> 21 tokens"
+    },
+    "k3_vit_pos_emb_grid_side": {
+      "value": 64,
+      "unit": "positions per side",
+      "source": "SRC-378",
+      "accessed": "2026-10-09",
+      "note": "research/notes/01b-kimi-k3.md §2.2 vision_config: pos_emb_type divided_fixed (learnable 64×64×1024 grid, init_pos_emb_height/width 64), bilinear interpolation"
+    }
+  },
+  "sims_w03": {
+    "_class": "A",
+    "_about": "Values copied exactly from research notes for manuscript Part 03 (author w03, 2026-10-09).",
+    "http2_recommended_min_max_concurrent_streams": {
+      "value": 100,
+      "unit": "streams",
+      "source": "SRC-138",
+      "accessed": "2026-10-09",
+      "note": "RFC 9113 sec 6.5.2: SETTINGS_MAX_CONCURRENT_STREAMS initial value is no limit; recommended no smaller than 100. Copied from research/notes/06-network-security-ops.md §2.2 and §5 (S17)."
+    },
+    "envoy_local_ratelimit_retry_after_min_s": {
+      "value": 1,
+      "unit": "s",
+      "source": "SRC-162",
+      "accessed": "2026-10-09",
+      "note": "With enable_retry_after_header, Retry-After is the delay until the next token, at least one second. Copied from research/notes/06-network-security-ops.md §2.5 and §5 (S43)."
+    }
+  },
+  "sims_w07": {
+    "_class": "A",
+    "_about": "Values copied exactly from research notes for manuscript Part 07 (author w07, 2026-10-09).",
+    "robots_min_redirects": {
+      "value": 5,
+      "unit": "redirects",
+      "source": "SRC-262",
+      "accessed": "2026-10-09",
+      "note": "RFC 9309: crawlers should follow at least 5 consecutive redirects for robots.txt. Copied from research/notes/07-data-retrieval.md F5 (S50)."
+    },
+    "anthropic_cited_text_max_chars": {
+      "value": 150,
+      "unit": "characters",
+      "source": "SRC-257",
+      "accessed": "2026-10-09",
+      "note": "Anthropic web search citations carry cited_text of up to 150 characters. Copied from research/notes/07-data-retrieval.md F5 (S45)."
+    },
+    "tavily_include_domains_max": {
+      "value": 300,
+      "unit": "domains",
+      "source": "SRC-260",
+      "accessed": "2026-10-09",
+      "note": "Tavily search include_domains up to 300 (exclude_domains up to 150). Copied from research/notes/07-data-retrieval.md F5 (S48)."
+    },
+    "tavily_exclude_domains_max": {
+      "value": 150,
+      "unit": "domains",
+      "source": "SRC-260",
+      "accessed": "2026-10-09",
+      "note": "Copied from research/notes/07-data-retrieval.md F5 (S48)."
+    },
+    "imdsv2_token_ttl_max_s": {
+      "value": 21600,
+      "unit": "s",
+      "source": "SRC-183",
+      "accessed": "2026-10-09",
+      "note": "IMDSv2 token lifetime from 1 s to 6 hours. Copied from research/notes/06-network-security-ops.md 2.7 (S64)."
+    },
+    "imdsv2_put_hop_limit": {
+      "value": 1,
+      "unit": "IP hops",
+      "source": "SRC-183",
+      "accessed": "2026-10-09",
+      "note": "Default response hop limit (TTL) of the token PUT response. Copied from research/notes/06-network-security-ops.md 2.7 (S64)."
+    }
+  },
+  "sims_w06": {
+    "_class": "A",
+    "_about": "Values Part 06 (author w06, 2026-10-09) cites that were not in constants.json; copied exactly from research/notes/03-engines.md.",
+    "vllm_fill_bitmask_parallel_threshold": {
+      "value": 128,
+      "unit": "requests",
+      "source": "vllm@8cbd5d0:vllm/v1/structured_output/__init__.py#L73-L80",
+      "accessed": "2026-10-09",
+      "note": "research/notes/03-engines.md §5: vLLM structured output fill-mask parallel threshold 128 requests (batches of 16)"
+    },
+    "vllm_fill_bitmask_parallel_batch": {
+      "value": 16,
+      "unit": "requests per task",
+      "source": "vllm@8cbd5d0:vllm/v1/structured_output/__init__.py#L73-L80",
+      "accessed": "2026-10-09",
+      "note": "research/notes/03-engines.md §5: batches of 16"
+    }
+  },
+  "sims_w08": {
+    "_class": "A",
+    "_about": "Values Part 08 (author w08, 2026-10-09) cites that were not in constants.json; copied exactly from research/notes/06-network-security-ops.md.",
+    "firecracker_creation_rate_per_host": {
+      "value": 150,
+      "unit": "microVMs/s per host",
+      "source": "SRC-176",
+      "accessed": "2026-10-09",
+      "note": "research/notes/06-network-security-ops.md 2.6 (S57): 'allows creation of up to 150 MicroVMs per second per host' (paper abstract, minimal kernel config, 2020)"
+    }
+  },
+  "sims_w05": {
+    "_class": "A",
+    "_about": "Values Part 05 (author w05, 2026-10-09) quotes that were not in constants.json; copied exactly from research/notes/07-data-retrieval.md F3.",
+    "pgvector_postfilter_example_fraction": {
+      "value": 0.1,
+      "unit": "fraction of rows",
+      "source": "SRC-230",
+      "accessed": "2026-10-09",
+      "note": "note 07 F3: pgvector docs example, a condition matching 10 percent of rows"
+    },
+    "pgvector_postfilter_example_rows": {
+      "value": 4,
+      "unit": "rows",
+      "source": "SRC-230",
+      "accessed": "2026-10-09",
+      "note": "note 07 F3: with ef_search = 40 only about 4 matching rows return on average (docs' own example)"
+    },
+    "contextual_retrieval_initial_candidates": {
+      "value": 150,
+      "unit": "chunks",
+      "source": "SRC-240",
+      "accessed": "2026-10-09",
+      "note": "note 07 F3: initial retrieval top 150"
+    },
+    "contextual_retrieval_final_chunks": {
+      "value": 20,
+      "unit": "chunks",
+      "source": "SRC-240",
+      "accessed": "2026-10-09",
+      "note": "note 07 F3: reranked to top 20"
+    }
+  },
+  "sims_w09": {
+    "_class": "A",
+    "_about": "Values Part 09 (author w09, 2026-10-09) cites that were not in constants.json; copied exactly from research/notes/04-distributed-stack.md and 03-engines.md.",
+    "llmd_peak_prefill_throughput_default": {
+      "value": 15928,
+      "unit": "tokens/s",
+      "source": "SRC-284",
+      "accessed": "2026-10-09",
+      "note": "prefix-cache-affinity-filter default peakPrefillThroughput, calibrated for Qwen3-32B on H100 80 GB TP=2 (note 04 §2.1.7, §2.1.8)."
+    },
+    "llmd_approx_prefix_block_tokens": {
+      "value": 64,
+      "unit": "tokens",
+      "source": "SRC-284",
+      "accessed": "2026-10-09",
+      "note": "approx-prefix-cache-producer block size, clamped to a minimum of 64 (note 04 §2.1.9)."
+    },
+    "llmd_band_max_requests": {
+      "value": 5000,
+      "unit": "requests",
+      "source": "SRC-284",
+      "accessed": "2026-10-09",
+      "note": "Per-band maxRequests default of flow control (note 04 §2.1.11; registry/config.go#L50-L53)."
+    },
+    "llmd_metrics_staleness_ms": {
+      "value": 200,
+      "unit": "ms",
+      "source": "SRC-284",
+      "accessed": "2026-10-09",
+      "note": "Metrics older than this count as stale for the saturation detector (note 04 §2.1.4)."
+    },
+    "llmd_trtllm_mix_prefix_weight": {
+      "value": 3,
+      "unit": "weight",
+      "source": "SRC-285",
+      "accessed": "2026-10-09",
+      "note": "optimized-baseline TRT-LLM variant: prefix-cache-scorer weight (note 04 §2.1.7)."
+    },
+    "llmd_trtllm_mix_queue_weight": {
+      "value": 2,
+      "unit": "weight",
+      "source": "SRC-285",
+      "accessed": "2026-10-09",
+      "note": "queue-scorer weight (note 04 §2.1.7)."
+    },
+    "llmd_trtllm_mix_kv_weight": {
+      "value": 2,
+      "unit": "weight",
+      "source": "SRC-285",
+      "accessed": "2026-10-09",
+      "note": "kv-cache-utilization-scorer weight (note 04 §2.1.7)."
+    },
+    "llmd_trtllm_mix_nohit_lru_weight": {
+      "value": 2,
+      "unit": "weight",
+      "source": "SRC-285",
+      "accessed": "2026-10-09",
+      "note": "no-hit-lru-scorer weight (note 04 §2.1.7)."
+    },
+    "dynamo_decode_active_request_weight": {
+      "value": 0.0,
+      "unit": "weight",
+      "source": "SRC-288",
+      "accessed": "2026-10-09",
+      "note": "decode_active_request_weight default (note 04 §2.2.1)."
+    },
+    "dynamo_overlap_credit_decay": {
+      "value": 0.0,
+      "unit": "decay",
+      "source": "SRC-288",
+      "accessed": "2026-10-09",
+      "note": "overlap_score_credit_decay default, off (note 04 §2.2.1)."
+    },
+    "sglang_cache_threshold": {
+      "value": 0.3,
+      "unit": "match rate",
+      "source": "SRC-050",
+      "accessed": "2026-10-09",
+      "note": "SGLang Model Gateway cache_aware default (note 03 §2.13)."
+    },
+    "sglang_balance_abs_threshold": {
+      "value": 64,
+      "unit": "requests",
+      "source": "SRC-050",
+      "accessed": "2026-10-09",
+      "note": "balance_abs_threshold default (note 03 §2.13)."
+    },
+    "sglang_balance_rel_threshold": {
+      "value": 1.5,
+      "unit": "ratio",
+      "source": "SRC-050",
+      "accessed": "2026-10-09",
+      "note": "balance_rel_threshold default (note 03 §2.13)."
+    },
+    "mooncake_ttft_global_cache_aware_s": {
+      "value": 3.07,
+      "unit": "s",
+      "source": "SRC-103",
+      "accessed": "2026-10-09",
+      "note": "Average TTFT, global cache-aware scheduling, FAST '25 Fig. 5 (note 04 §2.4.2)."
+    },
+    "mooncake_ttft_local_cache_aware_s": {
+      "value": 3.58,
+      "unit": "s",
+      "source": "SRC-103",
+      "accessed": "2026-10-09",
+      "note": "Average TTFT, local cache-aware (note 04 §2.4.2)."
+    },
+    "mooncake_ttft_load_balancing_s": {
+      "value": 5.27,
+      "unit": "s",
+      "source": "SRC-103",
+      "accessed": "2026-10-09",
+      "note": "Average TTFT, load-balancing scheduling (note 04 §2.4.2)."
+    },
+    "mooncake_ttft_random_s": {
+      "value": 19.65,
+      "unit": "s",
+      "source": "SRC-103",
+      "accessed": "2026-10-09",
+      "note": "Average TTFT, random scheduling (note 04 §2.4.2)."
+    }
+  },
+  "sims_w10": {
+    "_class": "A",
+    "_about": "Values Part 10 (author w10, 2026-10-09) cites that were not in constants.json; copied exactly from research notes 03 and 05 (and one page read by the author, SRC-560).",
+    "fa3_sm90_hdim128_causal_block_m": {
+      "value": 128,
+      "unit": "query rows per tile",
+      "source": "flash-attention@94e22c9:hopper/tile_size.h#L30-L33",
+      "accessed": "2026-10-09",
+      "note": "FA3 forward tile size for head_dim 128, 2-byte elements, causal: {kBlockM 128, kBlockN 128}"
+    },
+    "fa3_sm90_hdim128_causal_block_n": {
+      "value": 128,
+      "unit": "key rows per tile",
+      "source": "flash-attention@94e22c9:hopper/tile_size.h#L30-L33",
+      "accessed": "2026-10-09",
+      "note": "as above"
+    },
+    "fa3_h100_fp16_tflops": {
+      "value": 740,
+      "unit": "TFLOPS",
+      "source": "SRC-056",
+      "accessed": "2026-10-09",
+      "note": "note 05 §2.C C1: FA3 on H100 up to 740 TFLOPs/s with FP16 (75% utilisation)"
+    },
+    "fa3_h100_fp16_utilization": {
+      "value": 0.75,
+      "unit": "fraction",
+      "source": "SRC-056",
+      "accessed": "2026-10-09",
+      "note": "note 05 §2.C C1"
+    },
+    "fa3_over_fa2_low": {
+      "value": 1.5,
+      "unit": "x",
+      "source": "SRC-056",
+      "accessed": "2026-10-09",
+      "note": "note 05 §2.C C1: 1.5-2.0x faster than FA2 with FP16"
+    },
+    "fa3_over_fa2_high": {
+      "value": 2.0,
+      "unit": "x",
+      "source": "SRC-056",
+      "accessed": "2026-10-09",
+      "note": "note 05 §2.C C1"
+    },
+    "fa4_b200_bf16_tflops": {
+      "value": 1613,
+      "unit": "TFLOPS",
+      "source": "SRC-057",
+      "accessed": "2026-10-09",
+      "note": "note 05 §2.C C1: FA4 up to 1613 TFLOPs/s BF16 (71% utilisation) on B200"
+    },
+    "fa4_b200_bf16_utilization": {
+      "value": 0.71,
+      "unit": "fraction",
+      "source": "SRC-057",
+      "accessed": "2026-10-09",
+      "note": "note 05 §2.C C1"
+    },
+    "fa4_over_cudnn": {
+      "value": 1.3,
+      "unit": "x",
+      "source": "SRC-057",
+      "accessed": "2026-10-09",
+      "note": "note 05 §2.C C1: 1.3x over cuDNN 9.13"
+    },
+    "xgrammar_mask_us_json_max": {
+      "value": 40,
+      "unit": "us per token",
+      "source": "SRC-092",
+      "accessed": "2026-10-09",
+      "note": "note 05 §2.C C5: per-token mask time under 40 us for JSON Schema and CFG(JSON); Llama-3.1-8B tokenizer, Ryzen 9 7950X"
+    },
+    "xgrammar_mask_us_xml_python_max": {
+      "value": 200,
+      "unit": "us per token",
+      "source": "SRC-092",
+      "accessed": "2026-10-09",
+      "note": "note 05 §2.C C5: under 200 us for XML and Python DSL"
+    },
+    "xgrammar_context_dependent_tokens": {
+      "value": 1134,
+      "unit": "tokens",
+      "source": "SRC-092",
+      "accessed": "2026-10-09",
+      "note": "note 05 §2.C C5: context-dependent tokens 1134 of 128k (< 1%) for Llama-3.1 with a JSON grammar"
+    },
+    "llguidance_mask_us_128k": {
+      "value": 50,
+      "unit": "us per token (one CPU core)",
+      "source": "SRC-094",
+      "accessed": "2026-10-09",
+      "note": "note 05 §2.C C5: approximately 50 us of single-core CPU time for a tokenizer with 128k tokens"
+    },
+    "llguidance_full_mask_json_ms": {
+      "value": 1.5,
+      "unit": "ms",
+      "source": "SRC-094",
+      "accessed": "2026-10-09",
+      "note": "note 05 §2.C C5: full mask for a typical JSON schema about 1.5 ms"
+    },
+    "tml_samples": {
+      "value": 1000,
+      "unit": "completions",
+      "source": "SRC-085",
+      "accessed": "2026-10-09",
+      "note": "note 05 §2.C C4: Qwen3-235B-A22B-Instruct-2507, temperature 0, 1000 tokens each"
+    },
+    "tml_unique_completions": {
+      "value": 80,
+      "unit": "completions",
+      "source": "SRC-085",
+      "accessed": "2026-10-09",
+      "note": "note 05 §2.C C4"
+    },
+    "tml_first_divergence_token": {
+      "value": 103,
+      "unit": "token index",
+      "source": "SRC-085",
+      "accessed": "2026-10-09",
+      "note": "note 05 §2.C C4: identical for the first 102 tokens"
+    },
+    "tml_vllm_default_s": {
+      "value": 26,
+      "unit": "s",
+      "source": "SRC-085",
+      "accessed": "2026-10-09",
+      "note": "note 05 §2.C C4: Qwen-3-8B, one GPU, 1000 sequences of 90-110 output tokens"
+    },
+    "tml_deterministic_unoptimized_s": {
+      "value": 55,
+      "unit": "s",
+      "source": "SRC-085",
+      "accessed": "2026-10-09",
+      "note": "note 05 §2.C C4"
+    },
+    "tml_deterministic_improved_s": {
+      "value": 42,
+      "unit": "s",
+      "source": "SRC-085",
+      "accessed": "2026-10-09",
+      "note": "note 05 §2.C C4: with the improved attention kernel (+61.5%)"
+    },
+    "sglang_deterministic_slowdown_pct": {
+      "value": 34.35,
+      "unit": "%",
+      "source": "SRC-091",
+      "accessed": "2026-10-09",
+      "note": "note 05 §2.C C4: average, FlashInfer and FA3 backends, Qwen3-8B, TP1, H200"
+    },
+    "vllm_detok_initial_offset_tokens": {
+      "value": 5,
+      "unit": "tokens",
+      "source": "vllm@8cbd5d0:vllm/tokenizers/detokenizer_utils.py#L59",
+      "accessed": "2026-10-09",
+      "note": "INITIAL_INCREMENTAL_DETOKENIZATION_OFFSET: the prefix window starts 5 tokens before the read offset"
+    },
+    "openai_reasoning_reserve_tokens": {
+      "value": 25000,
+      "unit": "tokens",
+      "source": "SRC-560",
+      "accessed": "2026-10-09",
+      "note": "OpenAI reasoning guide: 'reserving at least 25,000 tokens for reasoning and outputs' (read 2026-10-09)"
+    }
+  },
+  "sims_w11": {
+    "_about": "Values copied exactly from research notes 02, 03, 05 and 01 (and two pages opened by author w11) for Part 11 sims and text (author w11, 2026-10-09). They appear under extra.sims_w11.",
+    "_class": "A",
+    "gb300_sm_count": {
+      "value": 160,
+      "unit": "SMs",
+      "source": "SRC-011",
+      "accessed": "2026-10-09",
+      "note": "research/notes/02-hardware.md §2.2: Blackwell Ultra per GPU, 160 SMs full die, 4 Tensor Cores per SM"
+    },
+    "gb300_tensor_cores_per_sm": {
+      "value": 4,
+      "unit": "count",
+      "source": "SRC-011",
+      "accessed": "2026-10-09",
+      "note": "research/notes/02-hardware.md §2.2"
+    },
+    "gb300_tmem_per_sm": {
+      "value": 256,
+      "unit": "KB",
+      "source": "SRC-011",
+      "accessed": "2026-10-09",
+      "note": "research/notes/02-hardware.md §2.2: TMEM 256 KB per SM"
+    },
+    "gb300_nvl72_lpddr5x_capacity": {
+      "value": 17,
+      "unit": "TB",
+      "source": "SRC-007",
+      "accessed": "2026-10-09",
+      "note": "research/notes/02-hardware.md §2.2: 17 TB LPDDR5X at 14 TB/s per rack (36 Grace CPUs)"
+    },
+    "gb300_nvl72_lpddr5x_bandwidth": {
+      "value": 14,
+      "unit": "TB/s",
+      "source": "SRC-007",
+      "accessed": "2026-10-09",
+      "note": "research/notes/02-hardware.md §2.2"
+    },
+    "h100_max_warps_per_sm": {
+      "value": 64,
+      "unit": "warps",
+      "source": "SRC-580",
+      "accessed": "2026-10-09",
+      "note": "NVIDIA Hopper Tuning Guide §1.4.1.1: 'The maximum number of concurrent warps per SM remains the same as in NVIDIA Ampere GPU architecture (that is, 64)'"
+    },
+    "h100_max_registers_per_thread": {
+      "value": 255,
+      "unit": "registers",
+      "source": "SRC-580",
+      "accessed": "2026-10-09",
+      "note": "Hopper Tuning Guide §1.4.1.1"
+    },
+    "hopper_max_portable_cluster_size": {
+      "value": 8,
+      "unit": "thread blocks",
+      "source": "SRC-580",
+      "accessed": "2026-10-09",
+      "note": "Hopper Tuning Guide §1.4.1.3: 'The maximum portable cluster size supported is 8'"
+    },
+    "cuda_graph_blog_per_kernel_sync_us": {
+      "value": 9.6,
+      "unit": "us",
+      "source": "SRC-089",
+      "accessed": "2026-10-09",
+      "note": "research/notes/05-papers-architecture.md C3: V100, CUDA 10.1, 2019; chain of short kernels, sync after each launch"
+    },
+    "cuda_graph_blog_per_kernel_overlap_us": {
+      "value": 3.8,
+      "unit": "us",
+      "source": "SRC-089",
+      "accessed": "2026-10-09",
+      "note": "same experiment, launches overlapped (no sync)"
+    },
+    "cuda_graph_blog_per_kernel_graph_us": {
+      "value": 3.4,
+      "unit": "us",
+      "source": "SRC-089",
+      "accessed": "2026-10-09",
+      "note": "same experiment, one CUDA Graph"
+    },
+    "cuda_graph_blog_kernel_exec_us": {
+      "value": 2.9,
+      "unit": "us",
+      "source": "SRC-089",
+      "accessed": "2026-10-09",
+      "note": "same experiment: kernel execution time itself"
+    },
+    "cuda_graph_blog_instantiate_us": {
+      "value": 400,
+      "unit": "us",
+      "source": "SRC-089",
+      "accessed": "2026-10-09",
+      "note": "graph create + instantiate, about 400 us, one time"
+    },
+    "vllm_default_max_num_batched_tokens_fallback": {
+      "value": 2048,
+      "unit": "tokens/step",
+      "source": "vllm@8cbd5d0:vllm/config/scheduler.py#L41",
+      "accessed": "2026-10-09",
+      "note": "research/notes/03-engines.md §2.1: DEFAULT_MAX_NUM_BATCHED_TOKENS (fallback; vllm serve default on A100-class GPUs)"
+    },
+    "deepseek_v3_mtp_second_token_acceptance_low": {
+      "value": 0.85,
+      "unit": "fraction",
+      "source": "SRC-071",
+      "accessed": "2026-10-09",
+      "note": "research/notes/05-papers-architecture.md E4: acceptance rate of the 2nd token 85%-90% (section 5.4.3); conditions not stated"
+    },
+    "deepseek_v3_mtp_second_token_acceptance_high": {
+      "value": 0.9,
+      "unit": "fraction",
+      "source": "SRC-071",
+      "accessed": "2026-10-09",
+      "note": "same"
+    },
+    "deepseek_v3_mtp_tps_speedup": {
+      "value": 1.8,
+      "unit": "x",
+      "source": "SRC-071",
+      "accessed": "2026-10-09",
+      "note": "same: 1.8x TPS"
+    },
+    "glm5_mtp_accept_length": {
+      "value": 2.76,
+      "unit": "tokens per step",
+      "source": "SRC-318",
+      "accessed": "2026-10-09",
+      "note": "research/notes/01-models.md §2.1.3: GLM-5 report accept length 2.76 at 4 steps"
+    },
+    "eagle3_sglang_speedup_batch2": {
+      "value": 1.81,
+      "unit": "x",
+      "source": "SRC-105",
+      "accessed": "2026-10-09",
+      "note": "research/notes/05-papers-architecture.md E1: EAGLE-3 in SGLang 0.4.4, H100, Llama-3.1-8B-Instruct, MT-bench, chain 3"
+    },
+    "eagle3_sglang_speedup_batch64": {
+      "value": 1.38,
+      "unit": "x",
+      "source": "SRC-105",
+      "accessed": "2026-10-09",
+      "note": "same table, batch 64"
+    },
+    "fa3_h100_bf16_peak_tflops": {
+      "value": 740,
+      "unit": "TFLOPS",
+      "source": "SRC-056",
+      "accessed": "2026-10-09",
+      "note": "research/notes/05-papers-architecture.md C1: FA3 on H100 up to 740 TFLOPs/s (75% utilisation) FP16"
+    },
+    "fa4_b200_bf16_peak_tflops": {
+      "value": 1613,
+      "unit": "TFLOPS",
+      "source": "SRC-057",
+      "accessed": "2026-10-09",
+      "note": "research/notes/05-papers-architecture.md C1: FA4 up to 1613 TFLOPs/s BF16 on B200 (71% utilisation)"
+    }
+  },
+  "sims_w12": {
+    "_class": "A",
+    "_about": "Values Part 12 (author w12, 2026-10-09) cites that were not in constants.json; copied exactly from research notes 01b, 02, 04 and 08, from vLLM code at 8cbd5d0, and from papers read for SRC-600..SRC-607.",
+    "megatron_allreduces_per_layer_forward": {
+      "value": 2,
+      "unit": "AllReduce per transformer layer (forward)",
+      "source": "SRC-600",
+      "accessed": "2026-10-09",
+      "note": "Megatron-LM §3: 'two all-reduces in the forward path and two in the backward path'"
+    },
+    "vllm_custom_ar_oneshot_max_bytes_8gpu": {
+      "value": 262144,
+      "unit": "bytes",
+      "source": "vllm@8cbd5d0:csrc/custom_all_reduce.cuh#L299-L306",
+      "accessed": "2026-10-09",
+      "note": "fully connected NVLink, world size <= 8: bytes < 256 * 1024 -> 1-stage (one-shot) kernel, else 2-stage (reduce-scatter + all-gather)"
+    },
+    "vllm_custom_ar_oneshot_max_bytes_4gpu": {
+      "value": 524288,
+      "unit": "bytes",
+      "source": "vllm@8cbd5d0:csrc/custom_all_reduce.cuh#L299-L306",
+      "accessed": "2026-10-09",
+      "note": "world size <= 4: bytes < 512 * 1024 -> one-shot"
+    },
+    "vllm_custom_ar_max_world_size": {
+      "value": 8,
+      "unit": "GPUs",
+      "source": "vllm@8cbd5d0:vllm/distributed/device_communicators/custom_all_reduce.py#L499-L514",
+      "accessed": "2026-10-09",
+      "note": "should_custom_ar returns False if world_size > 8; needs 2 GPUs or fully connected NVLink"
+    },
+    "nccl_ll_payload_efficiency": {
+      "value": 0.5,
+      "unit": "fraction",
+      "source": "SRC-295",
+      "accessed": "2026-10-09",
+      "note": "note 04 §2.6.1: LL 16-byte line carries 8 B payload"
+    },
+    "nccl_ll128_payload_efficiency": {
+      "value": 0.9375,
+      "unit": "fraction",
+      "source": "SRC-295",
+      "accessed": "2026-10-09",
+      "note": "note 04 §2.6.1: LL128 120 of 128 B"
+    },
+    "gpipe_negligible_bubble_factor": {
+      "value": 4,
+      "unit": "microbatches per stage",
+      "source": "SRC-601",
+      "accessed": "2026-10-09",
+      "note": "GPipe §2.3: 'bubble overhead to be negligible when M >= 4 x K'"
+    },
+    "sglang_k3_prefill_pp_stages": {
+      "value": 8,
+      "unit": "stages",
+      "source": "SRC-387",
+      "accessed": "2026-10-09",
+      "note": "note 01b §2.11: SGLang K3 prefill uses PP8 (93 layers -> 8 stages)"
+    },
+    "sglang_k3_pp8_vs_tep8_low": {
+      "value": 1.45,
+      "unit": "x prefill capacity",
+      "source": "SRC-387",
+      "accessed": "2026-10-09",
+      "note": "note 01b §2.11: each PP8 node has 1.45 to 1.72 times the prefill capacity of a TEP8 node (8K prefill, 2x4 GB300)"
+    },
+    "sglang_k3_pp8_vs_tep8_high": {
+      "value": 1.72,
+      "unit": "x prefill capacity",
+      "source": "SRC-387",
+      "accessed": "2026-10-09",
+      "note": "same sentence"
+    },
+    "dynamo_k3_gb300_prefill_max_batched_tokens": {
+      "value": 16384,
+      "unit": "tokens",
+      "source": "SRC-388",
+      "accessed": "2026-10-09",
+      "note": "note 01b §2.11: vLLM GB300 disagg prefill flag --max-num-batched-tokens 16384"
+    },
+    "dynamo_k3_gb300_decode_max_batched_tokens": {
+      "value": 2048,
+      "unit": "tokens",
+      "source": "SRC-388",
+      "accessed": "2026-10-09",
+      "note": "note 01b §2.11: decode --max-num-batched-tokens 2048"
+    },
+    "trtllm_k3_dep16_conc64_out_tok_s": {
+      "value": 1669.1,
+      "unit": "output tokens/s per 16 GPUs",
+      "source": "SRC-389",
+      "accessed": "2026-10-09",
+      "note": "note 01b §2.11: DEP16, 16 GB300, concurrency 64, 8K/1K"
+    },
+    "trtllm_k3_dep16_conc64_tps_user": {
+      "value": 29.36,
+      "unit": "tokens/s per user",
+      "source": "SRC-389",
+      "accessed": "2026-10-09",
+      "note": "same row"
+    },
+    "trtllm_k3_dep16_conc64_tpot_ms": {
+      "value": 34.06,
+      "unit": "ms",
+      "source": "SRC-389",
+      "accessed": "2026-10-09",
+      "note": "same row"
+    },
+    "trtllm_k3_dep16_conc64": {
+      "value": 64,
+      "unit": "concurrent requests",
+      "source": "SRC-389",
+      "accessed": "2026-10-09",
+      "note": "same row"
+    },
+    "trtllm_k3_dep16_conc256": {
+      "value": 256,
+      "unit": "concurrent requests",
+      "source": "SRC-389",
+      "accessed": "2026-10-09",
+      "note": "note 01b §2.11"
+    },
+    "trtllm_k3_dep16_conc256_out_tok_s": {
+      "value": 3823.9,
+      "unit": "output tokens/s per 16 GPUs",
+      "source": "SRC-389",
+      "accessed": "2026-10-09",
+      "note": "DEP16 concurrency 256, 8K/1K"
+    },
+    "trtllm_k3_dep16_conc256_tps_user": {
+      "value": 16.07,
+      "unit": "tokens/s per user",
+      "source": "SRC-389",
+      "accessed": "2026-10-09",
+      "note": "note 01b §2.11: DEP16 concurrency 256, TPS/user column"
+    },
+    "trtllm_k3_dep16_conc256_tpot_ms": {
+      "value": 62.24,
+      "unit": "ms",
+      "source": "SRC-389",
+      "accessed": "2026-10-09",
+      "note": "same row"
+    },
+    "trtllm_k3_tep8_per_rank_gb": {
+      "value": 213,
+      "unit": "GB",
+      "source": "SRC-389",
+      "accessed": "2026-10-09",
+      "note": "note 01b §2.11: TEP8 per-rank weights 213 GB"
+    },
+    "vllm_k3_gb300_batch1_tp8_tok_s": {
+      "value": 111,
+      "unit": "tokens/s",
+      "source": "SRC-343",
+      "accessed": "2026-10-09",
+      "note": "note 01b §2.11: batch-1 decode on GB300 NVL72, TP8, no speculation"
+    },
+    "vllm_k3_gb300_batch1_tp16_tok_s": {
+      "value": 118,
+      "unit": "tokens/s",
+      "source": "SRC-343",
+      "accessed": "2026-10-09",
+      "note": "same, TP16"
+    },
+    "deepep_bench_hidden": {
+      "value": 7168,
+      "unit": "values",
+      "source": "SRC-300",
+      "accessed": "2026-10-09",
+      "note": "DeepEP V1 benchmark conditions: hidden 7168, top-8, FP8 dispatch, BF16 combine"
+    },
+    "deepep_bench_topk": {
+      "value": 8,
+      "unit": "experts per token",
+      "source": "SRC-300",
+      "accessed": "2026-10-09",
+      "note": "same"
+    },
+    "deepep_ll_bench_tokens": {
+      "value": 128,
+      "unit": "tokens per batch",
+      "source": "SRC-300",
+      "accessed": "2026-10-09",
+      "note": "low-latency kernel benchmark"
+    },
+    "deepep_ll_ep16_dispatch_us": {
+      "value": 118,
+      "unit": "µs",
+      "source": "SRC-300",
+      "accessed": "2026-10-09",
+      "note": "H800 + CX7 400 Gb/s; EP16 low-latency dispatch"
+    },
+    "deepep_ll_ep16_combine_us": {
+      "value": 195,
+      "unit": "µs",
+      "source": "SRC-300",
+      "accessed": "2026-10-09",
+      "note": "EP16 low-latency combine"
+    },
+    "deepep_ll_ep8_dispatch_us": {
+      "value": 77,
+      "unit": "µs",
+      "source": "SRC-300",
+      "accessed": "2026-10-09",
+      "note": "EP8"
+    },
+    "deepep_ll_ep8_combine_us": {
+      "value": 114,
+      "unit": "µs",
+      "source": "SRC-300",
+      "accessed": "2026-10-09",
+      "note": "EP8"
+    },
+    "deepep_normal_bench_tokens": {
+      "value": 4096,
+      "unit": "tokens per batch",
+      "source": "SRC-300",
+      "accessed": "2026-10-09",
+      "note": "normal kernels benchmark"
+    },
+    "deepep_normal_intranode_ep8_dispatch_gbs": {
+      "value": 153,
+      "unit": "GB/s",
+      "source": "SRC-300",
+      "accessed": "2026-10-09",
+      "note": "NVLink bottleneck bandwidth, intranode EP8"
+    },
+    "deepep_normal_internode_ep16_dispatch_gbs": {
+      "value": 43,
+      "unit": "GB/s",
+      "source": "SRC-300",
+      "accessed": "2026-10-09",
+      "note": "RDMA bottleneck bandwidth, internode EP16"
+    },
+    "dsv3_nvlink_gbs": {
+      "value": 160,
+      "unit": "GB/s",
+      "source": "SRC-071",
+      "accessed": "2026-10-09",
+      "note": "DeepSeek-V3 report §3.2.2 (H800)"
+    },
+    "dsv3_ib_gbs": {
+      "value": 50,
+      "unit": "GB/s",
+      "source": "SRC-071",
+      "accessed": "2026-10-09",
+      "note": "same"
+    },
+    "dsv3_max_nodes_per_token": {
+      "value": 4,
+      "unit": "nodes",
+      "source": "SRC-071",
+      "accessed": "2026-10-09",
+      "note": "each token goes to at most 4 nodes"
+    },
+    "dsv3_prefill_unit_gpus": {
+      "value": 32,
+      "unit": "GPUs",
+      "source": "SRC-071",
+      "accessed": "2026-10-09",
+      "note": "§3.4: prefill unit 4 nodes, attention TP4+SP+DP8, MoE EP32"
+    },
+    "dsv3_decode_unit_gpus": {
+      "value": 320,
+      "unit": "GPUs",
+      "source": "SRC-071",
+      "accessed": "2026-10-09",
+      "note": "§3.4: decode unit 40 nodes, MoE EP320"
+    },
+    "dsv3_prefill_redundant_experts": {
+      "value": 32,
+      "unit": "experts",
+      "source": "SRC-071",
+      "accessed": "2026-10-09",
+      "note": "§3.4: 32 redundant experts in prefill"
+    },
+    "dsv3_hot_expert_refresh_min": {
+      "value": 10,
+      "unit": "minutes",
+      "source": "SRC-071",
+      "accessed": "2026-10-09",
+      "note": "hot experts re-chosen periodically, e.g. every 10 minutes"
+    },
+    "vllm_eplb_window_size": {
+      "value": 1000,
+      "unit": "steps",
+      "source": "vllm@8cbd5d0:vllm/config/parallel.py#L66",
+      "accessed": "2026-10-09",
+      "note": "EPLBConfig.window_size default"
+    },
+    "vllm_eplb_step_interval": {
+      "value": 3000,
+      "unit": "steps",
+      "source": "vllm@8cbd5d0:vllm/config/parallel.py#L68",
+      "accessed": "2026-10-09",
+      "note": "EPLBConfig.step_interval default"
+    },
+    "cp_paper_gpus": {
+      "value": 128,
+      "unit": "H100 GPUs",
+      "source": "SRC-603",
+      "accessed": "2026-10-09",
+      "note": "Context Parallelism for Scalable Million-Token Inference, abstract"
+    },
+    "cp_paper_nodes": {
+      "value": 16,
+      "unit": "nodes",
+      "source": "SRC-603",
+      "accessed": "2026-10-09",
+      "note": "abstract"
+    },
+    "cp_paper_1m_prefill_s": {
+      "value": 77,
+      "unit": "s",
+      "source": "SRC-603",
+      "accessed": "2026-10-09",
+      "note": "1M-token prefill, Llama3 405B"
+    },
+    "cp_paper_1m_efficiency": {
+      "value": 0.93,
+      "unit": "fraction",
+      "source": "SRC-603",
+      "accessed": "2026-10-09",
+      "note": "93% parallelization efficiency"
+    },
+    "cp_paper_128k_prefill_s": {
+      "value": 3.8,
+      "unit": "s",
+      "source": "SRC-603",
+      "accessed": "2026-10-09",
+      "note": "128K-token prefill"
+    },
+    "melange_max_cost_reduction": {
+      "value": 0.77,
+      "unit": "fraction",
+      "source": "SRC-604",
+      "accessed": "2026-10-09",
+      "note": "Mélange abstract: up to 77% lower deployment cost (conversational)"
+    },
+    "splitwise_cost_design_throughput_x": {
+      "value": 1.4,
+      "unit": "x throughput",
+      "source": "SRC-102",
+      "accessed": "2026-10-09",
+      "note": "abstract: 1.4x higher throughput at 20% lower cost"
+    },
+    "splitwise_cost_design_cost_reduction": {
+      "value": 0.2,
+      "unit": "fraction",
+      "source": "SRC-102",
+      "accessed": "2026-10-09",
+      "note": "same sentence"
+    },
+    "dgx_h100_cpu_cores": {
+      "value": 112,
+      "unit": "cores",
+      "source": "SRC-006",
+      "accessed": "2026-10-09",
+      "note": "2 x Intel Xeon Platinum 8480C (note 02 §2.1, confirmed V-001)"
+    },
+    "dgx_h100_system_memory_tb": {
+      "value": 2,
+      "unit": "TB DDR5",
+      "source": "SRC-006",
+      "accessed": "2026-10-09",
+      "note": "note 02 §2.1, confirmed V-001"
+    },
+    "dgx_h100_compute_nics": {
+      "value": 8,
+      "unit": "single-port ConnectX-7 400 Gb/s",
+      "source": "SRC-006",
+      "accessed": "2026-10-09",
+      "note": "one per GPU"
+    },
+    "dgx_h100_storage_mgmt_nics": {
+      "value": 2,
+      "unit": "dual-port ConnectX-7",
+      "source": "SRC-006",
+      "accessed": "2026-10-09",
+      "note": "storage and management"
+    },
+    "dgx_h100_nvswitch_chips": {
+      "value": 4,
+      "unit": "NVSwitch chips",
+      "source": "SRC-006",
+      "accessed": "2026-10-09",
+      "note": "third-generation NVSwitch"
+    },
+    "superpod_h100_su_nodes": {
+      "value": 32,
+      "unit": "nodes per scalable unit",
+      "source": "SRC-605",
+      "accessed": "2026-10-09",
+      "note": "DGX SuperPOD H100 RA: 'Each group of 32 nodes is rail-aligned'"
+    },
+    "mi355x_hbm_bandwidth_tbs": {
+      "value": 8,
+      "unit": "TB/s",
+      "source": "SRC-030",
+      "accessed": "2026-10-09",
+      "note": "note 02 §2.6"
+    },
+    "tpu7x_hbm_bandwidth_gbs": {
+      "value": 7380,
+      "unit": "GB/s",
+      "source": "SRC-031",
+      "accessed": "2026-10-09",
+      "note": "note 02 §2.6"
+    },
+    "tpu7x_ici_gbs": {
+      "value": 1200,
+      "unit": "GB/s bidirectional per chip",
+      "source": "SRC-031",
+      "accessed": "2026-10-09",
+      "note": "note 02 §2.6"
+    },
+    "tpu7x_pod_chips": {
+      "value": 9216,
+      "unit": "chips",
+      "source": "SRC-031",
+      "accessed": "2026-10-09",
+      "note": "note 02 §2.6"
+    },
+    "trainium3_hbm_bandwidth_tbs": {
+      "value": 4.9,
+      "unit": "TB/s",
+      "source": "SRC-348",
+      "accessed": "2026-10-09",
+      "note": "derived per chip from UltraServer totals (V-001)"
+    },
+    "trainium3_neuronlink_tbs": {
+      "value": 2,
+      "unit": "TB/s per chip",
+      "source": "SRC-348",
+      "accessed": "2026-10-09",
+      "note": "NeuronLink-v4 2,048 GiB/s per device (V-001)"
+    },
+    "trainium3_ultraserver_chips": {
+      "value": 144,
+      "unit": "chips",
+      "source": "SRC-348",
+      "accessed": "2026-10-09",
+      "note": "Gen2 UltraServer"
+    }
+  },
+  "sims_w14": {
+    "_class": "A",
+    "_about": "Values Part 14 (author w14, 2026-10-09) cites that were not in constants.json; copied from research note 02 §2.1 and checked on the NVIDIA DGX H100 user guide (SRC-620).",
+    "dgx_h100_max_system_power_kw": {
+      "value": 10.2,
+      "unit": "kW",
+      "source": "SRC-620",
+      "accessed": "2026-10-09",
+      "note": "note 02 §2.1: 'Max system power quoted 10.2 kW'; DGX H100 user guide power table: '10.2 kW max.' (8 x H100)"
+    },
+    "sglang_dsv3_prefill_tok_s_per_node_2k": {
+      "value": 54543,
+      "unit": "input tokens/s per 8-GPU H100 node",
+      "source": "SRC-051",
+      "accessed": "2026-10-09",
+      "note": "note 03 §2.18: prefill per node 57,674 / 54,543 / 50,302 tok/s at 1K / 2K / 4K input (DeepSeek-V3, 2025, H100)"
+    },
+    "sglang_dsv3_decode_tok_s_per_node_2k": {
+      "value": 22282,
+      "unit": "output tokens/s per 8-GPU H100 node",
+      "source": "SRC-051",
+      "accessed": "2026-10-09",
+      "note": "note 03 §2.18: decode per node 22,282 tok/s (2K input)"
+    }
+  },
+  "sims_w15": {
+    "_class": "A",
+    "_about": "Values Part 15 (author w15, 2026-10-09) cites: protocol header sizes from the RFCs already in docs/sources.md, and defaults from pages the author opened (SRC-640 to SRC-653).",
+    "http2_frame_header_bytes": {
+      "value": 9,
+      "unit": "bytes",
+      "source": "SRC-138",
+      "accessed": "2026-10-09",
+      "note": "RFC 9113 sec 4.1: 'All frames begin with a fixed 9-octet header'."
+    },
+    "tls_record_header_bytes": {
+      "value": 5,
+      "unit": "bytes",
+      "source": "SRC-136",
+      "accessed": "2026-10-09",
+      "note": "RFC 9846 sec 5.2 TLSCiphertext: opaque_type (1) + legacy_record_version (2) + length (2)."
+    },
+    "tls_inner_content_type_bytes": {
+      "value": 1,
+      "unit": "bytes",
+      "source": "SRC-136",
+      "accessed": "2026-10-09",
+      "note": "RFC 9846 sec 5.2 TLSInnerPlaintext: one ContentType byte after the content (no padding)."
+    },
+    "aead_tag_bytes": {
+      "value": 16,
+      "unit": "bytes",
+      "source": "SRC-141",
+      "accessed": "2026-10-09",
+      "note": "RFC 9001 sec 5.3: the TLS 1.3 cipher suites used by QUIC 'have a 16-byte authentication tag'; the same AES-GCM/ChaCha20-Poly1305 tag applies to TLS records."
+    },
+    "quic_short_header_flags_bytes": {
+      "value": 1,
+      "unit": "bytes",
+      "source": "SRC-140",
+      "accessed": "2026-10-09",
+      "note": "RFC 9000 sec 17.3.1, 1-RTT packet: first byte holds header form, fixed bit, spin, reserved, key phase, packet number length."
+    },
+    "quic_stream_frame_type_bytes": {
+      "value": 1,
+      "unit": "bytes",
+      "source": "SRC-140",
+      "accessed": "2026-10-09",
+      "note": "RFC 9000 sec 19.8: STREAM frame type 0x08..0x0f (one-byte varint)."
+    },
+    "http3_data_frame_type_bytes": {
+      "value": 1,
+      "unit": "bytes",
+      "source": "SRC-139",
+      "accessed": "2026-10-09",
+      "note": "RFC 9114 sec 7.2.1: DATA frame Type (i) = 0x00, then Length (i)."
+    },
+    "grpc_message_prefix_bytes": {
+      "value": 5,
+      "unit": "bytes",
+      "source": "SRC-647",
+      "accessed": "2026-10-09",
+      "note": "gRPC over HTTP/2: Compressed-Flag (1 byte) + Message-Length (4 bytes, big endian)."
+    },
+    "udp_header_bytes": {
+      "value": 8,
+      "unit": "bytes",
+      "source": "SRC-641",
+      "accessed": "2026-10-09",
+      "note": "RFC 768: the minimum value of the length field is eight (header only)."
+    },
+    "ipv4_min_header_bytes": {
+      "value": 20,
+      "unit": "bytes",
+      "source": "SRC-642",
+      "accessed": "2026-10-09",
+      "note": "RFC 791: IHL minimum value 5 (32-bit words) = 20 bytes."
+    },
+    "tcp_min_header_bytes": {
+      "value": 20,
+      "unit": "bytes",
+      "source": "SRC-137",
+      "accessed": "2026-10-09",
+      "note": "RFC 9293 sec 3.1: Data Offset minimum 5 (32-bit words) = 20 bytes; options add more."
+    },
+    "tcp_delayed_ack_max_s": {
+      "value": 0.5,
+      "unit": "s",
+      "source": "SRC-137",
+      "accessed": "2026-10-09",
+      "note": "RFC 9293 sec 3.8.6.3: the ACK delay 'MUST be less than 0.5 seconds (MUST-40)'."
+    },
+    "envoy_http2_initial_stream_window_bytes": {
+      "value": 16777216,
+      "unit": "bytes",
+      "source": "SRC-644",
+      "accessed": "2026-10-09",
+      "note": "Envoy Http2ProtocolOptions.initial_stream_window_size 'defaults to 16MiB (16 * 1024 * 1024)'."
+    },
+    "envoy_http2_initial_connection_window_bytes": {
+      "value": 25165824,
+      "unit": "bytes",
+      "source": "SRC-644",
+      "accessed": "2026-10-09",
+      "note": "Envoy Http2ProtocolOptions.initial_connection_window_size: 'The default is 24MiB (24 * 1024 * 1024)'."
+    },
+    "envoy_quic_initial_stream_window_bytes": {
+      "value": 16777216,
+      "unit": "bytes",
+      "source": "SRC-644",
+      "accessed": "2026-10-09",
+      "note": "Envoy QuicProtocolOptions.initial_stream_window_size 'defaults to 16777216 (16 * 1024 * 1024)'."
+    },
+    "envoy_listener_buffer_limit_bytes": {
+      "value": 1048576,
+      "unit": "bytes",
+      "source": "SRC-645",
+      "accessed": "2026-10-09",
+      "note": "Envoy Listener.per_connection_buffer_limit_bytes: 'If unspecified, an implementation defined default is applied (1MiB).'"
+    },
+    "envoy_route_timeout_s": {
+      "value": 15,
+      "unit": "s",
+      "source": "SRC-643",
+      "accessed": "2026-10-09",
+      "note": "Envoy timeouts FAQ: route timeout 'defaults to 15 seconds'; 'typically a problem for streaming responses'."
+    },
+    "envoy_stream_idle_timeout_s": {
+      "value": 300,
+      "unit": "s",
+      "source": "SRC-643",
+      "accessed": "2026-10-09",
+      "note": "Envoy timeouts FAQ: 'The default stream idle timeout is 5 minutes.'"
+    },
+    "linux_tcp_wmem_default_bytes": {
+      "value": 16384,
+      "unit": "bytes",
+      "source": "SRC-648",
+      "accessed": "2026-10-09",
+      "note": "tcp(7) tcp_wmem default: 'The default value is 16 kB' (16,384 bytes); max is max(65536, min(4 MB, tcp_mem[1]*PAGE_SIZE/128))."
+    },
+    "cloudflare_proxy_read_timeout_s": {
+      "value": 125,
+      "unit": "s",
+      "source": "SRC-653",
+      "accessed": "2026-10-09",
+      "note": "Cloudflare error 524 page: 'the origin did not provide an HTTP response before the default 125 seconds'."
+    }
+  },
+  "sims_w16": {
+    "_class": "A",
+    "_about": "Values Part 16 (author w16, 2026-10-09) cites, from pages the author opened (SRC-661, SRC-664).",
+    "kafka_retention_ms_default": {
+      "value": 604800000,
+      "unit": "ms",
+      "source": "SRC-661",
+      "accessed": "2026-10-09",
+      "note": "Kafka 4.3 topic config retention.ms default '604800000 (7 days)' under the delete cleanup policy."
+    },
+    "stripe_meter_event_past_window_days": {
+      "value": 35,
+      "unit": "days",
+      "source": "SRC-664",
+      "accessed": "2026-10-09",
+      "note": "Stripe meter events: timestamp within the past 35 calendar days."
+    },
+    "stripe_meter_event_future_window_s": {
+      "value": 300,
+      "unit": "s",
+      "source": "SRC-664",
+      "accessed": "2026-10-09",
+      "note": "Stripe meter events: timestamp not more than 5 minutes in the future (clock drift)."
+    },
+    "stripe_meter_event_calls_per_s": {
+      "value": 1000,
+      "unit": "calls/s per account",
+      "source": "SRC-664",
+      "accessed": "2026-10-09",
+      "note": "Live-mode Meter Event endpoint limit; pre-aggregate or use meter event streams above it."
+    }
+  },
+  "sims_w17": {
+    "_class": "A",
+    "_about": "Values Part 17 (author w17, 2026-10-09) cites that were not in constants.json; copied exactly from the pages opened for SRC-680..SRC-690, from SRC-253 (Llama 3 report, §3.3.4) and from vLLM code at 8cbd5d0. They appear under extra.sims_w17.",
+    "llama3_snapshot_days": {
+      "value": 54,
+      "unit": "days",
+      "source": "SRC-253",
+      "accessed": "2026-10-09",
+      "note": "Llama 3 §3.3.4: 'During a 54-day snapshot period of pre-training, we experienced a total of 466 job interruptions.'"
+    },
+    "llama3_total_interruptions": {
+      "value": 466,
+      "unit": "interruptions",
+      "source": "SRC-253",
+      "accessed": "2026-10-09",
+      "note": "same sentence"
+    },
+    "llama3_unexpected_interruptions": {
+      "value": 419,
+      "unit": "interruptions",
+      "source": "SRC-253",
+      "accessed": "2026-10-09",
+      "note": "§3.3.4: 'The remaining 419 were unexpected interruptions.'"
+    },
+    "llama3_gpus": {
+      "value": 16384,
+      "unit": "H100 GPUs",
+      "source": "SRC-253",
+      "accessed": "2026-10-09",
+      "note": "§3.3: training on 'up to 16K H100 GPUs' (16K = 16,384)"
+    },
+    "llama3_hardware_share": {
+      "value": 0.78,
+      "unit": "fraction of unexpected interruptions",
+      "source": "SRC-253",
+      "accessed": "2026-10-09",
+      "note": "§3.3.4: 'Approximately 78% of the unexpected interruptions are attributed to confirmed hardware issues'"
+    },
+    "llama3_faulty_gpu": {
+      "value": 148,
+      "unit": "interruptions",
+      "source": "SRC-253",
+      "accessed": "2026-10-09",
+      "note": "Table 5: Faulty GPU, 148 (printed as 30.1%)"
+    },
+    "llama3_hbm3": {
+      "value": 72,
+      "unit": "interruptions",
+      "source": "SRC-253",
+      "accessed": "2026-10-09",
+      "note": "Table 5: GPU HBM3 Memory, 72 (printed as 17.2%)"
+    },
+    "llama3_network_switch_cable": {
+      "value": 35,
+      "unit": "interruptions",
+      "source": "SRC-253",
+      "accessed": "2026-10-09",
+      "note": "Table 5: Network Switch/Cable, 35"
+    },
+    "llama3_nic": {
+      "value": 7,
+      "unit": "interruptions",
+      "source": "SRC-253",
+      "accessed": "2026-10-09",
+      "note": "Table 5: NIC, 7"
+    },
+    "llama3_effective_training_time": {
+      "value": 0.9,
+      "unit": "fraction (lower bound)",
+      "source": "SRC-253",
+      "accessed": "2026-10-09",
+      "note": "§3.3.4: 'higher than 90% effective training time'"
+    },
+    "k8s_termination_grace_default_s": {
+      "value": 30,
+      "unit": "s",
+      "source": "SRC-683",
+      "accessed": "2026-10-09",
+      "note": "Pod lifecycle: 'By default, all deletes are graceful within 30 seconds.'"
+    },
+    "k8s_prestop_extension_s": {
+      "value": 2,
+      "unit": "s",
+      "source": "SRC-683",
+      "accessed": "2026-10-09",
+      "note": "'the kubelet requests a small, one-off grace period extension of 2 seconds'"
+    },
+    "envoy_outlier_consecutive_5xx": {
+      "value": 5,
+      "unit": "responses",
+      "source": "SRC-688",
+      "accessed": "2026-10-09",
+      "note": "outlier_detection.proto consecutive_5xx: 'Defaults to 5.'"
+    },
+    "envoy_outlier_interval_s": {
+      "value": 10,
+      "unit": "s",
+      "source": "SRC-688",
+      "accessed": "2026-10-09",
+      "note": "interval: 'Defaults to 10000ms or 10s.'"
+    },
+    "envoy_outlier_base_ejection_s": {
+      "value": 30,
+      "unit": "s",
+      "source": "SRC-688",
+      "accessed": "2026-10-09",
+      "note": "base_ejection_time: 'Defaults to 30000ms or 30s.'"
+    },
+    "envoy_outlier_max_ejection_pct": {
+      "value": 10,
+      "unit": "%",
+      "source": "SRC-688",
+      "accessed": "2026-10-09",
+      "note": "max_ejection_percent: 'Defaults to 10%.'"
+    },
+    "crdb_region_survival_min_regions": {
+      "value": 3,
+      "unit": "regions",
+      "source": "SRC-686",
+      "accessed": "2026-10-09",
+      "note": "'To survive region failures, you must add at least 3 database regions.'"
+    },
+    "crdb_pcr_failover_typical_s": {
+      "value": 300,
+      "unit": "s",
+      "source": "SRC-687",
+      "accessed": "2026-10-09",
+      "note": "physical cluster replication: failover 'should typically happen within five minutes' to the latest replicated time"
+    },
+    "vllm_shutdown_timeout_default_s": {
+      "value": 0,
+      "unit": "s",
+      "source": "vllm@8cbd5d0:vllm/engine/arg_utils.py#L1885-L1890",
+      "accessed": "2026-10-09",
+      "note": "--shutdown-timeout default 0; help: '0 = abort, >0 = wait.'"
+    },
+    "gateway_api_canary_example_weights": {
+      "value": [
+        90,
+        10
+      ],
+      "unit": "weight",
+      "source": "SRC-689",
+      "accessed": "2026-10-09",
+      "note": "traffic-splitting guide: weights 90 and 10 split traffic 90% / 10%"
+    }
+  },
+  "sims_w18": {
+    "_class": "A",
+    "_about": "Values Part 18 (author w18, 2026-10-09) cites, from pages the author opened (SRC-700 to SRC-703).",
+    "llama_guard_3_1b_params": {
+      "value": 1123000000,
+      "unit": "parameters",
+      "source": "SRC-703",
+      "accessed": "2026-10-09",
+      "note": "Llama Guard 3 1B model card: the pruned model has '1123 million parameters'; classifies prompts and responses over 13 hazard categories."
+    },
+    "llama_guard_3_hazard_categories": {
+      "value": 13,
+      "unit": "categories",
+      "source": "SRC-703",
+      "accessed": "2026-10-09",
+      "note": "MLCommons hazard taxonomy categories (model card)."
+    },
+    "nemo_output_rail_chunk_size": {
+      "value": 200,
+      "unit": "tokens",
+      "source": "SRC-701",
+      "accessed": "2026-10-09",
+      "note": "NeMo Guardrails rails.output.streaming.chunk_size default."
+    },
+    "nemo_output_rail_context_size": {
+      "value": 50,
+      "unit": "tokens",
+      "source": "SRC-701",
+      "accessed": "2026-10-09",
+      "note": "NeMo Guardrails rails.output.streaming.context_size default (tokens of the previous chunk re-read)."
+    },
+    "nemo_low_latency_chunk_example": {
+      "value": 50,
+      "unit": "tokens",
+      "source": "SRC-701",
+      "accessed": "2026-10-09",
+      "note": "Docs example for lower latency: chunk 50 with context 20."
+    },
+    "azure_async_filter_signal_chars": {
+      "value": 1000,
+      "unit": "characters",
+      "source": "SRC-700",
+      "accessed": "2026-10-09",
+      "note": "Azure OpenAI Asynchronous Filter: the content filtering signal is 'guaranteed within a ~1,000-character window of the policy-violating content'."
+    },
+    "constitutional_inference_overhead": {
+      "value": 0.237,
+      "unit": "fraction",
+      "source": "SRC-702",
+      "accessed": "2026-10-09",
+      "note": "Constitutional Classifiers abstract: '23.7% inference overhead'."
+    },
+    "constitutional_refusal_increase": {
+      "value": 0.0038,
+      "unit": "fraction (absolute)",
+      "source": "SRC-702",
+      "accessed": "2026-10-09",
+      "note": "Abstract: 'an absolute 0.38% increase in production-traffic refusals'."
+    },
+    "constitutional_late_block_fraction": {
+      "value": 0.0117,
+      "unit": "fraction of jailbreak attempts",
+      "source": "SRC-702",
+      "accessed": "2026-10-09",
+      "note": "Appendix A.4: the token stream was not blocked early enough in 1.17% of jailbreaking attempts."
+    }
+  },
+  "sims_w19": {
+    "_class": "A",
+    "_about": "Values Part 19 (author w19, 2026-10-09) cites: vLLM histogram buckets (research note 03 §2.9, vllm@8cbd5d0:vllm/v1/metrics/buckets.py), llm-d autoscaling and start-up measurements (note 04 §2.9; llm-d@2f95c24 guides), Google SRE Workbook burn-rate alerts (SRC-720), OpenMetrics exemplar limit (note 06, SRC-201).",
+    "vllm_ttft_buckets_s": {
+      "value": [
+        0.001,
+        0.005,
+        0.01,
+        0.02,
+        0.04,
+        0.06,
+        0.08,
+        0.1,
+        0.25,
+        0.5,
+        0.75,
+        1.0,
+        2.5,
+        5.0,
+        7.5,
+        10.0,
+        20.0,
+        40.0,
+        80.0,
+        160.0,
+        640.0,
+        2560.0
+      ],
+      "unit": "s (bucket upper bounds)",
+      "source": "SRC-038",
+      "accessed": "2026-10-09",
+      "note": "vllm@8cbd5d0:vllm/v1/metrics/buckets.py#L57-L80 TIME_TO_FIRST_TOKEN_BUCKETS."
+    },
+    "vllm_itl_buckets_s": {
+      "value": [
+        0.01,
+        0.025,
+        0.05,
+        0.075,
+        0.1,
+        0.15,
+        0.2,
+        0.3,
+        0.4,
+        0.5,
+        0.75,
+        1.0,
+        2.5,
+        5.0,
+        7.5,
+        10.0,
+        20.0,
+        40.0,
+        80.0
+      ],
+      "unit": "s (bucket upper bounds)",
+      "source": "SRC-038",
+      "accessed": "2026-10-09",
+      "note": "vllm@8cbd5d0:vllm/v1/metrics/buckets.py#L84-L104 INTER_TOKEN_LATENCY_BUCKETS."
+    },
+    "sre_slo_window_days": {
+      "value": 30,
+      "unit": "days",
+      "source": "SRC-720",
+      "accessed": "2026-10-09",
+      "note": "SRE Workbook ch. 5 example: 99.9% SLO over a 30-day window."
+    },
+    "sre_burn_alerts": {
+      "value": [
+        {
+          "severity": "page",
+          "long_window_h": 1,
+          "short_window_min": 5,
+          "burn_rate": 14.4,
+          "budget_consumed": 0.02
+        },
+        {
+          "severity": "page",
+          "long_window_h": 6,
+          "short_window_min": 30,
+          "burn_rate": 6,
+          "budget_consumed": 0.05
+        },
+        {
+          "severity": "ticket",
+          "long_window_h": 72,
+          "short_window_min": 360,
+          "burn_rate": 1,
+          "budget_consumed": 0.1
+        }
+      ],
+      "unit": "rows",
+      "source": "SRC-720",
+      "accessed": "2026-10-09",
+      "note": "Recommended multiwindow, multi-burn-rate alerts for a 99.9% SLO (Table 5-8); short window = 1/12 of the long window."
+    },
+    "openmetrics_exemplar_max_label_chars": {
+      "value": 128,
+      "unit": "UTF-8 code points",
+      "source": "SRC-201",
+      "accessed": "2026-10-09",
+      "note": "Combined length of an exemplar's label names and values must not exceed 128 code points."
+    },
+    "llmd_prefill_backlog_threshold_s": {
+      "value": 1.5,
+      "unit": "s of prefill backlog per replica",
+      "source": "SRC-285",
+      "accessed": "2026-10-09",
+      "note": "llm-d@2f95c24:guides/workload-autoscaling/keda-epp-token-aware/pd-disaggregation/base/prefill-scaledobject.yaml#L72-L87 (sum(llm_d_epp_inflight_tokens) / peak prefill tokens/s)."
+    },
+    "llmd_decode_kv_threshold": {
+      "value": 0.8,
+      "unit": "fraction (sum of vllm:kv_cache_usage_perc per replica)",
+      "source": "SRC-285",
+      "accessed": "2026-10-09",
+      "note": "llm-d@2f95c24:guides/workload-autoscaling/keda-epp-token-aware/pd-disaggregation/base/decode-scaledobject.yaml#L67-L71."
+    },
+    "llmd_scale_up_period_s": {
+      "value": 180,
+      "unit": "s per added pod",
+      "source": "SRC-285",
+      "accessed": "2026-10-09",
+      "note": "Same files: scaleUp policy 1 pod per 180 s, stabilization 0 s; scaleDown 1 pod per 300 s, stabilization 300 s."
+    },
+    "llmd_scale_down_period_s": {
+      "value": 300,
+      "unit": "s per removed pod",
+      "source": "SRC-285",
+      "accessed": "2026-10-09",
+      "note": "Same files, scaleDown policy."
+    },
+    "llmd_torch_compile_cold_s": {
+      "value": 20.1,
+      "unit": "s",
+      "source": "SRC-285",
+      "accessed": "2026-10-09",
+      "note": "llm-d@2f95c24:guides/modelexpress-p2p/benchmark-results/h200-ib-gpt-oss-120b.md#L25 (gpt-oss-120b TP2, 8xH200)."
+    },
+    "llmd_torch_compile_cached_s": {
+      "value": 3.4,
+      "unit": "s",
+      "source": "SRC-285",
+      "accessed": "2026-10-09",
+      "note": "Same file #L25, with compile-cache artifact transfer."
+    },
+    "llmd_engine_init_cold_s": {
+      "value": 94.6,
+      "unit": "s",
+      "source": "SRC-285",
+      "accessed": "2026-10-09",
+      "note": "Same file #L26: engine init (profile, KV cache, warmup)."
+    },
+    "llmd_engine_init_cached_s": {
+      "value": 77.8,
+      "unit": "s",
+      "source": "SRC-285",
+      "accessed": "2026-10-09",
+      "note": "Same file #L26, with artifact transfer."
+    },
+    "llmd_pod_ready_cold_s": {
+      "value": 181,
+      "unit": "s",
+      "source": "SRC-285",
+      "accessed": "2026-10-09",
+      "note": "Same file #L27: receiver pod-Ready, 1->2 scale-out wall clock, P2P weights."
+    },
+    "llmd_pod_ready_cached_s": {
+      "value": 156,
+      "unit": "s",
+      "source": "SRC-285",
+      "accessed": "2026-10-09",
+      "note": "Same file #L27, with artifact transfer."
+    },
+    "llmd_default_loader_GBps": {
+      "value": 1.1,
+      "unit": "GB/s per rank",
+      "source": "SRC-285",
+      "accessed": "2026-10-09",
+      "note": "Same file #L11-L15: default loader from warm NFS, ~1.1 GB/s (30.3 s for 33.51 GB)."
+    },
+    "llmd_slo_aware_attainment": {
+      "value": 0.958,
+      "unit": "fraction",
+      "source": "SRC-285",
+      "accessed": "2026-10-09",
+      "note": "llm-d@2f95c24:guides/workload-autoscaling/slo-aware/README.md#L198-L201: 95.8% combined SLO attainment at 5.93 average replicas, bounds 3-8 (H100, Qwen3-32B TP2)."
+    },
+    "llmd_slo_aware_avg_replicas": {
+      "value": 5.93,
+      "unit": "replicas",
+      "source": "SRC-285",
+      "accessed": "2026-10-09",
+      "note": "Same lines; 100% attainment at 8 static replicas."
+    },
+    "llmd_slo_aware_static_replicas": {
+      "value": 8,
+      "unit": "replicas",
+      "source": "SRC-285",
+      "accessed": "2026-10-09",
+      "note": "Same lines."
+    }
+  },
+  "sims_w20": {
+    "_class": "A",
+    "_about": "Values Part 20 (author w20, 2026-10-09) cites, from pages the author opened (SRC-740 to SRC-758, SRC-254).",
+    "flux_params": {
+      "value": 12000000000.0,
+      "unit": "parameters",
+      "source": "SRC-740",
+      "accessed": "2026-10-09",
+      "note": "FLUX.1 [dev]: '12 billion parameter rectified flow transformer'."
+    },
+    "flux_dev_card_steps": {
+      "value": 50,
+      "unit": "steps",
+      "source": "SRC-740",
+      "accessed": "2026-10-09",
+      "note": "Diffusers example on the FLUX.1 [dev] card: num_inference_steps=50, 1024x1024."
+    },
+    "flux_dev_card_px": {
+      "value": 1024,
+      "unit": "pixels per side",
+      "source": "SRC-740",
+      "accessed": "2026-10-09",
+      "note": "Diffusers example height=width=1024."
+    },
+    "flux_text_tokens": {
+      "value": 512,
+      "unit": "tokens",
+      "source": "SRC-740",
+      "accessed": "2026-10-09",
+      "note": "max_sequence_length=512 in the FLUX.1 [dev] example (T5 prompt tokens)."
+    },
+    "flux_schnell_steps": {
+      "value": 4,
+      "unit": "steps",
+      "source": "SRC-741",
+      "accessed": "2026-10-09",
+      "note": "FLUX.1 [schnell] generates in 1 to 4 steps; example num_inference_steps=4."
+    },
+    "flux_pipeline_default_steps": {
+      "value": 28,
+      "unit": "steps",
+      "source": "SRC-742",
+      "accessed": "2026-10-09",
+      "note": "FluxPipeline.__call__ default num_inference_steps: int = 28 (L611)."
+    },
+    "flux_vae_scale_factor": {
+      "value": 8,
+      "unit": "pixels per latent position",
+      "source": "SRC-742",
+      "accessed": "2026-10-09",
+      "note": "vae_scale_factor = 2 ** (len(block_out_channels) - 1), fallback 8 (L208)."
+    },
+    "flux_latent_pack": {
+      "value": 2,
+      "unit": "latent positions per token side",
+      "source": "SRC-742",
+      "accessed": "2026-10-09",
+      "note": "_pack_latents views latents as (h/2, 2, w/2, 2): one transformer token per 2x2 latent patch (L522-L525)."
+    },
+    "flux_in_channels": {
+      "value": 64,
+      "unit": "channels per token",
+      "source": "SRC-743",
+      "accessed": "2026-10-09",
+      "note": "FluxTransformer2DModel in_channels default 64 = 16 latent channels x 4 (2x2 pack)."
+    },
+    "flux_double_blocks": {
+      "value": 19,
+      "unit": "layers",
+      "source": "SRC-743",
+      "accessed": "2026-10-09",
+      "note": "num_layers default 19 (joint image-text blocks)."
+    },
+    "flux_single_blocks": {
+      "value": 38,
+      "unit": "layers",
+      "source": "SRC-743",
+      "accessed": "2026-10-09",
+      "note": "num_single_layers default 38."
+    },
+    "flux_heads": {
+      "value": 24,
+      "unit": "heads",
+      "source": "SRC-743",
+      "accessed": "2026-10-09",
+      "note": "num_attention_heads default 24."
+    },
+    "flux_head_dim": {
+      "value": 128,
+      "unit": "dims",
+      "source": "SRC-743",
+      "accessed": "2026-10-09",
+      "note": "attention_head_dim default 128."
+    },
+    "chameleon_image_px": {
+      "value": 512,
+      "unit": "pixels per side",
+      "source": "SRC-254",
+      "accessed": "2026-10-09",
+      "note": "Chameleon tokenizer encodes a 512x512 image."
+    },
+    "chameleon_image_tokens": {
+      "value": 1024,
+      "unit": "tokens per image",
+      "source": "SRC-254",
+      "accessed": "2026-10-09",
+      "note": "'encodes a 512x512 image into 1024 discrete tokens from a codebook of size 8192'."
+    },
+    "chameleon_codebook": {
+      "value": 8192,
+      "unit": "codes",
+      "source": "SRC-254",
+      "accessed": "2026-10-09",
+      "note": "Image tokenizer codebook size."
+    },
+    "opus_recommended_frame_ms": {
+      "value": 20,
+      "unit": "ms",
+      "source": "SRC-747",
+      "accessed": "2026-10-09",
+      "note": "RFC 6716: '20 ms frames are a good choice for most applications'."
+    },
+    "opus_max_frame_ms": {
+      "value": 60,
+      "unit": "ms",
+      "source": "SRC-747",
+      "accessed": "2026-10-09",
+      "note": "Frames of 2.5, 5, 10, 20, 40 or 60 ms."
+    },
+    "opus_min_frame_ms": {
+      "value": 2.5,
+      "unit": "ms",
+      "source": "SRC-747",
+      "accessed": "2026-10-09",
+      "note": "Smallest Opus frame."
+    },
+    "opus_fullband_hz": {
+      "value": 48000,
+      "unit": "Hz",
+      "source": "SRC-747",
+      "accessed": "2026-10-09",
+      "note": "Fullband effective sample rate."
+    },
+    "mimi_frame_hz": {
+      "value": 12.5,
+      "unit": "frames/s",
+      "source": "SRC-750",
+      "accessed": "2026-10-09",
+      "note": "Mimi latent at 12.5 frames per second."
+    },
+    "mimi_codebooks": {
+      "value": 8,
+      "unit": "codebooks per frame",
+      "source": "SRC-750",
+      "accessed": "2026-10-09",
+      "note": "Q = 8 RVQ quantizers used by Moshi."
+    },
+    "mimi_codebook_size": {
+      "value": 2048,
+      "unit": "codes",
+      "source": "SRC-750",
+      "accessed": "2026-10-09",
+      "note": "Each quantizer has 2048 entries."
+    },
+    "mimi_sample_rate_hz": {
+      "value": 24000,
+      "unit": "Hz",
+      "source": "SRC-750",
+      "accessed": "2026-10-09",
+      "note": "Mimi encoder takes a 24 kHz waveform."
+    },
+    "moshi_theoretical_latency_ms": {
+      "value": 160,
+      "unit": "ms",
+      "source": "SRC-750",
+      "accessed": "2026-10-09",
+      "note": "Abstract: theoretical latency of 160 ms."
+    },
+    "moshi_practical_latency_ms": {
+      "value": 200,
+      "unit": "ms",
+      "source": "SRC-750",
+      "accessed": "2026-10-09",
+      "note": "Abstract: 200 ms in practice."
+    },
+    "moshi_acoustic_delay_frames": {
+      "value": 1,
+      "unit": "frames",
+      "source": "SRC-750",
+      "accessed": "2026-10-09",
+      "note": "Fine-tuned with an acoustic delay of 1 (pretrained with 2)."
+    },
+    "whisper_sample_rate_hz": {
+      "value": 16000,
+      "unit": "Hz",
+      "source": "SRC-751",
+      "accessed": "2026-10-09",
+      "note": "All audio re-sampled to 16,000 Hz."
+    },
+    "whisper_stride_ms": {
+      "value": 10,
+      "unit": "ms",
+      "source": "SRC-751",
+      "accessed": "2026-10-09",
+      "note": "Log-Mel on 25 ms windows with a stride of 10 ms."
+    },
+    "whisper_window_ms": {
+      "value": 25,
+      "unit": "ms",
+      "source": "SRC-751",
+      "accessed": "2026-10-09",
+      "note": "25-millisecond windows."
+    },
+    "whisper_mel_channels": {
+      "value": 80,
+      "unit": "channels",
+      "source": "SRC-751",
+      "accessed": "2026-10-09",
+      "note": "80-channel log-magnitude Mel spectrogram."
+    },
+    "whisper_segment_s": {
+      "value": 30,
+      "unit": "s",
+      "source": "SRC-751",
+      "accessed": "2026-10-09",
+      "note": "Audio files broken into 30-second segments."
+    },
+    "kyutai_stt_1b_delay_s": {
+      "value": 0.5,
+      "unit": "s",
+      "source": "SRC-752",
+      "accessed": "2026-10-09",
+      "note": "stt-1b-en_fr: 0.5 second delay and a semantic VAD."
+    },
+    "kyutai_stt_2b6_delay_s": {
+      "value": 2.5,
+      "unit": "s",
+      "source": "SRC-752",
+      "accessed": "2026-10-09",
+      "note": "stt-2.6b-en: 2.5 second delay."
+    },
+    "kyutai_stt_h100_streams": {
+      "value": 400,
+      "unit": "streams in real time",
+      "source": "SRC-752",
+      "accessed": "2026-10-09",
+      "note": "'a H100 can process 400 streams in real-time'."
+    },
+    "silero_chunk_ms": {
+      "value": 30,
+      "unit": "ms (at least)",
+      "source": "SRC-753",
+      "accessed": "2026-10-09",
+      "note": "One audio chunk (30+ ms)."
+    },
+    "silero_chunk_cpu_ms": {
+      "value": 1,
+      "unit": "ms (upper bound)",
+      "source": "SRC-753",
+      "accessed": "2026-10-09",
+      "note": "Under 1 ms per chunk on one CPU thread."
+    },
+    "realtime_pcm_hz": {
+      "value": 24000,
+      "unit": "Hz",
+      "source": "SRC-754",
+      "accessed": "2026-10-09",
+      "note": "Realtime API examples use PCM16 at 24 kHz mono."
+    },
+    "rtp_jitter_gain_denominator": {
+      "value": 16,
+      "unit": "",
+      "source": "SRC-749",
+      "accessed": "2026-10-09",
+      "note": "J(i) = J(i-1) + (abs(D) - J(i-1))/16."
+    },
+    "research_agent_token_multiple": {
+      "value": 4,
+      "unit": "x chat tokens",
+      "source": "SRC-755",
+      "accessed": "2026-10-09",
+      "note": "Agents use about 4x the tokens of chat interactions."
+    },
+    "research_multiagent_token_multiple": {
+      "value": 15,
+      "unit": "x chat tokens",
+      "source": "SRC-755",
+      "accessed": "2026-10-09",
+      "note": "Multi-agent systems use about 15x the tokens of chats."
+    },
+    "research_subagents_min": {
+      "value": 3,
+      "unit": "subagents",
+      "source": "SRC-755",
+      "accessed": "2026-10-09",
+      "note": "Lead agent starts 3-5 subagents in parallel."
+    },
+    "research_subagents_max": {
+      "value": 5,
+      "unit": "subagents",
+      "source": "SRC-755",
+      "accessed": "2026-10-09",
+      "note": "Lead agent starts 3-5 subagents in parallel."
+    },
+    "research_context_truncation_tokens": {
+      "value": 200000,
+      "unit": "tokens",
+      "source": "SRC-755",
+      "accessed": "2026-10-09",
+      "note": "Context above 200,000 tokens is truncated, so the plan is saved to memory."
+    },
+    "temporal_retry_initial_s": {
+      "value": 1,
+      "unit": "s",
+      "source": "SRC-756",
+      "accessed": "2026-10-09",
+      "note": "Activity retry default initial interval."
+    },
+    "temporal_retry_backoff": {
+      "value": 2.0,
+      "unit": "",
+      "source": "SRC-756",
+      "accessed": "2026-10-09",
+      "note": "Default backoff coefficient."
+    },
+    "temporal_retry_max_interval_factor": {
+      "value": 100,
+      "unit": "x initial interval",
+      "source": "SRC-756",
+      "accessed": "2026-10-09",
+      "note": "Default maximum interval."
+    },
+    "background_zdr_retention_min": {
+      "value": 10,
+      "unit": "min (about)",
+      "source": "SRC-757",
+      "accessed": "2026-10-09",
+      "note": "Background responses kept on disk about 10 minutes for ZDR projects."
+    }
+  }
+}

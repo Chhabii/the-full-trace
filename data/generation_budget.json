@@ -1,0 +1,282 @@
+{
+  "meta": {
+    "script": "sim/generation_budget.py",
+    "generated_at": "2026-10-09T12:08:50+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T11:46:20+00:00",
+      "sha256": "7f6ef022590a"
+    },
+    "constants_used": {
+      "extra.sims_w04.k3_special_slots": 256,
+      "hypothetical.backend.default_max_tokens": 4096,
+      "hypothetical.generation_guards.repetition_max_pattern_tokens": 64,
+      "hypothetical.generation_guards.repetition_min_count": 6,
+      "hypothetical.generation_guards.repetition_min_pattern_tokens": 8,
+      "hypothetical.serving_assumptions.stream_rate_example_tokens_per_s": 100,
+      "hypothetical.slo.p95_tpot_ms": 60,
+      "hypothetical.timeout_budget_ref.tool_pass_cap_s": 40,
+      "hypothetical.tool_loop.pass1_reasoning_tokens": 300,
+      "hypothetical.tool_loop.pass2_reasoning_tokens": 200,
+      "hypothetical.tool_loop.pass3_reasoning_tokens": 400,
+      "models.M-dense.kv_bytes_per_token_bf16": 360448,
+      "models.M-frontier.mla_kv_bytes_per_token_bf16": 27648
+    }
+  },
+  "serves": {
+    "requirements": [
+      "R-X.13",
+      "R-X.14"
+    ],
+    "manuscript": "Part 10.13, 10.14"
+  },
+  "reasoning": {
+    "per_pass": {
+      "p1": {
+        "reasoning_tokens": 300,
+        "output_tokens": 424,
+        "non_reasoning_output_tokens": 124,
+        "reasoning_share_of_output": 0.7075471698113207,
+        "max_tokens": 4096,
+        "max_tokens_left_after_reasoning": 3796,
+        "reasoning_share_of_max_tokens": 0.0732421875,
+        "reasoning_time_at_stream_rate": {
+          "formula": "300 tokens ÷ 100 tokens/s",
+          "value": 3000,
+          "unit": "ms",
+          "note": "illustrative SSE example rate, not the reference request's speed"
+        },
+        "reasoning_time_at_reference_step": {
+          "formula": "300 × 47.2 ms",
+          "value": 14171.4,
+          "unit": "ms",
+          "note": "decode step of the reference request (Part 14.2)"
+        },
+        "reasoning_time_at_p95_tpot": {
+          "formula": "300 × 60 ms",
+          "value": 18000,
+          "unit": "ms"
+        },
+        "reasoning_kv_k3_bf16": {
+          "formula": "300 × 27,648 B",
+          "value": 8294400,
+          "unit": "B",
+          "MB_1e6": 8.2944,
+          "GB_1e9": 0.0082944,
+          "MiB_2pow20": 7.91015625,
+          "GiB_2pow30": 0.007724761963
+        },
+        "reasoning_kv_m_dense_bf16": {
+          "formula": "300 × 360,448 B",
+          "value": 108134400,
+          "unit": "B",
+          "MB_1e6": 108.1344,
+          "GB_1e9": 0.1081344,
+          "MiB_2pow20": 103.125,
+          "GiB_2pow30": 0.1007080078
+        }
+      },
+      "p2": {
+        "reasoning_tokens": 200,
+        "output_tokens": 440,
+        "non_reasoning_output_tokens": 240,
+        "reasoning_share_of_output": 0.45454545454545453,
+        "max_tokens": 4096,
+        "max_tokens_left_after_reasoning": 3896,
+        "reasoning_share_of_max_tokens": 0.048828125,
+        "reasoning_time_at_stream_rate": {
+          "formula": "200 tokens ÷ 100 tokens/s",
+          "value": 2000,
+          "unit": "ms",
+          "note": "illustrative SSE example rate, not the reference request's speed"
+        },
+        "reasoning_time_at_reference_step": {
+          "formula": "200 × 47.2 ms",
+          "value": 9447.6,
+          "unit": "ms",
+          "note": "decode step of the reference request (Part 14.2)"
+        },
+        "reasoning_time_at_p95_tpot": {
+          "formula": "200 × 60 ms",
+          "value": 12000,
+          "unit": "ms"
+        },
+        "reasoning_kv_k3_bf16": {
+          "formula": "200 × 27,648 B",
+          "value": 5529600,
+          "unit": "B",
+          "MB_1e6": 5.5296,
+          "GB_1e9": 0.0055296,
+          "MiB_2pow20": 5.2734375,
+          "GiB_2pow30": 0.005149841309
+        },
+        "reasoning_kv_m_dense_bf16": {
+          "formula": "200 × 360,448 B",
+          "value": 72089600,
+          "unit": "B",
+          "MB_1e6": 72.0896,
+          "GB_1e9": 0.0720896,
+          "MiB_2pow20": 68.75,
+          "GiB_2pow30": 0.06713867188
+        }
+      },
+      "p3": {
+        "reasoning_tokens": 400,
+        "output_tokens": 863,
+        "non_reasoning_output_tokens": 463,
+        "reasoning_share_of_output": 0.46349942062572425,
+        "max_tokens": 4096,
+        "max_tokens_left_after_reasoning": 3696,
+        "reasoning_share_of_max_tokens": 0.09765625,
+        "reasoning_time_at_stream_rate": {
+          "formula": "400 tokens ÷ 100 tokens/s",
+          "value": 4000,
+          "unit": "ms",
+          "note": "illustrative SSE example rate, not the reference request's speed"
+        },
+        "reasoning_time_at_reference_step": {
+          "formula": "400 × 47.2 ms",
+          "value": 18895.2,
+          "unit": "ms",
+          "note": "decode step of the reference request (Part 14.2)"
+        },
+        "reasoning_time_at_p95_tpot": {
+          "formula": "400 × 60 ms",
+          "value": 24000,
+          "unit": "ms"
+        },
+        "reasoning_kv_k3_bf16": {
+          "formula": "400 × 27,648 B",
+          "value": 11059200,
+          "unit": "B",
+          "MB_1e6": 11.0592,
+          "GB_1e9": 0.0110592,
+          "MiB_2pow20": 10.546875,
+          "GiB_2pow30": 0.01029968262
+        },
+        "reasoning_kv_m_dense_bf16": {
+          "formula": "400 × 360,448 B",
+          "value": 144179200,
+          "unit": "B",
+          "MB_1e6": 144.1792,
+          "GB_1e9": 0.1441792,
+          "MiB_2pow20": 137.5,
+          "GiB_2pow30": 0.1342773438
+        }
+      }
+    },
+    "total_reasoning_tokens": 900,
+    "total_output_tokens": 1727,
+    "reasoning_share_of_output": 0.5211349160393747,
+    "total_reasoning_time_at_stream_rate": {
+      "formula": "900 ÷ 100 tokens/s",
+      "value": 9000,
+      "unit": "ms",
+      "note": "illustrative SSE example rate"
+    },
+    "total_reasoning_time_at_reference_step": {
+      "formula": "900 × 47.2 ms",
+      "value": 42514.2,
+      "unit": "ms",
+      "note": "decode step of the reference request (Part 14.2)"
+    },
+    "total_reasoning_time_at_p95_tpot": {
+      "formula": "900 × 60 ms",
+      "value": 54000,
+      "unit": "ms"
+    },
+    "reasoning_kv_k3_bf16_end": {
+      "formula": "900 × 27,648 B",
+      "value": 24883200,
+      "unit": "B",
+      "MB_1e6": 24.8832,
+      "GB_1e9": 0.0248832,
+      "MiB_2pow20": 23.73046875,
+      "GiB_2pow30": 0.02317428589,
+      "note": "pass 1 and 2 outputs stay in the context of later passes (5.6)"
+    },
+    "reasoning_kv_m_dense_bf16_end": {
+      "formula": "900 × 360,448 B",
+      "value": 324403200,
+      "unit": "B",
+      "MB_1e6": 324.4032,
+      "GB_1e9": 0.3244032,
+      "MiB_2pow20": 309.375,
+      "GiB_2pow30": 0.3021240234
+    },
+    "runaway": {
+      "label": "a pass whose reasoning never ends before max_tokens",
+      "tokens": 4096,
+      "time_at_stream_rate": {
+        "formula": "4096 ÷ 100 tokens/s",
+        "value": 40960,
+        "unit": "ms",
+        "note": "illustrative SSE example rate"
+      },
+      "time_at_reference_step": {
+        "formula": "4096 × 47.2 ms",
+        "value": 193486.848,
+        "unit": "ms"
+      },
+      "tool_pass_cap_s": 40,
+      "tokens_before_tool_pass_cap": {
+        "formula": "tool-pass cap ÷ decode step (queue and prefill left out, so an upper bound)",
+        "value": 846.7759008,
+        "unit": "tokens",
+        "note": "Part 17.1: the orchestrator's child deadline stops a runaway pass before max_tokens"
+      },
+      "time_at_p95_tpot": {
+        "formula": "4096 × 60 ms",
+        "value": 245760,
+        "unit": "ms"
+      },
+      "kv_k3_bf16": {
+        "formula": "4096 × 27,648 B",
+        "value": 113246208,
+        "unit": "B",
+        "MB_1e6": 113.246208,
+        "GB_1e9": 0.113246208,
+        "MiB_2pow20": 108,
+        "GiB_2pow30": 0.10546875
+      },
+      "over_planned_pass1": 9.660377358490566,
+      "visible_tokens": 0,
+      "finish_reason": "length"
+    },
+    "stream_rate_tokens_per_s": 100,
+    "p95_tpot_ms": 60,
+    "reference_step_ms": 47.238,
+    "reference_tokens_per_s": 21.16939751894661
+  },
+  "repetition": {
+    "label": "Illustrative looping text; real K3 token IDs.",
+    "settings": {
+      "max_pattern_size": 64,
+      "min_pattern_size": 8,
+      "min_count": 6
+    },
+    "prefix_text": "Birchline has the highest list price.",
+    "loop_text": " The margin is highest for Birchline.",
+    "prefix_tokens": 10,
+    "loop_tokens": 8,
+    "loop_ids": [
+      646,
+      5753,
+      387,
+      10759,
+      395,
+      127844,
+      1611,
+      13
+    ],
+    "stopped_at_output_token": 57,
+    "pattern_len_found": 8,
+    "note": "The prefix ends with the same '.' token as the loop, so the 8-token window that repeats 6 times closes one token before the 6th full sentence ends.",
+    "copies_written": 6,
+    "tokens_saved_vs_max_tokens": 4039,
+    "max_tokens": 4096,
+    "five_copies_trigger": false,
+    "finish_reason": "repetition (vLLM FinishReason.REPETITION; status FINISHED_REPETITION)",
+    "source": "vllm@8cbd5d0:vllm/v1/core/sched/utils.py#L10-L64 and #L98-L138"
+  }
+}

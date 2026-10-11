@@ -1,0 +1,505 @@
+{
+  "meta": {
+    "script": "sim/failure_math.py",
+    "generated_at": "2026-10-09T19:20:32+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T19:17:10+00:00",
+      "sha256": "4091418cecc1"
+    },
+    "constants_used": {
+      "extra.sims_w12.trtllm_k3_dep16_conc256_tps_user": 16.07,
+      "extra.sims_w12.trtllm_k3_dep16_conc64_tps_user": 29.36,
+      "extra.sims_w17.crdb_pcr_failover_typical_s": 300,
+      "extra.sims_w17.k8s_termination_grace_default_s": 30,
+      "extra.sims_w17.llama3_faulty_gpu": 148,
+      "extra.sims_w17.llama3_gpus": 16384,
+      "extra.sims_w17.llama3_hardware_share": 0.78,
+      "extra.sims_w17.llama3_hbm3": 72,
+      "extra.sims_w17.llama3_snapshot_days": 54,
+      "extra.sims_w17.llama3_unexpected_interruptions": 419,
+      "hypothetical.backend.default_max_tokens": 4096,
+      "hypothetical.crash_ref.crash_at_visible_token": 200,
+      "hypothetical.crash_ref.engine_warmup_s": 90,
+      "hypothetical.crash_ref.inference_readiness_failure_threshold": 2,
+      "hypothetical.crash_ref.inference_readiness_period_s": 5,
+      "hypothetical.deployment.k3_decode_gpus_per_worker": 16,
+      "hypothetical.deployment.k3_prefill_gpus_per_worker": 8,
+      "hypothetical.deployment.m_dense_replica_gpus": 8,
+      "hypothetical.epp_calibration.peak_prefill_tokens_per_s": 16000,
+      "hypothetical.region_failover_ref.async_replication_lag_s": 10,
+      "hypothetical.region_failover_ref.global_health_failures_to_down": 3,
+      "hypothetical.region_failover_ref.global_health_interval_s": 5,
+      "hypothetical.region_failover_ref.standby_region": "ap_northeast",
+      "hypothetical.region_failover_ref.weight_push_s": 5,
+      "hypothetical.retry_ref.backoff_base_s": 0.2,
+      "hypothetical.retry_ref.backoff_cap_s": 5,
+      "hypothetical.retry_ref.jitter_seed": 17,
+      "hypothetical.retry_ref.stack_layers": 5,
+      "hypothetical.rollout_ref.canary_stage_hold_s": 900,
+      "hypothetical.rollout_ref.canary_weights_pct": [
+        1,
+        5,
+        25,
+        50,
+        100
+      ],
+      "hypothetical.rollout_ref.decode_workers_in_pool": 26,
+      "hypothetical.rollout_ref.drain_timeout_s": 300,
+      "hypothetical.rollout_ref.grace_margin_s": 30,
+      "hypothetical.rollout_ref.max_unavailable_workers": 2,
+      "hypothetical.slow_db_ref.db_call_timeout_ms": 200,
+      "hypothetical.slow_db_ref.slowdown_factors": [
+        1,
+        2,
+        5,
+        10,
+        40
+      ],
+      "hypothetical.storage_ref.messages_per_request": 2,
+      "hypothetical.traffic.mean_output_tokens": 400,
+      "hypothetical.traffic.mean_prompt_tokens": 3000,
+      "hypothetical.traffic.prefix_cache_hit_fraction": 0.6
+    }
+  },
+  "conventions": {
+    "serves": [
+      "R-XVII.3",
+      "R-XVII.4",
+      "R-XVII.5",
+      "R-XVII.8",
+      "R-XVII.10",
+      "R-XVII.11"
+    ],
+    "class": "Inputs: class A curated values (extra.sims_w12, extra.sims_w17) and class C hypothetical values; results are arithmetic"
+  },
+  "crash": {
+    "shown_tokens": 200,
+    "visible_tokens_pass3": 463,
+    "lost_kv_context_tokens": {
+      "formula": "pass-3 prompt + reasoning + shown tokens",
+      "value": 30995,
+      "unit": "tokens",
+      "arithmetic": "30,395 + 400 + 200"
+    },
+    "sequences_lost_on_worker": {
+      "value": 1504,
+      "unit": "sequences",
+      "source": "capacity_math:fleet.million.m_frontier_h_frontier.sequences_per_worker",
+      "note": "every sequence on the 16 GPUs (Part 14 design point: 94 per rank × 16 ranks, RA-55)"
+    },
+    "decode_speed_per_sequence": {
+      "value": 21.17,
+      "unit": "tokens/s",
+      "source": "capacity_math:fleet.million.m_frontier_h_frontier.step.tokens_per_s_per_sequence"
+    },
+    "gpus_lost": {
+      "value": 16,
+      "unit": "GPUs"
+    },
+    "detect_in_flight": "immediate: the engine process dies, open streams to it fail (vLLM EngineDeadError path)",
+    "detect_routing": {
+      "formula": "readiness period × failure threshold",
+      "value": 10,
+      "unit": "s",
+      "arithmetic": "5 × 2 = 10 s"
+    },
+    "regenerate": {
+      "prefill_tokens": 30395,
+      "prefill_time": {
+        "formula": "prompt tokens / prefill rate",
+        "value": 1899.6875,
+        "unit": "ms",
+        "s": 1.8996875,
+        "arithmetic": "30,395 / 16,000 = 1.90 s"
+      },
+      "decode_time": {
+        "value": 40765.23382,
+        "unit": "ms",
+        "s": 40.76523382,
+        "arithmetic": "863 / 21.17 = 40.8 s"
+      },
+      "tokens_shown_twice": 200
+    },
+    "continue_from_shown": {
+      "prefill_tokens": 30995,
+      "prefill_time": {
+        "value": 1937.1875,
+        "unit": "ms",
+        "s": 1.9371875,
+        "arithmetic": "30,995 / 16,000 = 1.94 s"
+      },
+      "decode_tokens_left": 263,
+      "decode_time": {
+        "value": 12423.24043,
+        "unit": "ms",
+        "s": 12.42324043,
+        "arithmetic": "263 / 21.17 = 12.4 s"
+      }
+    },
+    "recompute_all_sequences": {
+      "mean_context_tokens": {
+        "formula": "mean prompt + half of mean output",
+        "value": 3200,
+        "unit": "tokens"
+      },
+      "other_sequences_prefill_tokens": {
+        "value": 4809600,
+        "unit": "tokens",
+        "arithmetic": "1,503 × 3,200"
+      },
+      "prefill_time_one_endpoint": {
+        "formula": "tokens / prefill rate of one endpoint",
+        "value": 300600,
+        "unit": "ms",
+        "s": 300.6
+      }
+    },
+    "worker_reform": {
+      "weights_from_peer": {
+        "value": 2100,
+        "unit": "ms",
+        "s": 2.1,
+        "note": "bandwidth_orders: per-rank weights HBM → HBM from a running replica at 800 Gb/s"
+      },
+      "engine_warmup": {
+        "value": 90000,
+        "unit": "ms",
+        "s": 90
+      },
+      "total": {
+        "value": 92100,
+        "unit": "ms",
+        "s": 92.1,
+        "arithmetic": "2.1 + 90 = 92.1 s"
+      }
+    }
+  },
+  "region": {
+    "detect": {
+      "formula": "health interval × failures to mark down",
+      "value": 15,
+      "unit": "s",
+      "arithmetic": "5 × 3 = 15 s"
+    },
+    "traffic_rto": {
+      "formula": "detection + weight push",
+      "value": 20,
+      "unit": "s",
+      "arithmetic": "15 + 5 = 20 s"
+    },
+    "history_rto": {
+      "formula": "detection + weight push + standby promotion",
+      "value": 320,
+      "unit": "s",
+      "arithmetic": "15 + 5 + 300 = 320 s",
+      "minutes": 5.333333333
+    },
+    "rpo_async": {
+      "formula": "replication lag of the asynchronous standby",
+      "value": 10,
+      "unit": "s"
+    },
+    "region_rps": {
+      "formula": "ap_south peak of the daily demand curve",
+      "value": 11741.24728,
+      "unit": "requests/s",
+      "source": "demand_curve:regions.ap_south.peak_rps (Part 14.8)"
+    },
+    "messages_at_risk": {
+      "formula": "requests/s × message rows per request × lag",
+      "value": 234824.9456,
+      "unit": "message rows",
+      "arithmetic": "11,741 × 2 × 10 = 234,825"
+    },
+    "standby_region": "ap_northeast",
+    "serving_region_for_reference_user": "eu_west",
+    "sync_cross_region_write_penalty": {
+      "formula": "RTT ap_south ↔ ap_northeast (region survival: quorum across regions)",
+      "value": 65.81449016,
+      "unit": "ms"
+    },
+    "serve_to_standby_rtt": {
+      "formula": "RTT eu_west ↔ ap_northeast",
+      "value": 93.8663433,
+      "unit": "ms"
+    },
+    "ttft_floor_penalty": {
+      "value": 26.63725035,
+      "unit": "ms"
+    },
+    "prefix_cache_loss": {
+      "hit_fraction_before": 0.6,
+      "prefill_multiplier_cold": {
+        "formula": "1 / (1 − prefix-hit fraction)",
+        "value": 2.5,
+        "unit": "×",
+        "arithmetic": "1 / (1 − 0.6) = 2.5",
+        "note": "prefill tokens per request when the surviving region holds none of the moved prefixes"
+      }
+    }
+  },
+  "slow_db": {
+    "pool_size": 4,
+    "transactions_per_request": 4,
+    "normal_hold_ms": 5,
+    "load_rps_per_pod": 100,
+    "formula": "pod capacity = pool size / (transactions per request × transaction time)",
+    "rows": [
+      {
+        "factor": 1,
+        "hold_ms": 5,
+        "pod_capacity_rps": 200,
+        "arithmetic": "4 / (4 × 5 ms) = 200 requests/s",
+        "share_reaching_gpus": 1,
+        "gpu_idle_share": 0,
+        "backlog_growth_per_pod_rps": 0
+      },
+      {
+        "factor": 2,
+        "hold_ms": 10,
+        "pod_capacity_rps": 100,
+        "arithmetic": "4 / (4 × 10 ms) = 100 requests/s",
+        "share_reaching_gpus": 1,
+        "gpu_idle_share": 0,
+        "backlog_growth_per_pod_rps": 0
+      },
+      {
+        "factor": 5,
+        "hold_ms": 25,
+        "pod_capacity_rps": 40,
+        "arithmetic": "4 / (4 × 25 ms) = 40 requests/s",
+        "share_reaching_gpus": 0.4,
+        "gpu_idle_share": 0.6,
+        "backlog_growth_per_pod_rps": 60
+      },
+      {
+        "factor": 10,
+        "hold_ms": 50,
+        "pod_capacity_rps": 20,
+        "arithmetic": "4 / (4 × 50 ms) = 20 requests/s",
+        "share_reaching_gpus": 0.2,
+        "gpu_idle_share": 0.8,
+        "backlog_growth_per_pod_rps": 80
+      },
+      {
+        "factor": 40,
+        "hold_ms": 200,
+        "pod_capacity_rps": 5,
+        "arithmetic": "4 / (4 × 200 ms) = 5 requests/s",
+        "share_reaching_gpus": 0.05,
+        "gpu_idle_share": 0.95,
+        "backlog_growth_per_pod_rps": 95
+      }
+    ],
+    "by_factor": {
+      "1": {
+        "factor": 1,
+        "hold_ms": 5,
+        "pod_capacity_rps": 200,
+        "arithmetic": "4 / (4 × 5 ms) = 200 requests/s",
+        "share_reaching_gpus": 1,
+        "gpu_idle_share": 0,
+        "backlog_growth_per_pod_rps": 0
+      },
+      "2": {
+        "factor": 2,
+        "hold_ms": 10,
+        "pod_capacity_rps": 100,
+        "arithmetic": "4 / (4 × 10 ms) = 100 requests/s",
+        "share_reaching_gpus": 1,
+        "gpu_idle_share": 0,
+        "backlog_growth_per_pod_rps": 0
+      },
+      "5": {
+        "factor": 5,
+        "hold_ms": 25,
+        "pod_capacity_rps": 40,
+        "arithmetic": "4 / (4 × 25 ms) = 40 requests/s",
+        "share_reaching_gpus": 0.4,
+        "gpu_idle_share": 0.6,
+        "backlog_growth_per_pod_rps": 60
+      },
+      "10": {
+        "factor": 10,
+        "hold_ms": 50,
+        "pod_capacity_rps": 20,
+        "arithmetic": "4 / (4 × 50 ms) = 20 requests/s",
+        "share_reaching_gpus": 0.2,
+        "gpu_idle_share": 0.8,
+        "backlog_growth_per_pod_rps": 80
+      },
+      "40": {
+        "factor": 40,
+        "hold_ms": 200,
+        "pod_capacity_rps": 5,
+        "arithmetic": "4 / (4 × 200 ms) = 5 requests/s",
+        "share_reaching_gpus": 0.05,
+        "gpu_idle_share": 0.95,
+        "backlog_growth_per_pod_rps": 95
+      }
+    },
+    "timeout_over_normal": {
+      "value": 40,
+      "unit": "×",
+      "arithmetic": "200 / 5"
+    }
+  },
+  "retries": {
+    "attempts_ra12": 3,
+    "budget_ra12": 0.1,
+    "every_layer": {
+      "formula": "attempts ^ layers",
+      "value": 243,
+      "unit": "× load at the bottom",
+      "arithmetic": "3^5 = 243"
+    },
+    "one_layer": {
+      "value": 3,
+      "unit": "× load at the bottom (worst case, no budget)"
+    },
+    "one_layer_with_budget": {
+      "formula": "1 + retry budget",
+      "value": 1.1,
+      "unit": "× load at the bottom"
+    },
+    "backoff_ceilings_s": [
+      0.2,
+      0.4
+    ],
+    "backoff_formula": "sleep = random(0, min(cap, base × 2^attempt))",
+    "sampled_sleeps_s": [
+      [
+        0.1043967819,
+        0.3226763108
+      ],
+      [
+        0.1920989549,
+        0.1158501511
+      ],
+      [
+        0.1532214876,
+        0.2816879467
+      ],
+      [
+        0.1322766114,
+        0.04406481957
+      ],
+      [
+        0.005387355758,
+        0.1536684418
+      ]
+    ],
+    "worst_total_sleep_s": 0.6
+  },
+  "rollout": {
+    "longest_stream_conc64": {
+      "formula": "max_tokens / per-user speed",
+      "value": 139509.5368,
+      "unit": "ms",
+      "s": 139.5095368,
+      "arithmetic": "4,096 / 29.36 = 140 s"
+    },
+    "longest_stream_conc256": {
+      "value": 254884.8787,
+      "unit": "ms",
+      "s": 254.8848787,
+      "arithmetic": "4,096 / 16.07 = 255 s"
+    },
+    "drain_timeout_s": 300,
+    "termination_grace_s": {
+      "value": 330,
+      "unit": "s",
+      "arithmetic": "300 + 30 = 330 s"
+    },
+    "tokens_cut_by_k8s_default": {
+      "formula": "streams with more than this many tokens left are cut at the 30 s default",
+      "value": 880.8,
+      "unit": "tokens",
+      "arithmetic": "30 s × 29.36 tokens/s = 881 tokens"
+    },
+    "waves": {
+      "value": 13,
+      "unit": "waves",
+      "arithmetic": "ceil(26 / 2) = 13"
+    },
+    "wave_time": {
+      "formula": "drain bound + weights from peer + engine warm-up",
+      "value": 392100,
+      "unit": "ms",
+      "s": 392.1,
+      "arithmetic": "300 + 2.1 + 90 = 392.1 s"
+    },
+    "pool_rollout_worst": {
+      "value": 5097300,
+      "unit": "ms",
+      "s": 5097.3,
+      "minutes": 84.955,
+      "arithmetic": "13 × 392.1 s"
+    },
+    "capacity_during_wave": {
+      "value": 0.9230769231,
+      "unit": "fraction",
+      "arithmetic": "(26 − 2) / 26"
+    },
+    "canary_min_duration": {
+      "formula": "hold per stage × stages before 100%",
+      "value": 3600000,
+      "unit": "ms",
+      "s": 3600,
+      "minutes": 60,
+      "arithmetic": "900 × 4"
+    },
+    "pool_size_matches_part09": true
+  },
+  "hardware": {
+    "gpu_days": {
+      "value": 884736,
+      "unit": "GPU-days",
+      "arithmetic": "54 × 16,384"
+    },
+    "interruptions_per_day_16k": {
+      "value": 7.759259259,
+      "unit": "interruptions/day",
+      "arithmetic": "419 / 54 = 7.8"
+    },
+    "per_1000_gpu_days": {
+      "value": 0.4735876013,
+      "unit": "interruptions per 1,000 GPU-days",
+      "arithmetic": "419 / 884,736 × 1,000"
+    },
+    "hardware_per_1000_gpu_days": {
+      "value": 0.369398329,
+      "unit": "interruptions per 1,000 GPU-days"
+    },
+    "gpu_and_hbm_count": {
+      "value": 220,
+      "unit": "interruptions",
+      "arithmetic": "148 + 72"
+    },
+    "gpu_and_hbm_share_of_unexpected": {
+      "value": 0.5250596659,
+      "unit": "fraction",
+      "arithmetic": "220 / 419"
+    },
+    "rack_gpus": 72,
+    "per_rack_per_30_days": {
+      "formula": "rate per GPU-day × 72 GPUs × 30 days",
+      "value": 1.022949219,
+      "unit": "interruptions",
+      "arithmetic": "0.000474 × 72 × 30 = 1.02"
+    },
+    "mean_days_between_per_rack": {
+      "formula": "1 / (rate per GPU-day × 72)",
+      "value": 29.32696897,
+      "unit": "days"
+    },
+    "blast_radius_gpus": {
+      "m_dense_replica_tp8": 8,
+      "m_frontier_prefill_tep8": 8,
+      "m_frontier_decode_dep16": 16,
+      "nvlink_domain_rack": 72
+    },
+    "caveat": "Rates come from one synchronous 16K-GPU training run (SRC-253); a serving fleet has different load and restarts only the failed unit."
+  }
+}

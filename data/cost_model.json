@@ -1,0 +1,725 @@
+{
+  "meta": {
+    "script": "sim/cost_model.py",
+    "generated_at": "2026-10-09T19:20:34+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T19:17:10+00:00",
+      "sha256": "4091418cecc1"
+    },
+    "constants_used": {
+      "hypothetical.cost_model_ref.cpu_us_per_event_per_hop": 20,
+      "hypothetical.cost_model_ref.cross_region_usd_per_gb": 0.02,
+      "hypothetical.cost_model_ref.db_storage_usd_per_gb_month": 0.25,
+      "hypothetical.cost_model_ref.db_usd_per_million_reads": 0.25,
+      "hypothetical.cost_model_ref.db_usd_per_million_writes": 1.25,
+      "hypothetical.cost_model_ref.internet_egress_usd_per_gb": 0.08,
+      "hypothetical.cost_model_ref.object_storage_usd_per_gb_month": 0.023,
+      "hypothetical.cost_model_ref.storage_months_counted": 1,
+      "hypothetical.cost_model_ref.telemetry_usd_per_gb": 0.3,
+      "hypothetical.cost_model_ref.utilization_points": [
+        1.0,
+        0.7,
+        0.5,
+        0.3
+      ],
+      "hypothetical.cost_model_ref.vcpu_hour_usd": 0.04,
+      "hypothetical.deployment.k3_prefill_gpus_per_worker": 8,
+      "hypothetical.fleet_price_ref.gb300_gpu_hour_usd": 6.0,
+      "hypothetical.fleet_price_ref.h100_sxm_gpu_hour_usd": 2.5,
+      "hypothetical.observability_ref.span_bytes": 400,
+      "hypothetical.reference_request.web_queries": 3,
+      "hypothetical.sandbox_pool.host_vcpus": 192,
+      "hypothetical.sandbox_vm.idle_keep_live_s": 120,
+      "hypothetical.storage_ref.bytes_per_token_text": 4,
+      "hypothetical.storage_ref.message_row_overhead_bytes": 300,
+      "hypothetical.storage_ref.messages_per_request": 2,
+      "hypothetical.storage_ref.replicas_per_range": 3,
+      "hypothetical.web_search_provider.price_usd_per_1000_queries": 5
+    }
+  },
+  "label": "HYPOTHETICAL cost model (class C): hypothetical unit prices × quantities from earlier parts; not any company's economics",
+  "serves": [
+    "R-XXII.6"
+  ],
+  "prices": {
+    "gb300_gpu_hour_usd": 6.0,
+    "h100_gpu_hour_usd": 2.5,
+    "vcpu_hour_usd": 0.04,
+    "vm_hour_usd": 0.016,
+    "cpu_us_per_event_per_hop": 20,
+    "db_usd_per_million_writes": 1.25,
+    "db_usd_per_million_reads": 0.25,
+    "db_storage_usd_per_gb_month": 0.25,
+    "object_storage_usd_per_gb_month": 0.023,
+    "internet_egress_usd_per_gb": 0.08,
+    "cross_region_usd_per_gb": 0.02,
+    "telemetry_usd_per_gb": 0.3,
+    "storage_months_counted": 1
+  },
+  "fleet_utilization": {
+    "fleet_with_background": 0.3978132388,
+    "fleet_without_background": 0.3132387707
+  },
+  "requests": {
+    "r1": {
+      "name": "short chat",
+      "input_tokens": 20,
+      "output_tokens": 30,
+      "lines": [
+        {
+          "center": "GPUs: inference (prefill, decode, vision)",
+          "usd": 3.068378808e-05,
+          "quantity": 0.01841027285,
+          "unit": "GB300 GPU-s",
+          "price": 6,
+          "price_unit": "USD per GPU-hour",
+          "formula": "GPU-s × price / 3,600",
+          "scales_with_gpu_utilization": true,
+          "from": "request_cost:four_requests.r1.gpu_s.total"
+        },
+        {
+          "center": "CPU orchestration (edge, gateway, orchestrator, router, search engine)",
+          "usd": 8.718726957e-08,
+          "quantity": 0.007846854261,
+          "unit": "vCPU-s",
+          "price": 0.04,
+          "price_unit": "USD per vCPU-hour",
+          "formula": "(CPU steps on the path + events × forwarders × µs per event) × price / 3,600",
+          "scales_with_gpu_utilization": false,
+          "from": "super_trace:critical_path; sse_framing:reference_stream.events",
+          "path_cpu_s": 0.004006854261,
+          "stream_cpu_s": 0.00384,
+          "events": 32
+        },
+        {
+          "center": "database (message rows, quota counters)",
+          "usd": 6.1e-06,
+          "quantity": 6,
+          "unit": "row operations",
+          "price": 1.25,
+          "price_unit": "USD per million writes",
+          "formula": "writes × write price + reads × read price + stored bytes × GB-month price × months",
+          "scales_with_gpu_utilization": false,
+          "from": "hypothetical.storage_ref; super_trace:state.conversation_rows",
+          "writes": 4,
+          "reads": 2,
+          "stored_bytes": 2400,
+          "ops_usd": 5.5e-06,
+          "storage_usd": 6e-07
+        },
+        {
+          "center": "network: stream egress and cross-region copy",
+          "usd": 1.429495652e-07,
+          "quantity": 2386.869565,
+          "unit": "B",
+          "price": 0.08,
+          "price_unit": "USD per GB (egress)",
+          "formula": "stream bytes × egress price + row bytes × cross-region price",
+          "scales_with_gpu_utilization": false,
+          "from": "sse_framing:reference_stream.bytes_estimate; hypothetical.storage_ref",
+          "egress_bytes": 1586.869565,
+          "cross_region_bytes": 800
+        },
+        {
+          "center": "telemetry (spans, logs, events)",
+          "usd": 3.27e-06,
+          "quantity": 10900,
+          "unit": "B",
+          "price": 0.3,
+          "price_unit": "USD per GB",
+          "formula": "(spans × span bytes + log bytes + event bytes) × price",
+          "scales_with_gpu_utilization": false,
+          "from": "reference_trace:span_count; safety_privacy:log_privacy.volume; usage_accounting:events",
+          "spans": 9,
+          "log_bytes": 5600,
+          "event_bytes": 1700
+        }
+      ],
+      "by_center": {
+        "GPUs: inference (prefill, decode, vision)": 3.068378808e-05,
+        "CPU orchestration (edge, gateway, orchestrator, router, search engine)": 8.718726957e-08,
+        "database (message rows, quota counters)": 6.1e-06,
+        "network: stream egress and cross-region copy": 1.429495652e-07,
+        "telemetry (spans, logs, events)": 3.27e-06
+      },
+      "gpu_usd": 3.068378808e-05,
+      "other_usd": 9.600136835e-06,
+      "total_usd": 4.028392491e-05,
+      "gpu_share": 0.761688146,
+      "usd_per_million_output_tokens": 1.342797497,
+      "gpu_hours": 5.113964681e-06,
+      "gpu_hours_per_million_requests": 5.113964681,
+      "sensitivity": {
+        "u_100": {
+          "utilization": 1,
+          "usd_per_request": 4.028392491e-05,
+          "usd_per_million_output_tokens": 1.342797497,
+          "idle_gpu_usd": 0,
+          "gpu_share": 0.761688146
+        },
+        "u_70": {
+          "utilization": 0.7,
+          "usd_per_request": 5.343411981e-05,
+          "usd_per_million_output_tokens": 1.781137327,
+          "idle_gpu_usd": 1.315019489e-05,
+          "gpu_share": 0.8203369519
+        },
+        "u_50": {
+          "utilization": 0.5,
+          "usd_per_request": 7.096771299e-05,
+          "usd_per_million_output_tokens": 2.365590433,
+          "idle_gpu_usd": 3.068378808e-05,
+          "gpu_share": 0.8647252894
+        },
+        "u_30": {
+          "utilization": 0.3,
+          "usd_per_request": 0.0001118794304,
+          "usd_per_million_output_tokens": 3.729314348,
+          "idle_gpu_usd": 7.159550552e-05,
+          "gpu_share": 0.9141921192
+        },
+        "fleet_with_background": {
+          "utilization": 0.3978132388,
+          "usd_per_request": 8.673127549e-05,
+          "usd_per_million_output_tokens": 2.891042516,
+          "idle_gpu_usd": 4.644735058e-05,
+          "gpu_share": 0.889311707
+        },
+        "fleet_without_background": {
+          "utilization": 0.3132387707,
+          "usd_per_request": 0.0001075566829,
+          "usd_per_million_output_tokens": 3.585222764,
+          "idle_gpu_usd": 6.727275802e-05,
+          "gpu_share": 0.910743465
+        }
+      }
+    },
+    "r2": {
+      "name": "long document",
+      "input_tokens": 100000,
+      "output_tokens": 30,
+      "lines": [
+        {
+          "center": "GPUs: inference (prefill, decode, vision)",
+          "usd": 0.03776425305,
+          "quantity": 22.65855183,
+          "unit": "GB300 GPU-s",
+          "price": 6,
+          "price_unit": "USD per GPU-hour",
+          "formula": "GPU-s × price / 3,600",
+          "scales_with_gpu_utilization": true,
+          "from": "request_cost:four_requests.r2.gpu_s.total"
+        },
+        {
+          "center": "CPU orchestration (edge, gateway, orchestrator, router, search engine)",
+          "usd": 4.679034061e-07,
+          "quantity": 0.04211130655,
+          "unit": "vCPU-s",
+          "price": 0.04,
+          "price_unit": "USD per vCPU-hour",
+          "formula": "(CPU steps on the path + events × forwarders × µs per event) × price / 3,600",
+          "scales_with_gpu_utilization": false,
+          "from": "super_trace:critical_path; sse_framing:reference_stream.events",
+          "path_cpu_s": 0.03827130655,
+          "stream_cpu_s": 0.00384,
+          "events": 32
+        },
+        {
+          "center": "database (message rows, quota counters)",
+          "usd": 0.00030604,
+          "quantity": 6,
+          "unit": "row operations",
+          "price": 1.25,
+          "price_unit": "USD per million writes",
+          "formula": "writes × write price + reads × read price + stored bytes × GB-month price × months",
+          "scales_with_gpu_utilization": false,
+          "from": "hypothetical.storage_ref; super_trace:state.conversation_rows",
+          "writes": 4,
+          "reads": 2,
+          "stored_bytes": 1202160,
+          "ops_usd": 5.5e-06,
+          "storage_usd": 0.00030054
+        },
+        {
+          "center": "network: stream egress and cross-region copy",
+          "usd": 8.141349565e-06,
+          "quantity": 402306.8696,
+          "unit": "B",
+          "price": 0.08,
+          "price_unit": "USD per GB (egress)",
+          "formula": "stream bytes × egress price + row bytes × cross-region price",
+          "scales_with_gpu_utilization": false,
+          "from": "sse_framing:reference_stream.bytes_estimate; hypothetical.storage_ref",
+          "egress_bytes": 1586.869565,
+          "cross_region_bytes": 400720
+        },
+        {
+          "center": "telemetry (spans, logs, events)",
+          "usd": 3.27e-06,
+          "quantity": 10900,
+          "unit": "B",
+          "price": 0.3,
+          "price_unit": "USD per GB",
+          "formula": "(spans × span bytes + log bytes + event bytes) × price",
+          "scales_with_gpu_utilization": false,
+          "from": "reference_trace:span_count; safety_privacy:log_privacy.volume; usage_accounting:events",
+          "spans": 9,
+          "log_bytes": 5600,
+          "event_bytes": 1700
+        }
+      ],
+      "by_center": {
+        "GPUs: inference (prefill, decode, vision)": 0.03776425305,
+        "CPU orchestration (edge, gateway, orchestrator, router, search engine)": 4.679034061e-07,
+        "database (message rows, quota counters)": 0.00030604,
+        "network: stream egress and cross-region copy": 8.141349565e-06,
+        "telemetry (spans, logs, events)": 3.27e-06
+      },
+      "gpu_usd": 0.03776425305,
+      "other_usd": 0.000317919253,
+      "total_usd": 0.0380821723,
+      "gpu_share": 0.9916517564,
+      "usd_per_million_output_tokens": 1269.405743,
+      "gpu_hours": 0.006294042175,
+      "gpu_hours_per_million_requests": 6294.042175,
+      "sensitivity": {
+        "u_100": {
+          "utilization": 1,
+          "usd_per_request": 0.0380821723,
+          "usd_per_million_output_tokens": 1269.405743,
+          "idle_gpu_usd": 0,
+          "gpu_share": 0.9916517564
+        },
+        "u_70": {
+          "utilization": 0.7,
+          "usd_per_request": 0.05426685218,
+          "usd_per_million_output_tokens": 1808.895073,
+          "idle_gpu_usd": 0.01618467988,
+          "gpu_share": 0.9941415571
+        },
+        "u_50": {
+          "utilization": 0.5,
+          "usd_per_request": 0.07584642535,
+          "usd_per_million_output_tokens": 2528.214178,
+          "idle_gpu_usd": 0.03776425305,
+          "gpu_share": 0.9958083819
+        },
+        "u_30": {
+          "utilization": 0.3,
+          "usd_per_request": 0.1261987628,
+          "usd_per_million_output_tokens": 4206.625425,
+          "idle_gpu_usd": 0.08811659045,
+          "gpu_share": 0.9974808053
+        },
+        "fleet_with_background": {
+          "utilization": 0.3978132388,
+          "usd_per_request": 0.09524752282,
+          "usd_per_million_output_tokens": 3174.917427,
+          "idle_gpu_usd": 0.05716535052,
+          "gpu_share": 0.9966621783
+        },
+        "fleet_without_background": {
+          "utilization": 0.3132387707,
+          "usd_per_request": 0.1208785158,
+          "usd_per_million_output_tokens": 4029.283859,
+          "idle_gpu_usd": 0.08279634348,
+          "gpu_share": 0.9973699276
+        }
+      }
+    },
+    "r3": {
+      "name": "long generation",
+      "input_tokens": 1000,
+      "output_tokens": 5000,
+      "lines": [
+        {
+          "center": "GPUs: inference (prefill, decode, vision)",
+          "usd": 0.004522145511,
+          "quantity": 2.713287306,
+          "unit": "GB300 GPU-s",
+          "price": 6,
+          "price_unit": "USD per GPU-hour",
+          "formula": "GPU-s × price / 3,600",
+          "scales_with_gpu_utilization": true,
+          "from": "request_cost:four_requests.r3.gpu_s.total"
+        },
+        {
+          "center": "CPU orchestration (edge, gateway, orchestrator, router, search engine)",
+          "usd": 6.717585701e-06,
+          "quantity": 0.6045827131,
+          "unit": "vCPU-s",
+          "price": 0.04,
+          "price_unit": "USD per vCPU-hour",
+          "formula": "(CPU steps on the path + events × forwarders × µs per event) × price / 3,600",
+          "scales_with_gpu_utilization": false,
+          "from": "super_trace:critical_path; sse_framing:reference_stream.events",
+          "path_cpu_s": 0.004342713065,
+          "stream_cpu_s": 0.60024,
+          "events": 5002
+        },
+        {
+          "center": "database (message rows, quota counters)",
+          "usd": 2.395e-05,
+          "quantity": 6,
+          "unit": "row operations",
+          "price": 1.25,
+          "price_unit": "USD per million writes",
+          "formula": "writes × write price + reads × read price + stored bytes × GB-month price × months",
+          "scales_with_gpu_utilization": false,
+          "from": "hypothetical.storage_ref; super_trace:state.conversation_rows",
+          "writes": 4,
+          "reads": 2,
+          "stored_bytes": 73800,
+          "ops_usd": 5.5e-06,
+          "storage_usd": 1.845e-05
+        },
+        {
+          "center": "network: stream egress and cross-region copy",
+          "usd": 2.01128742e-05,
+          "quantity": 269860.9275,
+          "unit": "B",
+          "price": 0.08,
+          "price_unit": "USD per GB (egress)",
+          "formula": "stream bytes × egress price + row bytes × cross-region price",
+          "scales_with_gpu_utilization": false,
+          "from": "sse_framing:reference_stream.bytes_estimate; hypothetical.storage_ref",
+          "egress_bytes": 245260.9275,
+          "cross_region_bytes": 24600
+        },
+        {
+          "center": "telemetry (spans, logs, events)",
+          "usd": 3.27e-06,
+          "quantity": 10900,
+          "unit": "B",
+          "price": 0.3,
+          "price_unit": "USD per GB",
+          "formula": "(spans × span bytes + log bytes + event bytes) × price",
+          "scales_with_gpu_utilization": false,
+          "from": "reference_trace:span_count; safety_privacy:log_privacy.volume; usage_accounting:events",
+          "spans": 9,
+          "log_bytes": 5600,
+          "event_bytes": 1700
+        }
+      ],
+      "by_center": {
+        "GPUs: inference (prefill, decode, vision)": 0.004522145511,
+        "CPU orchestration (edge, gateway, orchestrator, router, search engine)": 6.717585701e-06,
+        "database (message rows, quota counters)": 2.395e-05,
+        "network: stream egress and cross-region copy": 2.01128742e-05,
+        "telemetry (spans, logs, events)": 3.27e-06
+      },
+      "gpu_usd": 0.004522145511,
+      "other_usd": 5.40504599e-05,
+      "total_usd": 0.004576195971,
+      "gpu_share": 0.9881887794,
+      "usd_per_million_output_tokens": 0.9152391942,
+      "gpu_hours": 0.0007536909183,
+      "gpu_hours_per_million_requests": 753.6909183,
+      "sensitivity": {
+        "u_100": {
+          "utilization": 1,
+          "usd_per_request": 0.004576195971,
+          "usd_per_million_output_tokens": 0.9152391942,
+          "idle_gpu_usd": 0,
+          "gpu_share": 0.9881887794
+        },
+        "u_70": {
+          "utilization": 0.7,
+          "usd_per_request": 0.006514258333,
+          "usd_per_million_output_tokens": 1.302851667,
+          "idle_gpu_usd": 0.001938062362,
+          "gpu_share": 0.9917027454
+        },
+        "u_50": {
+          "utilization": 0.5,
+          "usd_per_request": 0.009098341482,
+          "usd_per_million_output_tokens": 1.819668296,
+          "idle_gpu_usd": 0.004522145511,
+          "gpu_share": 0.9940593063
+        },
+        "u_30": {
+          "utilization": 0.3,
+          "usd_per_request": 0.01512786883,
+          "usd_per_million_output_tokens": 3.025573766,
+          "idle_gpu_usd": 0.01055167286,
+          "gpu_share": 0.9964270936
+        },
+        "fleet_with_background": {
+          "utilization": 0.3978132388,
+          "usd_per_request": 0.01142155931,
+          "usd_per_million_output_tokens": 2.284311861,
+          "idle_gpu_usd": 0.006845363336,
+          "gpu_share": 0.9952676812
+        },
+        "fleet_without_background": {
+          "utilization": 0.3132387707,
+          "usd_per_request": 0.0144907867,
+          "usd_per_million_output_tokens": 2.898157339,
+          "idle_gpu_usd": 0.009914590724,
+          "gpu_share": 0.996270012
+        }
+      }
+    },
+    "r4": {
+      "name": "the reference request (image + PDF chunks + web search + Python)",
+      "input_tokens": 83533,
+      "output_tokens": 1727,
+      "lines": [
+        {
+          "center": "GPUs: inference (prefill, decode, vision)",
+          "usd": 0.01255088369,
+          "quantity": 7.530530213,
+          "unit": "GB300 GPU-s",
+          "price": 6,
+          "price_unit": "USD per GPU-hour",
+          "formula": "GPU-s × price / 3,600",
+          "scales_with_gpu_utilization": true,
+          "from": "request_cost:four_requests.r4.gpu_s.total"
+        },
+        {
+          "center": "KV transfer (NVLink pull, prefill GPUs held)",
+          "usd": 7.87656704e-05,
+          "quantity": 0.04725940224,
+          "unit": "GB300 GPU-s",
+          "price": 6,
+          "price_unit": "USD per GPU-hour",
+          "formula": "Σ transfer time × 8 prefill GPUs × price / 3,600",
+          "scales_with_gpu_utilization": true,
+          "from": "super_trace:transfers",
+          "note": "NVLink inside the rack has no per-byte bill (RA-55); the cost is GPU time"
+        },
+        {
+          "center": "embeddings and rerank (retrieval GPUs)",
+          "usd": 0.0004095972222,
+          "quantity": 0.58982,
+          "unit": "H100 GPU-s",
+          "price": 2.5,
+          "price_unit": "USD per GPU-hour",
+          "formula": "(query embedding + rerank on one GPU) × price / 3,600",
+          "scales_with_gpu_utilization": true,
+          "from": "bm25_hnsw_demo:real_scale.model_cost.{query_embed_ms, rerank_ms_one_gpu_capped}",
+          "note": "batch-1 times: an upper bound, because the pool batches queries"
+        },
+        {
+          "center": "CPU orchestration (edge, gateway, orchestrator, router, search engine)",
+          "usd": 1.110032006e-06,
+          "quantity": 0.09990288052,
+          "unit": "vCPU-s",
+          "price": 0.04,
+          "price_unit": "USD per vCPU-hour",
+          "formula": "(CPU steps on the path + events × forwarders × µs per event) × price / 3,600",
+          "scales_with_gpu_utilization": false,
+          "from": "super_trace:critical_path; sse_framing:reference_stream.events",
+          "path_cpu_s": 0.04266288052,
+          "stream_cpu_s": 0.05724,
+          "events": 477
+        },
+        {
+          "center": "database (message rows, quota counters)",
+          "usd": 1.2456e-05,
+          "quantity": 10,
+          "unit": "row operations",
+          "price": 1.25,
+          "price_unit": "USD per million writes",
+          "formula": "writes × write price + reads × read price + stored bytes × GB-month price × months",
+          "scales_with_gpu_utilization": false,
+          "from": "hypothetical.storage_ref; super_trace:state.conversation_rows",
+          "writes": 8,
+          "reads": 2,
+          "stored_bytes": 7824,
+          "ops_usd": 1.05e-05,
+          "storage_usd": 1.956e-06
+        },
+        {
+          "center": "object storage (photo and PDF)",
+          "usd": 0.000115,
+          "quantity": 5000000,
+          "unit": "B",
+          "price": 0.023,
+          "price_unit": "USD per GB-month",
+          "formula": "bytes × price × months",
+          "scales_with_gpu_utilization": false,
+          "from": "super_trace:state.objects"
+        },
+        {
+          "center": "network: stream egress and cross-region copy",
+          "usd": 1.990464348e-06,
+          "quantity": 26836.80435,
+          "unit": "B",
+          "price": 0.08,
+          "price_unit": "USD per GB (egress)",
+          "formula": "stream bytes × egress price + row bytes × cross-region price",
+          "scales_with_gpu_utilization": false,
+          "from": "sse_framing:reference_stream.bytes_estimate; hypothetical.storage_ref",
+          "egress_bytes": 24228.80435,
+          "cross_region_bytes": 2608
+        },
+        {
+          "center": "search and crawling (provider queries)",
+          "usd": 0.015,
+          "quantity": 3,
+          "unit": "queries",
+          "price": 5,
+          "price_unit": "USD per 1,000 queries",
+          "formula": "queries / 1,000 × price",
+          "scales_with_gpu_utilization": false,
+          "from": "web_search_budget:fleet.reference_request_cost_usd"
+        },
+        {
+          "center": "sandboxes (microVM run and idle window)",
+          "usd": 0.0005391333333,
+          "quantity": 121.305,
+          "unit": "VM-s",
+          "price": 0.016,
+          "price_unit": "USD per VM-hour",
+          "formula": "(run + idle window) × host vCPUs × vCPU price / VMs per host",
+          "scales_with_gpu_utilization": false,
+          "from": "sandbox_pool:reference_call, littles_law.vms_per_host_by_memory"
+        },
+        {
+          "center": "telemetry (spans, logs, events)",
+          "usd": 5.07e-06,
+          "quantity": 16900,
+          "unit": "B",
+          "price": 0.3,
+          "price_unit": "USD per GB",
+          "formula": "(spans × span bytes + log bytes + event bytes) × price",
+          "scales_with_gpu_utilization": false,
+          "from": "reference_trace:span_count; safety_privacy:log_privacy.volume; usage_accounting:events",
+          "spans": 17,
+          "log_bytes": 5600,
+          "event_bytes": 4500
+        }
+      ],
+      "by_center": {
+        "GPUs: inference (prefill, decode, vision)": 0.01255088369,
+        "KV transfer (NVLink pull, prefill GPUs held)": 7.87656704e-05,
+        "embeddings and rerank (retrieval GPUs)": 0.0004095972222,
+        "CPU orchestration (edge, gateway, orchestrator, router, search engine)": 1.110032006e-06,
+        "database (message rows, quota counters)": 1.2456e-05,
+        "object storage (photo and PDF)": 0.000115,
+        "network: stream egress and cross-region copy": 1.990464348e-06,
+        "search and crawling (provider queries)": 0.015,
+        "sandboxes (microVM run and idle window)": 0.0005391333333,
+        "telemetry (spans, logs, events)": 5.07e-06
+      },
+      "gpu_usd": 0.01303924658,
+      "other_usd": 0.01567475983,
+      "total_usd": 0.02871400641,
+      "gpu_share": 0.4541075319,
+      "usd_per_million_output_tokens": 16.62652369,
+      "gpu_hours": 0.002268780449,
+      "gpu_hours_per_million_requests": 2268.780449,
+      "sensitivity": {
+        "u_100": {
+          "utilization": 1,
+          "usd_per_request": 0.02871400641,
+          "usd_per_million_output_tokens": 16.62652369,
+          "idle_gpu_usd": 0,
+          "gpu_share": 0.4541075319
+        },
+        "u_70": {
+          "utilization": 0.7,
+          "usd_per_request": 0.03430225495,
+          "usd_per_million_output_tokens": 19.86233639,
+          "idle_gpu_usd": 0.005588248535,
+          "gpu_share": 0.5430399589
+        },
+        "u_50": {
+          "utilization": 0.5,
+          "usd_per_request": 0.04175325299,
+          "usd_per_million_output_tokens": 24.17675333,
+          "idle_gpu_usd": 0.01303924658,
+          "gpu_share": 0.6245859016
+        },
+        "u_30": {
+          "utilization": 0.3,
+          "usd_per_request": 0.0591389151,
+          "usd_per_million_output_tokens": 34.24372618,
+          "idle_gpu_usd": 0.03042490869,
+          "gpu_share": 0.7349501626
+        },
+        "fleet_with_background": {
+          "utilization": 0.3978132388,
+          "usd_per_request": 0.04845206665,
+          "usd_per_million_output_tokens": 28.05562631,
+          "idle_gpu_usd": 0.01973806023,
+          "gpu_share": 0.6764893447
+        },
+        "fleet_without_background": {
+          "utilization": 0.3132387707,
+          "usd_per_request": 0.05730193949,
+          "usd_per_million_output_tokens": 33.18004603,
+          "idle_gpu_usd": 0.02858793307,
+          "gpu_share": 0.726453241
+        }
+      }
+    }
+  },
+  "reference": {
+    "ranked_centers": [
+      {
+        "center": "search and crawling (provider queries)",
+        "usd": 0.015,
+        "share": 0.522393141
+      },
+      {
+        "center": "GPUs: inference (prefill, decode, vision)",
+        "usd": 0.01255088369,
+        "share": 0.4370997036
+      },
+      {
+        "center": "sandboxes (microVM run and idle window)",
+        "usd": 0.0005391333333,
+        "share": 0.01877597036
+      },
+      {
+        "center": "embeddings and rerank (retrieval GPUs)",
+        "usd": 0.0004095972222,
+        "share": 0.01426471863
+      },
+      {
+        "center": "object storage (photo and PDF)",
+        "usd": 0.000115,
+        "share": 0.004005014081
+      },
+      {
+        "center": "KV transfer (NVLink pull, prefill GPUs held)",
+        "usd": 7.87656704e-05,
+        "share": 0.002743109731
+      },
+      {
+        "center": "database (message rows, quota counters)",
+        "usd": 1.2456e-05,
+        "share": 0.0004337952643
+      },
+      {
+        "center": "telemetry (spans, logs, events)",
+        "usd": 5.07e-06,
+        "share": 0.0001765688817
+      },
+      {
+        "center": "network: stream egress and cross-region copy",
+        "usd": 1.990464348e-06,
+        "share": 6.932032819e-05
+      },
+      {
+        "center": "CPU orchestration (edge, gateway, orchestrator, router, search engine)",
+        "usd": 1.110032006e-06,
+        "share": 3.865820708e-05
+      }
+    ],
+    "gpu_lines_share": 0.4541075319,
+    "search_over_gpu_inference": 1.19513497,
+    "non_gpu_non_search_usd": 0.00067475983,
+    "hypothetical_bill_usd": 0.1087044,
+    "cost_at_fleet_utilization_usd": 0.04845206665,
+    "bill_over_cost_at_fleet_utilization": 2.243545168,
+    "breakeven_utilization": 0.1401622811,
+    "breakeven_formula": "u where GPU lines / u + other lines = bill"
+  },
+  "r2_over_r1_usd": 945.3441388,
+  "per_million_spread": 1386.966108,
+  "check_log10_r2_over_r1": 2.975589936
+}

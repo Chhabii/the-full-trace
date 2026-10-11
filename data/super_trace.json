@@ -1,0 +1,1240 @@
+{
+  "meta": {
+    "script": "sim/super_trace.py",
+    "generated_at": "2026-10-09T19:20:34+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T19:17:10+00:00",
+      "sha256": "4091418cecc1"
+    },
+    "constants_used": {
+      "hypothetical.async_work_ref.event_append_ms": 5,
+      "hypothetical.async_work_ref.memory_extraction_s": 3,
+      "hypothetical.async_work_ref.turn_index_s": 0.3,
+      "hypothetical.reference_request.image": {
+        "format": "JPEG",
+        "width_px": 4032,
+        "height_px": 3024,
+        "bytes": 2900000,
+        "source": "phone photo of a whiteboard"
+      },
+      "hypothetical.reference_request.output_tokens_visible": 450,
+      "hypothetical.reference_request.pdf": {
+        "name": "q3-report.pdf",
+        "pages": 18,
+        "bytes": 2100000,
+        "layout": "two-column, 6 tables, 4 figures",
+        "text_layer_pages": 16,
+        "scanned_pages": 2
+      },
+      "hypothetical.retrieval_ref.chunks_per_document_mean": 24,
+      "hypothetical.routing_sim.mean_think_time_s": 15,
+      "hypothetical.sandbox_vm.idle_keep_live_s": 120,
+      "hypothetical.sandbox_vm.memory_mib": 2048,
+      "hypothetical.sandbox_vm.session_retention_s": 3600,
+      "hypothetical.storage_ref.bytes_per_token_text": 4,
+      "hypothetical.storage_ref.in_region_commit_ms": 2,
+      "hypothetical.storage_ref.message_row_overhead_bytes": 300,
+      "hypothetical.storage_ref.replicas_per_range": 3,
+      "hypothetical.stream_safety_ref.check_latency_ms": 20,
+      "hypothetical.stream_safety_ref.check_window_tokens": 16,
+      "hypothetical.streaming_ref.in_region_hop_forward_ms": 0.25,
+      "hypothetical.super_trace_ref.client_handler_ms": 3,
+      "hypothetical.super_trace_ref.model_router_ms": 1,
+      "hypothetical.super_trace_ref.tool_dispatch_ms": 2,
+      "hypothetical.timeout_budget_ref.memory_read_expected_s": 0.02,
+      "hypothetical.tool_loop.pass1_reasoning_tokens": 300,
+      "hypothetical.tool_loop.pass2_reasoning_tokens": 200,
+      "hypothetical.tool_loop.pass3_reasoning_tokens": 400,
+      "models.M-frontier.checkpoint_bytes": 1560936091448,
+      "models.M-frontier.hidden_size": 7168,
+      "models.M-frontier.kda_fixed_state_bytes_per_seq": 449372160,
+      "models.M-frontier.mla_kv_bytes_per_token_bf16": 27648,
+      "models.M-frontier.vocab_size": 163840
+    }
+  },
+  "label": "Timeline of the reference request assembled from earlier parts' data; short service times are HYPOTHETICAL (observability_ref, super_trace_ref)",
+  "serves": [
+    "R-XXI.1",
+    "R-XXI.2",
+    "R-XXI.3",
+    "R-XXI.4",
+    "R-XXI.5",
+    "R-XXI.6",
+    "R-XXI.7",
+    "R-XXI.8",
+    "R-XXI.9",
+    "R-XXIII.1"
+  ],
+  "inputs": {
+    "step_s": 0.047238,
+    "batch_per_rank": 94,
+    "access_one_way_s": 0.01,
+    "backbone_one_way_s": 0.022239388409999998,
+    "engine_to_pixel_s": 0.04207272174333334,
+    "gateway_to_pixel_s": 0.04132272174333333,
+    "frame_wait_s": 0.008333333333333335,
+    "rag_parts_ms": {
+      "query_embed": 4.52,
+      "index_search": 25,
+      "chunk_fetch": 5,
+      "rerank": 146.3
+    },
+    "fan_out_s": {
+      "history_read": 0.006,
+      "memory_read": 0.02,
+      "retrieval": 0.18082,
+      "user_message_insert": 0.002
+    },
+    "assemble_s": 0.0026628805188688713,
+    "text_tokens_p1": 7770,
+    "tokenizer_tokens_per_s": 2917892.840081504,
+    "queue_s": 0.16999999999999998,
+    "router_s": 0.001,
+    "dispatch_s": 0.002,
+    "web_search_s": 1.6053,
+    "run_python_s": 1.305,
+    "commit_s": 0.002,
+    "check_s": 0.02,
+    "window_tokens": 16,
+    "preamble_tokens": 9,
+    "reasoning_tokens": {
+      "1": 300,
+      "2": 200,
+      "3": 400
+    },
+    "client_s": 0.003,
+    "edge_s": 0.001,
+    "auth_s": 0.002
+  },
+  "events": [
+    {
+      "id": "R0",
+      "t_s": 0.0,
+      "t_ms": 0.0,
+      "name": "key press (Send)",
+      "component": "browser",
+      "hardware": "browser",
+      "representation": "DOM keydown/click event",
+      "flow": "control",
+      "ra": [
+        "RA-07"
+      ],
+      "from": "Part 2.1"
+    },
+    {
+      "id": "R1",
+      "t_s": 0.003,
+      "t_ms": 3.0,
+      "name": "request leaves the browser on the open HTTP/3 connection",
+      "component": "browser",
+      "hardware": "browser -> NIC",
+      "representation": "HTTP/3 POST, 764 B JSON",
+      "flow": "data",
+      "ra": [
+        "RA-02",
+        "RA-07"
+      ],
+      "from": "hypothetical.super_trace_ref.client_handler_ms"
+    },
+    {
+      "id": "R2",
+      "t_s": 0.013000000000000001,
+      "t_ms": 13.000000000000002,
+      "name": "request reaches the edge PoP",
+      "component": "edge proxy",
+      "hardware": "network device + CPU",
+      "representation": "QUIC packets -> HTTP/3 request",
+      "flow": "data",
+      "ra": [
+        "RA-01",
+        "RA-04"
+      ],
+      "from": "network_latency:ttft_timer_reference_request.request_reaches_pop"
+    },
+    {
+      "id": "R3",
+      "t_s": 0.014000000000000002,
+      "t_ms": 14.000000000000002,
+      "name": "edge forwards to the region",
+      "component": "edge proxy",
+      "hardware": "CPU",
+      "representation": "HTTP/2 over TLS on the backbone",
+      "flow": "control",
+      "ra": [
+        "RA-04",
+        "RA-52"
+      ],
+      "from": "hypothetical.observability_ref.edge_proxy_ms"
+    },
+    {
+      "id": "R4",
+      "t_s": 0.036239388410000004,
+      "t_ms": 36.239388410000004,
+      "name": "request reaches the regional ingress and API gateway",
+      "component": "API gateway",
+      "hardware": "CPU",
+      "representation": "HTTP request, validated JSON",
+      "flow": "data",
+      "ra": [
+        "RA-09"
+      ],
+      "from": "network_latency:ttft_timer_reference_request.request_reaches_region"
+    },
+    {
+      "id": "R5",
+      "t_s": 0.038239388410000005,
+      "t_ms": 38.239388410000004,
+      "name": "gateway verifies the token, checks RPM, sends message.start, calls the orchestrator",
+      "component": "API gateway",
+      "hardware": "CPU",
+      "representation": "gRPC + Protobuf with deadline and tenant ID",
+      "flow": "control",
+      "ra": [
+        "RA-09",
+        "RA-10",
+        "RA-11",
+        "RA-74"
+      ],
+      "from": "hypothetical.observability_ref.auth_verify_ms",
+      "message_start_pixel_s": 0.07956211015333334
+    },
+    {
+      "id": "R6",
+      "t_s": 0.21905938841,
+      "t_ms": 219.05938841,
+      "name": "history, memory, retrieval and the user-message insert return; the policy verdict joins",
+      "component": "orchestrator",
+      "hardware": "CPU",
+      "representation": "rows, memory records, 6 chunk texts",
+      "flow": "data",
+      "ra": [
+        "RA-14",
+        "RA-17",
+        "RA-24",
+        "RA-25",
+        "RA-26",
+        "RA-27",
+        "RA-58"
+      ],
+      "from": "bm25_hnsw_demo:real_scale.model_cost; hypothetical.observability_ref; hypothetical.timeout_budget_ref",
+      "branches_s": {
+        "history_read": 0.006,
+        "memory_read": 0.02,
+        "retrieval": 0.18082,
+        "user_message_insert": 0.002
+      }
+    },
+    {
+      "id": "R7",
+      "t_s": 0.22172226892886887,
+      "t_ms": 221.72226892886886,
+      "name": "context object built: 10 segments, 23,322-token pass-1 prompt",
+      "component": "orchestrator",
+      "hardware": "CPU",
+      "representation": "context object -> chat messages",
+      "flow": "data",
+      "ra": [
+        "RA-14",
+        "RA-62",
+        "RA-68"
+      ],
+      "from": "context_budget:pass1_without_image; tokenize_demo:throughput.results.k3_tiktoken_core.tokens_per_s"
+    },
+    {
+      "id": "R8",
+      "t_s": 0.22272226892886887,
+      "t_ms": 222.72226892886889,
+      "name": "pass 1: model router reserves TPM and forwards",
+      "component": "model router",
+      "hardware": "CPU",
+      "representation": "OpenAI-style JSON request",
+      "flow": "control",
+      "ra": [
+        "RA-10",
+        "RA-15",
+        "RA-56",
+        "RA-73"
+      ],
+      "from": "hypothetical.super_trace_ref.model_router_ms"
+    },
+    {
+      "id": "R9",
+      "t_s": 0.39272226892886886,
+      "t_ms": 392.72226892886886,
+      "name": "pass 1: EPP picks the decode endpoint first; the scheduler admits the sequence",
+      "component": "inference gateway",
+      "hardware": "CPU",
+      "representation": "request on a chosen endpoint",
+      "flow": "control",
+      "ra": [
+        "RA-34",
+        "RA-37",
+        "RA-41",
+        "RA-71"
+      ],
+      "from": "hypothetical.pool_queueing"
+    },
+    {
+      "id": "R10",
+      "t_s": 0.9233760270372336,
+      "t_ms": 923.3760270372336,
+      "name": "pass 1: prefill ends; the KV of all but the trailing prompt token is ready to pull",
+      "component": "prefill worker (TEP8)",
+      "hardware": "GPU",
+      "representation": "20,250 new tokens -> KV blocks",
+      "flow": "data",
+      "ra": [
+        "RA-38",
+        "RA-40",
+        "RA-43"
+      ],
+      "from": "request_cost:four_requests.r4.passes.0"
+    },
+    {
+      "id": "R11",
+      "t_s": 0.9265917505572336,
+      "t_ms": 926.5917505572337,
+      "name": "pass 1: decode rank holds the KV",
+      "component": "decode worker (DEP16)",
+      "hardware": "GPU",
+      "representation": "1.09 GB of state over NVLink",
+      "flow": "data",
+      "ra": [
+        "RA-38",
+        "RA-55"
+      ],
+      "from": "disagg_transfer:links.nvlink5_gb300; models.M-frontier"
+    },
+    {
+      "id": "R12",
+      "t_s": 20.955503750557234,
+      "t_ms": 20955.503750557233,
+      "name": "pass 1: decode ends with the web_search call",
+      "component": "decode worker (DEP16)",
+      "hardware": "GPU",
+      "representation": "token IDs -> text deltas",
+      "flow": "control",
+      "ra": [
+        "RA-44",
+        "RA-50",
+        "RA-65",
+        "RA-72"
+      ],
+      "from": "request_cost:four_requests.r4.passes.0.decode_s"
+    },
+    {
+      "id": "R13",
+      "t_s": 22.562803750557233,
+      "t_ms": 22562.803750557232,
+      "name": "web_search result returns: 8 results, 3 pages",
+      "component": "orchestrator",
+      "hardware": "CPU",
+      "representation": "tool-result JSON -> token IDs",
+      "flow": "data",
+      "ra": [
+        "RA-28",
+        "RA-29",
+        "RA-67"
+      ],
+      "from": "web_search_budget:latency.monte_carlo.tool_step_ms.p50"
+    },
+    {
+      "id": "R14",
+      "t_s": 22.563803750557234,
+      "t_ms": 22563.803750557236,
+      "name": "pass 2: model router reserves TPM and forwards",
+      "component": "model router",
+      "hardware": "CPU",
+      "representation": "OpenAI-style JSON request",
+      "flow": "control",
+      "ra": [
+        "RA-10",
+        "RA-15",
+        "RA-56",
+        "RA-73"
+      ],
+      "from": "hypothetical.super_trace_ref.model_router_ms"
+    },
+    {
+      "id": "R15",
+      "t_s": 22.733803750557236,
+      "t_ms": 22733.803750557236,
+      "name": "pass 2: EPP picks the decode endpoint first; the scheduler admits the sequence",
+      "component": "inference gateway",
+      "hardware": "CPU",
+      "representation": "request on a chosen endpoint",
+      "flow": "control",
+      "ra": [
+        "RA-34",
+        "RA-37",
+        "RA-41",
+        "RA-71"
+      ],
+      "from": "hypothetical.pool_queueing"
+    },
+    {
+      "id": "R16",
+      "t_s": 22.88898002229366,
+      "t_ms": 22888.980022293657,
+      "name": "pass 2: prefill ends; the KV of all but the trailing prompt token is ready to pull",
+      "component": "prefill worker (TEP8)",
+      "hardware": "GPU",
+      "representation": "6,264 new tokens -> KV blocks",
+      "flow": "data",
+      "ra": [
+        "RA-38",
+        "RA-40",
+        "RA-43"
+      ],
+      "from": "request_cost:four_requests.r4.passes.1"
+    },
+    {
+      "id": "R17",
+      "t_s": 22.89167172405366,
+      "t_ms": 22891.67172405366,
+      "name": "pass 2: decode rank holds the KV",
+      "component": "decode worker (DEP16)",
+      "hardware": "GPU",
+      "representation": "0.62 GB of state over NVLink",
+      "flow": "data",
+      "ra": [
+        "RA-38",
+        "RA-55"
+      ],
+      "from": "disagg_transfer:links.nvlink5_gb300; models.M-frontier"
+    },
+    {
+      "id": "R18",
+      "t_s": 43.67639172405366,
+      "t_ms": 43676.39172405366,
+      "name": "pass 2: decode ends with the run_python call",
+      "component": "decode worker (DEP16)",
+      "hardware": "GPU",
+      "representation": "token IDs -> text deltas",
+      "flow": "control",
+      "ra": [
+        "RA-44",
+        "RA-50",
+        "RA-65",
+        "RA-72"
+      ],
+      "from": "request_cost:four_requests.r4.passes.1.decode_s"
+    },
+    {
+      "id": "R19",
+      "t_s": 44.98339172405366,
+      "t_ms": 44983.39172405366,
+      "name": "run_python result returns: numbers and a PNG chart",
+      "component": "orchestrator",
+      "hardware": "CPU",
+      "representation": "stdout + artifact file ID",
+      "flow": "data",
+      "ra": [
+        "RA-30",
+        "RA-69"
+      ],
+      "from": "sandbox_pool:reference_call.sandbox_total_ms"
+    },
+    {
+      "id": "R20",
+      "t_s": 44.98439172405366,
+      "t_ms": 44984.39172405366,
+      "name": "pass 3: model router reserves TPM and forwards",
+      "component": "model router",
+      "hardware": "CPU",
+      "representation": "OpenAI-style JSON request",
+      "flow": "control",
+      "ra": [
+        "RA-10",
+        "RA-15",
+        "RA-56",
+        "RA-73"
+      ],
+      "from": "hypothetical.super_trace_ref.model_router_ms"
+    },
+    {
+      "id": "R21",
+      "t_s": 45.15439172405366,
+      "t_ms": 45154.39172405366,
+      "name": "pass 3: EPP picks the decode endpoint first; the scheduler admits the sequence",
+      "component": "inference gateway",
+      "hardware": "CPU",
+      "representation": "request on a chosen endpoint",
+      "flow": "control",
+      "ra": [
+        "RA-34",
+        "RA-37",
+        "RA-41",
+        "RA-71"
+      ],
+      "from": "hypothetical.pool_queueing"
+    },
+    {
+      "id": "R22",
+      "t_s": 45.15912397123912,
+      "t_ms": 45159.12397123912,
+      "name": "pass 3: prefill ends; the prefill step samples the first token of the pass",
+      "component": "decode endpoint (local prefill)",
+      "hardware": "GPU",
+      "representation": "187 new tokens -> KV blocks; logits -> 1 token ID",
+      "flow": "data",
+      "ra": [
+        "RA-38",
+        "RA-40",
+        "RA-43",
+        "RA-44"
+      ],
+      "from": "request_cost:four_requests.r4.passes.2"
+    },
+    {
+      "id": "R23",
+      "t_s": 85.87827997123912,
+      "t_ms": 85878.27997123913,
+      "name": "pass 3: decode ends with the answer and stop token",
+      "component": "decode worker (DEP16)",
+      "hardware": "GPU",
+      "representation": "token IDs -> text deltas",
+      "flow": "data",
+      "ra": [
+        "RA-44",
+        "RA-50",
+        "RA-65",
+        "RA-72"
+      ],
+      "from": "request_cost:four_requests.r4.passes.2.decode_s"
+    },
+    {
+      "id": "R24",
+      "t_s": 85.94035269298246,
+      "t_ms": 85940.35269298246,
+      "name": "last text delta painted",
+      "component": "browser",
+      "hardware": "browser",
+      "representation": "SSE event -> DOM text",
+      "flow": "data",
+      "ra": [
+        "RA-47",
+        "RA-75"
+      ],
+      "from": "sse_framing:latency.total_mean_ms"
+    },
+    {
+      "id": "R25",
+      "t_s": 85.94235269298245,
+      "t_ms": 85942.35269298246,
+      "name": "message.done painted; the cursor goes away",
+      "component": "browser",
+      "hardware": "browser",
+      "representation": "SSE message.done -> DOM",
+      "flow": "control",
+      "ra": [
+        "RA-18",
+        "RA-74"
+      ],
+      "from": "hypothetical.storage_ref.in_region_commit_ms"
+    }
+  ],
+  "event_count": 26,
+  "critical_path": [
+    {
+      "key": "browser",
+      "segment": "input event, handler, fetch()",
+      "component": "browser",
+      "hardware": "browser (CPU)",
+      "start_s": 0.0,
+      "s": 0.003,
+      "ms": 3.0,
+      "resource": "renderer main thread",
+      "gpu": false
+    },
+    {
+      "key": "access",
+      "segment": "access network, user to PoP",
+      "component": "access network",
+      "hardware": "network",
+      "start_s": 0.003,
+      "s": 0.01,
+      "ms": 10.0,
+      "resource": "RTT, one way",
+      "gpu": false
+    },
+    {
+      "key": "edge",
+      "segment": "edge checks: TLS, limits, WAF, bot score, traceparent",
+      "component": "edge proxy",
+      "hardware": "CPU",
+      "start_s": 0.013000000000000001,
+      "s": 0.001,
+      "ms": 1.0,
+      "resource": "edge proxy CPU",
+      "gpu": false
+    },
+    {
+      "key": "backbone",
+      "segment": "backbone, PoP to ap_south",
+      "component": "backbone",
+      "hardware": "network",
+      "start_s": 0.014000000000000002,
+      "s": 0.022239388409999998,
+      "ms": 22.239388409999997,
+      "resource": "fiber distance",
+      "gpu": false
+    },
+    {
+      "key": "gateway",
+      "segment": "authentication and RPM bucket",
+      "component": "API gateway",
+      "hardware": "CPU",
+      "start_s": 0.036239388410000004,
+      "s": 0.002,
+      "ms": 2.0,
+      "resource": "gateway CPU, Redis bucket",
+      "gpu": false
+    },
+    {
+      "key": "fan_out",
+      "segment": "orchestrator fan-out (slowest: retrieval)",
+      "component": "orchestrator + stores + retrieval",
+      "hardware": "CPU + retrieval GPUs",
+      "start_s": 0.038239388410000005,
+      "s": 0.18082,
+      "ms": 180.82000000000002,
+      "resource": "retrieval pool (reranker)",
+      "gpu": false
+    },
+    {
+      "key": "assemble",
+      "segment": "context assembly and token count",
+      "component": "orchestrator",
+      "hardware": "CPU",
+      "start_s": 0.21905938841,
+      "s": 0.0026628805188688713,
+      "ms": 2.6628805188688713,
+      "resource": "orchestrator CPU",
+      "gpu": false
+    },
+    {
+      "key": "model_router",
+      "segment": "pass 1: model router (rule table, TPM reservation)",
+      "component": "model router",
+      "hardware": "CPU",
+      "start_s": 0.22172226892886887,
+      "s": 0.001,
+      "ms": 1.0,
+      "resource": "Redis Lua call",
+      "gpu": false
+    },
+    {
+      "key": "queue",
+      "segment": "pass 1: endpoint pick and queue",
+      "component": "inference gateway + engine queue",
+      "hardware": "CPU",
+      "start_s": 0.22272226892886887,
+      "s": 0.16999999999999998,
+      "ms": 169.99999999999997,
+      "resource": "pool queue",
+      "gpu": false
+    },
+    {
+      "key": "prefill",
+      "segment": "pass 1: vision encoder + prefill",
+      "component": "prefill worker (TEP8)",
+      "hardware": "GPU (GB300)",
+      "start_s": 0.39272226892886886,
+      "s": 0.5306537581083648,
+      "ms": 530.6537581083647,
+      "resource": "GB300 HBM + Tensor Cores",
+      "gpu": true
+    },
+    {
+      "key": "kv_transfer",
+      "segment": "pass 1: KV transfer prefill -> decode",
+      "component": "NVLink (NIXL)",
+      "hardware": "GPU interconnect",
+      "start_s": 0.9233760270372336,
+      "s": 0.00321572352,
+      "ms": 3.21572352,
+      "resource": "NVLink 5",
+      "gpu": true
+    },
+    {
+      "key": "decode",
+      "segment": "pass 1: decode 424 steps (424 tokens)",
+      "component": "decode worker (DEP16)",
+      "hardware": "GPU (GB300)",
+      "start_s": 0.9265917505572336,
+      "s": 20.028912000000002,
+      "ms": 20028.912,
+      "resource": "HBM bandwidth (memory-bound step)",
+      "gpu": true
+    },
+    {
+      "key": "web_search",
+      "segment": "web_search tool step (p50)",
+      "component": "web search tool + egress fetcher",
+      "hardware": "CPU + external",
+      "start_s": 20.955503750557234,
+      "s": 1.6073,
+      "ms": 1607.3,
+      "resource": "search provider, fetcher",
+      "gpu": false
+    },
+    {
+      "key": "model_router",
+      "segment": "pass 2: model router (rule table, TPM reservation)",
+      "component": "model router",
+      "hardware": "CPU",
+      "start_s": 22.562803750557233,
+      "s": 0.001,
+      "ms": 1.0,
+      "resource": "Redis Lua call",
+      "gpu": false
+    },
+    {
+      "key": "queue",
+      "segment": "pass 2: endpoint pick and queue",
+      "component": "inference gateway + engine queue",
+      "hardware": "CPU",
+      "start_s": 22.563803750557234,
+      "s": 0.16999999999999998,
+      "ms": 169.99999999999997,
+      "resource": "pool queue",
+      "gpu": false
+    },
+    {
+      "key": "prefill",
+      "segment": "pass 2: prefill",
+      "component": "prefill worker (TEP8)",
+      "hardware": "GPU (GB300)",
+      "start_s": 22.733803750557236,
+      "s": 0.1551762717364224,
+      "ms": 155.1762717364224,
+      "resource": "GB300 HBM + Tensor Cores",
+      "gpu": true
+    },
+    {
+      "key": "kv_transfer",
+      "segment": "pass 2: KV transfer prefill -> decode",
+      "component": "NVLink (NIXL)",
+      "hardware": "GPU interconnect",
+      "start_s": 22.88898002229366,
+      "s": 0.00269170176,
+      "ms": 2.69170176,
+      "resource": "NVLink 5",
+      "gpu": true
+    },
+    {
+      "key": "decode",
+      "segment": "pass 2: decode 440 steps (440 tokens)",
+      "component": "decode worker (DEP16)",
+      "hardware": "GPU (GB300)",
+      "start_s": 22.89167172405366,
+      "s": 20.78472,
+      "ms": 20784.72,
+      "resource": "HBM bandwidth (memory-bound step)",
+      "gpu": true
+    },
+    {
+      "key": "run_python",
+      "segment": "run_python tool step",
+      "component": "code sandbox",
+      "hardware": "CPU (microVM)",
+      "start_s": 43.67639172405366,
+      "s": 1.307,
+      "ms": 1307.0,
+      "resource": "warm Firecracker VM",
+      "gpu": false
+    },
+    {
+      "key": "model_router",
+      "segment": "pass 3: model router (rule table, TPM reservation)",
+      "component": "model router",
+      "hardware": "CPU",
+      "start_s": 44.98339172405366,
+      "s": 0.001,
+      "ms": 1.0,
+      "resource": "Redis Lua call",
+      "gpu": false
+    },
+    {
+      "key": "queue",
+      "segment": "pass 3: endpoint pick and queue",
+      "component": "inference gateway + engine queue",
+      "hardware": "CPU",
+      "start_s": 44.98439172405366,
+      "s": 0.16999999999999998,
+      "ms": 169.99999999999997,
+      "resource": "pool queue",
+      "gpu": false
+    },
+    {
+      "key": "prefill",
+      "segment": "pass 3: prefill",
+      "component": "decode endpoint (local prefill)",
+      "hardware": "GPU (GB300)",
+      "start_s": 45.15439172405366,
+      "s": 0.0047322471854592,
+      "ms": 4.7322471854592,
+      "resource": "GB300 HBM + Tensor Cores",
+      "gpu": true
+    },
+    {
+      "key": "decode",
+      "segment": "pass 3: decode 862 steps (863 tokens)",
+      "component": "decode worker (DEP16)",
+      "hardware": "GPU (GB300)",
+      "start_s": 45.15912397123912,
+      "s": 40.719156000000005,
+      "ms": 40719.156,
+      "resource": "HBM bandwidth (memory-bound step)",
+      "gpu": true
+    },
+    {
+      "key": "holdback",
+      "segment": "last hold-back check",
+      "component": "orchestrator + output classifier",
+      "hardware": "CPU + small GPU",
+      "start_s": 85.87827997123912,
+      "s": 0.02,
+      "ms": 20.0,
+      "resource": "classifier pool",
+      "gpu": false
+    },
+    {
+      "key": "stream_back",
+      "segment": "last delta to the screen",
+      "component": "gateway, ingress, edge, browser",
+      "hardware": "network + browser",
+      "start_s": 85.89827997123912,
+      "s": 0.04207272174333334,
+      "ms": 42.07272174333334,
+      "resource": "backbone + access + frame",
+      "gpu": false
+    },
+    {
+      "key": "final_write",
+      "segment": "final message write, then message.done",
+      "component": "orchestrator -> conversation DB",
+      "hardware": "CPU + store",
+      "start_s": 85.94035269298246,
+      "s": 0.002,
+      "ms": 2.0,
+      "resource": "quorum commit",
+      "gpu": false
+    }
+  ],
+  "critical_path_sum_s": 85.94235269298245,
+  "transfers": {
+    "1": {
+      "remote": true,
+      "tokens": 23321,
+      "tokens_lacking": 23322,
+      "recomputed_tokens": 1,
+      "bytes": 1094151168,
+      "GB_1e9": 1.094151168,
+      "formula": "KDA fixed state + MLA bytes/token × (tokens the decode rank lacks − the trailing token it recomputes)",
+      "arithmetic": "449,372,160 + 27,648 × (23,322 − 1) = 1,094,151,168 B",
+      "wire_s": 0.00121572352,
+      "overhead_s": 0.002,
+      "s": 0.00321572352,
+      "ms": 3.21572352,
+      "from": "disagg_transfer:links.nvlink5_gb300.per_direction; hypothetical.serving_assumptions.kv_transfer_software_overhead_ms"
+    },
+    "2": {
+      "remote": true,
+      "tokens": 6263,
+      "tokens_lacking": 6264,
+      "recomputed_tokens": 1,
+      "bytes": 622531584,
+      "GB_1e9": 0.622531584,
+      "formula": "KDA fixed state + MLA bytes/token × (tokens the decode rank lacks − the trailing token it recomputes)",
+      "arithmetic": "449,372,160 + 27,648 × (6,264 − 1) = 622,531,584 B",
+      "wire_s": 0.00069170176,
+      "overhead_s": 0.002,
+      "s": 0.00269170176,
+      "ms": 2.69170176,
+      "from": "disagg_transfer:links.nvlink5_gb300.per_direction; hypothetical.serving_assumptions.kv_transfer_software_overhead_ms"
+    },
+    "3": {
+      "remote": false,
+      "tokens": 0,
+      "bytes": 0,
+      "GB_1e9": 0.0,
+      "s": 0.0,
+      "ms": 0.0,
+      "note": "short uncached suffix prefilled on the decode endpoint (RA-38): no transfer"
+    }
+  },
+  "passes": [
+    {
+      "pass": 1,
+      "router_s": 0.001,
+      "queue_s": 0.16999999999999998,
+      "prefill_s": 0.5306537581083648,
+      "transfer_s": 0.00321572352,
+      "decode_s": 20.028912000000002,
+      "decode_steps": 424,
+      "disaggregated": true,
+      "output_tokens": 424,
+      "reasoning_tokens": 300,
+      "prefill_on": "prefill worker (TEP8)",
+      "total_s": 20.733781481628366,
+      "prefill_end_s": 0.9233760270372336,
+      "first_token_at_s": 0.9738297505572336,
+      "server_ttft_s": 0.7511074816283647,
+      "server_ttft_formula": "queue + prefill + KV transfer + one decode step (RA-38)"
+    },
+    {
+      "pass": 2,
+      "router_s": 0.001,
+      "queue_s": 0.16999999999999998,
+      "prefill_s": 0.1551762717364224,
+      "transfer_s": 0.00269170176,
+      "decode_s": 20.78472,
+      "decode_steps": 440,
+      "disaggregated": true,
+      "output_tokens": 440,
+      "reasoning_tokens": 200,
+      "prefill_on": "prefill worker (TEP8)",
+      "total_s": 21.113587973496422,
+      "prefill_end_s": 22.88898002229366,
+      "first_token_at_s": 22.93890972405366,
+      "server_ttft_s": 0.37510597349642266,
+      "server_ttft_formula": "queue + prefill + KV transfer + one decode step (RA-38)"
+    },
+    {
+      "pass": 3,
+      "router_s": 0.001,
+      "queue_s": 0.16999999999999998,
+      "prefill_s": 0.0047322471854592,
+      "transfer_s": 0.0,
+      "decode_s": 40.719156000000005,
+      "decode_steps": 862,
+      "disaggregated": false,
+      "output_tokens": 863,
+      "reasoning_tokens": 400,
+      "prefill_on": "decode endpoint (local prefill)",
+      "total_s": 40.89488824718546,
+      "prefill_end_s": 45.15912397123912,
+      "first_token_at_s": 45.15912397123912,
+      "server_ttft_s": 0.1747322471854585,
+      "server_ttft_formula": "queue + prefill (the prefill step samples token 1)"
+    }
+  ],
+  "milestones": {
+    "message_start_pixel_s": 0.07956211015333334,
+    "pass1_prefill_end_s": 0.9233760270372336,
+    "first_token_at_engine_s": 0.9738297505572336,
+    "first_token_formula": "pass-1 prefill end + KV transfer + one decode step (RA-38: the decode worker recomputes the trailing prompt token and samples token 1)",
+    "reasoning_status_pixel_s": 1.015902472300567,
+    "before_first_pass_s": 0.22172226892886887,
+    "first_visible_pixel_s": 15.585206472300568,
+    "first_answer_pixel_s": 64.82496669298246,
+    "last_token_at_engine_s": 85.87827997123912,
+    "last_text_pixel_s": 85.94035269298246,
+    "done_pixel_s": 85.94235269298245,
+    "e2e_s": 85.94235269298245
+  },
+  "compare": {
+    "request_cost_wall_s": 85.13365027703027,
+    "e2e_minus_wall_s": 0.8087024159521832,
+    "timeout_budget_typical_used_s": 85.82447028,
+    "deadline_s": 120,
+    "deadline_left_s": 34.05764730701755,
+    "note": "request_cost.wall_s counts GPU time and tool steps only; the trace adds network, CPU steps, queues, KV transfers and the hold-back checks"
+  },
+  "busy": {
+    "by_component_on_path_s": {
+      "browser": 0.003,
+      "access network": 0.01,
+      "edge proxy": 0.001,
+      "backbone": 0.022239388409999998,
+      "API gateway": 0.002,
+      "orchestrator + stores + retrieval": 0.18082,
+      "orchestrator": 0.0026628805188688713,
+      "model router": 0.003,
+      "inference gateway + engine queue": 0.51,
+      "prefill worker (TEP8)": 0.6858300298447872,
+      "NVLink (NIXL)": 0.00590742528,
+      "decode worker (DEP16)": 81.53278800000001,
+      "web search tool + egress fetcher": 1.6073,
+      "code sandbox": 1.307,
+      "decode endpoint (local prefill)": 0.0047322471854592,
+      "orchestrator + output classifier": 0.02,
+      "gateway, ingress, edge, browser": 0.04207272174333334,
+      "orchestrator -> conversation DB": 0.002
+    },
+    "by_key_s": {
+      "browser": 0.003,
+      "access": 0.01,
+      "edge": 0.001,
+      "backbone": 0.022239388409999998,
+      "gateway": 0.002,
+      "fan_out": 0.18082,
+      "assemble": 0.0026628805188688713,
+      "model_router": 0.003,
+      "queue": 0.51,
+      "prefill": 0.6905622770302464,
+      "kv_transfer": 0.00590742528,
+      "decode": 81.53278800000001,
+      "web_search": 1.6073,
+      "run_python": 1.307,
+      "holdback": 0.02,
+      "stream_back": 0.04207272174333334,
+      "final_write": 0.002
+    },
+    "by_key_ms": {
+      "browser": 3.0,
+      "access": 10.0,
+      "edge": 1.0,
+      "backbone": 22.239388409999997,
+      "gateway": 2.0,
+      "fan_out": 180.82000000000002,
+      "assemble": 2.6628805188688713,
+      "model_router": 3.0,
+      "queue": 510.0,
+      "prefill": 690.5622770302464,
+      "kv_transfer": 5.90742528,
+      "decode": 81532.78800000002,
+      "web_search": 1607.3,
+      "run_python": 1307.0,
+      "holdback": 20.0,
+      "stream_back": 42.07272174333334,
+      "final_write": 2.0
+    },
+    "decode_s": 81.53278800000001,
+    "decode_share_of_e2e": 0.9486915990217882,
+    "gpu_on_path_s": 82.22925770231025,
+    "gpu_share_of_e2e": 0.9567955161300187,
+    "tools_on_path_s": 2.9143,
+    "network_on_path_s": 0.07831211015333334,
+    "orchestrator_held_open_s": 85.90411330457245,
+    "gpu_seconds": {
+      "gb300_prefill": 4.970271863170252,
+      "gb300_decode": 2.0060319962896727,
+      "gb300_vision": 0.5542263530717184,
+      "gb300_total": 7.530530212531644,
+      "h100_query_embed": 0.00452,
+      "h100_rerank": 0.5852999999999999,
+      "h100_total": 0.5898199999999999
+    },
+    "usd": {
+      "gpu": 0.01255088368755274,
+      "other": 0.015,
+      "total": 0.02755088368755274
+    }
+  },
+  "stages": {
+    "A": {
+      "form": "browser JSON",
+      "where": "browser",
+      "bytes": 764,
+      "ids": {
+        "conversation_id": "conv_6f1d2a9c3b7e4058",
+        "message_id": "msg_01JA4Q7Z3K9W2T6R8Y5U0P1M4N",
+        "parent_message_id": "msg_01JA4Q2B8D5F7H1J3L6N9Q0S2V",
+        "image_file_id": "file_9c2e71b04d5a48f3",
+        "pdf_file_id": "file_3a8f60d2c1e94b7a",
+        "idempotency_key": "4b7e2c91-0d3a-4f6e-9a58-2c1b7d3e8f40",
+        "request_id": "req_7Hq2Lm9Xv4Bn"
+      }
+    },
+    "B": {
+      "form": "validated internal request (Protobuf over gRPC)",
+      "where": "API gateway -> orchestrator",
+      "fields": [
+        "tenant_id (from the verified token)",
+        "user_id",
+        "conversation_id",
+        "message_id",
+        "file IDs (authorized)",
+        "idempotency_key",
+        "deadline",
+        "traceparent",
+        "priority band"
+      ],
+      "deadline_s": 119,
+      "traceparent": "00-4dca626b27c05b19c53fef0a9e2ce74b-0faccebd8b22948c-01",
+      "tenant_id_illustrative": "org_4f2a9c"
+    },
+    "C": {
+      "form": "context object",
+      "where": "orchestrator",
+      "segments": 10,
+      "prompt_tokens": 23322,
+      "max_tokens": 4096,
+      "tpm_reservation": 27418,
+      "chunks": 6,
+      "memory_records": 2,
+      "cache_salt": "tenant ID (RA-40)"
+    },
+    "D": {
+      "form": "token IDs",
+      "where": "model server",
+      "shape": [
+        1,
+        23322
+      ],
+      "user_text_tokens": 52,
+      "visual_tokens": 15552,
+      "image_wrapper_ids": [
+        163602,
+        4017,
+        220,
+        27154,
+        17,
+        87,
+        25401,
+        19,
+        163603,
+        163605,
+        163604
+      ]
+    },
+    "E": {
+      "form": "batched tensors",
+      "where": "GPU HBM",
+      "prefill_hidden_shape": [
+        20250,
+        7168
+      ],
+      "prefill_hidden_bytes_bf16": 290304000,
+      "decode_hidden_shape_per_rank": [
+        94,
+        7168
+      ]
+    },
+    "F": {
+      "form": "KV cache + logits",
+      "where": "GPU HBM",
+      "state_after_pass1_prompt_bytes": 1094178816,
+      "state_end_of_pass3_bytes": 1313593344,
+      "logits_shape": [
+        1,
+        163840
+      ],
+      "logits_bytes_fp32": 655360,
+      "logits_check": "[B, 131,072]"
+    },
+    "G": {
+      "form": "sampled token IDs",
+      "where": "GPU -> engine core",
+      "bytes_per_token": 4,
+      "example_ids": [
+        116389,
+        673,
+        60896,
+        131100,
+        230
+      ]
+    },
+    "H": {
+      "form": "text deltas",
+      "where": "API server (detokenizer)",
+      "example_text": "␣Margin␣by␣competitor␣📈",
+      "held_steps": 1
+    },
+    "I": {
+      "form": "SSE events",
+      "where": "API gateway -> edge -> browser",
+      "example": "event: output_text.delta\ndata: {\"delta\":\" the\"}\n\n",
+      "example_bytes": 49,
+      "events": 477,
+      "bytes": 24228.804347826088
+    },
+    "J": {
+      "form": "rendered message",
+      "where": "browser DOM",
+      "chars": 1793.918918918919,
+      "frame_ms": 16.666666666666668
+    }
+  },
+  "side_work": {
+    "items": {
+      "event_appends": {
+        "count": 9,
+        "each_s": 0.005,
+        "if_sync_s": 0.045
+      },
+      "memory_extraction": {
+        "if_sync_s": 3
+      },
+      "turn_indexing": {
+        "if_sync_s": 0.3
+      }
+    },
+    "total_if_sync_s": 3.3449999999999998,
+    "share_of_e2e": 0.03892143855951401,
+    "usage_events_during_request": 5
+  },
+  "state": {
+    "conversation_rows": {
+      "user_row_bytes": 508,
+      "assistant_row_bytes": 2100,
+      "arithmetic": "52 × 4 + 300 = 508 B; 450 × 4 + 300 = 2100 B",
+      "stored_bytes": 7824,
+      "replicas": 3
+    },
+    "objects": {
+      "image_bytes": 2900000,
+      "pdf_bytes": 2100000
+    },
+    "pdf_vectors": {
+      "chunks_mean": 24,
+      "bytes_per_vector": 2048,
+      "bytes": 49152
+    },
+    "weights_bytes": 1560936091448,
+    "active_kv_peak_bytes": [
+      1105901568,
+      1285890048,
+      1313593344
+    ],
+    "prefix_kv_end_bytes": 1313593344,
+    "encoder_cache_bytes": 222953472,
+    "stream_buffer_bound_bytes": 98304,
+    "tpm": {
+      "reserved": 95821,
+      "used": 85260,
+      "refund": 10561
+    },
+    "events": {
+      "count": 9,
+      "bytes": 4500,
+      "counts": {
+        "usage": 5,
+        "audit": 2,
+        "analytics": 1,
+        "turn_completed": 1
+      }
+    },
+    "sandbox": {
+      "memory_mib": 2048,
+      "idle_keep_live_s": 120,
+      "files_kept_s": 3600,
+      "run_python_ends_at_s": 44.98339172405366,
+      "vm_stops_at_s": 164.98339172405366,
+      "vm_stops_after_done_s": 79.04103903107121
+    },
+    "tool_result_tokens_web": 6040,
+    "trace_spans": 17
+  },
+  "second_turn": {
+    "match_tokens": 4182,
+    "hit_tokens_hash_block": 4096,
+    "hit_tokens_saved_state": 0,
+    "match_rule": "tools + effort + system + history turns 1-3, the same positions as in turn 4",
+    "turn4_in_history_min_tokens": 16075,
+    "image_positions": 15562,
+    "image_prefill_s": 0.32410368,
+    "vision_encoder_s_saved_if_encoder_cache_hit": 0.0692782941339648,
+    "vision_gpu_s_saved_if_encoder_cache_hit": 0.5542263530717184,
+    "think_time_mean_s": 15,
+    "vm_idle_at_next_send_s": 55.95896096892879,
+    "vm_still_live": true,
+    "max_think_time_for_live_vm_s": 79.04103903107121,
+    "warm_claim_ms": 25,
+    "affinity_threshold": 0.8
+  }
+}

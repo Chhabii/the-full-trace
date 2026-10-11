@@ -1,0 +1,27 @@
+{
+  "generation_guards": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Part 10 (Transformer internals, §10.14) reference-system guards against generation failures. They use vLLM's public sampling parameters; real providers' settings are not public (class D).",
+    "repetition_max_pattern_tokens": {
+      "value": 64,
+      "unit": "tokens",
+      "note": "vLLM RepetitionDetectionParams.max_pattern_size: the longest repeated token pattern the engine looks for. 64 tokens covers a repeated sentence or a repeated short list item."
+    },
+    "repetition_min_pattern_tokens": {
+      "value": 8,
+      "unit": "tokens",
+      "note": "min_pattern_size: patterns shorter than 8 tokens (for example '| ' table separators or digit runs) repeat legitimately, so they never stop a stream."
+    },
+    "repetition_min_count": {
+      "value": 6,
+      "unit": "repeats",
+      "note": "min_count: a pattern must repeat 6 times back to back before the engine stops the sequence with FINISHED_REPETITION. Low enough to stop a loop within a few hundred tokens, high enough to allow a 5-row table with identical rows."
+    },
+    "malformed_output_regenerations": {
+      "value": 1,
+      "unit": "regenerations per inference pass",
+      "note": "When the orchestrator rejects a tool call or a JSON answer that fails schema validation, it runs the pass once more with the validation error appended; a second failure returns an error to the client. Separate from the transport retry layer of RA-12."
+    }
+  }
+}

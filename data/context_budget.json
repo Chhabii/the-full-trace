@@ -1,0 +1,365 @@
+{
+  "meta": {
+    "script": "sim/context_budget.py",
+    "generated_at": "2026-10-09T09:43:53+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T09:41:27+00:00",
+      "sha256": "4a1f5188d807"
+    },
+    "constants_used": {
+      "hypothetical.backend.default_max_tokens": 4096,
+      "hypothetical.backend.pod_load_rps": 100,
+      "hypothetical.backend.pods_per_region": 200,
+      "hypothetical.backend.transaction_ms": 5,
+      "hypothetical.backend.transactions_per_request": 4,
+      "hypothetical.context_budget_ref.compaction_keep_recent_turns": 4,
+      "hypothetical.context_budget_ref.compaction_summary_tokens": 1200,
+      "hypothetical.context_budget_ref.compaction_trigger_tokens": 24000,
+      "hypothetical.context_budget_ref.history_turn_tokens": [
+        780,
+        840,
+        980
+      ],
+      "hypothetical.context_budget_ref.prompt_budget_tokens": 131072,
+      "hypothetical.context_budget_ref.rag_chunk_tokens": [
+        610,
+        540,
+        720,
+        480,
+        390,
+        560
+      ],
+      "hypothetical.context_budget_ref.rag_token_budget": 6000,
+      "hypothetical.context_budget_ref.safety_metadata_tokens": 0,
+      "hypothetical.memory_ref.record_texts": [
+        "Reports figures in EUR.",
+        "Prefers results as a table."
+      ],
+      "hypothetical.memory_ref.token_cap": 300,
+      "hypothetical.reference_request.history_tokens": 2600,
+      "hypothetical.reference_request.output_tokens_visible": 450,
+      "hypothetical.reference_request.rag_chunks_selected": 6,
+      "hypothetical.reference_request.web_pages_fetched": 3,
+      "hypothetical.reference_request.web_results_considered": 8,
+      "hypothetical.retrieval_ref.per_retriever_top_k": 100,
+      "hypothetical.retrieval_ref.rerank_keep": 20,
+      "hypothetical.retrieval_ref.rerank_min_score": 0.5,
+      "hypothetical.tool_loop.code_output_cap_tokens": 2000,
+      "hypothetical.tool_loop.code_result_tokens": 160,
+      "hypothetical.tool_loop.fetched_page_tokens_cap": 3000,
+      "hypothetical.tool_loop.fetched_page_tokens_reference": 1800,
+      "hypothetical.tool_loop.pass1_reasoning_tokens": 300,
+      "hypothetical.tool_loop.pass2_reasoning_tokens": 200,
+      "hypothetical.tool_loop.pass3_reasoning_tokens": 400,
+      "hypothetical.tool_loop.system_prompt_tokens": 1200,
+      "hypothetical.tool_loop.web_snippet_tokens_per_result": 80,
+      "models.M-frontier.max_position_embeddings": 1048576,
+      "models.M-frontier.moonshot_prefix_hash_block_tokens": 512,
+      "network.protocols.rtt_to_request_sent_tcp_tls13": 2,
+      "retrieval_and_data.hyp_rerank_candidates": 100,
+      "retrieval_and_data.pgbouncer_default_pool_size": 20,
+      "retrieval_and_data.postgres_max_connections_default": 100
+    }
+  },
+  "rows": [
+    {
+      "segment": "tool_declare",
+      "tokens": 315,
+      "start": 0,
+      "end": 315,
+      "source": "data/reference_tools.json (real K3 tokenizer)",
+      "changes_per": "deployment + tenant tool set"
+    },
+    {
+      "segment": "thinking_effort",
+      "tokens": 67,
+      "start": 315,
+      "end": 382,
+      "source": "data/tokenize_demo.json (thinking_effort=max)",
+      "changes_per": "deployment"
+    },
+    {
+      "segment": "system_prompt",
+      "tokens": 1200,
+      "start": 382,
+      "end": 1582,
+      "source": "hypothetical.tool_loop.system_prompt_tokens",
+      "changes_per": "deployment (date changes daily)"
+    },
+    {
+      "segment": "history_turn_1",
+      "tokens": 780,
+      "start": 1582,
+      "end": 2362,
+      "source": "hypothetical.context_budget_ref.history_turn_tokens",
+      "changes_per": "conversation"
+    },
+    {
+      "segment": "history_turn_2",
+      "tokens": 840,
+      "start": 2362,
+      "end": 3202,
+      "source": "hypothetical.context_budget_ref.history_turn_tokens",
+      "changes_per": "conversation"
+    },
+    {
+      "segment": "history_turn_3",
+      "tokens": 980,
+      "start": 3202,
+      "end": 4182,
+      "source": "hypothetical.context_budget_ref.history_turn_tokens",
+      "changes_per": "conversation"
+    },
+    {
+      "segment": "memory",
+      "tokens": 46,
+      "start": 4182,
+      "end": 4228,
+      "source": "real K3 tokenizer on the two records",
+      "changes_per": "turn"
+    },
+    {
+      "segment": "retrieved_chunks",
+      "tokens": 3459,
+      "start": 4228,
+      "end": 7687,
+      "source": "frame and headers: real K3 tokenizer; bodies: hypothetical",
+      "changes_per": "turn"
+    },
+    {
+      "segment": "user_turn",
+      "tokens": 15625,
+      "start": 7687,
+      "end": 23312,
+      "source": "data/tokenize_demo.json (text + image wrapper + 15,552 visual tokens)",
+      "changes_per": "turn"
+    },
+    {
+      "segment": "generation_prefix",
+      "tokens": 10,
+      "start": 23312,
+      "end": 23322,
+      "source": "data/tokenize_demo.json",
+      "changes_per": "pass"
+    }
+  ],
+  "by_segment": {
+    "tool_declare": 315,
+    "thinking_effort": 67,
+    "system_prompt": 1200,
+    "history_turn_1": 780,
+    "history_turn_2": 840,
+    "history_turn_3": 980,
+    "memory": 46,
+    "retrieved_chunks": 3459,
+    "user_turn": 15625,
+    "generation_prefix": 10
+  },
+  "passes": {
+    "p1": {
+      "prompt_tokens": 23322,
+      "output_tokens": 424,
+      "reasoning_tokens": 300,
+      "context_end": 23746,
+      "prefix_match_tokens": 3202,
+      "prefix_match": "tool-declare + effort + system + history turns 1-2, cached by turn 3 of the same conversation",
+      "prefix_hit_tokens_512": 3072,
+      "prefill_tokens": 20250,
+      "hit_fraction": 0.1317,
+      "prefix_hit_saved_state": 0,
+      "prefill_tokens_saved_state": 23322,
+      "retention_interval_tokens": 32768,
+      "tpm_reservation": 27418,
+      "fits_window": true,
+      "window_left_after_reservation": 1021158,
+      "prompt_budget_left": 107750,
+      "max_tokens": 4096,
+      "output_within_max_tokens": true,
+      "stable_prefix_any_tenant_request_tokens": 1582,
+      "stable_prefix_hit_512": 1536,
+      "cold_prefill_tokens": 21786
+    },
+    "p2": {
+      "prompt_tokens": 29816,
+      "output_tokens": 440,
+      "reasoning_tokens": 200,
+      "context_end": 30256,
+      "prefix_match_tokens": 23746,
+      "prefix_match": "pass 1 prompt and pass 1 output",
+      "prefix_hit_tokens_512": 23552,
+      "prefill_tokens": 6264,
+      "hit_fraction": 0.7899,
+      "prefix_hit_saved_state": 23322,
+      "prefill_tokens_saved_state": 6494,
+      "retention_interval_tokens": 32768,
+      "tpm_reservation": 33912,
+      "fits_window": true,
+      "window_left_after_reservation": 1014664,
+      "prompt_budget_left": 101256,
+      "max_tokens": 4096,
+      "output_within_max_tokens": true,
+      "prefill_breakdown": {
+        "pass1_output_tail_and_result": 6264
+      }
+    },
+    "p3": {
+      "prompt_tokens": 30395,
+      "output_tokens": 863,
+      "reasoning_tokens": 400,
+      "context_end": 31258,
+      "prefix_match_tokens": 30256,
+      "prefix_match": "pass 2 prompt and pass 2 output",
+      "prefix_hit_tokens_512": 30208,
+      "prefill_tokens": 187,
+      "hit_fraction": 0.9938,
+      "prefix_hit_saved_state": 29816,
+      "prefill_tokens_saved_state": 579,
+      "retention_interval_tokens": 32768,
+      "tpm_reservation": 34491,
+      "fits_window": true,
+      "window_left_after_reservation": 1014085,
+      "prompt_budget_left": 100677,
+      "max_tokens": 4096,
+      "output_within_max_tokens": true
+    }
+  },
+  "totals": {
+    "prompt_tokens_all_passes": 83533,
+    "prefill_tokens_all_passes": 26701,
+    "reused_tokens_all_passes": 56832,
+    "reuse_fraction_all_passes": 0.6804,
+    "prefill_tokens_all_passes_saved_state": 30395,
+    "reuse_fraction_all_passes_saved_state": 0.6361,
+    "output_tokens_all_passes": 1727,
+    "reasoning_tokens_all_passes": 900,
+    "visible_output_tokens": 450,
+    "final_context_tokens": 31258,
+    "final_context_share_of_window": 0.0298,
+    "visual_share_of_p1_prompt": 0.6668,
+    "tpm_reserved_all_passes": 95821,
+    "tpm_used_all_passes": 85260
+  },
+  "rag": {
+    "per_retriever_top_k": 100,
+    "fused_candidates": 100,
+    "rerank_keep": 20,
+    "min_score": 0.5,
+    "selected": 6,
+    "budget_tokens": 6000,
+    "chunk_body_tokens": [
+      610,
+      540,
+      720,
+      480,
+      390,
+      560
+    ],
+    "chunk_body_total": 3300,
+    "header_tokens": [
+      25,
+      24,
+      19,
+      17,
+      16,
+      17
+    ],
+    "header_total": 118,
+    "frame_tokens": 36,
+    "separator_tokens": 5,
+    "total_tokens": 3459,
+    "budget_left": 2541,
+    "headers": [
+      "[1] q3-report.pdf, page 7, 3 Pricing > 3.2 Gross margin by plan",
+      "[2] q3-report.pdf, page 8, 3 Pricing > 3.3 Cost of revenue",
+      "[3] pricing-policy.docx, page 2, 3 Competitor price matching",
+      "[4] pricing-policy.docx, page 1, 1 List prices",
+      "[5] q3-report.pdf, page 4, 2 Revenue",
+      "[6] pricing-policy.docx, page 2, 2 Discounts"
+    ],
+    "rule": "add chunks in rerank order while P(yes) >= min_score and the total stays within the budget"
+  },
+  "memory": {
+    "records": [
+      "Reports figures in EUR.",
+      "Prefers results as a table."
+    ],
+    "record_line_tokens": [
+      6,
+      8
+    ],
+    "message_tokens": 46,
+    "frame_and_header_tokens": 32,
+    "cap": 300,
+    "rendered": "# Saved memory\nFacts this user saved. Use them only when they are relevant.\n- Reports figures in EUR.\n- Prefers results as a table."
+  },
+  "tool_calls": {
+    "source": "data/tool_call_demo.json (Part 06); story values in hypothetical.tool_call_story",
+    "web_search": {
+      "arguments": {
+        "queries": [
+          "AlderSoft list price per seat 2026",
+          "Birchline pricing plans list price per user",
+          "Cedar Systems pricing per seat per month"
+        ],
+        "recency_days": 90,
+        "fetch_top": 3
+      },
+      "call_tokens": 102,
+      "pass1_output_after_reasoning": 124,
+      "preamble_and_frames": 22
+    },
+    "run_python": {
+      "code_tokens": 176,
+      "call_tokens": 227,
+      "code": "import matplotlib\nmatplotlib.use(\"Agg\")\nimport matplotlib.pyplot as plt\n\nunit_cost = 17.60  # EUR per seat-month, Q3 report\nprices = {\"AlderSoft\": 42.00, \"Birchline\": 55.00, \"Cedar Systems\": 38.00}\n\nrows = []\nfor name, price in prices.items():\n    margin = (price - unit_cost) / price\n    rows.append((name, price, margin))\n    print(f\"{name}: price {price:.2f} EUR, gross margin {margin:.1%}\")\n\nplt.bar([r[0] for r in rows], [r[2] * 100 for r in rows])\nplt.ylabel(\"Gross margin at competitor price (%)\")\nplt.savefig(\"/mnt/output/margin_by_competitor.png\", dpi=150)\n",
+      "timeout_s": 30,
+      "pass2_output_after_reasoning": 240
+    },
+    "assistant_frames": {
+      "close_think": 3,
+      "response_open_close": 6,
+      "close_message_eom": 4
+    },
+    "frames_per_message": 13,
+    "tool_result_frame_tokens": {
+      "web_search": 20,
+      "run_python": 20
+    },
+    "web_result_tokens": {
+      "results": 8,
+      "per_result": 80,
+      "pages": 3,
+      "per_page": 1800,
+      "body": 6040,
+      "with_frame": 6060,
+      "page_cap": 3000
+    },
+    "code_result_tokens": {
+      "body": 109,
+      "body_budget_hypothetical": 160,
+      "with_frame": 129,
+      "cap": 2000
+    }
+  },
+  "window": 1048576,
+  "hash_block_tokens": 512,
+  "prompt_budget_tokens": 131072,
+  "stable_prefix_tokens": 1582,
+  "pass1_without_image": 7770,
+  "compaction": {
+    "mean_turn_tokens": 866.7,
+    "trigger_tokens": 24000,
+    "keep_recent_turns": 4,
+    "summary_tokens": 1200,
+    "turns_when_triggered": 28,
+    "history_before": 24267,
+    "history_after": 4667,
+    "tokens_saved_per_pass": 19600,
+    "first_pass_after_compaction_prefill_from": "the summary onward: the history prefix changed, so its blocks miss",
+    "label": "illustrative: every turn has the mean size of the reference request's three turns"
+  },
+  "label": "illustrative text rendered with the real K3 tokenizer; token counts of unrendered parts come from hypothetical constants",
+  "order_rule": "segments sorted by how often they change: deployment, tenant, conversation, turn, pass",
+  "safety_metadata_tokens": 0
+}

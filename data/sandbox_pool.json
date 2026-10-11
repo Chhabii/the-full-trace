@@ -1,0 +1,434 @@
+{
+  "meta": {
+    "script": "sim/sandbox_pool.py",
+    "generated_at": "2026-10-09T09:33:43+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T09:32:42+00:00",
+      "sha256": "e4918724d137"
+    },
+    "constants_used": {
+      "extra.sims_w08.firecracker_creation_rate_per_host": 150,
+      "hypothetical.sandbox_pool.artifact_upload_ms": 80,
+      "hypothetical.sandbox_pool.burst_safety_z": 3,
+      "hypothetical.sandbox_pool.calls_per_session": 2,
+      "hypothetical.sandbox_pool.copy_in_ms": 20,
+      "hypothetical.sandbox_pool.guest_agent_ready_ms": 200,
+      "hypothetical.sandbox_pool.host_memory_gib": 1024,
+      "hypothetical.sandbox_pool.host_reserved_gib": 64,
+      "hypothetical.sandbox_pool.host_vcpus": 192,
+      "hypothetical.sandbox_pool.mean_gap_between_calls_s": 20,
+      "hypothetical.sandbox_pool.mean_run_s": 3,
+      "hypothetical.sandbox_pool.pool_claim_ms": 5,
+      "hypothetical.sandbox_pool.pool_warmup_ms": 350,
+      "hypothetical.sandbox_pool.python_warm_imports_ms": 1500,
+      "hypothetical.sandbox_pool.reference_run_ms": 1200,
+      "hypothetical.sandbox_pool.snapshot_restore_ms": 150,
+      "hypothetical.sandbox_pool.vmm_start_ms": 12,
+      "hypothetical.sandbox_vm.idle_keep_live_s": 120,
+      "hypothetical.sandbox_vm.memory_mib": 2048,
+      "hypothetical.sandbox_vm.vcpus": 2,
+      "hypothetical.tool_call_story.pass2_timeout_s": 30,
+      "hypothetical.tool_exec_limits.run_python_deadline_margin_s": 5,
+      "hypothetical.traffic.code_execution_fraction": 0.05,
+      "hypothetical.traffic.peak_arrival_rate": 50000,
+      "network.protocols.firecracker_boot_ms": 125
+    }
+  },
+  "arrivals": {
+    "peak_arrival_rate": {
+      "value": 50000,
+      "unit": "requests/s"
+    },
+    "code_execution_fraction": {
+      "value": 0.05,
+      "unit": "fraction of requests"
+    },
+    "code_calls_per_s": {
+      "value": 2500.0,
+      "unit": "calls/s",
+      "formula": "peak_arrival_rate × code_execution_fraction",
+      "arithmetic": "50,000 × 0.05 = 2,500 calls/s"
+    },
+    "calls_per_session": {
+      "value": 2,
+      "unit": "calls"
+    },
+    "new_sessions_per_s": {
+      "value": 1250.0,
+      "unit": "sessions/s",
+      "formula": "code_calls_per_s / calls_per_session",
+      "arithmetic": "2,500 / 2 = 1,250 sessions/s"
+    },
+    "label": "hypothetical peak (one code call per code-using request on average, the same as tool_call_demo fleet)"
+  },
+  "start_paths": {
+    "cold": {
+      "steps": [
+        {
+          "step": "start the jailed Firecracker process (to API socket)",
+          "ms": 12,
+          "class": "C (typical value of the Firecracker specification)"
+        },
+        {
+          "step": "boot the guest kernel to /sbin/init",
+          "ms": 125,
+          "class": "A (Firecracker: at most 125 ms, minimal kernel)"
+        },
+        {
+          "step": "guest init and agent ready on vsock",
+          "ms": 200,
+          "class": "C"
+        },
+        {
+          "step": "start Python and import numpy, pandas, matplotlib",
+          "ms": 1500,
+          "class": "C"
+        },
+        {
+          "step": "copy the uploaded files in over vsock",
+          "ms": 20,
+          "class": "C"
+        }
+      ],
+      "total_ms": {
+        "value": 1857,
+        "unit": "ms",
+        "formula": "sum of the cold steps",
+        "arithmetic": "12 + 125 + 200 + 1500 + 20 = 1857 ms"
+      }
+    },
+    "pool_refill": {
+      "steps": [
+        {
+          "step": "load the template snapshot and resume",
+          "ms": 150,
+          "class": "C (no public restore time)"
+        },
+        {
+          "step": "reseed, warm up, health check",
+          "ms": 350,
+          "class": "C"
+        }
+      ],
+      "total_ms": {
+        "value": 500,
+        "unit": "ms",
+        "formula": "snapshot_restore + pool_warmup",
+        "arithmetic": "150 + 350 = 500 ms"
+      }
+    },
+    "warm_claim": {
+      "steps": [
+        {
+          "step": "claim a ready VM from the pool",
+          "ms": 5,
+          "class": "C"
+        },
+        {
+          "step": "copy the uploaded files in over vsock",
+          "ms": 20,
+          "class": "C"
+        }
+      ],
+      "total_ms": {
+        "value": 25,
+        "unit": "ms",
+        "formula": "pool_claim + copy_in",
+        "arithmetic": "5 + 20 = 25 ms"
+      }
+    },
+    "restore_on_demand": {
+      "total_ms": {
+        "value": 170,
+        "unit": "ms",
+        "formula": "snapshot_restore + copy_in (no pool; pages fault in during the run)",
+        "arithmetic": "150 + 20 = 170 ms"
+      }
+    },
+    "cold_minus_warm_ms": {
+      "value": 1832,
+      "unit": "ms",
+      "formula": "cold − warm_claim",
+      "arithmetic": "1857 − 25 = 1832 ms"
+    },
+    "cold_over_warm": {
+      "value": 74.28,
+      "unit": "×",
+      "formula": "cold / warm_claim",
+      "arithmetic": "1857 / 25 = 74"
+    },
+    "label": "hypothetical times except the 125 ms boot bound (Firecracker, class A)"
+  },
+  "reference_call": {
+    "timeout_s": {
+      "value": 30,
+      "unit": "s"
+    },
+    "executor_deadline_s": {
+      "value": 35,
+      "unit": "s",
+      "formula": "timeout_s + run_python_deadline_margin_s",
+      "arithmetic": "30 + 5 = 35 s"
+    },
+    "steps_ms": {
+      "warm_claim_and_copy_in": 25,
+      "run": 1200,
+      "artifact_upload": 80
+    },
+    "sandbox_total_ms": {
+      "value": 1305,
+      "unit": "ms",
+      "formula": "warm claim + run + artifact upload",
+      "arithmetic": "25 + 1200 + 80 = 1305 ms"
+    },
+    "if_cold_total_ms": {
+      "value": 3137,
+      "unit": "ms",
+      "formula": "cold start + run + artifact upload",
+      "arithmetic": "1857 + 1200 + 80 = 3137 ms"
+    },
+    "share_of_deadline": {
+      "value": 0.0435,
+      "unit": "fraction",
+      "formula": "sandbox_total / timeout_s"
+    }
+  },
+  "littles_law": {
+    "busy_vms": {
+      "value": 7500.0,
+      "unit": "VMs",
+      "formula": "L = λ_calls × W_run",
+      "arithmetic": "2,500 calls/s × 3 s = 7,500 VMs"
+    },
+    "session_hold_s": {
+      "value": 146,
+      "unit": "s",
+      "formula": "W = calls × run + (calls − 1) × gap + idle_keep",
+      "arithmetic": "2 × 3 + 1 × 20 + 120 = 146 s"
+    },
+    "live_vms": {
+      "value": 182500.0,
+      "unit": "VMs",
+      "formula": "L = λ_sessions × W",
+      "arithmetic": "1,250 sessions/s × 146 s = 182,500 VMs"
+    },
+    "busy_fraction": {
+      "value": 0.0410958904109589,
+      "unit": "fraction",
+      "formula": "busy_vms / live_vms",
+      "arithmetic": "7,500 / 182,500 = 0.041"
+    },
+    "live_memory_tib": {
+      "value": 356.4453125,
+      "unit": "TiB",
+      "formula": "live_vms × memory_mib / 1024²",
+      "arithmetic": "182,500 × 2048 MiB = 356 TiB"
+    },
+    "vms_per_host_by_memory": {
+      "value": 480,
+      "unit": "VMs",
+      "formula": "⌊(host_memory − reserved) × 1024 / memory_mib⌋",
+      "arithmetic": "⌊(1024 − 64) × 1024 / 2048⌋ = 480"
+    },
+    "hosts_by_memory": {
+      "value": 381,
+      "unit": "hosts",
+      "formula": "⌈live_vms / vms_per_host⌉",
+      "arithmetic": "⌈182,500 / 480⌉ = 381"
+    },
+    "busy_vcpus": {
+      "value": 15000.0,
+      "unit": "vCPUs",
+      "formula": "busy_vms × vcpus",
+      "arithmetic": "7,500 × 2 = 15,000"
+    },
+    "hosts_by_cpu": {
+      "value": 79,
+      "unit": "hosts",
+      "formula": "⌈busy_vcpus / host_vcpus⌉",
+      "arithmetic": "⌈15,000 / 192⌉ = 79"
+    },
+    "hosts": {
+      "value": 381,
+      "unit": "hosts",
+      "formula": "max(hosts_by_memory, hosts_by_cpu)"
+    },
+    "binding_resource": "memory",
+    "idle_keep_s": {
+      "value": 120,
+      "unit": "s"
+    }
+  },
+  "pool": {
+    "refill_time_s": {
+      "value": 0.5,
+      "unit": "s"
+    },
+    "mean_pool": {
+      "value": 625.0,
+      "unit": "VMs",
+      "formula": "L = λ_sessions × T_refill (Little's Law)",
+      "arithmetic": "1,250 /s × 0.5 s = 625.0 VMs"
+    },
+    "central_pool": {
+      "value": 700,
+      "unit": "VMs",
+      "formula": "⌈mean + z × √mean⌉",
+      "arithmetic": "⌈625.0 + 3 × √625.0⌉ = ⌈625.0 + 75.0⌉ = 700"
+    },
+    "hosts": {
+      "value": 381,
+      "unit": "hosts"
+    },
+    "sessions_per_s_per_host": {
+      "value": 3.2808398950131235,
+      "unit": "sessions/s",
+      "formula": "λ_sessions / hosts",
+      "arithmetic": "1,250 / 381 = 3.28 /s"
+    },
+    "mean_pool_per_host": {
+      "value": 1.6404199475065617,
+      "unit": "VMs",
+      "formula": "λ_host × T_refill",
+      "arithmetic": "3.28 × 0.5 = 1.64 VMs"
+    },
+    "per_host_pool": {
+      "value": 6,
+      "unit": "VMs",
+      "formula": "⌈mean_host + z × √mean_host⌉",
+      "arithmetic": "⌈1.64 + 3 × √1.64⌉ = ⌈5.48⌉ = 6"
+    },
+    "per_host_pool_total": {
+      "value": 2286,
+      "unit": "VMs",
+      "formula": "per_host_pool × hosts",
+      "arithmetic": "6 × 381 = 2,286"
+    },
+    "per_host_over_central": {
+      "value": 3.2657142857142856,
+      "unit": "×"
+    },
+    "pool_memory_gib_per_host": {
+      "value": 12.0,
+      "unit": "GiB"
+    },
+    "cold_template_mean_pool": {
+      "value": 2321.25,
+      "unit": "VMs",
+      "formula": "λ_sessions × T_cold",
+      "arithmetic": "1,250 /s × 1.857 s = 2,321 VMs"
+    },
+    "cold_over_refill": {
+      "value": 3.714,
+      "unit": "×"
+    },
+    "paper_check": {
+      "creations_per_s_per_pooled_vm": {
+        "value": 8.0,
+        "unit": "creations/s",
+        "formula": "1 / creation latency",
+        "arithmetic": "1 / 0.125 s = 8 per s"
+      },
+      "statement": "NSDI 2020: at 125 ms creation time, one pooled microVM per 8 creations per second (SRC-176)"
+    },
+    "hosts_including_pool": {
+      "value": 385,
+      "unit": "hosts",
+      "formula": "⌈(live_vms + per_host_pool_total) / vms_per_host⌉",
+      "arithmetic": "⌈(182,500 + 2,286) / 480⌉ = 385"
+    },
+    "host_creation_rate_cap": {
+      "value": 150,
+      "unit": "microVMs/s per host"
+    },
+    "host_refill_utilization": {
+      "value": 0.021872265966754158,
+      "unit": "fraction",
+      "formula": "sessions_per_s_per_host / creation cap",
+      "arithmetic": "3.28 / 150 = 0.022"
+    }
+  },
+  "idle_window": {
+    "alternative_idle_keep_s": {
+      "value": 20,
+      "unit": "s",
+      "formula": "idle window cut to mean_gap_between_calls_s"
+    },
+    "littles_law": {
+      "busy_vms": {
+        "value": 7500.0,
+        "unit": "VMs",
+        "formula": "L = λ_calls × W_run",
+        "arithmetic": "2,500 calls/s × 3 s = 7,500 VMs"
+      },
+      "session_hold_s": {
+        "value": 46,
+        "unit": "s",
+        "formula": "W = calls × run + (calls − 1) × gap + idle_keep",
+        "arithmetic": "2 × 3 + 1 × 20 + 20 = 46 s"
+      },
+      "live_vms": {
+        "value": 57500.0,
+        "unit": "VMs",
+        "formula": "L = λ_sessions × W",
+        "arithmetic": "1,250 sessions/s × 46 s = 57,500 VMs"
+      },
+      "busy_fraction": {
+        "value": 0.13043478260869565,
+        "unit": "fraction",
+        "formula": "busy_vms / live_vms",
+        "arithmetic": "7,500 / 57,500 = 0.130"
+      },
+      "live_memory_tib": {
+        "value": 112.3046875,
+        "unit": "TiB",
+        "formula": "live_vms × memory_mib / 1024²",
+        "arithmetic": "57,500 × 2048 MiB = 112 TiB"
+      },
+      "vms_per_host_by_memory": {
+        "value": 480,
+        "unit": "VMs",
+        "formula": "⌊(host_memory − reserved) × 1024 / memory_mib⌋",
+        "arithmetic": "⌊(1024 − 64) × 1024 / 2048⌋ = 480"
+      },
+      "hosts_by_memory": {
+        "value": 120,
+        "unit": "hosts",
+        "formula": "⌈live_vms / vms_per_host⌉",
+        "arithmetic": "⌈57,500 / 480⌉ = 120"
+      },
+      "busy_vcpus": {
+        "value": 15000.0,
+        "unit": "vCPUs",
+        "formula": "busy_vms × vcpus",
+        "arithmetic": "7,500 × 2 = 15,000"
+      },
+      "hosts_by_cpu": {
+        "value": 79,
+        "unit": "hosts",
+        "formula": "⌈busy_vcpus / host_vcpus⌉",
+        "arithmetic": "⌈15,000 / 192⌉ = 79"
+      },
+      "hosts": {
+        "value": 120,
+        "unit": "hosts",
+        "formula": "max(hosts_by_memory, hosts_by_cpu)"
+      },
+      "binding_resource": "memory",
+      "idle_keep_s": {
+        "value": 20,
+        "unit": "s"
+      }
+    },
+    "live_vms_saved": {
+      "value": 125000.0,
+      "unit": "VMs"
+    },
+    "hosts_saved": {
+      "value": 261,
+      "unit": "hosts"
+    },
+    "note": "a shorter window frees memory, but more second calls arrive after the VM stopped and lose their Python state"
+  }
+}

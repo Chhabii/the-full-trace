@@ -1,0 +1,207 @@
+{
+  "sandbox_vm": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Size and limits of one code sandbox: one Firecracker microVM per session (RA-30). Part 08.1.",
+    "vcpus": {
+      "value": 2,
+      "unit": "vCPUs",
+      "note": "Guest vCPU count (Firecracker machine config); the host cgroup cpu.max caps the VM at the same number of host CPUs."
+    },
+    "memory_mib": {
+      "value": 2048,
+      "unit": "MiB",
+      "note": "Guest memory; enough for pandas, numpy and matplotlib on report-sized data. The host reserves it in full (no memory overcommit)."
+    },
+    "scratch_disk_mib": {
+      "value": 4096,
+      "unit": "MiB",
+      "note": "Writable, sparse per-session block device for /tmp and the home directory; deleted with the session."
+    },
+    "output_quota_mib": {
+      "value": 256,
+      "unit": "MiB",
+      "note": "Most bytes the guest agent copies out of /mnt/output per call; files beyond it are not returned."
+    },
+    "artifact_max_files": {
+      "value": 20,
+      "unit": "files",
+      "note": "Most files returned from /mnt/output per call."
+    },
+    "pids_max": {
+      "value": 256,
+      "unit": "processes",
+      "note": "Guest cgroup pids.max for the code's process tree; fork() then fails with EAGAIN (stops fork bombs)."
+    },
+    "idle_keep_live_s": {
+      "value": 120,
+      "unit": "s",
+      "note": "After a call ends, the session VM stays running this long for the next call of the same session, so Python variables survive; then the host stops the VM and keeps only the session's files."
+    },
+    "session_retention_s": {
+      "value": 3600,
+      "unit": "s",
+      "note": "How long the session's files (scratch disk and /mnt/output) are kept in the object store for later turns; a later call gets a fresh VM with the files copied back in, but no Python state. Then the files are deleted."
+    },
+    "artifact_url_ttl_s": {
+      "value": 300,
+      "unit": "s",
+      "note": "Lifetime of the presigned GET URL the file API issues for one artifact download (RA-63)."
+    }
+  },
+  "sandbox_pool": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Start-up times, session shape and host size used for warm-pool sizing (Part 08.1). Firecracker publishes boot time but no snapshot-restore time, so restore values are hypothetical.",
+    "vmm_start_ms": {
+      "value": 12,
+      "unit": "ms",
+      "note": "Wall time from process start to API socket; the Firecracker specification gives a typical 12 ms (range 6 to 60 ms)."
+    },
+    "guest_agent_ready_ms": {
+      "value": 200,
+      "unit": "ms",
+      "note": "Cold path: from guest /sbin/init to the guest agent listening on vsock (mounts, user setup, agent start)."
+    },
+    "python_warm_imports_ms": {
+      "value": 1500,
+      "unit": "ms",
+      "note": "Cold path: start the Python interpreter and import numpy, pandas and matplotlib. The pool snapshot is taken after this step."
+    },
+    "snapshot_restore_ms": {
+      "value": 150,
+      "unit": "ms",
+      "note": "Load the template snapshot into a new jailed Firecracker process, resume it and complete the vsock handshake (memory pages load later, on demand)."
+    },
+    "pool_warmup_ms": {
+      "value": 350,
+      "unit": "ms",
+      "note": "After restore, the agent reseeds user-space random state and runs a tiny warm-up script that faults in the interpreter's pages, before the VM joins the pool."
+    },
+    "pool_claim_ms": {
+      "value": 5,
+      "unit": "ms",
+      "note": "Sandbox manager takes a ready VM from the host's pool and binds it to the session."
+    },
+    "copy_in_ms": {
+      "value": 20,
+      "unit": "ms",
+      "note": "Guest agent receives the session's uploaded files (the 2.1 MB Q3 report) over vsock into /mnt/data."
+    },
+    "reference_run_ms": {
+      "value": 1200,
+      "unit": "ms",
+      "note": "Run time of the reference request's 16-line margin script, mostly matplotlib rendering and savefig."
+    },
+    "artifact_upload_ms": {
+      "value": 80,
+      "unit": "ms",
+      "note": "Copy the PNG out over vsock, scan its type and size, and PUT it to the object store."
+    },
+    "mean_run_s": {
+      "value": 3,
+      "unit": "s",
+      "note": "Mean run time of one code call across the fleet (most calls are short data and chart scripts)."
+    },
+    "calls_per_session": {
+      "value": 2,
+      "unit": "calls",
+      "note": "Mean code calls in one sandbox session (one conversation's code work)."
+    },
+    "mean_gap_between_calls_s": {
+      "value": 20,
+      "unit": "s",
+      "note": "Mean time between two calls of the same session (one more inference pass, or the user's next turn); shorter than idle_keep_live_s, so the VM is still live."
+    },
+    "burst_safety_z": {
+      "value": 3,
+      "unit": "standard deviations",
+      "note": "Pool headroom above the Little's Law mean: arrivals in the refill window are treated as Poisson, so the pool adds z × sqrt(mean)."
+    },
+    "host_vcpus": {
+      "value": 192,
+      "unit": "vCPUs",
+      "note": "Hardware threads of one sandbox host (two 48-core CPUs with SMT)."
+    },
+    "host_memory_gib": {
+      "value": 1024,
+      "unit": "GiB",
+      "note": "DRAM of one sandbox host."
+    },
+    "host_reserved_gib": {
+      "value": 64,
+      "unit": "GiB",
+      "note": "Host memory kept for the host kernel, page cache of snapshot files, jailer and Firecracker overhead."
+    }
+  },
+  "computer_use": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "The browser tool's observe-act loop for a 20-step task (Part 08.2). Not part of the reference request.",
+    "viewport_width_px": {
+      "value": 1280,
+      "unit": "px",
+      "note": "Width of the remote browser's viewport and of each screenshot."
+    },
+    "viewport_height_px": {
+      "value": 800,
+      "unit": "px",
+      "note": "Height of the remote browser's viewport and of each screenshot."
+    },
+    "steps_per_task": {
+      "value": 20,
+      "unit": "steps",
+      "note": "Screenshot-action steps for one browser task, for example filling a multi-page web form."
+    },
+    "task_text_tokens": {
+      "value": 150,
+      "unit": "tokens",
+      "note": "The user's task description in the context."
+    },
+    "tool_schema_tokens": {
+      "value": 900,
+      "unit": "tokens",
+      "note": "The browser tool's schema (actions, coordinates, keys) in the tool-declare message."
+    },
+    "reasoning_tokens_per_step": {
+      "value": 120,
+      "unit": "tokens",
+      "note": "Thinking tokens before each action."
+    },
+    "action_tokens_per_step": {
+      "value": 40,
+      "unit": "tokens",
+      "note": "The tool call of one action, for example a click with x, y coordinates."
+    },
+    "result_frame_tokens": {
+      "value": 25,
+      "unit": "tokens",
+      "note": "Text tokens of the tool-result message around each screenshot (frame, step number, URL)."
+    },
+    "kept_screenshots": {
+      "value": 3,
+      "unit": "screenshots",
+      "note": "Option B: only the last 3 screenshots stay in the context; older ones become a short text placeholder."
+    },
+    "placeholder_tokens": {
+      "value": 10,
+      "unit": "tokens",
+      "note": "Text that replaces a removed screenshot in option B."
+    },
+    "capture_ms": {
+      "value": 100,
+      "unit": "ms",
+      "note": "Capture the viewport, encode PNG and write it to the object store."
+    },
+    "action_exec_ms": {
+      "value": 150,
+      "unit": "ms",
+      "note": "The browser VM runs one click or key action."
+    },
+    "page_settle_ms": {
+      "value": 800,
+      "unit": "ms",
+      "note": "Wait after an action for navigation, network and rendering before the next screenshot."
+    }
+  }
+}

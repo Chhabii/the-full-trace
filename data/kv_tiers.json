@@ -1,0 +1,1604 @@
+{
+  "meta": {
+    "script": "sim/kv_tiers.py",
+    "generated_at": "2026-10-09T07:02:08+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T07:01:58+00:00",
+      "sha256": "fc412905b92c"
+    },
+    "constants_used": {
+      "extra.sims_s1.dgx_h100_compute_nics_per_node": 8,
+      "extra.sims_s1.dgx_h100_data_nvme_drives_per_node": 8,
+      "extra.sims_s1.h_teach_gpus_per_node": 8,
+      "extra.sims_s1.mooncake_eq2_example.a": 4,
+      "extra.sims_s1.mooncake_eq2_example.b": 22,
+      "extra.sims_s1.mooncake_eq2_example.bytes_per_element_s": 2,
+      "extra.sims_s1.mooncake_eq2_example.gpu_tflops": 312,
+      "extra.sims_s1.mooncake_eq2_example.gpus": 8,
+      "extra.sims_s1.mooncake_eq2_example.gqa": 8,
+      "extra.sims_s1.mooncake_eq2_example.hidden_d": 8192,
+      "extra.sims_s1.mooncake_eq2_example.layers_l": 80,
+      "extra.sims_s1.mooncake_eq2_example.prefix_tokens_p": 8192,
+      "extra.sims_s1.mooncake_eq2_example.published_min_bandwidth": 6,
+      "extra.sims_s1.mooncake_te_8x400g_nic_count": 8,
+      "hardware.H-teach.h100_pcie_gen5_x16_printed": 128,
+      "hardware.H-teach.h100_sxm_bf16_dense": 989.5,
+      "hardware.H-teach.h100_sxm_hbm_bandwidth": 3.35,
+      "hardware.gpu_hierarchy_latency.hopper_global_latency": 478.8,
+      "hardware.interconnect.ib_ndr_port": 400,
+      "hardware.interconnect.nvlink_c2c_grace_superchip": 900,
+      "hardware.interconnect.pcie_gen5_x16_per_direction": 63,
+      "hardware.memory_tiers.ddr5_6400_12ch_socket": 614.4,
+      "hardware.memory_tiers.grace_lpddr5x_bandwidth": 512,
+      "hardware.memory_tiers.nvme_gen5_seq_read": 14,
+      "hypothetical.serving_assumptions.kv_transfer_software_overhead_ms": 2.0,
+      "hypothetical.serving_assumptions.prefill_mfu": 0.5,
+      "hypothetical.serving_assumptions.prefix_hit_suffix_tokens": 500,
+      "hypothetical.serving_assumptions.reference_context_tokens": 32768,
+      "hypothetical.serving_assumptions.reference_shared_prefix_tokens": 8000,
+      "kv_systems.mooncake_te_bw_8x400g_gbs": 190,
+      "models.M-dense.head_dim": 128,
+      "models.M-dense.hidden_size": 12288,
+      "models.M-dense.intermediate_size": 28672,
+      "models.M-dense.max_position_embeddings": 262144,
+      "models.M-dense.num_attention_heads": 96,
+      "models.M-dense.num_hidden_layers": 88,
+      "models.M-dense.num_key_value_heads": 8,
+      "models.M-dense.text_params": 125025988608,
+      "models.M-dense.tie_word_embeddings": false,
+      "models.M-dense.torch_dtype": "bfloat16",
+      "models.M-dense.total_params": 127704210176,
+      "models.M-dense.vision_params": 2678221568,
+      "models.M-dense.vllm_recipe": {
+        "recommended_hw": "8x H200 (alt 4x B200, 2-8x MI300X)",
+        "tp": 8,
+        "eagle_num_speculative_tokens": 3,
+        "mi300x_tp8_1k_in_1k_out_conc32": {
+          "output_tok_s": 915,
+          "mean_ttft_ms": 2522,
+          "mean_tpot_ms": 26.1
+        },
+        "mi300x_tp1": {
+          "output_tok_s": 438,
+          "mean_ttft_ms": 5719,
+          "mean_tpot_ms": 55.2
+        }
+      },
+      "models.M-dense.vocab_size": 131072,
+      "routing.dynamo.disk_hit_credit": 0.25,
+      "routing.dynamo.host_hit_credit": 0.75,
+      "routing.dynamo.overlap_score_credit_gpu": 1.0,
+      "software.vllm.block_size_tokens": 16
+    }
+  },
+  "conventions": {
+    "model": "M-dense, BF16 KV (360,448 B/token; 45,056 B/token/GPU under TP=8)",
+    "hardware": "H-teach: 8× H100 SXM, TP=8",
+    "bandwidth": "B/s per GPU per direction unless stated; GB = 1e9 B",
+    "serves": [
+      "R-XIII.6",
+      "R-XIII.3",
+      "R-XXII.4"
+    ]
+  },
+  "tiers": {
+    "G1_gpu_hbm": {
+      "kvbm_name": "G1",
+      "medium": "GPU HBM3 (H100 SXM)",
+      "path": "on the GPU; a hit moves nothing",
+      "bandwidth_per_gpu": {
+        "value": 3350000000000,
+        "unit": "B/s",
+        "GB_per_s": 3350,
+        "from": "hardware.H-teach.h100_sxm_hbm_bandwidth"
+      },
+      "latency": {
+        "value": 478.8,
+        "unit": "cycles",
+        "from": "hardware.gpu_hierarchy_latency.hopper_global_latency",
+        "class": "A (third-party microbenchmark, H800 PCIe with HBM2e, not H100 SXM)",
+        "note": "Dependent-load latency in clock cycles. Not converted to ns: the H100 clock constant is do_not_show."
+      },
+      "dynamo_router_credit": 1.0
+    },
+    "G2_cpu_dram_pcie": {
+      "kvbm_name": "G2",
+      "medium": "pinned host DRAM",
+      "path": "PCIe Gen5 x16, host to GPU (H-teach)",
+      "bandwidth_per_gpu": {
+        "value": 63000000000,
+        "unit": "B/s",
+        "GB_per_s": 63,
+        "direction": "per direction",
+        "from": "hardware.interconnect.pcie_gen5_x16_per_direction",
+        "printed_both_directions_GB_per_s": 128
+      },
+      "context": {
+        "ddr5_socket_bandwidth_GB_per_s": 614.4,
+        "note": "DRAM itself is faster than one PCIe link (AMD EPYC 9005 figure; the DGX H100 host CPU differs), so the GPU's PCIe link is the limit."
+      },
+      "latency": {
+        "value": null,
+        "status": "not public",
+        "note": "constants.json has no sourced latency for this path. research/notes/02-hardware.md §2.4 lists unsourced order-of-magnitude estimates (class D until measured); they are not used. The fixed per-transfer cost is modelled by hypothetical.serving_assumptions.kv_transfer_software_overhead_ms."
+      },
+      "dynamo_router_credit": 0.75
+    },
+    "G2_cpu_dram_nvlink_c2c_gb300": {
+      "kvbm_name": "G2",
+      "medium": "Grace LPDDR5X",
+      "path": "NVLink-C2C, Grace to GPU (H-frontier only)",
+      "bandwidth_per_gpu": {
+        "formula": "900 GB/s bidirectional / 2",
+        "value": 450000000000,
+        "unit": "B/s",
+        "GB_per_s": 450,
+        "direction": "per direction",
+        "from": "hardware.interconnect.nvlink_c2c_grace_superchip"
+      },
+      "context": {
+        "grace_lpddr5x_bandwidth_GB_per_s": 512
+      },
+      "caveat": "The constant is the Grace CPU Superchip's CPU-to-CPU NVLink-C2C ('up to'); using it for the Grace-to-Blackwell link of GB300 is an assumption. One Grace serves two GPUs and its LPDDR5X bandwidth is shared. Not used for M-dense on H-teach below.",
+      "latency": {
+        "value": null,
+        "status": "not public",
+        "note": "constants.json has no sourced latency for this path. research/notes/02-hardware.md §2.4 lists unsourced order-of-magnitude estimates (class D until measured); they are not used. The fixed per-transfer cost is modelled by hypothetical.serving_assumptions.kv_transfer_software_overhead_ms."
+      }
+    },
+    "G3_local_nvme": {
+      "kvbm_name": "G3",
+      "medium": "local NVMe SSD (PCIe Gen5 x4)",
+      "path": "drive to GPU (GPUDirect Storage or host bounce)",
+      "bandwidth_per_drive": {
+        "value": 14000000000,
+        "unit": "B/s",
+        "GB_per_s": 14,
+        "direction": "sequential read",
+        "from": "hardware.memory_tiers.nvme_gen5_seq_read"
+      },
+      "drives_per_gpu": {
+        "formula": "data drives per node / GPUs per node",
+        "terms": {
+          "drives": {
+            "value": 8,
+            "unit": "drives",
+            "from": "extra.sims_s1.dgx_h100_data_nvme_drives_per_node"
+          },
+          "gpus": {
+            "value": 8,
+            "unit": "GPUs",
+            "from": "extra.sims_s1.h_teach_gpus_per_node"
+          }
+        },
+        "value": 1,
+        "unit": "drives"
+      },
+      "bandwidth_per_gpu": {
+        "value": 14000000000,
+        "unit": "B/s",
+        "GB_per_s": 14,
+        "note": "Reference choice (class C): each GPU reads from its own Gen5 drive, all eight in parallel. DGX H100 has 8 data drives; their PCIe generation is not stated in the source."
+      },
+      "latency": {
+        "value": null,
+        "status": "not public",
+        "note": "constants.json has no sourced latency for this path. research/notes/02-hardware.md §2.4 lists unsourced order-of-magnitude estimates (class D until measured); they are not used. The fixed per-transfer cost is modelled by hypothetical.serving_assumptions.kv_transfer_software_overhead_ms."
+      },
+      "dynamo_router_credit": 0.25
+    },
+    "G4_remote_store_rdma": {
+      "kvbm_name": "G4 (Dynamo: object store; Mooncake Store / LMCache remote: RDMA)",
+      "medium": "remote DRAM or SSD on other nodes",
+      "path": "one 400 Gb/s NDR NIC per GPU, GPUDirect RDMA",
+      "nics_per_gpu": {
+        "formula": "compute NICs per node / GPUs per node",
+        "value": 1,
+        "unit": "NICs"
+      },
+      "bandwidth_per_gpu": {
+        "formula": "400 Gb/s / 8 bits per byte × NICs per GPU",
+        "value": 50000000000,
+        "unit": "B/s",
+        "GB_per_s": 50,
+        "direction": "per direction",
+        "from": "hardware.interconnect.ib_ndr_port"
+      },
+      "measured_effective_per_nic": {
+        "formula": "Mooncake Transfer Engine measured total / NIC count (40 GB transfer, 8×400 Gbps RoCE)",
+        "terms": {
+          "total": {
+            "value": 190,
+            "unit": "GB/s",
+            "from": "kv_systems.mooncake_te_bw_8x400g_gbs"
+          },
+          "nics": {
+            "value": 8,
+            "unit": "NICs",
+            "from": "extra.sims_s1.mooncake_te_8x400g_nic_count"
+          }
+        },
+        "value": 23750000000,
+        "unit": "B/s",
+        "GB_per_s": 23.75,
+        "fraction_of_line_rate": 0.475
+      },
+      "latency": {
+        "value": null,
+        "status": "not public",
+        "note": "constants.json has no sourced latency for this path. research/notes/02-hardware.md §2.4 lists unsourced order-of-magnitude estimates (class D until measured); they are not used. The fixed per-transfer cost is modelled by hypothetical.serving_assumptions.kv_transfer_software_overhead_ms."
+      },
+      "dynamo_router_credit": null,
+      "dynamo_router_credit_note": "Dynamo's router cost gives credits for G1, G2 and G3 hits only."
+    }
+  },
+  "bandwidth_ratios": {
+    "hbm_over_G2_cpu_dram_pcie": 53.17460317,
+    "hbm_over_G3_local_nvme": 239.2857143,
+    "hbm_over_G4_remote_store_rdma": 67
+  },
+  "per_prefix": {
+    "8000": {
+      "prefix_tokens": 8000,
+      "kv_bytes_total": {
+        "formula": "8,000 × 360,448 B/token (BF16)",
+        "value": 2883584000,
+        "unit": "B",
+        "MB_1e6": 2883.584,
+        "GB_1e9": 2.883584,
+        "MiB_2pow20": 2750,
+        "GiB_2pow30": 2.685546875
+      },
+      "kv_bytes_per_gpu": {
+        "formula": "8,000 × 45,056 B/token/GPU (TP=8 share)",
+        "value": 360448000,
+        "unit": "B",
+        "MB_1e6": 360.448,
+        "GB_1e9": 0.360448,
+        "MiB_2pow20": 343.75,
+        "GiB_2pow30": 0.3356933594
+      },
+      "recompute": {
+        "flops_matmul": {
+          "formula": "2 × N_matmul × T",
+          "terms": {
+            "N_matmul": {
+              "value": 123413200896,
+              "unit": "params",
+              "from": "derived from models.M-dense config"
+            }
+          },
+          "value": 1974611214336000,
+          "unit": "FLOP"
+        },
+        "flops_attention": {
+          "formula": "2 × H × d_head × L × T × (T + 1)",
+          "terms": {
+            "H": 96,
+            "d_head": 128,
+            "L": 88,
+            "T": 8000
+          },
+          "value": 138429333504000,
+          "unit": "FLOP"
+        },
+        "flops_total": {
+          "value": 2113040547840000,
+          "unit": "FLOP"
+        },
+        "node_compute": {
+          "formula": "TP × dense BF16 peak × prefill_mfu",
+          "terms": {
+            "TP": 8,
+            "peak": {
+              "value": 989500000000000,
+              "unit": "FLOP/s",
+              "from": "hardware.H-teach.h100_sxm_bf16_dense"
+            },
+            "prefill_mfu": {
+              "value": 0.5,
+              "unit": "fraction",
+              "from": "hypothetical.serving_assumptions.prefill_mfu (HYPOTHETICAL)"
+            }
+          },
+          "value": 3958000000000000,
+          "unit": "FLOP/s"
+        },
+        "time": {
+          "formula": "flops_total / node_compute",
+          "value": 533.8657271,
+          "unit": "ms",
+          "s": 0.5338657271
+        },
+        "hbm_kv_written": {
+          "value": 2883584000,
+          "unit": "B",
+          "MB_1e6": 2883.584,
+          "GB_1e9": 2.883584,
+          "MiB_2pow20": 2750,
+          "GiB_2pow30": 2.685546875,
+          "note": "Recompute moves no bytes between tiers but writes the KV into HBM again."
+        }
+      },
+      "tiers": {
+        "G2_cpu_dram_pcie": {
+          "bandwidth_per_gpu_GB_per_s": 63,
+          "transfer": {
+            "formula": "kv_bytes_per_gpu / bandwidth_per_gpu",
+            "value": 5.721396825,
+            "unit": "ms",
+            "s": 0.005721396825
+          },
+          "transfer_with_overhead": {
+            "formula": "kv_bytes_per_gpu / bandwidth_per_gpu + 2 ms (HYPOTHETICAL)",
+            "value": 7.721396825,
+            "unit": "ms",
+            "s": 0.007721396825
+          },
+          "recompute_over_transfer": 93.31038265,
+          "recompute_cheaper_bandwidth_only": false,
+          "recompute_cheaper_with_overhead": false
+        },
+        "G3_local_nvme": {
+          "bandwidth_per_gpu_GB_per_s": 14,
+          "transfer": {
+            "formula": "kv_bytes_per_gpu / bandwidth_per_gpu",
+            "value": 25.74628571,
+            "unit": "ms",
+            "s": 0.02574628571
+          },
+          "transfer_with_overhead": {
+            "formula": "kv_bytes_per_gpu / bandwidth_per_gpu + 2 ms (HYPOTHETICAL)",
+            "value": 27.74628571,
+            "unit": "ms",
+            "s": 0.02774628571
+          },
+          "recompute_over_transfer": 20.73564059,
+          "recompute_cheaper_bandwidth_only": false,
+          "recompute_cheaper_with_overhead": false
+        },
+        "G4_remote_store_rdma": {
+          "bandwidth_per_gpu_GB_per_s": 50,
+          "transfer": {
+            "formula": "kv_bytes_per_gpu / bandwidth_per_gpu",
+            "value": 7.20896,
+            "unit": "ms",
+            "s": 0.00720896
+          },
+          "transfer_with_overhead": {
+            "formula": "kv_bytes_per_gpu / bandwidth_per_gpu + 2 ms (HYPOTHETICAL)",
+            "value": 9.20896,
+            "unit": "ms",
+            "s": 0.00920896
+          },
+          "recompute_over_transfer": 74.05585925,
+          "recompute_cheaper_bandwidth_only": false,
+          "recompute_cheaper_with_overhead": false,
+          "transfer_at_measured_effective": {
+            "value": 15.17675789,
+            "unit": "ms",
+            "s": 0.01517675789
+          }
+        }
+      },
+      "break_even_bandwidth_per_gpu": {
+        "formula": "kv_bytes_per_gpu / recompute_time",
+        "value": 675166023.4,
+        "unit": "B/s",
+        "GB_per_s": 0.6751660234,
+        "note": "A tier slower than this per GPU loses to recompute."
+      }
+    },
+    "8192": {
+      "prefix_tokens": 8192,
+      "kv_bytes_total": {
+        "formula": "8,192 × 360,448 B/token (BF16)",
+        "value": 2952790016,
+        "unit": "B",
+        "MB_1e6": 2952.790016,
+        "GB_1e9": 2.952790016,
+        "MiB_2pow20": 2816,
+        "GiB_2pow30": 2.75
+      },
+      "kv_bytes_per_gpu": {
+        "formula": "8,192 × 45,056 B/token/GPU (TP=8 share)",
+        "value": 369098752,
+        "unit": "B",
+        "MB_1e6": 369.098752,
+        "GB_1e9": 0.369098752,
+        "MiB_2pow20": 352,
+        "GiB_2pow30": 0.34375
+      },
+      "recompute": {
+        "flops_matmul": {
+          "formula": "2 × N_matmul × T",
+          "terms": {
+            "N_matmul": {
+              "value": 123413200896,
+              "unit": "params",
+              "from": "derived from models.M-dense config"
+            }
+          },
+          "value": 2022001883480064,
+          "unit": "FLOP"
+        },
+        "flops_attention": {
+          "formula": "2 × H × d_head × L × T × (T + 1)",
+          "terms": {
+            "H": 96,
+            "d_head": 128,
+            "L": 88,
+            "T": 8192
+          },
+          "value": 145153251606528,
+          "unit": "FLOP"
+        },
+        "flops_total": {
+          "value": 2167155135086592,
+          "unit": "FLOP"
+        },
+        "node_compute": {
+          "formula": "TP × dense BF16 peak × prefill_mfu",
+          "terms": {
+            "TP": 8,
+            "peak": {
+              "value": 989500000000000,
+              "unit": "FLOP/s",
+              "from": "hardware.H-teach.h100_sxm_bf16_dense"
+            },
+            "prefill_mfu": {
+              "value": 0.5,
+              "unit": "fraction",
+              "from": "hypothetical.serving_assumptions.prefill_mfu (HYPOTHETICAL)"
+            }
+          },
+          "value": 3958000000000000,
+          "unit": "FLOP/s"
+        },
+        "time": {
+          "formula": "flops_total / node_compute",
+          "value": 547.5379321,
+          "unit": "ms",
+          "s": 0.5475379321
+        },
+        "hbm_kv_written": {
+          "value": 2952790016,
+          "unit": "B",
+          "MB_1e6": 2952.790016,
+          "GB_1e9": 2.952790016,
+          "MiB_2pow20": 2816,
+          "GiB_2pow30": 2.75,
+          "note": "Recompute moves no bytes between tiers but writes the KV into HBM again."
+        }
+      },
+      "tiers": {
+        "G2_cpu_dram_pcie": {
+          "bandwidth_per_gpu_GB_per_s": 63,
+          "transfer": {
+            "formula": "kv_bytes_per_gpu / bandwidth_per_gpu",
+            "value": 5.858710349,
+            "unit": "ms",
+            "s": 0.005858710349
+          },
+          "transfer_with_overhead": {
+            "formula": "kv_bytes_per_gpu / bandwidth_per_gpu + 2 ms (HYPOTHETICAL)",
+            "value": 7.858710349,
+            "unit": "ms",
+            "s": 0.007858710349
+          },
+          "recompute_over_transfer": 93.45707492,
+          "recompute_cheaper_bandwidth_only": false,
+          "recompute_cheaper_with_overhead": false
+        },
+        "G3_local_nvme": {
+          "bandwidth_per_gpu_GB_per_s": 14,
+          "transfer": {
+            "formula": "kv_bytes_per_gpu / bandwidth_per_gpu",
+            "value": 26.36419657,
+            "unit": "ms",
+            "s": 0.02636419657
+          },
+          "transfer_with_overhead": {
+            "formula": "kv_bytes_per_gpu / bandwidth_per_gpu + 2 ms (HYPOTHETICAL)",
+            "value": 28.36419657,
+            "unit": "ms",
+            "s": 0.02836419657
+          },
+          "recompute_over_transfer": 20.76823887,
+          "recompute_cheaper_bandwidth_only": false,
+          "recompute_cheaper_with_overhead": false
+        },
+        "G4_remote_store_rdma": {
+          "bandwidth_per_gpu_GB_per_s": 50,
+          "transfer": {
+            "formula": "kv_bytes_per_gpu / bandwidth_per_gpu",
+            "value": 7.38197504,
+            "unit": "ms",
+            "s": 0.00738197504
+          },
+          "transfer_with_overhead": {
+            "formula": "kv_bytes_per_gpu / bandwidth_per_gpu + 2 ms (HYPOTHETICAL)",
+            "value": 9.38197504,
+            "unit": "ms",
+            "s": 0.00938197504
+          },
+          "recompute_over_transfer": 74.17228168,
+          "recompute_cheaper_bandwidth_only": false,
+          "recompute_cheaper_with_overhead": false,
+          "transfer_at_measured_effective": {
+            "value": 15.54100008,
+            "unit": "ms",
+            "s": 0.01554100008
+          }
+        }
+      },
+      "break_even_bandwidth_per_gpu": {
+        "formula": "kv_bytes_per_gpu / recompute_time",
+        "value": 674106268.1,
+        "unit": "B/s",
+        "GB_per_s": 0.6741062681,
+        "note": "A tier slower than this per GPU loses to recompute."
+      }
+    },
+    "32768": {
+      "prefix_tokens": 32768,
+      "kv_bytes_total": {
+        "formula": "32,768 × 360,448 B/token (BF16)",
+        "value": 11811160064,
+        "unit": "B",
+        "MB_1e6": 11811.16006,
+        "GB_1e9": 11.81116006,
+        "MiB_2pow20": 11264,
+        "GiB_2pow30": 11
+      },
+      "kv_bytes_per_gpu": {
+        "formula": "32,768 × 45,056 B/token/GPU (TP=8 share)",
+        "value": 1476395008,
+        "unit": "B",
+        "MB_1e6": 1476.395008,
+        "GB_1e9": 1.476395008,
+        "MiB_2pow20": 1408,
+        "GiB_2pow30": 1.375
+      },
+      "recompute": {
+        "flops_matmul": {
+          "formula": "2 × N_matmul × T",
+          "terms": {
+            "N_matmul": {
+              "value": 123413200896,
+              "unit": "params",
+              "from": "derived from models.M-dense config"
+            }
+          },
+          "value": 8088007533920256,
+          "unit": "FLOP"
+        },
+        "flops_attention": {
+          "formula": "2 × H × d_head × L × T × (T + 1)",
+          "terms": {
+            "H": 96,
+            "d_head": 128,
+            "L": 88,
+            "T": 32768
+          },
+          "value": 2322239424823296,
+          "unit": "FLOP"
+        },
+        "flops_total": {
+          "value": 10410246958743552,
+          "unit": "FLOP"
+        },
+        "node_compute": {
+          "formula": "TP × dense BF16 peak × prefill_mfu",
+          "terms": {
+            "TP": 8,
+            "peak": {
+              "value": 989500000000000,
+              "unit": "FLOP/s",
+              "from": "hardware.H-teach.h100_sxm_bf16_dense"
+            },
+            "prefill_mfu": {
+              "value": 0.5,
+              "unit": "fraction",
+              "from": "hypothetical.serving_assumptions.prefill_mfu (HYPOTHETICAL)"
+            }
+          },
+          "value": 3958000000000000,
+          "unit": "FLOP/s"
+        },
+        "time": {
+          "formula": "flops_total / node_compute",
+          "value": 2630.178615,
+          "unit": "ms",
+          "s": 2.630178615
+        },
+        "hbm_kv_written": {
+          "value": 11811160064,
+          "unit": "B",
+          "MB_1e6": 11811.16006,
+          "GB_1e9": 11.81116006,
+          "MiB_2pow20": 11264,
+          "GiB_2pow30": 11,
+          "note": "Recompute moves no bytes between tiers but writes the KV into HBM again."
+        }
+      },
+      "tiers": {
+        "G2_cpu_dram_pcie": {
+          "bandwidth_per_gpu_GB_per_s": 63,
+          "transfer": {
+            "formula": "kv_bytes_per_gpu / bandwidth_per_gpu",
+            "value": 23.4348414,
+            "unit": "ms",
+            "s": 0.0234348414
+          },
+          "transfer_with_overhead": {
+            "formula": "kv_bytes_per_gpu / bandwidth_per_gpu + 2 ms (HYPOTHETICAL)",
+            "value": 25.4348414,
+            "unit": "ms",
+            "s": 0.0254348414
+          },
+          "recompute_over_transfer": 112.2336853,
+          "recompute_cheaper_bandwidth_only": false,
+          "recompute_cheaper_with_overhead": false
+        },
+        "G3_local_nvme": {
+          "bandwidth_per_gpu_GB_per_s": 14,
+          "transfer": {
+            "formula": "kv_bytes_per_gpu / bandwidth_per_gpu",
+            "value": 105.4567863,
+            "unit": "ms",
+            "s": 0.1054567863
+          },
+          "transfer_with_overhead": {
+            "formula": "kv_bytes_per_gpu / bandwidth_per_gpu + 2 ms (HYPOTHETICAL)",
+            "value": 107.4567863,
+            "unit": "ms",
+            "s": 0.1074567863
+          },
+          "recompute_over_transfer": 24.94081896,
+          "recompute_cheaper_bandwidth_only": false,
+          "recompute_cheaper_with_overhead": false
+        },
+        "G4_remote_store_rdma": {
+          "bandwidth_per_gpu_GB_per_s": 50,
+          "transfer": {
+            "formula": "kv_bytes_per_gpu / bandwidth_per_gpu",
+            "value": 29.52790016,
+            "unit": "ms",
+            "s": 0.02952790016
+          },
+          "transfer_with_overhead": {
+            "formula": "kv_bytes_per_gpu / bandwidth_per_gpu + 2 ms (HYPOTHETICAL)",
+            "value": 31.52790016,
+            "unit": "ms",
+            "s": 0.03152790016
+          },
+          "recompute_over_transfer": 89.07435344,
+          "recompute_cheaper_bandwidth_only": false,
+          "recompute_cheaper_with_overhead": false,
+          "transfer_at_measured_effective": {
+            "value": 62.16400034,
+            "unit": "ms",
+            "s": 0.06216400034
+          }
+        }
+      },
+      "break_even_bandwidth_per_gpu": {
+        "formula": "kv_bytes_per_gpu / recompute_time",
+        "value": 561328800.8,
+        "unit": "B/s",
+        "GB_per_s": 0.5613288008,
+        "note": "A tier slower than this per GPU loses to recompute."
+      }
+    },
+    "131072": {
+      "prefix_tokens": 131072,
+      "kv_bytes_total": {
+        "formula": "131,072 × 360,448 B/token (BF16)",
+        "value": 47244640256,
+        "unit": "B",
+        "MB_1e6": 47244.64026,
+        "GB_1e9": 47.24464026,
+        "MiB_2pow20": 45056,
+        "GiB_2pow30": 44
+      },
+      "kv_bytes_per_gpu": {
+        "formula": "131,072 × 45,056 B/token/GPU (TP=8 share)",
+        "value": 5905580032,
+        "unit": "B",
+        "MB_1e6": 5905.580032,
+        "GB_1e9": 5.905580032,
+        "MiB_2pow20": 5632,
+        "GiB_2pow30": 5.5
+      },
+      "recompute": {
+        "flops_matmul": {
+          "formula": "2 × N_matmul × T",
+          "terms": {
+            "N_matmul": {
+              "value": 123413200896,
+              "unit": "params",
+              "from": "derived from models.M-dense config"
+            }
+          },
+          "value": 32352030135681024,
+          "unit": "FLOP"
+        },
+        "flops_attention": {
+          "formula": "2 × H × d_head × L × T × (T + 1)",
+          "terms": {
+            "H": 96,
+            "d_head": 128,
+            "L": 88,
+            "T": 131072
+          },
+          "value": 37154980393648128,
+          "unit": "FLOP"
+        },
+        "flops_total": {
+          "value": 69507010529329152,
+          "unit": "FLOP"
+        },
+        "node_compute": {
+          "formula": "TP × dense BF16 peak × prefill_mfu",
+          "terms": {
+            "TP": 8,
+            "peak": {
+              "value": 989500000000000,
+              "unit": "FLOP/s",
+              "from": "hardware.H-teach.h100_sxm_bf16_dense"
+            },
+            "prefill_mfu": {
+              "value": 0.5,
+              "unit": "fraction",
+              "from": "hypothetical.serving_assumptions.prefill_mfu (HYPOTHETICAL)"
+            }
+          },
+          "value": 3958000000000000,
+          "unit": "FLOP/s"
+        },
+        "time": {
+          "formula": "flops_total / node_compute",
+          "value": 17561.14465,
+          "unit": "ms",
+          "s": 17.56114465
+        },
+        "hbm_kv_written": {
+          "value": 47244640256,
+          "unit": "B",
+          "MB_1e6": 47244.64026,
+          "GB_1e9": 47.24464026,
+          "MiB_2pow20": 45056,
+          "GiB_2pow30": 44,
+          "note": "Recompute moves no bytes between tiers but writes the KV into HBM again."
+        }
+      },
+      "tiers": {
+        "G2_cpu_dram_pcie": {
+          "bandwidth_per_gpu_GB_per_s": 63,
+          "transfer": {
+            "formula": "kv_bytes_per_gpu / bandwidth_per_gpu",
+            "value": 93.73936559,
+            "unit": "ms",
+            "s": 0.09373936559
+          },
+          "transfer_with_overhead": {
+            "formula": "kv_bytes_per_gpu / bandwidth_per_gpu + 2 ms (HYPOTHETICAL)",
+            "value": 95.73936559,
+            "unit": "ms",
+            "s": 0.09573936559
+          },
+          "recompute_over_transfer": 187.340127,
+          "recompute_cheaper_bandwidth_only": false,
+          "recompute_cheaper_with_overhead": false
+        },
+        "G3_local_nvme": {
+          "bandwidth_per_gpu_GB_per_s": 14,
+          "transfer": {
+            "formula": "kv_bytes_per_gpu / bandwidth_per_gpu",
+            "value": 421.8271451,
+            "unit": "ms",
+            "s": 0.4218271451
+          },
+          "transfer_with_overhead": {
+            "formula": "kv_bytes_per_gpu / bandwidth_per_gpu + 2 ms (HYPOTHETICAL)",
+            "value": 423.8271451,
+            "unit": "ms",
+            "s": 0.4238271451
+          },
+          "recompute_over_transfer": 41.63113933,
+          "recompute_cheaper_bandwidth_only": false,
+          "recompute_cheaper_with_overhead": false
+        },
+        "G4_remote_store_rdma": {
+          "bandwidth_per_gpu_GB_per_s": 50,
+          "transfer": {
+            "formula": "kv_bytes_per_gpu / bandwidth_per_gpu",
+            "value": 118.1116006,
+            "unit": "ms",
+            "s": 0.1181116006
+          },
+          "transfer_with_overhead": {
+            "formula": "kv_bytes_per_gpu / bandwidth_per_gpu + 2 ms (HYPOTHETICAL)",
+            "value": 120.1116006,
+            "unit": "ms",
+            "s": 0.1201116006
+          },
+          "recompute_over_transfer": 148.6826405,
+          "recompute_cheaper_bandwidth_only": false,
+          "recompute_cheaper_with_overhead": false,
+          "transfer_at_measured_effective": {
+            "value": 248.6560013,
+            "unit": "ms",
+            "s": 0.2486560013
+          }
+        }
+      },
+      "break_even_bandwidth_per_gpu": {
+        "formula": "kv_bytes_per_gpu / recompute_time",
+        "value": 336286737.0,
+        "unit": "B/s",
+        "GB_per_s": 0.336286737,
+        "note": "A tier slower than this per GPU loses to recompute."
+      }
+    }
+  },
+  "crossover": {
+    "recompute_time_model": {
+      "formula": "t_r(T) = c2·T² + c1·T",
+      "c2_s_per_token2": 5.464092976e-10,
+      "c1_s_per_token": 6.236194151e-05,
+      "note": "c2 = 2·H·d_head·L / G_node; c1 = (2·N_matmul + 2·H·d_head·L) / G_node. Recompute time per token grows with T, so a link that beats recompute at T = 1 beats it at every T."
+    },
+    "max_break_even_bandwidth_per_gpu": {
+      "formula": "kv_bytes_per_token_per_gpu / t_r(1)",
+      "value": 722485608.0,
+      "unit": "B/s",
+      "GB_per_s": 0.722485608,
+      "note": "Any tier faster than this per GPU is cheaper than recompute for every prefix length (bandwidth only)."
+    },
+    "tiers": {
+      "G2_cpu_dram_pcie": {
+        "bandwidth_only": {
+          "recompute_cheaper_for_any_prefix": false,
+          "transfer_s_per_token": 7.151746032e-07,
+          "recompute_s_per_token_at_T1": 6.236248792e-05,
+          "note": "Transfer per token is far below recompute per token: no crossover; reusing cached KV always wins on time."
+        },
+        "with_overhead": {
+          "formula": "positive root of c2·T² + (c1 − kv_gpu/B)·T − overhead = 0",
+          "value": 32.43357782,
+          "unit": "tokens",
+          "recompute_cheaper_below_tokens": 32,
+          "note": "With the 2 ms HYPOTHETICAL fixed cost per transfer, recomputing is faster only for prefixes shorter than this. Above it, fetch the cached KV."
+        }
+      },
+      "G3_local_nvme": {
+        "bandwidth_only": {
+          "recompute_cheaper_for_any_prefix": false,
+          "transfer_s_per_token": 3.218285714e-06,
+          "recompute_s_per_token_at_T1": 6.236248792e-05,
+          "note": "Transfer per token is far below recompute per token: no crossover; reusing cached KV always wins on time."
+        },
+        "with_overhead": {
+          "formula": "positive root of c2·T² + (c1 − kv_gpu/B)·T − overhead = 0",
+          "value": 33.80541046,
+          "unit": "tokens",
+          "recompute_cheaper_below_tokens": 33,
+          "note": "With the 2 ms HYPOTHETICAL fixed cost per transfer, recomputing is faster only for prefixes shorter than this. Above it, fetch the cached KV."
+        }
+      },
+      "G4_remote_store_rdma": {
+        "bandwidth_only": {
+          "recompute_cheaper_for_any_prefix": false,
+          "transfer_s_per_token": 9.0112e-07,
+          "recompute_s_per_token_at_T1": 6.236248792e-05,
+          "note": "Transfer per token is far below recompute per token: no crossover; reusing cached KV always wins on time."
+        },
+        "with_overhead": {
+          "formula": "positive root of c2·T² + (c1 − kv_gpu/B)·T − overhead = 0",
+          "value": 32.53164669,
+          "unit": "tokens",
+          "recompute_cheaper_below_tokens": 32,
+          "note": "With the 2 ms HYPOTHETICAL fixed cost per transfer, recomputing is faster only for prefixes shorter than this. Above it, fetch the cached KV."
+        }
+      }
+    }
+  },
+  "mooncake_eq2": {
+    "formula_as_written": "reuse beats recompute iff B / G > 2·d·s / (gqa × (a·p·d + b·d²))",
+    "derivation": "transfer time p·l·(2d/gqa)·s / B < recompute time l·(a·p²·d + b·p·d²) / G, divided by p·l and rearranged.",
+    "source": "SRC-103 (Mooncake, USENIX FAST '25 §2.2 Eq. 1-2); research/notes/04-distributed-stack.md §2.4.3",
+    "paper_example_check": {
+      "terms": {
+        "layers_l": 80,
+        "hidden_d": 8192,
+        "gqa": 8,
+        "bytes_per_element_s": 2,
+        "a": 4,
+        "b": 22,
+        "gpu_tflops": 312,
+        "gpus": 8,
+        "prefix_tokens_p": 8192,
+        "published_min_bandwidth": 6
+      },
+      "threshold_B_over_G": {
+        "formula": "2·d·s / (gqa·(a·p·d + b·d²))",
+        "value": 2.34750601e-06,
+        "unit": "B/FLOP"
+      },
+      "G": {
+        "formula": "gpus × TFLOPS",
+        "value": 2496000000000000,
+        "unit": "FLOP/s"
+      },
+      "min_bandwidth": {
+        "formula": "threshold × G",
+        "value": 5859375000,
+        "unit": "B/s",
+        "GB_per_s": 5.859375
+      },
+      "published_GB_per_s": 6,
+      "agrees_with_published": true
+    },
+    "m_dense_mapping": {
+      "l": {
+        "value": 88,
+        "unit": "layers",
+        "from": "models.M-dense.num_hidden_layers"
+      },
+      "d": {
+        "value": 12288,
+        "unit": "dims",
+        "from": "models.M-dense.hidden_size"
+      },
+      "gqa": {
+        "formula": "H / H_kv",
+        "value": 12,
+        "unit": "ratio"
+      },
+      "s": {
+        "value": 2,
+        "unit": "B",
+        "from": "bfloat16"
+      },
+      "a": {
+        "value": 2,
+        "unit": "dimensionless",
+        "note": "Causal attention: query t sees t keys, 2·d·n² per layer. The paper's a = 4 counts the full n² square (non-causal)."
+      },
+      "b": {
+        "formula": "2 × N_matmul / (l × d²)",
+        "value": 18.57575758,
+        "unit": "dimensionless"
+      },
+      "kv_bytes_per_token_check": {
+        "formula": "l × (2·d / gqa) × s",
+        "value": 360448,
+        "unit": "B/token",
+        "equals_m_dense_kv": true
+      },
+      "B_and_G": "B = node KV load bandwidth = 8 × per-GPU link; G = node compute = 8 × peak × prefill_mfu. The ratio B/G equals the per-GPU ratio."
+    },
+    "per_prefix": {
+      "8000": {
+        "threshold_B_over_G": {
+          "value": 1.364672161e-06,
+          "unit": "B/FLOP"
+        },
+        "min_bandwidth_per_gpu_eq2": {
+          "formula": "threshold × G_gpu",
+          "value": 675171551.7,
+          "unit": "B/s",
+          "GB_per_s": 0.6751715517
+        },
+        "min_bandwidth_per_gpu_direct": {
+          "formula": "kv_bytes_per_gpu / recompute_time (exact T(T+1))",
+          "value": 675166023.4,
+          "unit": "B/s",
+          "GB_per_s": 0.6751660234
+        },
+        "relative_difference": 8.188032967e-06,
+        "min_bandwidth_per_gpu_eq2_paper_a4": {
+          "value": 633663866.7,
+          "unit": "B/s",
+          "GB_per_s": 0.6336638667
+        },
+        "tiers": {
+          "G2_cpu_dram_pcie": {
+            "B_over_G": 0.0001273370389,
+            "eq2_reuse_wins": true,
+            "direct_reuse_wins": true,
+            "agree": true,
+            "margin": 93.30961863
+          },
+          "G3_local_nvme": {
+            "B_over_G": 2.829711976e-05,
+            "eq2_reuse_wins": true,
+            "direct_reuse_wins": true,
+            "agree": true,
+            "margin": 20.73547081
+          },
+          "G4_remote_store_rdma": {
+            "B_over_G": 0.000101061142,
+            "eq2_reuse_wins": true,
+            "direct_reuse_wins": true,
+            "agree": true,
+            "margin": 74.05525288
+          }
+        }
+      },
+      "8192": {
+        "threshold_B_over_G": {
+          "value": 1.362530124e-06,
+          "unit": "B/FLOP"
+        },
+        "min_bandwidth_per_gpu_eq2": {
+          "formula": "threshold × G_gpu",
+          "value": 674111779.0,
+          "unit": "B/s",
+          "GB_per_s": 0.674111779
+        },
+        "min_bandwidth_per_gpu_direct": {
+          "formula": "kv_bytes_per_gpu / recompute_time (exact T(T+1))",
+          "value": 674106268.1,
+          "unit": "B/s",
+          "GB_per_s": 0.6741062681
+        },
+        "relative_difference": 8.175180746e-06,
+        "min_bandwidth_per_gpu_eq2_paper_a4": {
+          "value": 631799484.7,
+          "unit": "B/s",
+          "GB_per_s": 0.6317994847
+        },
+        "tiers": {
+          "G2_cpu_dram_pcie": {
+            "B_over_G": 0.0001273370389,
+            "eq2_reuse_wins": true,
+            "direct_reuse_wins": true,
+            "agree": true,
+            "margin": 93.4563109
+          },
+          "G3_local_nvme": {
+            "B_over_G": 2.829711976e-05,
+            "eq2_reuse_wins": true,
+            "direct_reuse_wins": true,
+            "agree": true,
+            "margin": 20.76806909
+          },
+          "G4_remote_store_rdma": {
+            "B_over_G": 0.000101061142,
+            "eq2_reuse_wins": true,
+            "direct_reuse_wins": true,
+            "agree": true,
+            "margin": 74.17167532
+          }
+        }
+      },
+      "32768": {
+        "threshold_B_over_G": {
+          "value": 1.134578316e-06,
+          "unit": "B/FLOP"
+        },
+        "min_bandwidth_per_gpu_eq2": {
+          "formula": "threshold × G_gpu",
+          "value": 561332622.1,
+          "unit": "B/s",
+          "GB_per_s": 0.5613326221
+        },
+        "min_bandwidth_per_gpu_direct": {
+          "formula": "kv_bytes_per_gpu / recompute_time (exact T(T+1))",
+          "value": 561328800.8,
+          "unit": "B/s",
+          "GB_per_s": 0.5613288008
+        },
+        "relative_difference": 6.807469899e-06,
+        "min_bandwidth_per_gpu_eq2_paper_a4": {
+          "value": 458954858.9,
+          "unit": "B/s",
+          "GB_per_s": 0.4589548589
+        },
+        "tiers": {
+          "G2_cpu_dram_pcie": {
+            "B_over_G": 0.0001273370389,
+            "eq2_reuse_wins": true,
+            "direct_reuse_wins": true,
+            "agree": true,
+            "margin": 112.2329213
+          },
+          "G3_local_nvme": {
+            "B_over_G": 2.829711976e-05,
+            "eq2_reuse_wins": true,
+            "direct_reuse_wins": true,
+            "agree": true,
+            "margin": 24.94064918
+          },
+          "G4_remote_store_rdma": {
+            "B_over_G": 0.000101061142,
+            "eq2_reuse_wins": true,
+            "direct_reuse_wins": true,
+            "agree": true,
+            "margin": 89.07374707
+          }
+        }
+      },
+      "131072": {
+        "threshold_B_over_G": {
+          "value": 6.797132055e-07,
+          "unit": "B/FLOP"
+        },
+        "min_bandwidth_per_gpu_eq2": {
+          "formula": "threshold × G_gpu",
+          "value": 336288108.4,
+          "unit": "B/s",
+          "GB_per_s": 0.3362881084
+        },
+        "min_bandwidth_per_gpu_direct": {
+          "formula": "kv_bytes_per_gpu / recompute_time (exact T(T+1))",
+          "value": 336286737.0,
+          "unit": "B/s",
+          "GB_per_s": 0.336286737
+        },
+        "relative_difference": 4.078279233e-06,
+        "min_bandwidth_per_gpu_eq2_paper_a4": {
+          "value": 219144700.1,
+          "unit": "B/s",
+          "GB_per_s": 0.2191447001
+        },
+        "tiers": {
+          "G2_cpu_dram_pcie": {
+            "B_over_G": 0.0001273370389,
+            "eq2_reuse_wins": true,
+            "direct_reuse_wins": true,
+            "agree": true,
+            "margin": 187.3393629
+          },
+          "G3_local_nvme": {
+            "B_over_G": 2.829711976e-05,
+            "eq2_reuse_wins": true,
+            "direct_reuse_wins": true,
+            "agree": true,
+            "margin": 41.63096954
+          },
+          "G4_remote_store_rdma": {
+            "B_over_G": 0.000101061142,
+            "eq2_reuse_wins": true,
+            "direct_reuse_wins": true,
+            "agree": true,
+            "margin": 148.6820341
+          }
+        }
+      }
+    },
+    "all_agree": true
+  },
+  "four_outcomes_32k": {
+    "prefix_tokens": {
+      "value": 32768,
+      "unit": "tokens",
+      "from": "hypothetical.serving_assumptions.reference_context_tokens"
+    },
+    "kv_bytes_total": {
+      "value": 11811160064,
+      "unit": "B",
+      "MB_1e6": 11811.16006,
+      "GB_1e9": 11.81116006,
+      "MiB_2pow20": 11264,
+      "GiB_2pow30": 11
+    },
+    "kv_bytes_per_gpu": {
+      "value": 1476395008,
+      "unit": "B",
+      "MB_1e6": 1476.395008,
+      "GB_1e9": 1.476395008,
+      "MiB_2pow20": 1408,
+      "GiB_2pow30": 1.375
+    },
+    "gpu_hit_G1": {
+      "label": "GPU hit (G1)",
+      "bytes_moved_per_gpu": {
+        "value": 0,
+        "unit": "B",
+        "MB_1e6": 0,
+        "GB_1e9": 0,
+        "MiB_2pow20": 0,
+        "GiB_2pow30": 0
+      },
+      "time": {
+        "value": 0,
+        "unit": "ms",
+        "s": 0
+      },
+      "dynamo_router_credit": 1.0,
+      "note": "Blocks are already in HBM; the engine skips prefill for the cached prefix."
+    },
+    "cpu_hit_G2": {
+      "label": "CPU DRAM hit (G2) over PCIe Gen5 x16",
+      "bytes_moved_per_gpu": {
+        "value": 1476395008,
+        "unit": "B",
+        "MB_1e6": 1476.395008,
+        "GB_1e9": 1.476395008,
+        "MiB_2pow20": 1408,
+        "GiB_2pow30": 1.375
+      },
+      "bytes_moved_node": {
+        "value": 11811160064,
+        "unit": "B",
+        "MB_1e6": 11811.16006,
+        "GB_1e9": 11.81116006,
+        "MiB_2pow20": 11264,
+        "GiB_2pow30": 11
+      },
+      "bandwidth_per_gpu_GB_per_s": 63,
+      "time": {
+        "formula": "bytes_per_gpu / bandwidth_per_gpu",
+        "value": 23.4348414,
+        "unit": "ms",
+        "s": 0.0234348414
+      },
+      "time_with_overhead": {
+        "value": 25.4348414,
+        "unit": "ms",
+        "s": 0.0254348414
+      },
+      "dynamo_router_credit": 0.75
+    },
+    "nvme_hit_G3": {
+      "label": "local NVMe hit (G3)",
+      "bytes_moved_per_gpu": {
+        "value": 1476395008,
+        "unit": "B",
+        "MB_1e6": 1476.395008,
+        "GB_1e9": 1.476395008,
+        "MiB_2pow20": 1408,
+        "GiB_2pow30": 1.375
+      },
+      "bytes_moved_node": {
+        "value": 11811160064,
+        "unit": "B",
+        "MB_1e6": 11811.16006,
+        "GB_1e9": 11.81116006,
+        "MiB_2pow20": 11264,
+        "GiB_2pow30": 11
+      },
+      "bandwidth_per_gpu_GB_per_s": 14,
+      "time": {
+        "formula": "bytes_per_gpu / bandwidth_per_gpu",
+        "value": 105.4567863,
+        "unit": "ms",
+        "s": 0.1054567863
+      },
+      "time_with_overhead": {
+        "value": 107.4567863,
+        "unit": "ms",
+        "s": 0.1074567863
+      },
+      "dynamo_router_credit": 0.25
+    },
+    "remote_hit_G4": {
+      "label": "remote hit (G4) over 400 Gb/s RDMA",
+      "bytes_moved_per_gpu": {
+        "value": 1476395008,
+        "unit": "B",
+        "MB_1e6": 1476.395008,
+        "GB_1e9": 1.476395008,
+        "MiB_2pow20": 1408,
+        "GiB_2pow30": 1.375
+      },
+      "bytes_moved_node": {
+        "value": 11811160064,
+        "unit": "B",
+        "MB_1e6": 11811.16006,
+        "GB_1e9": 11.81116006,
+        "MiB_2pow20": 11264,
+        "GiB_2pow30": 11
+      },
+      "bandwidth_per_gpu_GB_per_s": 50,
+      "time": {
+        "formula": "bytes_per_gpu / bandwidth_per_gpu",
+        "value": 29.52790016,
+        "unit": "ms",
+        "s": 0.02952790016
+      },
+      "time_with_overhead": {
+        "value": 31.52790016,
+        "unit": "ms",
+        "s": 0.03152790016
+      },
+      "dynamo_router_credit": null,
+      "time_at_measured_effective": {
+        "value": 62.16400034,
+        "unit": "ms",
+        "s": 0.06216400034,
+        "note": "Mooncake-measured 23.75 GB/s per NIC"
+      }
+    },
+    "recompute": {
+      "label": "miss: recompute the prefix",
+      "bytes_moved_per_gpu": {
+        "value": 0,
+        "unit": "B",
+        "MB_1e6": 0,
+        "GB_1e9": 0,
+        "MiB_2pow20": 0,
+        "GiB_2pow30": 0
+      },
+      "flops": {
+        "value": 10410246958743552,
+        "unit": "FLOP"
+      },
+      "time": {
+        "value": 2630.178615,
+        "unit": "ms",
+        "s": 2.630178615
+      },
+      "note": "Moves no bytes between tiers; uses the whole node's compute for this time."
+    },
+    "ranking_fastest_first": [
+      "gpu_hit_G1",
+      "cpu_hit_G2",
+      "remote_hit_G4",
+      "nvme_hit_G3",
+      "recompute"
+    ],
+    "recompute_over_cpu_hit": 112.2336853
+  },
+  "prefix_hit_ttft": {
+    "inputs": {
+      "shared_prefix_tokens": {
+        "value": 8000,
+        "unit": "tokens",
+        "from": "hypothetical.serving_assumptions.reference_shared_prefix_tokens (HYPOTHETICAL: system prompt + tool schemas)"
+      },
+      "new_suffix_tokens": {
+        "value": 500,
+        "unit": "tokens",
+        "from": "hypothetical.serving_assumptions.prefix_hit_suffix_tokens (HYPOTHETICAL)"
+      },
+      "total_prompt_tokens": {
+        "formula": "prefix + suffix",
+        "value": 8500,
+        "unit": "tokens"
+      },
+      "block_size_tokens": {
+        "value": 16,
+        "unit": "tokens",
+        "from": "software.vllm.block_size_tokens"
+      }
+    },
+    "block_alignment": {
+      "full_prefix_blocks": {
+        "formula": "floor(8,000 / 16)",
+        "value": 500,
+        "unit": "blocks"
+      },
+      "cached_tokens": {
+        "formula": "full_prefix_blocks × block_size",
+        "value": 8000,
+        "unit": "tokens"
+      },
+      "partial_block_tokens_recomputed": {
+        "formula": "prefix − cached_tokens",
+        "value": 0,
+        "unit": "tokens",
+        "note": "Tokens of a last, partly filled prefix block have no block hash, so a hit recomputes them with the suffix."
+      },
+      "tokens_prefilled_on_hit": {
+        "formula": "total_prompt − cached_tokens",
+        "value": 500,
+        "unit": "tokens"
+      }
+    },
+    "node_compute": {
+      "formula": "TP × dense BF16 peak × prefill_mfu",
+      "terms": {
+        "TP": 8,
+        "peak": {
+          "value": 989500000000000,
+          "unit": "FLOP/s",
+          "from": "hardware.H-teach.h100_sxm_bf16_dense"
+        },
+        "prefill_mfu": {
+          "value": 0.5,
+          "unit": "fraction",
+          "from": "hypothetical.serving_assumptions.prefill_mfu (HYPOTHETICAL)"
+        }
+      },
+      "value": 3958000000000000,
+      "unit": "FLOP/s"
+    },
+    "miss": {
+      "flops_matmul": {
+        "formula": "2 × N_matmul × T",
+        "terms": {
+          "N_matmul": {
+            "value": 123413200896,
+            "unit": "params"
+          },
+          "T": 8500
+        },
+        "value": 2098024415232000,
+        "unit": "FLOP"
+      },
+      "flops_attention": {
+        "formula": "2 × H × d_head × L × T × (T + 1)",
+        "terms": {
+          "H": 96,
+          "d_head": 128,
+          "L": 88,
+          "T": 8500
+        },
+        "value": 156272590848000,
+        "unit": "FLOP"
+      },
+      "flops_total": {
+        "value": 2254297006080000,
+        "unit": "FLOP"
+      },
+      "prefill_time": {
+        "formula": "flops_total / node_compute",
+        "value": 569.5545746,
+        "unit": "ms",
+        "s": 0.5695545746
+      }
+    },
+    "hit": {
+      "flops_matmul": {
+        "formula": "2 × N_matmul × tokens_prefilled_on_hit",
+        "value": 123413200896000,
+        "unit": "FLOP"
+      },
+      "flops_attention": {
+        "formula": "2 × H × d_head × L × n × (2 × c + n + 1), n = tokens prefilled, c = cached",
+        "terms": {
+          "H": 96,
+          "d_head": 128,
+          "L": 88,
+          "n": 500,
+          "c": 8000
+        },
+        "value": 17843257344000,
+        "unit": "FLOP",
+        "note": "The suffix's queries attend over the cached prefix and over earlier suffix tokens (causal)."
+      },
+      "flops_total": {
+        "value": 141256458240000,
+        "unit": "FLOP"
+      },
+      "prefill_time": {
+        "formula": "flops_total / node_compute",
+        "value": 35.68884746,
+        "unit": "ms",
+        "s": 0.03568884746
+      },
+      "check_attention_identity": {
+        "formula": "miss attention − prefix-only attention = hit attention",
+        "prefix_only_attention_flops": 138429333504000,
+        "holds": true
+      }
+    },
+    "ttft_saved": {
+      "formula": "miss prefill_time − hit prefill_time",
+      "value": 533.8657271,
+      "unit": "ms",
+      "s": 0.5338657271
+    },
+    "ttft_saved_fraction": {
+      "formula": "ttft_saved / miss prefill_time",
+      "value": 0.9373390206,
+      "unit": "fraction"
+    },
+    "hit_over_miss": {
+      "value": 0.06266097939,
+      "unit": "fraction"
+    },
+    "flops_saved_fraction": {
+      "matmul": 0.9411764706,
+      "attention": 0.8858196614
+    },
+    "scope": "Prefill compute only. Queue time, tokenization, network and the first sampling step are the same for hit and miss and are not included.",
+    "hit_with_prefix_in_lower_tier": {
+      "G2_cpu_dram_pcie": {
+        "bytes_loaded_per_gpu": {
+          "formula": "8,000 cached tokens × 45,056 B/token/GPU",
+          "value": 360448000,
+          "unit": "B",
+          "MB_1e6": 360.448,
+          "GB_1e9": 0.360448,
+          "MiB_2pow20": 343.75,
+          "GiB_2pow30": 0.3356933594
+        },
+        "load_time": {
+          "value": 5.721396825,
+          "unit": "ms",
+          "s": 0.005721396825
+        },
+        "load_time_with_overhead": {
+          "value": 7.721396825,
+          "unit": "ms",
+          "s": 0.007721396825
+        },
+        "ttft_hit_plus_load": {
+          "formula": "hit prefill_time + load_time_with_overhead",
+          "value": 43.41024428,
+          "unit": "ms",
+          "s": 0.04341024428,
+          "note": "Upper bound: assumes the load finishes before the suffix prefill starts (no overlap)."
+        },
+        "ttft_saved_vs_miss": {
+          "value": 526.1443303,
+          "unit": "ms",
+          "s": 0.5261443303
+        }
+      },
+      "G3_local_nvme": {
+        "bytes_loaded_per_gpu": {
+          "formula": "8,000 cached tokens × 45,056 B/token/GPU",
+          "value": 360448000,
+          "unit": "B",
+          "MB_1e6": 360.448,
+          "GB_1e9": 0.360448,
+          "MiB_2pow20": 343.75,
+          "GiB_2pow30": 0.3356933594
+        },
+        "load_time": {
+          "value": 25.74628571,
+          "unit": "ms",
+          "s": 0.02574628571
+        },
+        "load_time_with_overhead": {
+          "value": 27.74628571,
+          "unit": "ms",
+          "s": 0.02774628571
+        },
+        "ttft_hit_plus_load": {
+          "formula": "hit prefill_time + load_time_with_overhead",
+          "value": 63.43513317,
+          "unit": "ms",
+          "s": 0.06343513317,
+          "note": "Upper bound: assumes the load finishes before the suffix prefill starts (no overlap)."
+        },
+        "ttft_saved_vs_miss": {
+          "value": 506.1194414,
+          "unit": "ms",
+          "s": 0.5061194414
+        }
+      },
+      "G4_remote_store_rdma": {
+        "bytes_loaded_per_gpu": {
+          "formula": "8,000 cached tokens × 45,056 B/token/GPU",
+          "value": 360448000,
+          "unit": "B",
+          "MB_1e6": 360.448,
+          "GB_1e9": 0.360448,
+          "MiB_2pow20": 343.75,
+          "GiB_2pow30": 0.3356933594
+        },
+        "load_time": {
+          "value": 7.20896,
+          "unit": "ms",
+          "s": 0.00720896
+        },
+        "load_time_with_overhead": {
+          "value": 9.20896,
+          "unit": "ms",
+          "s": 0.00920896
+        },
+        "ttft_hit_plus_load": {
+          "formula": "hit prefill_time + load_time_with_overhead",
+          "value": 44.89780746,
+          "unit": "ms",
+          "s": 0.04489780746,
+          "note": "Upper bound: assumes the load finishes before the suffix prefill starts (no overlap)."
+        },
+        "ttft_saved_vs_miss": {
+          "value": 524.6567671,
+          "unit": "ms",
+          "s": 0.5246567671
+        }
+      }
+    }
+  }
+}

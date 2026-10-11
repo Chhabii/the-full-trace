@@ -1,0 +1,1564 @@
+{
+  "meta": {
+    "script": "sim/capacity_math.py",
+    "generated_at": "2026-10-09T10:30:11+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T10:23:27+00:00",
+      "sha256": "7d0453de0b2b"
+    },
+    "constants_used": {
+      "extra.sims_w12.trtllm_k3_dep16_conc256": 256,
+      "extra.sims_w12.trtllm_k3_dep16_conc256_tpot_ms": 62.24,
+      "extra.sims_w12.trtllm_k3_dep16_conc64": 64,
+      "extra.sims_w12.trtllm_k3_dep16_conc64_out_tok_s": 1669.1,
+      "extra.sims_w12.trtllm_k3_dep16_conc64_tpot_ms": 34.06,
+      "extra.sims_w12.trtllm_k3_dep16_conc64_tps_user": 29.36,
+      "extra.sims_w14.dgx_h100_max_system_power_kw": 10.2,
+      "hardware.H-frontier.gb300_gpu_bf16_dense": 2.5,
+      "hardware.H-frontier.gb300_gpu_hbm_bandwidth": 8,
+      "hardware.H-frontier.gb300_nvl72_gpus": 72,
+      "hardware.H-teach.h100_sxm_bf16_dense": 989.5,
+      "hardware.H-teach.h100_sxm_fp8_dense": 1979,
+      "hardware.H-teach.h100_sxm_hbm_bandwidth": 3.35,
+      "hardware.interconnect.nvlink5_per_gpu": 1800,
+      "hypothetical.capacity_targets.decode_kv_fill_target": 0.85,
+      "hypothetical.capacity_targets.gb300_rack_power_kw": 140,
+      "hypothetical.capacity_targets.h100_nodes_per_rack": 4,
+      "hypothetical.capacity_targets.prefill_utilization_target": 0.6,
+      "hypothetical.deployment.k3_rack_decode_workers": 3,
+      "hypothetical.deployment.k3_rack_prefill_workers": 2,
+      "hypothetical.deployment.m_dense_replica_gpus": 8,
+      "hypothetical.epp_calibration.peak_prefill_tokens_per_s": 16000,
+      "hypothetical.fleet_price_ref.gb300_gpu_hour_usd": 6.0,
+      "hypothetical.fleet_price_ref.h100_sxm_gpu_hour_usd": 2.5,
+      "hypothetical.fleet_scenarios.daily_active_users": [
+        1000000,
+        10000000,
+        250000000,
+        1000000000
+      ],
+      "hypothetical.gpu_step_model.hbm_bandwidth_efficiency": 0.8,
+      "hypothetical.gpu_step_model.per_layer_overhead_us": 40,
+      "hypothetical.gpu_step_model.per_step_overhead_ms": 0.5,
+      "hypothetical.pool_queueing.ap_south_share_of_asia_pacific": 0.5,
+      "hypothetical.pool_queueing.decode_step_tokens_e1": 2048,
+      "hypothetical.pool_queueing.engine_wait_s": 0.15,
+      "hypothetical.pool_queueing.extra_passes_per_tool_request": 2,
+      "hypothetical.pool_queueing.gateway_queue_wait_s": 0.02,
+      "hypothetical.pool_queueing.littles_example_rate_per_s": 10000,
+      "hypothetical.pool_queueing.littles_example_wait_s": 2,
+      "hypothetical.pool_queueing.m_frontier_share_of_requests": 0.2,
+      "hypothetical.pool_queueing.mean_tool_time_s": 3,
+      "hypothetical.pool_queueing.mm1_utilizations": [
+        0.5,
+        0.7,
+        0.8,
+        0.9,
+        0.95,
+        0.99
+      ],
+      "hypothetical.pool_queueing.mmc_servers": 8,
+      "hypothetical.pool_queueing.prefill_time_s": 0.25,
+      "hypothetical.routing_endpoints_ref.active_decode_blocks": [
+        5150,
+        4980,
+        5060
+      ],
+      "hypothetical.routing_endpoints_ref.in_flight_requests": [
+        63,
+        52,
+        57
+      ],
+      "hypothetical.routing_endpoints_ref.running_sequences": [
+        60,
+        52,
+        56
+      ],
+      "hypothetical.routing_endpoints_ref.waiting_requests": [
+        1,
+        0,
+        0
+      ],
+      "hypothetical.serving_assumptions.prefill_mfu": 0.5,
+      "hypothetical.tp_comm_ref.nvlink_busbw_efficiency": 0.8,
+      "hypothetical.tp_comm_ref.nvlink_step_latency_us": 2.0,
+      "hypothetical.traffic.daily_active_users": 250000000,
+      "hypothetical.traffic.mean_output_tokens": 400,
+      "hypothetical.traffic.mean_prompt_tokens": 3000,
+      "hypothetical.traffic.peak_arrival_rate": 50000,
+      "hypothetical.traffic.peak_concurrently_connected_users": 25000000,
+      "hypothetical.traffic.peak_to_average_ratio": 1.45,
+      "hypothetical.traffic.per_request_decode_speed": 20,
+      "hypothetical.traffic.prefix_cache_hit_fraction": 0.6,
+      "hypothetical.traffic.regional_split": {
+        "north_america": 0.35,
+        "europe": 0.25,
+        "asia_pacific": 0.3,
+        "rest_of_world": 0.1
+      },
+      "hypothetical.traffic.registered_users": 1000000000,
+      "hypothetical.traffic.requests_per_dau_per_day": 12,
+      "hypothetical.traffic.tool_use_fraction": 0.25,
+      "models.M-dense.head_dim": 128,
+      "models.M-dense.hidden_size": 12288,
+      "models.M-dense.intermediate_size": 28672,
+      "models.M-dense.max_position_embeddings": 262144,
+      "models.M-dense.num_attention_heads": 96,
+      "models.M-dense.num_hidden_layers": 88,
+      "models.M-dense.num_key_value_heads": 8,
+      "models.M-dense.text_params": 125025988608,
+      "models.M-dense.tie_word_embeddings": false,
+      "models.M-dense.torch_dtype": "bfloat16",
+      "models.M-dense.total_params": 127704210176,
+      "models.M-dense.vision_params": 2678221568,
+      "models.M-dense.vllm_recipe": {
+        "recommended_hw": "8x H200 (alt 4x B200, 2-8x MI300X)",
+        "tp": 8,
+        "eagle_num_speculative_tokens": 3,
+        "mi300x_tp8_1k_in_1k_out_conc32": {
+          "output_tok_s": 915,
+          "mean_ttft_ms": 2522,
+          "mean_tpot_ms": 26.1
+        },
+        "mi300x_tp1": {
+          "output_tok_s": 438,
+          "mean_ttft_ms": 5719,
+          "mean_tpot_ms": 55.2
+        }
+      },
+      "models.M-dense.vocab_size": 131072,
+      "models.M-frontier.active_params": 104189614848,
+      "models.M-frontier.ep_bytes_per_token_all_moe_layers": 15830000.0,
+      "models.M-frontier.first_k_dense_replace": 1,
+      "models.M-frontier.kda_conv_state_shape_per_layer": [
+        36864,
+        3
+      ],
+      "models.M-frontier.kda_head_k_dim": 128,
+      "models.M-frontier.kda_head_v_dim": 128,
+      "models.M-frontier.kda_num_heads": 96,
+      "models.M-frontier.kda_recurrent_state_dtype": "float32",
+      "models.M-frontier.kda_recurrent_state_shape_per_layer": [
+        96,
+        128,
+        128
+      ],
+      "models.M-frontier.kda_short_conv_kernel": 4,
+      "models.M-frontier.kv_lora_rank": 512,
+      "models.M-frontier.max_position_embeddings": 1048576,
+      "models.M-frontier.num_attention_heads": 96,
+      "models.M-frontier.num_experts": 896,
+      "models.M-frontier.num_experts_per_token": 16,
+      "models.M-frontier.num_hidden_layers": 93,
+      "models.M-frontier.num_kda_layers": 69,
+      "models.M-frontier.num_mla_layers": 24,
+      "models.M-frontier.qk_nope_head_dim": 128,
+      "models.M-frontier.qk_rope_head_dim": 64,
+      "models.M-frontier.torch_dtype": "bfloat16",
+      "models.M-frontier.trtllm_per_rank_weights_gb": {
+        "DEP16": 210,
+        "TEP8": 213,
+        "TEP16": 115
+      },
+      "models.M-frontier.v_head_dim": 128
+    }
+  },
+  "littles_law_examples": {
+    "spec": {
+      "value": 20000,
+      "unit": "items",
+      "formula": "L = λ × W",
+      "arithmetic": "10,000 /s × 2 s = 20,000",
+      "lambda_per_s": 10000,
+      "W_s": 2,
+      "what": "requests in the system"
+    }
+  },
+  "pool": {
+    "label": "HYPOTHETICAL: ap_south M-frontier pool at the global peak",
+    "arrivals": {
+      "requests_per_s": {
+        "value": 1500.0,
+        "unit": "requests/s",
+        "formula": "peak × asia_pacific × ap_south share × M-frontier share",
+        "arithmetic": "50,000 × 0.3 × 0.5 × 0.2 = 1,500"
+      },
+      "passes_per_request": {
+        "value": 1.5,
+        "unit": "passes",
+        "formula": "1 + tool_use_fraction × extra passes",
+        "arithmetic": "1 + 0.25 × 2 = 1.5"
+      },
+      "passes_per_s": {
+        "value": 2250.0,
+        "unit": "passes/s",
+        "formula": "requests/s × passes per request",
+        "arithmetic": "1,500 × 1.5 = 2,250"
+      }
+    },
+    "stages": {
+      "gateway_queue": {
+        "value": 45.0,
+        "unit": "passes",
+        "formula": "L = λ × W",
+        "arithmetic": "2,250 /s × 0.02 s = 45",
+        "lambda_per_s": 2250.0,
+        "W_s": 0.02,
+        "what": "passes waiting in the EPP flow-control queue"
+      },
+      "engine_waiting": {
+        "value": 337.5,
+        "unit": "passes",
+        "formula": "L = λ × W",
+        "arithmetic": "2,250 /s × 0.15 s = 338",
+        "lambda_per_s": 2250.0,
+        "W_s": 0.15,
+        "what": "passes in the engines' waiting queues"
+      },
+      "prefilling": {
+        "value": 562.5,
+        "unit": "passes",
+        "formula": "L = λ × W",
+        "arithmetic": "2,250 /s × 0.25 s = 562",
+        "lambda_per_s": 2250.0,
+        "W_s": 0.25,
+        "what": "passes in prefill"
+      },
+      "decoding": {
+        "value": 30000.0,
+        "unit": "sequences",
+        "formula": "L = λ × W",
+        "arithmetic": "1,500 /s × 20 s = 30,000",
+        "lambda_per_s": 1500.0,
+        "W_s": 20.0,
+        "what": "sequences in decode",
+        "W_formula": "mean_output_tokens / decode speed = 400 / 20 = 20 s"
+      },
+      "open_streams": {
+        "value": 33195.0,
+        "unit": "streams",
+        "formula": "L = λ × W",
+        "arithmetic": "1,500 /s × 22.13 s = 33,195",
+        "lambda_per_s": 1500.0,
+        "W_s": 22.13,
+        "what": "in-flight HTTP streams (SSE) of M-frontier requests",
+        "W_formula": "decode + passes × (gateway + waiting + prefill) + tool_use × extra × tool time = 20 + 1.5 × (0.02 + 0.15 + 0.25) + 0.25 × 2 × 3 = 22.13 s"
+      }
+    },
+    "eight_counts": {
+      "registered_users_global": {
+        "value": 1000000000,
+        "unit": "users",
+        "note": "global, all models"
+      },
+      "daily_active_users_global": {
+        "value": 250000000,
+        "unit": "users",
+        "note": "global, all models"
+      },
+      "open_connections_ap_south": {
+        "value": 3750000.0,
+        "unit": "connections",
+        "formula": "connected users × asia_pacific × ap_south share",
+        "arithmetic": "25,000,000 × 0.3 × 0.5 = 3,750,000",
+        "note": "one HTTP/2 or HTTP/3 connection per connected app session, all models"
+      },
+      "in_flight_streams": {
+        "value": 33195.0,
+        "unit": "streams",
+        "formula": "L = λ × W",
+        "arithmetic": "1,500 /s × 22.13 s = 33,195",
+        "lambda_per_s": 1500.0,
+        "W_s": 22.13,
+        "what": "in-flight HTTP streams (SSE) of M-frontier requests",
+        "W_formula": "decode + passes × (gateway + waiting + prefill) + tool_use × extra × tool time = 20 + 1.5 × (0.02 + 0.15 + 0.25) + 0.25 × 2 × 3 = 22.13 s"
+      },
+      "waiting_requests": {
+        "value": 382.5,
+        "unit": "passes",
+        "formula": "gateway queue + engine waiting",
+        "arithmetic": "45 + 338"
+      },
+      "prefilling_requests": {
+        "value": 562.5,
+        "unit": "passes",
+        "formula": "L = λ × W",
+        "arithmetic": "2,250 /s × 0.25 s = 562",
+        "lambda_per_s": 2250.0,
+        "W_s": 0.25,
+        "what": "passes in prefill"
+      },
+      "decoding_sequences": {
+        "value": 30000.0,
+        "unit": "sequences",
+        "formula": "L = λ × W",
+        "arithmetic": "1,500 /s × 20 s = 30,000",
+        "lambda_per_s": 1500.0,
+        "W_s": 20.0,
+        "what": "sequences in decode",
+        "W_formula": "mean_output_tokens / decode speed = 400 / 20 = 20 s"
+      },
+      "output_tokens_per_s": {
+        "value": 600000.0,
+        "unit": "tokens/s",
+        "formula": "decoding sequences × per-sequence decode speed",
+        "arithmetic": "30,000 × 20 = 600,000"
+      }
+    },
+    "design": {
+      "sequences_per_decode_worker_at_8k": {
+        "value": 1184,
+        "unit": "sequences",
+        "note": "kv_math design_consequences (BF16 MLA)"
+      },
+      "decode_workers_needed": {
+        "value": 26,
+        "unit": "DEP16 workers",
+        "formula": "ceil(decoding sequences / sequences per worker)",
+        "arithmetic": "ceil(30,000 / 1,184) = 26"
+      },
+      "racks_needed": {
+        "value": 9,
+        "unit": "GB300 NVL72 racks",
+        "formula": "ceil(workers / decode workers per rack)",
+        "arithmetic": "ceil(26 / 3) = 9"
+      },
+      "note": "KV bound only, every sequence counted at 8k context; Part 14 sizes the fleet with all limits."
+    },
+    "endpoint_moment": {
+      "name": "E1",
+      "in_flight_requests_epp": {
+        "value": 63,
+        "unit": "requests",
+        "note": "EPP-tracked dispatches not yet finished"
+      },
+      "vllm_num_requests_waiting": {
+        "value": 1,
+        "unit": "requests"
+      },
+      "vllm_num_requests_running": {
+        "value": 60,
+        "unit": "requests"
+      },
+      "sequences_in_step": {
+        "value": 60,
+        "unit": "sequences",
+        "note": "all running sequences join each step; the local-prefill request is one of them"
+      },
+      "tokens_in_step": {
+        "value": 2108,
+        "unit": "tokens",
+        "formula": "one decode token per running sequence + local prefill chunk",
+        "arithmetic": "60 + 2,048 = 2,108"
+      },
+      "kv_blocks_in_use": {
+        "value": 5150,
+        "unit": "64-token blocks",
+        "note": "MLA blocks; KDA state pages come on top (routing_score kv_usage)"
+      }
+    }
+  },
+  "queueing_models": {
+    "label": "MODEL: Poisson arrivals, exponential service (M/M/1, M/M/c); real prefill times are not exponential",
+    "service": {
+      "uncached_tokens": {
+        "value": 1200.0,
+        "unit": "tokens",
+        "formula": "mean_prompt_tokens × (1 − prefix_cache_hit_fraction)",
+        "arithmetic": "3,000 × (1 − 0.6) = 1,200"
+      },
+      "S": {
+        "value": 0.075,
+        "unit": "s",
+        "formula": "uncached tokens / peak prefill rate",
+        "arithmetic": "1,200 / 16,000 = 75 ms"
+      }
+    },
+    "mm1": [
+      {
+        "rho": 0.5,
+        "Wq_s": 0.075,
+        "W_s": 0.15,
+        "Wq_over_S": 1.0,
+        "arithmetic": "0.5 / (1 − 0.5) × 75 ms = 75 ms"
+      },
+      {
+        "rho": 0.7,
+        "Wq_s": 0.17499999999999996,
+        "W_s": 0.24999999999999994,
+        "Wq_over_S": 2.333333333333333,
+        "arithmetic": "0.7 / (1 − 0.7) × 75 ms = 175 ms"
+      },
+      {
+        "rho": 0.8,
+        "Wq_s": 0.30000000000000004,
+        "W_s": 0.37500000000000006,
+        "Wq_over_S": 4.000000000000001,
+        "arithmetic": "0.8 / (1 − 0.8) × 75 ms = 300 ms"
+      },
+      {
+        "rho": 0.9,
+        "Wq_s": 0.6750000000000002,
+        "W_s": 0.7500000000000001,
+        "Wq_over_S": 9.000000000000002,
+        "arithmetic": "0.9 / (1 − 0.9) × 75 ms = 675 ms"
+      },
+      {
+        "rho": 0.95,
+        "Wq_s": 1.4249999999999987,
+        "W_s": 1.4999999999999987,
+        "Wq_over_S": 18.999999999999982,
+        "arithmetic": "0.95 / (1 − 0.95) × 75 ms = 1425 ms"
+      },
+      {
+        "rho": 0.99,
+        "Wq_s": 7.424999999999994,
+        "W_s": 7.499999999999994,
+        "Wq_over_S": 98.99999999999991,
+        "arithmetic": "0.99 / (1 − 0.99) × 75 ms = 7425 ms"
+      }
+    ],
+    "mmc": {
+      "servers": 8,
+      "formula": "Wq = C(c, a) × S / (c × (1 − ρ)), a = ρ × c",
+      "rows": [
+        {
+          "rho": 0.5,
+          "erlang_c": 0.059043994695266104,
+          "Wq_s": 0.0011070749005362393,
+          "Wq_separate_mm1_s": 0.075,
+          "ratio_separate_over_shared": 67.74609375
+        },
+        {
+          "rho": 0.7,
+          "erlang_c": 0.2706029322300022,
+          "Wq_s": 0.008456341632187567,
+          "Wq_separate_mm1_s": 0.17499999999999996,
+          "ratio_separate_over_shared": 20.694528155519812
+        },
+        {
+          "rho": 0.8,
+          "erlang_c": 0.45764492544201624,
+          "Wq_s": 0.021452105880094514,
+          "Wq_separate_mm1_s": 0.30000000000000004,
+          "ratio_separate_over_shared": 13.9846410267055
+        },
+        {
+          "rho": 0.9,
+          "erlang_c": 0.701532990146257,
+          "Wq_s": 0.0657687178262116,
+          "Wq_separate_mm1_s": 0.6750000000000002,
+          "ratio_separate_over_shared": 10.263237939100954
+        },
+        {
+          "rho": 0.95,
+          "erlang_c": 0.8441686306096838,
+          "Wq_s": 0.15828161823931558,
+          "Wq_separate_mm1_s": 1.4249999999999987,
+          "ratio_separate_over_shared": 9.002940555266846
+        },
+        {
+          "rho": 0.99,
+          "erlang_c": 0.9678036008649403,
+          "Wq_s": 0.9073158758108807,
+          "Wq_separate_mm1_s": 7.424999999999994,
+          "ratio_separate_over_shared": 8.18347854143318
+        }
+      ]
+    }
+  },
+  "fleet": {
+    "label": "HYPOTHETICAL fleet (class C traffic and planning values); step times are models",
+    "population": {
+      "registered_users": {
+        "value": 1000000000,
+        "unit": "users"
+      },
+      "daily_active_users": {
+        "value": 250000000,
+        "unit": "users"
+      },
+      "requests_per_day": {
+        "value": 3000000000,
+        "unit": "requests/day",
+        "formula": "DAU × requests per DAU per day",
+        "arithmetic": "250,000,000 × 12 = 3,000,000,000"
+      },
+      "mean_requests_per_s": {
+        "value": 34722.22222222222,
+        "unit": "requests/s",
+        "formula": "requests per day / 86,400 s",
+        "arithmetic": "3,000,000,000 / 86,400 = 34,722"
+      },
+      "peak_from_ratio": {
+        "value": 50347.22222222222,
+        "unit": "requests/s",
+        "formula": "mean × peak-to-average",
+        "arithmetic": "34,722 × 1.45 = 50,347"
+      },
+      "peak_requests_per_s": {
+        "value": 50000,
+        "unit": "requests/s",
+        "note": "hypothetical.traffic.peak_arrival_rate (rounded)"
+      },
+      "connected_users_peak": {
+        "value": 25000000,
+        "unit": "users"
+      },
+      "decode_time_s": {
+        "value": 20.0,
+        "unit": "s",
+        "formula": "mean output tokens / decode speed",
+        "arithmetic": "400 / 20 = 20 s"
+      },
+      "in_flight_generations": {
+        "value": 1000000.0,
+        "unit": "sequences",
+        "formula": "L = λ × W",
+        "arithmetic": "50,000 /s × 20 s = 1,000,000"
+      },
+      "seconds_between_requests_per_connected_user": {
+        "value": 500.0,
+        "unit": "s",
+        "formula": "connected users / peak requests/s",
+        "arithmetic": "25,000,000 / 50,000 = 500 s"
+      },
+      "generating_fraction_of_connected": {
+        "value": 0.04,
+        "unit": "fraction",
+        "formula": "in-flight generations / connected users",
+        "arithmetic": "1,000,000 / 25,000,000 = 4%"
+      },
+      "duty_cycle_check": {
+        "value": 0.04,
+        "unit": "fraction",
+        "formula": "decode time / seconds between requests",
+        "arithmetic": "20 / 500"
+      },
+      "processes": {
+        "m_dense_replicas": {
+          "value": 1460,
+          "unit": "replicas (one engine process group each)",
+          "formula": "ceil(L / sequences per replica)",
+          "arithmetic": "ceil(1,000,000 / 685) = 1,460"
+        },
+        "gpu_processes": {
+          "value": 11680,
+          "unit": "GPU worker processes",
+          "note": "one worker process per GPU (TP=8)"
+        },
+        "sequences_per_replica": {
+          "value": 685,
+          "unit": "sequences"
+        },
+        "daily_users_per_replica": {
+          "value": 171232.87671232875,
+          "unit": "users",
+          "arithmetic": "250,000,000 / 1,460 = 171,233"
+        },
+        "registered_users_per_gpu_process": {
+          "value": 85616.43835616438,
+          "unit": "users"
+        },
+        "note": "M-dense with FP8 KV, every generation on M-dense: a teaching bound for the process count"
+      },
+      "scenarios": [
+        {
+          "daily_active_users": 1000000,
+          "peak_requests_per_s": 201.38888888888889,
+          "in_flight_generations": 4027.777777777778,
+          "output_tokens_per_s": 80555.55555555556,
+          "m_dense_replicas": 6,
+          "m_dense_gpus": 48,
+          "users_per_replica": 166666.66666666666
+        },
+        {
+          "daily_active_users": 10000000,
+          "peak_requests_per_s": 2013.888888888889,
+          "in_flight_generations": 40277.77777777778,
+          "output_tokens_per_s": 805555.5555555556,
+          "m_dense_replicas": 59,
+          "m_dense_gpus": 472,
+          "users_per_replica": 169491.5254237288
+        },
+        {
+          "daily_active_users": 250000000,
+          "peak_requests_per_s": 50347.22222222222,
+          "in_flight_generations": 1006944.4444444444,
+          "output_tokens_per_s": 20138888.888888888,
+          "m_dense_replicas": 1470,
+          "m_dense_gpus": 11760,
+          "users_per_replica": 170068.02721088435
+        },
+        {
+          "daily_active_users": 1000000000,
+          "peak_requests_per_s": 201388.88888888888,
+          "in_flight_generations": 4027777.7777777775,
+          "output_tokens_per_s": 80555555.55555555,
+          "m_dense_replicas": 5880,
+          "m_dense_gpus": 47040,
+          "users_per_replica": 170068.02721088435
+        }
+      ]
+    },
+    "million": {
+      "N": {
+        "value": 1000000,
+        "unit": "generations",
+        "note": "R-XIV.2"
+      },
+      "tokens_per_s_each": {
+        "value": 20,
+        "unit": "tokens/s"
+      },
+      "tpot_ms": {
+        "value": 50.0,
+        "unit": "ms",
+        "formula": "1 / speed"
+      },
+      "token_rate": {
+        "value": 20000000,
+        "unit": "tokens/s",
+        "formula": "N × tokens/s each",
+        "arithmetic": "1,000,000 × 20 = 20,000,000"
+      },
+      "kv_memory": {
+        "mean_context_tokens": {
+          "value": 3200,
+          "unit": "tokens",
+          "formula": "mean prompt + mean output / 2",
+          "arithmetic": "3,000 + 400 / 2 = 3,200"
+        },
+        "m_dense_bf16_per_seq": {
+          "value": 1153433600,
+          "unit": "B",
+          "arithmetic": "3,200 × 360,448 B",
+          "TB_1e12": 0.0011534336,
+          "MB_1e6": 1153.4336
+        },
+        "m_dense_bf16_total": {
+          "value": 1153433600000000,
+          "unit": "B",
+          "arithmetic": "1,000,000 × 1,153.4 MB",
+          "TB_1e12": 1153.4336,
+          "MB_1e6": 1153433600.0
+        },
+        "m_dense_fp8_total": {
+          "value": 576716800000000,
+          "unit": "B",
+          "TB_1e12": 576.7168,
+          "MB_1e6": 576716800.0
+        },
+        "m_frontier_per_seq": {
+          "value": 537845760,
+          "unit": "B",
+          "formula": "KDA state + c × 27,648 B",
+          "arithmetic": "449,372,160 + 3,200 × 27,648 = 537,845,760 B",
+          "TB_1e12": 0.00053784576,
+          "MB_1e6": 537.84576
+        },
+        "m_frontier_fixed_share": {
+          "value": 0.8355037697052776,
+          "unit": "fraction"
+        },
+        "m_frontier_total": {
+          "value": 537845760000000,
+          "unit": "B",
+          "arithmetic": "1,000,000 × 537.8 MB",
+          "TB_1e12": 537.84576,
+          "MB_1e6": 537845760.0
+        },
+        "m_frontier_fp8_mla_total": {
+          "value": 493608960000000.0,
+          "unit": "B",
+          "TB_1e12": 493.60896,
+          "MB_1e6": 493608960.0
+        }
+      },
+      "m_dense_h_teach": {
+        "context_tokens": 3200,
+        "end_context_tokens": 3400,
+        "source": "data/roofline.json batch_sweep (M-dense decode step model on H-teach, TP=8, FP8 weights)",
+        "bf16_kv": {
+          "batch_per_replica": {
+            "value": 342,
+            "unit": "sequences",
+            "note": "KV-limited batch at the end context (roofline kv_capacity_sequences)"
+          },
+          "step_ms": {
+            "value": 33.228,
+            "unit": "ms"
+          },
+          "tokens_per_s_per_sequence": {
+            "value": 30.1,
+            "unit": "tokens/s"
+          },
+          "meets_20_tokens_per_s": true,
+          "throughput_per_replica": {
+            "value": 10293,
+            "unit": "tokens/s"
+          },
+          "throughput_per_gpu": {
+            "value": 1286.625,
+            "unit": "tokens/s per GPU",
+            "arithmetic": "10,293 / 8"
+          },
+          "replicas_by_concurrency": {
+            "value": 2924,
+            "unit": "replicas",
+            "formula": "ceil(N / batch per replica)",
+            "arithmetic": "ceil(1,000,000 / 342) = 2,924"
+          },
+          "replicas_by_token_rate": {
+            "value": 1944,
+            "unit": "replicas",
+            "formula": "ceil(token rate / throughput per replica)",
+            "arithmetic": "ceil(20,000,000 / 10,293) = 1,944"
+          },
+          "binding": "concurrency (KV memory)",
+          "replicas": {
+            "value": 2924,
+            "unit": "replicas = 8-GPU nodes",
+            "formula": "max(by concurrency, by token rate)"
+          },
+          "gpus": {
+            "value": 23392,
+            "unit": "H100 GPUs",
+            "arithmetic": "2,924 × 8 = 23,392"
+          },
+          "racks": {
+            "value": 731,
+            "unit": "racks",
+            "formula": "ceil(nodes / 4)",
+            "arithmetic": "ceil(2,924 / 4) = 731"
+          },
+          "power_MW": {
+            "value": 29.8248,
+            "unit": "MW",
+            "formula": "nodes × DGX H100 max system power",
+            "arithmetic": "2,924 × 10.2 kW = 29.8 MW"
+          }
+        },
+        "fp8_kv": {
+          "batch_per_replica": {
+            "value": 685,
+            "unit": "sequences",
+            "note": "KV-limited batch at the end context (roofline kv_capacity_sequences)"
+          },
+          "step_ms": {
+            "value": 44.089,
+            "unit": "ms"
+          },
+          "tokens_per_s_per_sequence": {
+            "value": 22.7,
+            "unit": "tokens/s"
+          },
+          "meets_20_tokens_per_s": true,
+          "throughput_per_replica": {
+            "value": 15537,
+            "unit": "tokens/s"
+          },
+          "throughput_per_gpu": {
+            "value": 1942.125,
+            "unit": "tokens/s per GPU",
+            "arithmetic": "15,537 / 8"
+          },
+          "replicas_by_concurrency": {
+            "value": 1460,
+            "unit": "replicas",
+            "formula": "ceil(N / batch per replica)",
+            "arithmetic": "ceil(1,000,000 / 685) = 1,460"
+          },
+          "replicas_by_token_rate": {
+            "value": 1288,
+            "unit": "replicas",
+            "formula": "ceil(token rate / throughput per replica)",
+            "arithmetic": "ceil(20,000,000 / 15,537) = 1,288"
+          },
+          "binding": "concurrency (KV memory)",
+          "replicas": {
+            "value": 1460,
+            "unit": "replicas = 8-GPU nodes",
+            "formula": "max(by concurrency, by token rate)"
+          },
+          "gpus": {
+            "value": 11680,
+            "unit": "H100 GPUs",
+            "arithmetic": "1,460 × 8 = 11,680"
+          },
+          "racks": {
+            "value": 365,
+            "unit": "racks",
+            "formula": "ceil(nodes / 4)",
+            "arithmetic": "ceil(1,460 / 4) = 365"
+          },
+          "power_MW": {
+            "value": 14.891999999999998,
+            "unit": "MW",
+            "formula": "nodes × DGX H100 max system power",
+            "arithmetic": "1,460 × 10.2 kW = 14.9 MW"
+          }
+        }
+      },
+      "m_frontier_h_frontier": {
+        "context_tokens": 3200,
+        "seq_bytes": {
+          "value": 537845760,
+          "unit": "B",
+          "formula": "KDA state + ceil(c / 64) × 64 × 27,648 B",
+          "arithmetic": "449,372,160 + 3,200 × 27,648 = 537,845,760 B"
+        },
+        "pool_per_rank": {
+          "value": 50665032704,
+          "unit": "B",
+          "note": "kv_math capacity_h_frontier_k3_dep16 step 5"
+        },
+        "batch_kv_limit_per_rank": {
+          "value": 94,
+          "unit": "sequences",
+          "formula": "floor(pool / seq_bytes)",
+          "arithmetic": "floor(50,665,032,704 / 537,845,760) = 94"
+        },
+        "batch_per_rank": {
+          "value": 94,
+          "unit": "sequences",
+          "note": "binding limit: KV memory"
+        },
+        "binding": "KV memory",
+        "step": {
+          "B": 94,
+          "context": 3200,
+          "kv_bytes_read": 50557501440,
+          "t_memory_ms": 40.712,
+          "t_compute_ms": 15.67,
+          "t_fixed_ms": 4.22,
+          "t_all_to_all_ms": 2.306,
+          "step_ms": 47.238,
+          "tokens_per_s_per_sequence": 21.17,
+          "tokens_per_s_per_rank": 1989.939,
+          "bound": "memory"
+        },
+        "weights_per_rank_GB": 210.0,
+        "experts_untouched_fraction": {
+          "value": 1.700953268195594e-12,
+          "unit": "fraction",
+          "formula": "(1 − 16/896)^(16 × B)",
+          "note": "so every step reads every local expert"
+        },
+        "experts_untouched_fraction_b4": 0.3156300900563269,
+        "sequences_per_worker": {
+          "value": 1504,
+          "unit": "sequences",
+          "arithmetic": "94 × 16 = 1,504"
+        },
+        "throughput_per_worker": {
+          "value": 31839.019450697786,
+          "unit": "tokens/s"
+        },
+        "throughput_per_gpu": {
+          "value": 1989.9387156686116,
+          "unit": "tokens/s per GPU"
+        },
+        "decode_workers": {
+          "value": 665,
+          "unit": "DEP16 workers",
+          "formula": "ceil(N / sequences per worker)",
+          "arithmetic": "ceil(1,000,000 / 1,504) = 665"
+        },
+        "decode_gpus": {
+          "value": 10640,
+          "unit": "GB300 GPUs",
+          "arithmetic": "665 × 16 = 10,640"
+        },
+        "racks": {
+          "value": 222,
+          "unit": "GB300 NVL72 racks",
+          "formula": "ceil(decode workers / 3)",
+          "arithmetic": "ceil(665 / 3) = 222"
+        },
+        "rack_gpus_total": {
+          "value": 15984,
+          "unit": "GPUs",
+          "arithmetic": "222 × 72 = 15,984",
+          "note": "includes each rack's 2 prefill workers and 8 warm spares (RA-55)"
+        },
+        "power_MW": {
+          "value": 31.08,
+          "unit": "MW",
+          "formula": "racks × rack power (HYPOTHETICAL 140 kW)",
+          "arithmetic": "222 × 140 kW = 31.1 MW"
+        },
+        "model_check_conc64": {
+          "batch_per_rank": 4,
+          "context_tokens": 8704,
+          "model_step_ms": 37.91,
+          "measured_tpot_ms": 34.06,
+          "ratio": 1.113159443237424,
+          "note": "TensorRT-LLM DEP16, 16 GB300, concurrency 64, 8K/1K (SRC-389); the measured run also prefills 8K prompts on the same GPUs"
+        },
+        "measured_throughput_count": {
+          "tokens_per_s_per_worker": 1669.1,
+          "per_gpu": 104.31875,
+          "workers": {
+            "value": 11983,
+            "unit": "DEP16 workers",
+            "formula": "ceil(token rate / measured tokens/s per 16 GPUs)",
+            "arithmetic": "ceil(20,000,000 / 1,669.1) = 11,983"
+          },
+          "gpus": 191728,
+          "over_model": 18.01954887218045,
+          "note": "aggregated serving: the same 16 GPUs also prefill one 8K prompt per request"
+        }
+      },
+      "depends_on": [
+        "model size",
+        "hardware",
+        "batching",
+        "prompt and output lengths",
+        "quantization",
+        "SLO",
+        "parallelism"
+      ]
+    },
+    "arrival": {
+      "total": {
+        "requests_per_s": {
+          "value": 50000,
+          "unit": "requests/s"
+        },
+        "uncached_prompt_tokens": {
+          "value": 1200.0,
+          "unit": "tokens",
+          "formula": "mean prompt × (1 − hit)",
+          "arithmetic": "3,000 × (1 − 0.6) = 1,200"
+        },
+        "prefill_tokens_per_s": {
+          "value": 60000000.0,
+          "unit": "tokens/s",
+          "formula": "λ × uncached prompt tokens",
+          "arithmetic": "50,000 × 1,200 = 60,000,000"
+        },
+        "decode_tokens_per_s": {
+          "value": 20000000,
+          "unit": "tokens/s",
+          "formula": "λ × output tokens",
+          "arithmetic": "50,000 × 400 = 20,000,000"
+        },
+        "decoding_sequences": {
+          "value": 1000000.0,
+          "unit": "sequences",
+          "formula": "L = λ × W",
+          "arithmetic": "50,000 × 20 s = 1,000,000"
+        },
+        "decode_check": {
+          "value": 20000000.0,
+          "unit": "tokens/s",
+          "formula": "L × tokens/s each",
+          "arithmetic": "1,000,000 × 20 = 20,000,000"
+        }
+      },
+      "m_frontier": {
+        "requests_per_s": {
+          "value": 10000.0,
+          "unit": "requests/s",
+          "formula": "λ × M-frontier share",
+          "arithmetic": "50,000 × 0.2 = 10,000"
+        },
+        "prefill": {
+          "flops_per_request": {
+            "value": 254302693171200,
+            "unit": "FLOP",
+            "formula": "2 × active × n + per_pair × 24 × (n·p + n(n+1)/2)"
+          },
+          "flops_per_token": {
+            "value": 211918910976.0,
+            "unit": "FLOP/token"
+          },
+          "time_per_request_ms": {
+            "value": 25.43026931712,
+            "unit": "ms",
+            "note": "one TEP8 worker, compute-bound lower bound"
+          },
+          "tokens_per_s_per_worker": {
+            "value": 47187.860460138494,
+            "unit": "tokens/s",
+            "formula": "uncached tokens / prefill time"
+          },
+          "tokens_per_s_per_gpu": {
+            "value": 5898.482557517312,
+            "unit": "tokens/s per GPU"
+          },
+          "pool_tokens_per_s": {
+            "value": 12000000.0,
+            "unit": "tokens/s",
+            "arithmetic": "10,000 × 1,200 = 12,000,000"
+          },
+          "workers": {
+            "value": 424,
+            "unit": "TEP8 workers",
+            "formula": "ceil(tokens/s / (per worker × target))",
+            "arithmetic": "ceil(12,000,000 / (47,188 × 0.6)) = 424"
+          },
+          "gpus": {
+            "value": 3392,
+            "unit": "GPUs"
+          }
+        },
+        "decode": {
+          "sequences": {
+            "value": 200000.0,
+            "unit": "sequences",
+            "formula": "λ × W",
+            "arithmetic": "10,000 × 20 s = 200,000"
+          },
+          "sequences_per_worker_planned": {
+            "value": 1278.3999999999999,
+            "unit": "sequences",
+            "formula": "B per rank × 16 × fill target",
+            "arithmetic": "94 × 16 × 0.85 = 1,278.4"
+          },
+          "step_ms": {
+            "value": 47.238,
+            "unit": "ms"
+          },
+          "workers": {
+            "value": 157,
+            "unit": "DEP16 workers",
+            "formula": "ceil(sequences / planned per worker)",
+            "arithmetic": "ceil(200,000 / 1,278.4) = 157"
+          },
+          "gpus": {
+            "value": 2512,
+            "unit": "GPUs"
+          },
+          "tokens_per_s": {
+            "value": 4000000.0,
+            "unit": "tokens/s"
+          }
+        },
+        "ratio_prefill_to_decode_workers": {
+          "value": 2.700636942675159,
+          "unit": "ratio",
+          "note": "RA-55 racks hold 2 : 3 = 0.67"
+        },
+        "racks": {
+          "value": 212,
+          "unit": "GB300 NVL72 racks",
+          "formula": "max(ceil(prefill / 2), ceil(decode / 3))",
+          "arithmetic": "max(ceil(424 / 2), ceil(157 / 3)) = 212"
+        },
+        "rack_bound_by": "prefill",
+        "idle_prefill_slots": 0,
+        "idle_decode_slots": 479,
+        "gpus_in_racks": {
+          "value": 15264,
+          "unit": "GPUs"
+        },
+        "pool_gpus_if_split_free": {
+          "value": 5904,
+          "unit": "GPUs",
+          "formula": "prefill GPUs + decode GPUs",
+          "arithmetic": "3,392 + 2,512 = 5,904"
+        },
+        "racks_if_split_free": {
+          "value": 93,
+          "unit": "racks",
+          "formula": "ceil(pool GPUs / 64 active GPUs per rack)"
+        },
+        "ap_south_decoding_sequences": {
+          "value": 30000.0,
+          "unit": "sequences",
+          "note": "equals capacity_math pool.stages.decoding (Part 9.5)"
+        },
+        "ap_south_reconcile": {
+          "decoding_sequences": {
+            "value": 30000.0,
+            "unit": "sequences",
+            "note": "capacity_math pool.stages.decoding (Part 9.5)"
+          },
+          "share_of_global_m_frontier": 0.15,
+          "part09_kv_only_8k": {
+            "sequences_per_worker": 1184,
+            "workers": 26,
+            "assumes": "every sequence at 8,192 tokens; KV memory only; no step-time check"
+          },
+          "part12_measured_concurrency": {
+            "concurrency_per_worker": 64,
+            "tokens_per_s_per_user": 29.36,
+            "workers": 469,
+            "arithmetic": "ceil(30,000 / 64) = 469",
+            "assumes": "the concurrency TensorRT-LLM chose to measure (aggregated: the same GPUs prefill 8K prompts)"
+          },
+          "measured": {
+            "conc64": {
+              "batch_per_rank": 4,
+              "tpot_ms": 34.06,
+              "model_decode_only_ms": 37.91
+            },
+            "conc256": {
+              "batch_per_rank": 16,
+              "tpot_ms": 62.24,
+              "model_decode_only_ms": 39.46,
+              "prefill_interference_ms": 22.78
+            }
+          },
+          "tpot_target_ms": 50.0,
+          "model": {
+            "3200": {
+              "kv_limit_per_rank": 94,
+              "batch_per_rank": 94,
+              "binding": "KV memory",
+              "step_ms": 47.24,
+              "tokens_per_s_per_sequence": 21.17,
+              "sequences_per_worker": 1504,
+              "workers_full": 20,
+              "workers_planned": 24,
+              "arithmetic_planned": "ceil(30,000 / (1,504 × 0.85)) = 24"
+            },
+            "8192": {
+              "kv_limit_per_rank": 74,
+              "batch_per_rank": 74,
+              "binding": "KV memory",
+              "step_ms": 46.74,
+              "tokens_per_s_per_sequence": 21.39,
+              "sequences_per_worker": 1184,
+              "workers_full": 26,
+              "workers_planned": 30,
+              "arithmetic_planned": "ceil(30,000 / (1,184 × 0.85)) = 30"
+            }
+          },
+          "binding": "KV memory",
+          "decode_workers": {
+            "value": 24,
+            "unit": "DEP16 workers",
+            "note": "3,200-token mean context, 85% fill"
+          },
+          "prefill_workers": {
+            "value": 64,
+            "unit": "TEP8 workers",
+            "formula": "ceil(requests/s × uncached tokens / (per worker × target))",
+            "arithmetic": "ceil(1,500 × 1,200 / (47,188 × 0.6)) = 64"
+          },
+          "racks": {
+            "value": 32,
+            "unit": "racks",
+            "arithmetic": "max(ceil(64 / 2), ceil(24 / 3)) = 32"
+          }
+        }
+      },
+      "m_dense": {
+        "requests_per_s": {
+          "value": 40000.0,
+          "unit": "requests/s",
+          "formula": "λ × (1 − M-frontier share)",
+          "arithmetic": "50,000 × (1 − 0.2) = 40,000"
+        },
+        "prefill_tokens_per_s_per_replica": {
+          "value": 29520.610029841737,
+          "unit": "tokens/s",
+          "formula": "8,192-token step of chunks / step time",
+          "arithmetic": "8,192 / 277.5 ms = 29,521"
+        },
+        "prefill_chunk_step_ms": {
+          "value": 277.5010405177565,
+          "unit": "ms"
+        },
+        "decoding_sequences": {
+          "value": 800000.0,
+          "unit": "sequences",
+          "arithmetic": "40,000 × 20 s = 800,000"
+        },
+        "replica_equivalents_decode": {
+          "value": 2751.9779841761265,
+          "unit": "replicas",
+          "formula": "sequences / (KV batch × fill)",
+          "arithmetic": "800,000 / (342 × 0.85) = 2,752"
+        },
+        "replica_equivalents_prefill": {
+          "value": 2709.9710988062157,
+          "unit": "replicas",
+          "formula": "prefill tokens/s / (per replica × target)",
+          "arithmetic": "48,000,000 / (29,521 × 0.6) = 2,710"
+        },
+        "replicas": {
+          "value": 5462,
+          "unit": "replicas",
+          "formula": "ceil(decode + prefill equivalents)",
+          "arithmetic": "ceil(2,752 + 2,710) = 5,462"
+        },
+        "gpus": {
+          "value": 43696,
+          "unit": "H100 GPUs"
+        },
+        "note": "BF16 KV (engine default, RA-36). Adding GPU time of prefill and decode is an approximation of chunked prefill."
+      },
+      "targets": {
+        "prefill_utilization": 0.6,
+        "decode_kv_fill": 0.85
+      }
+    },
+    "curves": {
+      "chart": {
+        "batch": [
+          1,
+          2,
+          4,
+          8,
+          16,
+          32,
+          64,
+          128,
+          256,
+          342,
+          512,
+          685,
+          1024
+        ],
+        "throughput_per_gpu": [
+          13,
+          25,
+          50,
+          97,
+          186,
+          342,
+          590,
+          926,
+          1236,
+          1287,
+          1340,
+          1370,
+          1399
+        ],
+        "tokens_per_s_per_sequence": [
+          101,
+          100,
+          99,
+          97,
+          93,
+          85,
+          74,
+          58,
+          39,
+          30,
+          21,
+          16,
+          11
+        ],
+        "utilization_pct": [
+          3,
+          11,
+          21,
+          41,
+          58,
+          72,
+          84,
+          93,
+          96,
+          98
+        ],
+        "usd_per_million_tokens": [
+          58.98,
+          14.85,
+          7.54,
+          3.9,
+          2.78,
+          2.22,
+          1.91,
+          1.73,
+          1.67,
+          1.64
+        ],
+        "ttft_p99_s": [
+          0.42,
+          0.43,
+          0.46,
+          0.73,
+          0.89,
+          1.07,
+          1.43,
+          1.71,
+          3.36,
+          12.24
+        ]
+      },
+      "throughput_vs_batch": {
+        "rows": [
+          {
+            "batch": 1,
+            "throughput_per_gpu": 12.625,
+            "tokens_per_s_per_sequence": 100.9,
+            "step_ms": 9.909,
+            "fits_kv": true,
+            "meets_tpot_slo": true
+          },
+          {
+            "batch": 2,
+            "throughput_per_gpu": 25.125,
+            "tokens_per_s_per_sequence": 100.3,
+            "step_ms": 9.967,
+            "fits_kv": true,
+            "meets_tpot_slo": true
+          },
+          {
+            "batch": 4,
+            "throughput_per_gpu": 49.625,
+            "tokens_per_s_per_sequence": 99.2,
+            "step_ms": 10.083,
+            "fits_kv": true,
+            "meets_tpot_slo": true
+          },
+          {
+            "batch": 8,
+            "throughput_per_gpu": 97.0,
+            "tokens_per_s_per_sequence": 96.9,
+            "step_ms": 10.315,
+            "fits_kv": true,
+            "meets_tpot_slo": true
+          },
+          {
+            "batch": 16,
+            "throughput_per_gpu": 185.5,
+            "tokens_per_s_per_sequence": 92.8,
+            "step_ms": 10.779,
+            "fits_kv": true,
+            "meets_tpot_slo": true
+          },
+          {
+            "batch": 32,
+            "throughput_per_gpu": 341.625,
+            "tokens_per_s_per_sequence": 85.4,
+            "step_ms": 11.707,
+            "fits_kv": true,
+            "meets_tpot_slo": true
+          },
+          {
+            "batch": 64,
+            "throughput_per_gpu": 589.875,
+            "tokens_per_s_per_sequence": 73.7,
+            "step_ms": 13.562,
+            "fits_kv": true,
+            "meets_tpot_slo": true
+          },
+          {
+            "batch": 128,
+            "throughput_per_gpu": 926.375,
+            "tokens_per_s_per_sequence": 57.9,
+            "step_ms": 17.273,
+            "fits_kv": true,
+            "meets_tpot_slo": true
+          },
+          {
+            "batch": 256,
+            "throughput_per_gpu": 1236.375,
+            "tokens_per_s_per_sequence": 38.6,
+            "step_ms": 25.883,
+            "fits_kv": true,
+            "meets_tpot_slo": true
+          },
+          {
+            "batch": 342,
+            "throughput_per_gpu": 1286.625,
+            "tokens_per_s_per_sequence": 30.1,
+            "step_ms": 33.228,
+            "fits_kv": true,
+            "meets_tpot_slo": true
+          },
+          {
+            "batch": 512,
+            "throughput_per_gpu": 1340.375,
+            "tokens_per_s_per_sequence": 20.9,
+            "step_ms": 47.746,
+            "fits_kv": false,
+            "meets_tpot_slo": true
+          },
+          {
+            "batch": 685,
+            "throughput_per_gpu": 1369.5,
+            "tokens_per_s_per_sequence": 16,
+            "step_ms": 62.521,
+            "fits_kv": false,
+            "meets_tpot_slo": false
+          },
+          {
+            "batch": 1024,
+            "throughput_per_gpu": 1399.375,
+            "tokens_per_s_per_sequence": 10.9,
+            "step_ms": 91.472,
+            "fits_kv": false,
+            "meets_tpot_slo": false
+          }
+        ],
+        "source": "data/roofline.json batch_sweep (BF16 KV, 3,200-token context)",
+        "gain_1_to_kv_cap": 101.91089108910892,
+        "speed_loss_1_to_kv_cap": 3.352159468438538,
+        "gain_kv_cap_to_last": 1.0876323715146217,
+        "kv_cap_batch": 342,
+        "kv_cap": {
+          "batch": 342,
+          "throughput_per_gpu": 1286.625,
+          "tokens_per_s_per_sequence": 30.1,
+          "step_ms": 33.228,
+          "fits_kv": true,
+          "meets_tpot_slo": true
+        },
+        "batch1": {
+          "batch": 1,
+          "throughput_per_gpu": 12.625,
+          "tokens_per_s_per_sequence": 100.9,
+          "step_ms": 9.909,
+          "fits_kv": true,
+          "meets_tpot_slo": true
+        },
+        "last": {
+          "batch": 1024,
+          "throughput_per_gpu": 1399.375,
+          "tokens_per_s_per_sequence": 10.9,
+          "step_ms": 91.472,
+          "fits_kv": false,
+          "meets_tpot_slo": false
+        }
+      },
+      "cost_vs_utilization": {
+        "rows": [
+          {
+            "arrival_rate_rps": 0.25,
+            "throughput_tokens_per_s": 94.2003,
+            "utilization_of_capacity": 0.0272779941043234,
+            "usd_per_million_tokens": 58.97598580424432,
+            "ttft_p50_ms": 33.3004,
+            "ttft_p99_ms": 424.2743,
+            "tpot_p95_ms": 10.5344,
+            "within_slo_fraction": 1,
+            "goodput_rps": 0.242,
+            "usd_per_million_good_tokens": 58.97598580424432
+          },
+          {
+            "arrival_rate_rps": 1,
+            "throughput_tokens_per_s": 374.0856,
+            "utilization_of_capacity": 0.10832560821263078,
+            "usd_per_million_tokens": 14.851027560418139,
+            "ttft_p50_ms": 35.6837,
+            "ttft_p99_ms": 434.2388,
+            "tpot_p95_ms": 11.7294,
+            "within_slo_fraction": 1,
+            "goodput_rps": 0.9609,
+            "usd_per_million_good_tokens": 14.851027560418139
+          },
+          {
+            "arrival_rate_rps": 2,
+            "throughput_tokens_per_s": 736.8016,
+            "utilization_of_capacity": 0.21335887147764976,
+            "usd_per_million_tokens": 7.540097029587823,
+            "ttft_p50_ms": 38.1054,
+            "ttft_p99_ms": 458.6667,
+            "tpot_p95_ms": 13.3518,
+            "within_slo_fraction": 1,
+            "goodput_rps": 1.8927,
+            "usd_per_million_good_tokens": 7.540097029587823
+          },
+          {
+            "arrival_rate_rps": 4,
+            "throughput_tokens_per_s": 1424.1423,
+            "utilization_of_capacity": 0.4123951331696138,
+            "usd_per_million_tokens": 3.900983458995323,
+            "ttft_p50_ms": 42.4898,
+            "ttft_p99_ms": 734.1569,
+            "tpot_p95_ms": 16.6749,
+            "within_slo_fraction": 1,
+            "goodput_rps": 3.6583,
+            "usd_per_million_good_tokens": 3.900983458995323
+          },
+          {
+            "arrival_rate_rps": 6,
+            "throughput_tokens_per_s": 2001.3543,
+            "utilization_of_capacity": 0.5795409440953191,
+            "usd_per_million_tokens": 2.7758980783939937,
+            "ttft_p50_ms": 51.2107,
+            "ttft_p99_ms": 890.5611,
+            "tpot_p95_ms": 21.5951,
+            "within_slo_fraction": 1,
+            "goodput_rps": 5.141,
+            "usd_per_million_good_tokens": 2.7758980783939937
+          },
+          {
+            "arrival_rate_rps": 8,
+            "throughput_tokens_per_s": 2498.7684,
+            "utilization_of_capacity": 0.7235793270644533,
+            "usd_per_million_tokens": 2.2233175173639768,
+            "ttft_p50_ms": 64.7886,
+            "ttft_p99_ms": 1066.7913,
+            "tpot_p95_ms": 30.453,
+            "within_slo_fraction": 0.9967,
+            "goodput_rps": 6.3974,
+            "usd_per_million_good_tokens": 2.2306787572629445
+          },
+          {
+            "arrival_rate_rps": 10,
+            "throughput_tokens_per_s": 2911.5333,
+            "utilization_of_capacity": 0.843105469854568,
+            "usd_per_million_tokens": 1.9081202181529422,
+            "ttft_p50_ms": 83.7343,
+            "ttft_p99_ms": 1425.8446,
+            "tpot_p95_ms": 42.3383,
+            "within_slo_fraction": 0.9808,
+            "goodput_rps": 7.3357,
+            "usd_per_million_good_tokens": 1.9454733056208628
+          },
+          {
+            "arrival_rate_rps": 12,
+            "throughput_tokens_per_s": 3210.5441,
+            "utilization_of_capacity": 0.9296913388966944,
+            "usd_per_million_tokens": 1.7304093582005478,
+            "ttft_p50_ms": 120.9848,
+            "ttft_p99_ms": 1710.4089,
+            "tpot_p95_ms": 63.0749,
+            "within_slo_fraction": 0.9067,
+            "goodput_rps": 7.4774,
+            "usd_per_million_good_tokens": 1.9084695689870388
+          },
+          {
+            "arrival_rate_rps": 14,
+            "throughput_tokens_per_s": 3332.3984,
+            "utilization_of_capacity": 0.9649772230922485,
+            "usd_per_million_tokens": 1.6671342644851697,
+            "ttft_p50_ms": 363.6432,
+            "ttft_p99_ms": 3364.4993,
+            "tpot_p95_ms": 90.5226,
+            "within_slo_fraction": 0.2692,
+            "goodput_rps": 2.3041,
+            "usd_per_million_good_tokens": 6.192920744744315
+          },
+          {
+            "arrival_rate_rps": 16,
+            "throughput_tokens_per_s": 3378.3529,
+            "utilization_of_capacity": 0.9782844692482281,
+            "usd_per_million_tokens": 1.6444568462801965,
+            "ttft_p50_ms": 2360.6635,
+            "ttft_p99_ms": 12241.2582,
+            "tpot_p95_ms": 110.3509,
+            "within_slo_fraction": 0.1042,
+            "goodput_rps": 0.904,
+            "usd_per_million_good_tokens": 15.781735568907836
+          }
+        ],
+        "saturated_throughput": 3453.3441,
+        "source": "data/continuous_batching.json load_sweep and static_vs_continuous.saturated",
+        "price_usd_per_gpu_hour": 2.5,
+        "best_goodput": {
+          "arrival_rate_rps": 12,
+          "throughput_tokens_per_s": 3210.5441,
+          "utilization_of_capacity": 0.9296913388966944,
+          "usd_per_million_tokens": 1.7304093582005478,
+          "ttft_p50_ms": 120.9848,
+          "ttft_p99_ms": 1710.4089,
+          "tpot_p95_ms": 63.0749,
+          "within_slo_fraction": 0.9067,
+          "goodput_rps": 7.4774,
+          "usd_per_million_good_tokens": 1.9084695689870388
+        },
+        "cost_ratio_lightest_to_best": 34.082100587790066
+      }
+    }
+  }
+}

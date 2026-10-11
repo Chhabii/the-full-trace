@@ -1,0 +1,166 @@
+{
+  "_about": "Part 19 (observability, SLOs, autoscaling and quality) class C values. Every value is HYPOTHETICAL and chosen to agree with RA-42, RA-52 to RA-55, RA-61. Author w19, 2026-10-09.",
+  "observability_ref": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Service times of the short in-region spans of the reference request's trace, and the telemetry pipeline settings (RA-52). Part 19.1. Longer spans come from earlier data (network_latency, bm25_hnsw_demo, web_search_budget, sandbox_pool, request_cost, capacity_math, sse_framing).",
+    "edge_proxy_ms": {
+      "value": 1,
+      "unit": "ms",
+      "note": "Time the edge PoP proxy spends on one request before it forwards it: decrypt the QUIC packets, parse the HTTP/3 request, run the WAF rules, create the traceparent."
+    },
+    "auth_verify_ms": {
+      "value": 2,
+      "unit": "ms",
+      "note": "API gateway: verify the session token signature with a cached public key and check a local revocation cache; no network call on the common path."
+    },
+    "conversation_read_ms": {
+      "value": 6,
+      "unit": "ms",
+      "note": "Orchestrator reads the conversation row and its three earlier turns from an in-region replica (RA-17); a few index lookups at about 2 ms each (storage_ref.in_region_commit_ms is the write side)."
+    },
+    "rag_index_search_ms": {
+      "value": 25,
+      "unit": "ms",
+      "note": "BM25 and HNSW searches run in parallel over the tenant partition with the ACL filter; the slower of the two (Part 05)."
+    },
+    "rag_chunk_fetch_ms": {
+      "value": 5,
+      "unit": "ms",
+      "note": "Read the text of the 100 fused candidates from the chunk store for the reranker."
+    },
+    "metrics_scrape_interval_s": {
+      "value": 15,
+      "unit": "s",
+      "note": "Prometheus scrape interval for engine and EPP /metrics endpoints; equal to the HPA sync period so one sample per HPA evaluation."
+    },
+    "trace_baseline_sample_fraction": {
+      "value": 0.01,
+      "unit": "fraction of traces",
+      "note": "Tail-based sampling at the collector: keep every trace with an error or an SLO miss, plus this fraction of the rest."
+    },
+    "span_bytes": {
+      "value": 400,
+      "unit": "B per span",
+      "note": "Mean encoded size of one span (IDs, name, times, about ten attributes) after OTLP protobuf encoding, before compression."
+    }
+  },
+  "percentile_sample": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Seeded TTFT sample of one ap_south pool over one hour, for the percentile and histogram demo (Part 19.2) and the latency burn rate (19.3). A mixture: most requests see a short queue, a small share wait behind long prefills.",
+    "samples": {
+      "value": 10000,
+      "unit": "requests",
+      "note": "Sample size; large enough that p99 rests on 100 requests."
+    },
+    "seed": {
+      "value": 19,
+      "unit": "seed",
+      "note": "RNG seed."
+    },
+    "body_median_s": {
+      "value": 0.6,
+      "unit": "s",
+      "note": "Median TTFT of the common case (queue + prefill of a mostly cached prompt)."
+    },
+    "body_sigma": {
+      "value": 0.45,
+      "unit": "log-normal sigma",
+      "note": "Spread of the common case."
+    },
+    "slow_fraction": {
+      "value": 0.03,
+      "unit": "fraction of requests",
+      "note": "Share of requests that wait behind long uncached prefills or a burst."
+    },
+    "slow_median_s": {
+      "value": 3.0,
+      "unit": "s",
+      "note": "Median TTFT of the slow share."
+    },
+    "slow_sigma": {
+      "value": 0.5,
+      "unit": "log-normal sigma",
+      "note": "Spread of the slow share."
+    },
+    "incident_error_fractions": {
+      "value": [
+        0.02,
+        0.003
+      ],
+      "unit": "fraction of requests",
+      "note": "Two example incidents for the burn-rate alerts: a bad deploy that fails 2% of requests, and a slow leak that fails 0.3%."
+    }
+  },
+  "cold_start_ref": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Step times of one M-frontier DEP16 decode worker cold start that no public source measures for this stack (Part 19.4). Measured llm-d values are in extra.sims_w19. Ranges are low (best path) and high (worst normal path).",
+    "node_bind_low_s": {
+      "value": 1,
+      "unit": "s",
+      "note": "Kubernetes scheduler binds the pods to a free reserved node set in the same rack."
+    },
+    "node_bind_high_s": {
+      "value": 300,
+      "unit": "s",
+      "note": "No free trays: a powered-down compute tray must boot, pass health checks and join the cluster."
+    },
+    "image_bytes": {
+      "value": 12000000000,
+      "unit": "B",
+      "note": "Engine container image (vLLM, PyTorch, CUDA libraries, NIXL); weights are not in the image."
+    },
+    "image_pull_GBps": {
+      "value": 0.5,
+      "unit": "GB/s",
+      "note": "Effective pull rate from the in-region registry mirror, limited by layer decompression on the node."
+    },
+    "process_start_low_s": {
+      "value": 10,
+      "unit": "s",
+      "note": "Python imports and API server start with warm page cache."
+    },
+    "process_start_high_s": {
+      "value": 30,
+      "unit": "s",
+      "note": "Same with a cold page cache."
+    },
+    "cuda_init_low_s": {
+      "value": 3,
+      "unit": "s",
+      "note": "CUDA context creation on each GPU."
+    },
+    "cuda_init_high_s": {
+      "value": 10,
+      "unit": "s",
+      "note": "Same, plus GPU health checks at first use."
+    },
+    "nccl_setup_low_s": {
+      "value": 5,
+      "unit": "s",
+      "note": "Communicators and NIXL memory registration for 16 ranks inside one NVLink domain."
+    },
+    "nccl_setup_high_s": {
+      "value": 20,
+      "unit": "s",
+      "note": "Same when ranks wait for the slowest rank to finish loading."
+    },
+    "gpus_per_tray": {
+      "value": 4,
+      "unit": "GPUs",
+      "note": "A GB300 NVL72 compute tray holds 4 GPUs (72 GPUs in 18 trays); the tray's object-store port is shared by its 4 GPUs."
+    }
+  },
+  "diagnosis_ref": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Inputs of the third worked bottleneck case in Part 19.6 (a slow tool).",
+    "slow_tool_factor": {
+      "value": 3,
+      "unit": "x",
+      "note": "The external search provider becomes three times slower for every query and page (a provider-side incident); timeouts unchanged."
+    }
+  }
+}

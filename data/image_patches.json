@@ -1,0 +1,1011 @@
+{
+  "meta": {
+    "script": "sim/image_patches.py",
+    "generated_at": "2026-10-09T17:34:07+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T12:31:14+00:00",
+      "sha256": "7760cf964886"
+    },
+    "constants_used": {
+      "extra.sims_w04.k3_vit_pos_emb_grid_side": 64,
+      "extra.sims_w04.mistral_medium_repo_sha": "22b2b868a156",
+      "hardware.H-frontier.gb300_gpu_bf16_dense": 2.5,
+      "hypothetical.reference_request.image": {
+        "format": "JPEG",
+        "width_px": 4032,
+        "height_px": 3024,
+        "bytes": 2900000,
+        "source": "phone photo of a whiteboard"
+      },
+      "hypothetical.reference_request.pdf": {
+        "name": "q3-report.pdf",
+        "pages": 18,
+        "bytes": 2100000,
+        "layout": "two-column, 6 tables, 4 figures",
+        "text_layer_pages": 16,
+        "scanned_pages": 2
+      },
+      "hypothetical.serving_assumptions.prefill_mfu": 0.5,
+      "hypothetical.traffic.image_input_fraction": 0.08,
+      "hypothetical.traffic.peak_arrival_rate": 50000,
+      "models.M-frontier.flops_per_token_matmul": 208400000000.0,
+      "models.M-frontier.hidden_size": 7168,
+      "models.M-frontier.mla_kv_bytes_per_token_bf16": 27648,
+      "models.M-frontier.tokenizer_code_url": "https://huggingface.co/moonshotai/Kimi-K3/resolve/f831ab66814297da540d832a5235f8e904f29d06/tokenization_kimi.py",
+      "models.M-frontier.tokenizer_config_url": "https://huggingface.co/moonshotai/Kimi-K3/resolve/f831ab66814297da540d832a5235f8e904f29d06/tokenizer_config.json",
+      "models.M-frontier.tokenizer_model_url": "https://huggingface.co/moonshotai/Kimi-K3/resolve/f831ab66814297da540d832a5235f8e904f29d06/tiktoken.model",
+      "models.M-frontier.vllm_pd_validated_topology": "TEP8 prefill -> DEP16 decode, NIXL",
+      "models.M-vision.image_mean": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "models.M-vision.image_std": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "models.M-vision.in_patch_limit": 65536,
+      "models.M-vision.max_visual_tokens_per_image": 16384,
+      "models.M-vision.merge_kernel_size": 2,
+      "models.M-vision.patch_limit_on_one_side": 512,
+      "models.M-vision.patch_size": 14,
+      "models.M-vision.projector_params": 46144512,
+      "models.M-vision.ref_image_4032x3024": {
+        "W": 4032,
+        "H": 3024,
+        "s1": 1.0264,
+        "s2": 1.7778,
+        "s3": 2.3704,
+        "scale": 1.0,
+        "pad": [
+          0,
+          0
+        ],
+        "patch_grid_hw": [
+          216,
+          288
+        ],
+        "patches": 62208,
+        "token_grid_hw": [
+          108,
+          144
+        ],
+        "visual_tokens": 15552,
+        "wrapper_tokens": 10,
+        "llm_positions": 15562,
+        "wrapper_ids": [
+          163602,
+          4017,
+          220,
+          27154,
+          17,
+          87,
+          25401,
+          19,
+          163603,
+          163605,
+          163604
+        ]
+      },
+      "models.M-vision.ref_image_kv_bytes_bf16": 429981696,
+      "models.M-vision.ref_image_vit_flops": {
+        "linear": 49300000000000.0,
+        "attention": 642000000000000.0,
+        "projector": 1440000000000.0,
+        "total": 692800000000000.0
+      },
+      "models.M-vision.resize_rule": "scale = min(1, sqrt(65536/((W//14)*(H//14))), 7168/W, 7168/H); bicubic; zero-pad right/bottom to multiple of 28; tokens = (H'/28)*(W'/28)",
+      "models.M-vision.vision_tower_params": 401214464,
+      "models.M-vision.vt_hidden_size": 1024,
+      "models.M-vision.vt_intermediate_size": 4096,
+      "models.M-vision.vt_num_attention_heads": 12,
+      "models.M-vision.vt_num_hidden_layers": 27,
+      "models.M-vision.vt_qkv_hidden_size": 1536,
+      "models.examples.qwen3_8_27b_vision.image_max_pixels": 16777216,
+      "models.examples.qwen3_8_27b_vision.image_min_pixels": 65536,
+      "models.examples.qwen3_8_27b_vision.image_resize_factor": 32,
+      "models.examples.qwen3_8_27b_vision.vision_patch_size": 16,
+      "models.examples.qwen3_8_27b_vision.vision_spatial_merge_size": 2
+    }
+  },
+  "serves": "R-IV.3 (Part 4.3); page-image option of R-IV.4 (Part 4.4)",
+  "processor": {
+    "patch_size": 14,
+    "merge": 2,
+    "in_patch_limit": 65536,
+    "per_side_limit": 512,
+    "image_mean": [
+      0.5,
+      0.5,
+      0.5
+    ],
+    "image_std": [
+      0.5,
+      0.5,
+      0.5
+    ],
+    "rule": "scale = min(1, sqrt(65536/((W//14)*(H//14))), 7168/W, 7168/H); bicubic; zero-pad right/bottom to multiple of 28; tokens = (H'/28)*(W'/28)",
+    "factor": 28,
+    "max_side_px": 7168
+  },
+  "vit": {
+    "d": 1024,
+    "qkv": 1536,
+    "mlp": 4096,
+    "L": 27,
+    "heads": 12,
+    "head_dim": 128,
+    "ps": 14,
+    "merge": 2,
+    "d_llm": 7168,
+    "pos_grid": 64,
+    "patch_in": 588,
+    "linear_params_per_layer": 14680064,
+    "norm_params_per_layer": 2048,
+    "projector_in": 4096,
+    "projector_hidden": 4096
+  },
+  "rates": {
+    "gb300_bf16_dense_flops_per_s": 2500000000000000.0,
+    "mfu_hypothetical": 0.5,
+    "per_gpu_effective": 1250000000000000.0,
+    "prefill_mode": "TEP8",
+    "prefill_worker_gpus": 8,
+    "prefill_worker_effective": 1e+16
+  },
+  "case_order": [
+    "512x512",
+    "1024x1024",
+    "1920x1080",
+    "4032x3024",
+    "3584x3584",
+    "8064x6048"
+  ],
+  "cases": {
+    "512x512": {
+      "label": "illustrative input chosen for this demo",
+      "input_wh": [
+        512,
+        512
+      ],
+      "input_pixels": 262144,
+      "step1_floor_patches": {
+        "w": 36,
+        "h": 36,
+        "product": 1296,
+        "formula": "(512 // 14) × (512 // 14) = 36 × 36"
+      },
+      "step2_scales": {
+        "s1": 7.111111111111111,
+        "s2": 14.0,
+        "s3": 14.0,
+        "scale": 1.0,
+        "s1_formula": "sqrt(65536 / 1296)",
+        "s2_formula": "7168 / 512",
+        "s3_formula": "7168 / 512",
+        "limiting": "none (no resize)"
+      },
+      "step3_resized_wh": [
+        512,
+        512
+      ],
+      "resized": false,
+      "step4_pad_wh": [
+        20,
+        20
+      ],
+      "padded_wh": [
+        532,
+        532
+      ],
+      "step5_patch_grid_hw": [
+        38,
+        38
+      ],
+      "patches": 1444,
+      "step6_token_grid_hw": [
+        19,
+        19
+      ],
+      "visual_tokens": 361,
+      "patch_values": 588,
+      "wrapper_tokens": 9,
+      "wrapper_besides_pad": 8,
+      "llm_positions": 369,
+      "vit_flops": {
+        "patch_embed": 1738899456,
+        "linear": 1144692670464,
+        "attention": 345899040768,
+        "projector": 33311162368,
+        "total": 1525641773056,
+        "attention_share": 0.22672362993517972,
+        "formulas": {
+          "patch_embed": "2 × N × 588 × 1024",
+          "linear": "2 × N × 14,680,064 × 27",
+          "attention": "4 × N² × 1536 × 27",
+          "projector": "2 × T × (4096×4096 + 4096×7168)"
+        }
+      },
+      "vit_time_one_gb300_ms": 1.2205134184447999,
+      "llm_prefill_flops": 75232400000000.0,
+      "image_kv_bytes_bf16": 9980928,
+      "qwen": {
+        "resized_wh": [
+          512,
+          512
+        ],
+        "patches": 1024,
+        "visual_tokens": 256,
+        "wrapper_tokens": 2,
+        "rule": "one token per 32×32 pixels after resize; patch 16, merge 2×2"
+      }
+    },
+    "1024x1024": {
+      "label": "illustrative input chosen for this demo",
+      "input_wh": [
+        1024,
+        1024
+      ],
+      "input_pixels": 1048576,
+      "step1_floor_patches": {
+        "w": 73,
+        "h": 73,
+        "product": 5329,
+        "formula": "(1024 // 14) × (1024 // 14) = 73 × 73"
+      },
+      "step2_scales": {
+        "s1": 3.5068493150684934,
+        "s2": 7.0,
+        "s3": 7.0,
+        "scale": 1.0,
+        "s1_formula": "sqrt(65536 / 5329)",
+        "s2_formula": "7168 / 1024",
+        "s3_formula": "7168 / 1024",
+        "limiting": "none (no resize)"
+      },
+      "step3_resized_wh": [
+        1024,
+        1024
+      ],
+      "resized": false,
+      "step4_pad_wh": [
+        12,
+        12
+      ],
+      "padded_wh": [
+        1036,
+        1036
+      ],
+      "step5_patch_grid_hw": [
+        74,
+        74
+      ],
+      "patches": 5476,
+      "step6_token_grid_hw": [
+        37,
+        37
+      ],
+      "visual_tokens": 1369,
+      "patch_values": 588,
+      "wrapper_tokens": 11,
+      "wrapper_besides_pad": 10,
+      "llm_positions": 1379,
+      "vit_flops": {
+        "patch_embed": 6594330624,
+        "linear": 4340953645056,
+        "attention": 4974413119488,
+        "projector": 126324047872,
+        "total": 9448285143040,
+        "attention_share": 0.5264884626341279,
+        "formulas": {
+          "patch_embed": "2 × N × 588 × 1024",
+          "linear": "2 × N × 14,680,064 × 27",
+          "attention": "4 × N² × 1536 × 27",
+          "projector": "2 × T × (4096×4096 + 4096×7168)"
+        }
+      },
+      "vit_time_one_gb300_ms": 7.558628114432,
+      "llm_prefill_flops": 285299600000000.0,
+      "image_kv_bytes_bf16": 37850112,
+      "qwen": {
+        "resized_wh": [
+          1024,
+          1024
+        ],
+        "patches": 4096,
+        "visual_tokens": 1024,
+        "wrapper_tokens": 2,
+        "rule": "one token per 32×32 pixels after resize; patch 16, merge 2×2"
+      }
+    },
+    "1920x1080": {
+      "label": "illustrative input chosen for this demo (a Full-HD screenshot)",
+      "input_wh": [
+        1920,
+        1080
+      ],
+      "input_pixels": 2073600,
+      "step1_floor_patches": {
+        "w": 137,
+        "h": 77,
+        "product": 10549,
+        "formula": "(1920 // 14) × (1080 // 14) = 137 × 77"
+      },
+      "step2_scales": {
+        "s1": 2.492495134108368,
+        "s2": 3.7333333333333334,
+        "s3": 6.637037037037037,
+        "scale": 1.0,
+        "s1_formula": "sqrt(65536 / 10549)",
+        "s2_formula": "7168 / 1920",
+        "s3_formula": "7168 / 1080",
+        "limiting": "none (no resize)"
+      },
+      "step3_resized_wh": [
+        1920,
+        1080
+      ],
+      "resized": false,
+      "step4_pad_wh": [
+        12,
+        12
+      ],
+      "padded_wh": [
+        1932,
+        1092
+      ],
+      "step5_patch_grid_hw": [
+        78,
+        138
+      ],
+      "patches": 10764,
+      "step6_token_grid_hw": [
+        39,
+        69
+      ],
+      "visual_tokens": 2691,
+      "patch_values": 588,
+      "wrapper_tokens": 11,
+      "wrapper_besides_pad": 10,
+      "llm_positions": 2701,
+      "vit_flops": {
+        "patch_embed": 12962267136,
+        "linear": 8532875280384,
+        "attention": 19220396802048,
+        "projector": 248311185408,
+        "total": 28014545534976,
+        "attention_share": 0.6860863324750868,
+        "formulas": {
+          "patch_embed": "2 × N × 588 × 1024",
+          "linear": "2 × N × 14,680,064 × 27",
+          "attention": "4 × N² × 1536 × 27",
+          "projector": "2 × T × (4096×4096 + 4096×7168)"
+        }
+      },
+      "vit_time_one_gb300_ms": 22.4116364279808,
+      "llm_prefill_flops": 560804400000000.0,
+      "image_kv_bytes_bf16": 74400768,
+      "qwen": {
+        "resized_wh": [
+          1920,
+          1088
+        ],
+        "patches": 8160,
+        "visual_tokens": 2040,
+        "wrapper_tokens": 2,
+        "rule": "one token per 32×32 pixels after resize; patch 16, merge 2×2"
+      }
+    },
+    "4032x3024": {
+      "label": "your photo (hypothetical.reference_request.image)",
+      "input_wh": [
+        4032,
+        3024
+      ],
+      "input_pixels": 12192768,
+      "step1_floor_patches": {
+        "w": 288,
+        "h": 216,
+        "product": 62208,
+        "formula": "(4032 // 14) × (3024 // 14) = 288 × 216"
+      },
+      "step2_scales": {
+        "s1": 1.0264004785593348,
+        "s2": 1.7777777777777777,
+        "s3": 2.3703703703703702,
+        "scale": 1.0,
+        "s1_formula": "sqrt(65536 / 62208)",
+        "s2_formula": "7168 / 4032",
+        "s3_formula": "7168 / 3024",
+        "limiting": "none (no resize)"
+      },
+      "step3_resized_wh": [
+        4032,
+        3024
+      ],
+      "resized": false,
+      "step4_pad_wh": [
+        0,
+        0
+      ],
+      "padded_wh": [
+        4032,
+        3024
+      ],
+      "step5_patch_grid_hw": [
+        216,
+        288
+      ],
+      "patches": 62208,
+      "step6_token_grid_hw": [
+        108,
+        144
+      ],
+      "visual_tokens": 15552,
+      "patch_values": 588,
+      "wrapper_tokens": 11,
+      "wrapper_besides_pad": 10,
+      "llm_positions": 15562,
+      "vit_flops": {
+        "patch_embed": 74912366592,
+        "linear": 49313740750848,
+        "attention": 641959232274432,
+        "projector": 1435055947776,
+        "total": 692782941339648,
+        "attention_share": 0.9266383364363199,
+        "formulas": {
+          "patch_embed": "2 × N × 588 × 1024",
+          "linear": "2 × N × 14,680,064 × 27",
+          "attention": "4 × N² × 1536 × 27",
+          "projector": "2 × T × (4096×4096 + 4096×7168)"
+        }
+      },
+      "vit_time_one_gb300_ms": 554.2263530717184,
+      "llm_prefill_flops": 3241036800000000.0,
+      "image_kv_bytes_bf16": 429981696,
+      "qwen": {
+        "resized_wh": [
+          4032,
+          3008
+        ],
+        "patches": 47376,
+        "visual_tokens": 11844,
+        "wrapper_tokens": 2,
+        "rule": "one token per 32×32 pixels after resize; patch 16, merge 2×2"
+      }
+    },
+    "3584x3584": {
+      "label": "the report's stated maximum input, 3584 × 3584 (research/notes/01b-kimi-k3.md §2.9)",
+      "input_wh": [
+        3584,
+        3584
+      ],
+      "input_pixels": 12845056,
+      "step1_floor_patches": {
+        "w": 256,
+        "h": 256,
+        "product": 65536,
+        "formula": "(3584 // 14) × (3584 // 14) = 256 × 256"
+      },
+      "step2_scales": {
+        "s1": 1.0,
+        "s2": 2.0,
+        "s3": 2.0,
+        "scale": 1.0,
+        "s1_formula": "sqrt(65536 / 65536)",
+        "s2_formula": "7168 / 3584",
+        "s3_formula": "7168 / 3584",
+        "limiting": "none (no resize)"
+      },
+      "step3_resized_wh": [
+        3584,
+        3584
+      ],
+      "resized": false,
+      "step4_pad_wh": [
+        0,
+        0
+      ],
+      "padded_wh": [
+        3584,
+        3584
+      ],
+      "step5_patch_grid_hw": [
+        256,
+        256
+      ],
+      "patches": 65536,
+      "step6_token_grid_hw": [
+        128,
+        128
+      ],
+      "visual_tokens": 16384,
+      "patch_values": 588,
+      "wrapper_tokens": 11,
+      "wrapper_besides_pad": 10,
+      "llm_positions": 16394,
+      "vit_flops": {
+        "patch_embed": 78920024064,
+        "linear": 51951924412416,
+        "attention": 712483534798848,
+        "projector": 1511828488192,
+        "total": 766026207723520,
+        "attention_share": 0.930103340610512,
+        "formulas": {
+          "patch_embed": "2 × N × 588 × 1024",
+          "linear": "2 × N × 14,680,064 × 27",
+          "attention": "4 × N² × 1536 × 27",
+          "projector": "2 × T × (4096×4096 + 4096×7168)"
+        }
+      },
+      "vit_time_one_gb300_ms": 612.820966178816,
+      "llm_prefill_flops": 3414425600000000.0,
+      "image_kv_bytes_bf16": 452984832,
+      "qwen": {
+        "resized_wh": [
+          3584,
+          3584
+        ],
+        "patches": 50176,
+        "visual_tokens": 12544,
+        "wrapper_tokens": 2,
+        "rule": "one token per 32×32 pixels after resize; patch 16, merge 2×2"
+      }
+    },
+    "8064x6048": {
+      "label": "illustrative input chosen for this demo (a 49-megapixel photo)",
+      "input_wh": [
+        8064,
+        6048
+      ],
+      "input_pixels": 48771072,
+      "step1_floor_patches": {
+        "w": 576,
+        "h": 432,
+        "product": 248832,
+        "formula": "(8064 // 14) × (6048 // 14) = 576 × 432"
+      },
+      "step2_scales": {
+        "s1": 0.5132002392796674,
+        "s2": 0.8888888888888888,
+        "s3": 1.1851851851851851,
+        "scale": 0.5132002392796674,
+        "s1_formula": "sqrt(65536 / 248832)",
+        "s2_formula": "7168 / 8064",
+        "s3_formula": "7168 / 6048",
+        "limiting": "patch budget s1"
+      },
+      "step3_resized_wh": [
+        4138,
+        3103
+      ],
+      "resized": true,
+      "step4_pad_wh": [
+        6,
+        5
+      ],
+      "padded_wh": [
+        4144,
+        3108
+      ],
+      "step5_patch_grid_hw": [
+        222,
+        296
+      ],
+      "patches": 65712,
+      "step6_token_grid_hw": [
+        111,
+        148
+      ],
+      "visual_tokens": 16428,
+      "patch_values": 588,
+      "wrapper_tokens": 11,
+      "wrapper_besides_pad": 10,
+      "llm_positions": 16438,
+      "vit_flops": {
+        "patch_embed": 79131967488,
+        "linear": 52091443740672,
+        "attention": 716315489206272,
+        "projector": 1515888574464,
+        "total": 770001953488896,
+        "attention_share": 0.930277495999368,
+        "formulas": {
+          "patch_embed": "2 × N × 588 × 1024",
+          "linear": "2 × N × 14,680,064 × 27",
+          "attention": "4 × N² × 1536 × 27",
+          "projector": "2 × T × (4096×4096 + 4096×7168)"
+        }
+      },
+      "vit_time_one_gb300_ms": 616.0015627911168,
+      "llm_prefill_flops": 3423595200000000.0,
+      "image_kv_bytes_bf16": 454201344,
+      "qwen": {
+        "resized_wh": [
+          4704,
+          3520
+        ],
+        "patches": 64680,
+        "visual_tokens": 16170,
+        "wrapper_tokens": 2,
+        "rule": "one token per 32×32 pixels after resize; patch 16, merge 2×2"
+      }
+    }
+  },
+  "processor_max": {
+    "search": "every width and height patch count up to the per-side limit (vLLM get_max_image_size)",
+    "best_input_wh": [
+      1861,
+      7041
+    ],
+    "visual_tokens": 16817,
+    "patches": 67268,
+    "in_patch_limit_tokens": 16384,
+    "exceeds_in_patch_limit": true,
+    "resize": {
+      "input_wh": [
+        1861,
+        7041
+      ],
+      "input_pixels": 13103301,
+      "step1_floor_patches": {
+        "w": 132,
+        "h": 502,
+        "product": 66264,
+        "formula": "(1861 // 14) × (7041 // 14) = 132 × 502"
+      },
+      "step2_scales": {
+        "s1": 0.9944916502415174,
+        "s2": 3.85169263836647,
+        "s3": 1.018037210623491,
+        "scale": 0.9944916502415174,
+        "s1_formula": "sqrt(65536 / 66264)",
+        "s2_formula": "7168 / 1861",
+        "s3_formula": "7168 / 7041",
+        "limiting": "patch budget s1"
+      },
+      "step3_resized_wh": [
+        1850,
+        7002
+      ],
+      "resized": true,
+      "step4_pad_wh": [
+        26,
+        26
+      ],
+      "padded_wh": [
+        1876,
+        7028
+      ],
+      "step5_patch_grid_hw": [
+        502,
+        134
+      ],
+      "patches": 67268,
+      "step6_token_grid_hw": [
+        251,
+        67
+      ],
+      "visual_tokens": 16817,
+      "patch_values": 588
+    },
+    "why": "the scale is computed from floored patch counts, int() truncates the new size, and padding rounds each side up to a multiple of 28, so a tall image can end above the 65,536-patch budget",
+    "constant_max_visual_tokens": 16384
+  },
+  "reference": {
+    "input": {
+      "width": 4032,
+      "height": 3024,
+      "jpeg_bytes": 2900000,
+      "megapixels": 12.192768
+    },
+    "resize": {
+      "input_wh": [
+        4032,
+        3024
+      ],
+      "input_pixels": 12192768,
+      "step1_floor_patches": {
+        "w": 288,
+        "h": 216,
+        "product": 62208,
+        "formula": "(4032 // 14) × (3024 // 14) = 288 × 216"
+      },
+      "step2_scales": {
+        "s1": 1.0264004785593348,
+        "s2": 1.7777777777777777,
+        "s3": 2.3703703703703702,
+        "scale": 1.0,
+        "s1_formula": "sqrt(65536 / 62208)",
+        "s2_formula": "7168 / 4032",
+        "s3_formula": "7168 / 3024",
+        "limiting": "none (no resize)"
+      },
+      "step3_resized_wh": [
+        4032,
+        3024
+      ],
+      "resized": false,
+      "step4_pad_wh": [
+        0,
+        0
+      ],
+      "padded_wh": [
+        4032,
+        3024
+      ],
+      "step5_patch_grid_hw": [
+        216,
+        288
+      ],
+      "patches": 62208,
+      "step6_token_grid_hw": [
+        108,
+        144
+      ],
+      "visual_tokens": 15552,
+      "patch_values": 588
+    },
+    "wrapper": {
+      "text": "<|media_begin|>image 4032x3024<|media_content|><|media_pad|><|media_end|>",
+      "ids": [
+        163602,
+        4017,
+        220,
+        27154,
+        17,
+        87,
+        25401,
+        19,
+        163603,
+        163605,
+        163604
+      ],
+      "tokens": 11,
+      "besides_pad": 10
+    },
+    "llm_positions": 15562,
+    "patch_grid_hw": [
+      216,
+      288
+    ],
+    "token_grid_hw": [
+      108,
+      144
+    ],
+    "attention_pairs_per_layer_per_head": 3869835264,
+    "shapes": [
+      {
+        "stage": "JPEG bytes (upload)",
+        "shape": "2,900,000 bytes",
+        "bytes": 2900000,
+        "where": "object store"
+      },
+      {
+        "stage": "decoded RGB",
+        "shape": "[3024, 4032, 3] uint8",
+        "bytes": 36578304,
+        "where": "CPU"
+      },
+      {
+        "stage": "normalized (x/255 − 0.5)/0.5",
+        "shape": "[3024, 4032, 3] float32",
+        "bytes": 146313216,
+        "where": "CPU or GPU"
+      },
+      {
+        "stage": "patches (navit_patchify)",
+        "shape": "[62208, 588]",
+        "bytes": 146313216,
+        "where": "CPU or GPU, float32"
+      },
+      {
+        "stage": "patch embedding + position",
+        "shape": "[62208, 1024]",
+        "bytes": 127401984,
+        "where": "GPU, BF16"
+      },
+      {
+        "stage": "after 27 ViT layers",
+        "shape": "[62208, 1024]",
+        "bytes": 127401984,
+        "where": "GPU, BF16"
+      },
+      {
+        "stage": "2×2 merge",
+        "shape": "[15552, 4096]",
+        "bytes": 127401984,
+        "where": "GPU, BF16"
+      },
+      {
+        "stage": "projector MLP",
+        "shape": "[15552, 7168]",
+        "bytes": 222953472,
+        "where": "GPU, BF16"
+      }
+    ],
+    "decode_expansion": 12.61320827586207,
+    "vit_flops": {
+      "patch_embed": 74912366592,
+      "linear": 49313740750848,
+      "attention": 641959232274432,
+      "projector": 1435055947776,
+      "total": 692782941339648,
+      "attention_share": 0.9266383364363199,
+      "formulas": {
+        "patch_embed": "2 × N × 588 × 1024",
+        "linear": "2 × N × 14,680,064 × 27",
+        "attention": "4 × N² × 1536 × 27",
+        "projector": "2 × T × (4096×4096 + 4096×7168)"
+      }
+    },
+    "vit_flops_note": {
+      "linear": 49300000000000.0,
+      "attention": 642000000000000.0,
+      "projector": 1440000000000.0,
+      "total": 692800000000000.0
+    },
+    "vit_flops_matches_note": true,
+    "vit_time_one_gb300_s": 0.5542263530717184,
+    "llm_prefill_flops_visual_tokens": 3241036800000000.0,
+    "llm_flops_per_token": 208400000000.0,
+    "llm_prefill_time_prefill_worker_s": 0.32410368,
+    "image_kv_bytes_bf16": 429981696,
+    "kv_bytes_per_token_bf16": 27648,
+    "image_kv_matches_constants": true,
+    "encoder_output_bytes_bf16": 222953472,
+    "encoder_output_over_jpeg": 76.8805075862069,
+    "matches_constants": {
+      "visual_tokens": true,
+      "patches": true,
+      "llm_positions": true,
+      "token_grid": true
+    },
+    "times_label": "hypothetical: dense BF16 peak × prefill_mfu; matmul FLOPs only"
+  },
+  "vision_encoder": {
+    "per_layer": {
+      "qkv": 4718592,
+      "attn_out": 1572864,
+      "mlp": 8388608,
+      "norms": 2048,
+      "total": 14682112,
+      "formula": "1024×4608 + 1536×1024 + 2×1024×4096 + 2×1024"
+    },
+    "layers_total": 396417024,
+    "final_norm": 1024,
+    "patch_conv": 602112,
+    "pos_grid": 4194304,
+    "vision_tower_total": 401214464,
+    "vision_tower_constant": 401214464,
+    "vision_tower_matches": true,
+    "projector_total": 46144512,
+    "projector_constant": 46144512,
+    "projector_matches": true,
+    "projector_formula": "4096×4096 + 4096×7168 + 7168 (RMSNorm)"
+  },
+  "orientation": {
+    "stored_wh": [
+      3024,
+      4032
+    ],
+    "note": "If the phone stored the pixels rotated and only an EXIF Orientation tag says how to turn them, a pipeline that ignores the tag feeds the model the stored (rotated) pixels.",
+    "upright": {
+      "token_grid_hw": [
+        108,
+        144
+      ],
+      "visual_tokens": 15552,
+      "wrapper_text": "<|media_begin|>image 4032x3024<|media_content|><|media_pad|><|media_end|>"
+    },
+    "rotated": {
+      "token_grid_hw": [
+        144,
+        108
+      ],
+      "visual_tokens": 15552,
+      "wrapper_text": "<|media_begin|>image 3024x4032<|media_content|><|media_pad|><|media_end|>"
+    },
+    "same_token_count": true
+  },
+  "pdf_pages_as_images": {
+    "label": "illustrative input chosen for this demo: A4 pages rendered at 150 dpi",
+    "page_wh": [
+      1240,
+      1754
+    ],
+    "dpi": 150,
+    "pages": 18,
+    "k3": {
+      "resize": {
+        "input_wh": [
+          1240,
+          1754
+        ],
+        "input_pixels": 2174960,
+        "step1_floor_patches": {
+          "w": 88,
+          "h": 125,
+          "product": 11000,
+          "formula": "(1240 // 14) × (1754 // 14) = 88 × 125"
+        },
+        "step2_scales": {
+          "s1": 2.4408642284687163,
+          "s2": 5.780645161290322,
+          "s3": 4.086659064994299,
+          "scale": 1.0,
+          "s1_formula": "sqrt(65536 / 11000)",
+          "s2_formula": "7168 / 1240",
+          "s3_formula": "7168 / 1754",
+          "limiting": "none (no resize)"
+        },
+        "step3_resized_wh": [
+          1240,
+          1754
+        ],
+        "resized": false,
+        "step4_pad_wh": [
+          20,
+          10
+        ],
+        "padded_wh": [
+          1260,
+          1764
+        ],
+        "step5_patch_grid_hw": [
+          126,
+          90
+        ],
+        "patches": 11340,
+        "step6_token_grid_hw": [
+          63,
+          45
+        ],
+        "visual_tokens": 2835,
+        "patch_values": 588
+      },
+      "positions_per_page": 2845,
+      "positions_all_pages": 51210,
+      "vit_flops_per_page": 30597205524480,
+      "vit_flops_all_pages": 550749699440640,
+      "vit_time_all_pages_one_gb300_s": 0.440599759552512,
+      "image_kv_bytes_all_pages_bf16": 1410877440
+    },
+    "qwen": {
+      "resized_wh": [
+        1248,
+        1760
+      ],
+      "patches": 8580,
+      "visual_tokens": 2145,
+      "wrapper_tokens": 2,
+      "rule": "one token per 32×32 pixels after resize; patch 16, merge 2×2",
+      "positions_all_pages": 38646
+    }
+  },
+  "fleet": {
+    "peak_arrival_rate": 50000,
+    "image_input_fraction": 0.08,
+    "images_per_s": 4000.0,
+    "label": "hypothetical traffic; assumes every image has the stated size; dense BF16 peak × prefill_mfu",
+    "4032x3024": {
+      "vit_flops_per_image": 692782941339648,
+      "vit_flops_per_s": 2.771131765358592e+18,
+      "gb300_gpus_busy": 2216.905412286874,
+      "visual_tokens_per_image": 15552
+    },
+    "1024x1024": {
+      "vit_flops_per_image": 9448285143040,
+      "vit_flops_per_s": 3.779314057216e+16,
+      "gb300_gpus_busy": 30.234512457728,
+      "visual_tokens_per_image": 1369
+    },
+    "ratio_4032_over_1024": 73.32366994131002
+  },
+  "units": {
+    "bytes": "B",
+    "flops": "FLOP (2 per multiply-add)",
+    "times": "s or ms as named"
+  }
+}

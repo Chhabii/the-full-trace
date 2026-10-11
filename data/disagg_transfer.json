@@ -1,0 +1,1972 @@
+{
+  "meta": {
+    "script": "sim/disagg_transfer.py",
+    "generated_at": "2026-10-09T06:46:40+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T06:45:24+00:00",
+      "sha256": "36e36e01982d"
+    },
+    "constants_used": {
+      "extra.sims_s1.mooncake_roce_nic_gbps_per_gpu": 200,
+      "extra.sims_s1.mooncake_te_4x200g_nic_count": 4,
+      "hardware.H-frontier.gb300_gpu_bf16_dense": 2.5,
+      "hardware.H-frontier.gb300_nvl72_nic_per_gpu": 800,
+      "hardware.H-teach.h100_sxm_bf16_dense": 989.5,
+      "hardware.interconnect.ib_ndr_port": 400,
+      "hardware.interconnect.nvlink4_per_gpu": 900,
+      "hardware.interconnect.nvlink5_per_gpu": 1800,
+      "hypothetical.serving_assumptions.kv_transfer_software_overhead_ms": 2.0,
+      "hypothetical.serving_assumptions.prefill_mfu": 0.5,
+      "hypothetical.serving_assumptions.reference_context_tokens": 32768,
+      "hypothetical.serving_assumptions.slow_path_tcp_gbps": 25,
+      "hypothetical.slo.p95_tpot_ms": 60,
+      "hypothetical.traffic.per_request_decode_speed": 20,
+      "kv_systems.mooncake_te_bw_4x200g_gbs": 87,
+      "models.M-dense.head_dim": 128,
+      "models.M-dense.hidden_size": 12288,
+      "models.M-dense.intermediate_size": 28672,
+      "models.M-dense.max_position_embeddings": 262144,
+      "models.M-dense.num_attention_heads": 96,
+      "models.M-dense.num_hidden_layers": 88,
+      "models.M-dense.num_key_value_heads": 8,
+      "models.M-dense.text_params": 125025988608,
+      "models.M-dense.tie_word_embeddings": false,
+      "models.M-dense.torch_dtype": "bfloat16",
+      "models.M-dense.total_params": 127704210176,
+      "models.M-dense.vision_params": 2678221568,
+      "models.M-dense.vllm_recipe": {
+        "recommended_hw": "8x H200 (alt 4x B200, 2-8x MI300X)",
+        "tp": 8,
+        "eagle_num_speculative_tokens": 3,
+        "mi300x_tp8_1k_in_1k_out_conc32": {
+          "output_tok_s": 915,
+          "mean_ttft_ms": 2522,
+          "mean_tpot_ms": 26.1
+        },
+        "mi300x_tp1": {
+          "output_tok_s": 438,
+          "mean_ttft_ms": 5719,
+          "mean_tpot_ms": 55.2
+        }
+      },
+      "models.M-dense.vocab_size": 131072,
+      "models.M-frontier.active_params": 104189614848,
+      "models.M-frontier.kda_conv_state_shape_per_layer": [
+        36864,
+        3
+      ],
+      "models.M-frontier.kda_head_k_dim": 128,
+      "models.M-frontier.kda_head_v_dim": 128,
+      "models.M-frontier.kda_num_heads": 96,
+      "models.M-frontier.kda_recurrent_state_dtype": "float32",
+      "models.M-frontier.kda_recurrent_state_shape_per_layer": [
+        96,
+        128,
+        128
+      ],
+      "models.M-frontier.kda_short_conv_kernel": 4,
+      "models.M-frontier.kv_lora_rank": 512,
+      "models.M-frontier.max_position_embeddings": 1048576,
+      "models.M-frontier.num_attention_heads": 96,
+      "models.M-frontier.num_hidden_layers": 93,
+      "models.M-frontier.num_kda_layers": 69,
+      "models.M-frontier.num_mla_layers": 24,
+      "models.M-frontier.qk_nope_head_dim": 128,
+      "models.M-frontier.qk_rope_head_dim": 64,
+      "models.M-frontier.torch_dtype": "bfloat16",
+      "models.M-frontier.v_head_dim": 128,
+      "models.M-frontier.vllm_pd_validated_topology": "TEP8 prefill -> DEP16 decode, NIXL",
+      "routing.dynamo.conditional_disagg_max_effective_isl": 2048,
+      "routing.dynamo.conditional_disagg_ratio": 0.7
+    }
+  },
+  "conventions": {
+    "bandwidth": "per direction, B/s; NVIDIA prints NVLink as a bidirectional total, which is halved here. Ethernet and InfiniBand rates are per direction (full duplex).",
+    "overhead": {
+      "value": 2,
+      "unit": "ms",
+      "from": "hypothetical.serving_assumptions.kv_transfer_software_overhead_ms (HYPOTHETICAL)"
+    },
+    "serves": [
+      "R-XIII.7",
+      "R-XXII.3",
+      "R-XXII.4"
+    ]
+  },
+  "context_tokens": {
+    "value": 32768,
+    "unit": "tokens",
+    "from": "hypothetical.serving_assumptions.reference_context_tokens"
+  },
+  "kv_to_move": {
+    "m_dense_bf16": {
+      "total": {
+        "formula": "32,768 tokens × 360,448 B/token",
+        "value": 11811160064,
+        "unit": "B",
+        "MB_1e6": 11811.16006,
+        "GB_1e9": 11.81116006,
+        "MiB_2pow20": 11264,
+        "GiB_2pow30": 11
+      },
+      "per_gpu": {
+        "formula": "total / TP (8)",
+        "value": 1476395008,
+        "unit": "B",
+        "MB_1e6": 1476.395008,
+        "GB_1e9": 1.476395008,
+        "MiB_2pow20": 1408,
+        "GiB_2pow30": 1.375
+      },
+      "parallel_flows": 8,
+      "layout": "TP8 prefill → TP8 decode: each GPU sends its own KV head's share on its own link; all flows run in parallel."
+    },
+    "m_dense_fp8": {
+      "total": {
+        "formula": "32,768 tokens × 180,224 B/token",
+        "value": 5905580032,
+        "unit": "B",
+        "MB_1e6": 5905.580032,
+        "GB_1e9": 5.905580032,
+        "MiB_2pow20": 5632,
+        "GiB_2pow30": 5.5
+      },
+      "per_gpu": {
+        "formula": "total / TP (8)",
+        "value": 738197504,
+        "unit": "B",
+        "MB_1e6": 738.197504,
+        "GB_1e9": 0.738197504,
+        "MiB_2pow20": 704,
+        "GiB_2pow30": 0.6875
+      },
+      "parallel_flows": 8,
+      "layout": "TP8 prefill → TP8 decode: each GPU sends its own KV head's share on its own link; all flows run in parallel."
+    },
+    "k3_bf16_mla": {
+      "mla_kv": {
+        "formula": "32,768 × 27,648 B/token",
+        "value": 905969664,
+        "unit": "B",
+        "MB_1e6": 905.969664,
+        "GB_1e9": 0.905969664,
+        "MiB_2pow20": 864,
+        "GiB_2pow30": 0.84375
+      },
+      "kda_state": {
+        "formula": "fixed per-sequence KDA state",
+        "value": 449372160,
+        "unit": "B",
+        "MB_1e6": 449.37216,
+        "GB_1e9": 0.44937216,
+        "MiB_2pow20": 428.5546875,
+        "GiB_2pow30": 0.418510437
+      },
+      "total": {
+        "formula": "MLA KV + KDA state",
+        "value": 1355341824,
+        "unit": "B",
+        "MB_1e6": 1355.341824,
+        "GB_1e9": 1.355341824,
+        "MiB_2pow20": 1292.554688,
+        "GiB_2pow30": 1.262260437
+      },
+      "into_one_decode_rank": {
+        "value": 1355341824,
+        "unit": "B",
+        "MB_1e6": 1355.341824,
+        "GB_1e9": 1.355341824,
+        "MiB_2pow20": 1292.554688,
+        "GiB_2pow30": 1.262260437
+      },
+      "parallel_flows": 1,
+      "layout": "TEP8 prefill -> DEP16 decode, NIXL (vLLM validated topology). MLA KV is replicated on the TEP8 ranks, so one copy is sent; the KDA state is split by head across the prefill ranks. One DEP16 decode rank receives all of it, so its ingress link is the bottleneck.",
+      "prefill_ranks": 8,
+      "decode_ranks_per_worker": 16
+    },
+    "k3_fp8_mla": {
+      "mla_kv": {
+        "formula": "32,768 × 13,824 B/token",
+        "value": 452984832,
+        "unit": "B",
+        "MB_1e6": 452.984832,
+        "GB_1e9": 0.452984832,
+        "MiB_2pow20": 432,
+        "GiB_2pow30": 0.421875
+      },
+      "kda_state": {
+        "formula": "fixed per-sequence KDA state",
+        "value": 449372160,
+        "unit": "B",
+        "MB_1e6": 449.37216,
+        "GB_1e9": 0.44937216,
+        "MiB_2pow20": 428.5546875,
+        "GiB_2pow30": 0.418510437
+      },
+      "total": {
+        "formula": "MLA KV + KDA state",
+        "value": 902356992,
+        "unit": "B",
+        "MB_1e6": 902.356992,
+        "GB_1e9": 0.902356992,
+        "MiB_2pow20": 860.5546875,
+        "GiB_2pow30": 0.840385437
+      },
+      "into_one_decode_rank": {
+        "value": 902356992,
+        "unit": "B",
+        "MB_1e6": 902.356992,
+        "GB_1e9": 0.902356992,
+        "MiB_2pow20": 860.5546875,
+        "GiB_2pow30": 0.840385437
+      },
+      "parallel_flows": 1,
+      "layout": "TEP8 prefill -> DEP16 decode, NIXL (vLLM validated topology). MLA KV is replicated on the TEP8 ranks, so one copy is sent; the KDA state is split by head across the prefill ranks. One DEP16 decode rank receives all of it, so its ingress link is the bottleneck.",
+      "prefill_ranks": 8,
+      "decode_ranks_per_worker": 16
+    }
+  },
+  "links": {
+    "nvlink4_h100": {
+      "per_direction": {
+        "formula": "bidirectional total / 2",
+        "value": 450000000000,
+        "unit": "B/s",
+        "GB_per_s": 450,
+        "bidirectional_GB_per_s": 900,
+        "from": "hardware.interconnect.nvlink4_per_gpu"
+      },
+      "scope": "per GPU",
+      "class": "A",
+      "pairing": "M-dense only if prefill and decode GPUs share one NVLink domain. An M-dense TP=8 replica fills a whole 8-GPU HGX node, so its prefill → decode path between nodes is the NIC."
+    },
+    "nvlink5_gb300": {
+      "per_direction": {
+        "formula": "bidirectional total / 2",
+        "value": 900000000000,
+        "unit": "B/s",
+        "GB_per_s": 900,
+        "bidirectional_GB_per_s": 1800,
+        "from": "hardware.interconnect.nvlink5_per_gpu"
+      },
+      "scope": "per GPU",
+      "class": "A",
+      "pairing": "K3 inside one GB300 NVL72 rack (reference architecture RA-55: KV moves by NIXL over NVLink)."
+    },
+    "ib_ndr_400g": {
+      "per_direction": {
+        "formula": "400 Gb/s / 8 bits per byte (full duplex: this rate in each direction)",
+        "value": 50000000000,
+        "unit": "B/s",
+        "GB_per_s": 50,
+        "from": "hardware.interconnect.ib_ndr_port"
+      },
+      "scope": "per GPU (one ConnectX-7 per GPU on DGX H100)",
+      "class": "A",
+      "pairing": "M-dense prefill node → decode node (GPUDirect RDMA)."
+    },
+    "gb300_nic_800g": {
+      "per_direction": {
+        "formula": "800 Gb/s / 8 bits per byte",
+        "value": 100000000000,
+        "unit": "B/s",
+        "GB_per_s": 100,
+        "from": "hardware.H-frontier.gb300_nvl72_nic_per_gpu"
+      },
+      "scope": "per GPU (ConnectX-8 SuperNIC)",
+      "class": "A",
+      "pairing": "K3 prefill and decode in different racks."
+    },
+    "roce_200g": {
+      "per_direction": {
+        "formula": "200 Gb/s / 8 bits per byte",
+        "value": 25000000000,
+        "unit": "B/s",
+        "GB_per_s": 25,
+        "from": "extra.sims_s1.mooncake_roce_nic_gbps_per_gpu"
+      },
+      "measured_effective": {
+        "formula": "Mooncake Transfer Engine measured total / NIC count (40 GB transfer, 4×200 Gbps RoCE (FAST 2025 §5.4.1))",
+        "value": 21750000000,
+        "unit": "B/s",
+        "GB_per_s": 21.75,
+        "fraction_of_line_rate": 0.87
+      },
+      "scope": "per GPU (Mooncake production: one 200 Gb/s RoCEv2 NIC per GPU)",
+      "class": "A",
+      "pairing": "A RoCE cluster such as Mooncake's."
+    },
+    "tcp_25g_slow_path": {
+      "per_direction": {
+        "formula": "25 Gb/s / 8 bits per byte",
+        "value": 3125000000,
+        "unit": "B/s",
+        "GB_per_s": 3.125,
+        "from": "hypothetical.serving_assumptions.slow_path_tcp_gbps"
+      },
+      "scope": "per node (one port shared by all GPUs of the node)",
+      "class": "C",
+      "label": "HYPOTHETICAL",
+      "pairing": "A deployment without RDMA: KV goes through host memory and the kernel TCP stack."
+    }
+  },
+  "transfer_times": {
+    "m_dense_bf16": {
+      "nvlink4_h100": {
+        "bytes_on_bottleneck_link": {
+          "value": 1476395008,
+          "unit": "B",
+          "MB_1e6": 1476.395008,
+          "GB_1e9": 1.476395008,
+          "MiB_2pow20": 1408,
+          "GiB_2pow30": 1.375
+        },
+        "bandwidth_GB_per_s": 450,
+        "wire_time": {
+          "formula": "bytes / per-direction bandwidth",
+          "value": 3.280877796,
+          "unit": "ms",
+          "s": 0.003280877796
+        },
+        "overhead": {
+          "value": 2,
+          "unit": "ms",
+          "s": 0.002,
+          "note": "HYPOTHETICAL fixed software cost"
+        },
+        "total": {
+          "formula": "wire_time + overhead",
+          "value": 5.280877796,
+          "unit": "ms",
+          "s": 0.005280877796
+        }
+      },
+      "nvlink5_gb300": {
+        "bytes_on_bottleneck_link": {
+          "value": 1476395008,
+          "unit": "B",
+          "MB_1e6": 1476.395008,
+          "GB_1e9": 1.476395008,
+          "MiB_2pow20": 1408,
+          "GiB_2pow30": 1.375
+        },
+        "bandwidth_GB_per_s": 900,
+        "wire_time": {
+          "formula": "bytes / per-direction bandwidth",
+          "value": 1.640438898,
+          "unit": "ms",
+          "s": 0.001640438898
+        },
+        "overhead": {
+          "value": 2,
+          "unit": "ms",
+          "s": 0.002,
+          "note": "HYPOTHETICAL fixed software cost"
+        },
+        "total": {
+          "formula": "wire_time + overhead",
+          "value": 3.640438898,
+          "unit": "ms",
+          "s": 0.003640438898
+        }
+      },
+      "ib_ndr_400g": {
+        "bytes_on_bottleneck_link": {
+          "value": 1476395008,
+          "unit": "B",
+          "MB_1e6": 1476.395008,
+          "GB_1e9": 1.476395008,
+          "MiB_2pow20": 1408,
+          "GiB_2pow30": 1.375
+        },
+        "bandwidth_GB_per_s": 50,
+        "wire_time": {
+          "formula": "bytes / per-direction bandwidth",
+          "value": 29.52790016,
+          "unit": "ms",
+          "s": 0.02952790016
+        },
+        "overhead": {
+          "value": 2,
+          "unit": "ms",
+          "s": 0.002,
+          "note": "HYPOTHETICAL fixed software cost"
+        },
+        "total": {
+          "formula": "wire_time + overhead",
+          "value": 31.52790016,
+          "unit": "ms",
+          "s": 0.03152790016
+        }
+      },
+      "gb300_nic_800g": {
+        "bytes_on_bottleneck_link": {
+          "value": 1476395008,
+          "unit": "B",
+          "MB_1e6": 1476.395008,
+          "GB_1e9": 1.476395008,
+          "MiB_2pow20": 1408,
+          "GiB_2pow30": 1.375
+        },
+        "bandwidth_GB_per_s": 100,
+        "wire_time": {
+          "formula": "bytes / per-direction bandwidth",
+          "value": 14.76395008,
+          "unit": "ms",
+          "s": 0.01476395008
+        },
+        "overhead": {
+          "value": 2,
+          "unit": "ms",
+          "s": 0.002,
+          "note": "HYPOTHETICAL fixed software cost"
+        },
+        "total": {
+          "formula": "wire_time + overhead",
+          "value": 16.76395008,
+          "unit": "ms",
+          "s": 0.01676395008
+        }
+      },
+      "roce_200g": {
+        "bytes_on_bottleneck_link": {
+          "value": 1476395008,
+          "unit": "B",
+          "MB_1e6": 1476.395008,
+          "GB_1e9": 1.476395008,
+          "MiB_2pow20": 1408,
+          "GiB_2pow30": 1.375
+        },
+        "bandwidth_GB_per_s": 25,
+        "wire_time": {
+          "formula": "bytes / per-direction bandwidth",
+          "value": 59.05580032,
+          "unit": "ms",
+          "s": 0.05905580032
+        },
+        "overhead": {
+          "value": 2,
+          "unit": "ms",
+          "s": 0.002,
+          "note": "HYPOTHETICAL fixed software cost"
+        },
+        "total": {
+          "formula": "wire_time + overhead",
+          "value": 61.05580032,
+          "unit": "ms",
+          "s": 0.06105580032
+        },
+        "total_at_measured_effective": {
+          "value": 69.88023025,
+          "unit": "ms",
+          "s": 0.06988023025
+        }
+      },
+      "tcp_25g_slow_path": {
+        "bytes_on_bottleneck_link": {
+          "value": 11811160064,
+          "unit": "B",
+          "MB_1e6": 11811.16006,
+          "GB_1e9": 11.81116006,
+          "MiB_2pow20": 11264,
+          "GiB_2pow30": 11
+        },
+        "bandwidth_GB_per_s": 3.125,
+        "wire_time": {
+          "formula": "bytes / per-direction bandwidth",
+          "value": 3779.57122,
+          "unit": "ms",
+          "s": 3.77957122
+        },
+        "overhead": {
+          "value": 2,
+          "unit": "ms",
+          "s": 0.002,
+          "note": "HYPOTHETICAL fixed software cost"
+        },
+        "total": {
+          "formula": "wire_time + overhead",
+          "value": 3781.57122,
+          "unit": "ms",
+          "s": 3.78157122
+        },
+        "label": "HYPOTHETICAL"
+      }
+    },
+    "m_dense_fp8": {
+      "nvlink4_h100": {
+        "bytes_on_bottleneck_link": {
+          "value": 738197504,
+          "unit": "B",
+          "MB_1e6": 738.197504,
+          "GB_1e9": 0.738197504,
+          "MiB_2pow20": 704,
+          "GiB_2pow30": 0.6875
+        },
+        "bandwidth_GB_per_s": 450,
+        "wire_time": {
+          "formula": "bytes / per-direction bandwidth",
+          "value": 1.640438898,
+          "unit": "ms",
+          "s": 0.001640438898
+        },
+        "overhead": {
+          "value": 2,
+          "unit": "ms",
+          "s": 0.002,
+          "note": "HYPOTHETICAL fixed software cost"
+        },
+        "total": {
+          "formula": "wire_time + overhead",
+          "value": 3.640438898,
+          "unit": "ms",
+          "s": 0.003640438898
+        }
+      },
+      "nvlink5_gb300": {
+        "bytes_on_bottleneck_link": {
+          "value": 738197504,
+          "unit": "B",
+          "MB_1e6": 738.197504,
+          "GB_1e9": 0.738197504,
+          "MiB_2pow20": 704,
+          "GiB_2pow30": 0.6875
+        },
+        "bandwidth_GB_per_s": 900,
+        "wire_time": {
+          "formula": "bytes / per-direction bandwidth",
+          "value": 0.8202194489,
+          "unit": "ms",
+          "s": 0.0008202194489
+        },
+        "overhead": {
+          "value": 2,
+          "unit": "ms",
+          "s": 0.002,
+          "note": "HYPOTHETICAL fixed software cost"
+        },
+        "total": {
+          "formula": "wire_time + overhead",
+          "value": 2.820219449,
+          "unit": "ms",
+          "s": 0.002820219449
+        }
+      },
+      "ib_ndr_400g": {
+        "bytes_on_bottleneck_link": {
+          "value": 738197504,
+          "unit": "B",
+          "MB_1e6": 738.197504,
+          "GB_1e9": 0.738197504,
+          "MiB_2pow20": 704,
+          "GiB_2pow30": 0.6875
+        },
+        "bandwidth_GB_per_s": 50,
+        "wire_time": {
+          "formula": "bytes / per-direction bandwidth",
+          "value": 14.76395008,
+          "unit": "ms",
+          "s": 0.01476395008
+        },
+        "overhead": {
+          "value": 2,
+          "unit": "ms",
+          "s": 0.002,
+          "note": "HYPOTHETICAL fixed software cost"
+        },
+        "total": {
+          "formula": "wire_time + overhead",
+          "value": 16.76395008,
+          "unit": "ms",
+          "s": 0.01676395008
+        }
+      },
+      "gb300_nic_800g": {
+        "bytes_on_bottleneck_link": {
+          "value": 738197504,
+          "unit": "B",
+          "MB_1e6": 738.197504,
+          "GB_1e9": 0.738197504,
+          "MiB_2pow20": 704,
+          "GiB_2pow30": 0.6875
+        },
+        "bandwidth_GB_per_s": 100,
+        "wire_time": {
+          "formula": "bytes / per-direction bandwidth",
+          "value": 7.38197504,
+          "unit": "ms",
+          "s": 0.00738197504
+        },
+        "overhead": {
+          "value": 2,
+          "unit": "ms",
+          "s": 0.002,
+          "note": "HYPOTHETICAL fixed software cost"
+        },
+        "total": {
+          "formula": "wire_time + overhead",
+          "value": 9.38197504,
+          "unit": "ms",
+          "s": 0.00938197504
+        }
+      },
+      "roce_200g": {
+        "bytes_on_bottleneck_link": {
+          "value": 738197504,
+          "unit": "B",
+          "MB_1e6": 738.197504,
+          "GB_1e9": 0.738197504,
+          "MiB_2pow20": 704,
+          "GiB_2pow30": 0.6875
+        },
+        "bandwidth_GB_per_s": 25,
+        "wire_time": {
+          "formula": "bytes / per-direction bandwidth",
+          "value": 29.52790016,
+          "unit": "ms",
+          "s": 0.02952790016
+        },
+        "overhead": {
+          "value": 2,
+          "unit": "ms",
+          "s": 0.002,
+          "note": "HYPOTHETICAL fixed software cost"
+        },
+        "total": {
+          "formula": "wire_time + overhead",
+          "value": 31.52790016,
+          "unit": "ms",
+          "s": 0.03152790016
+        },
+        "total_at_measured_effective": {
+          "value": 35.94011513,
+          "unit": "ms",
+          "s": 0.03594011513
+        }
+      },
+      "tcp_25g_slow_path": {
+        "bytes_on_bottleneck_link": {
+          "value": 5905580032,
+          "unit": "B",
+          "MB_1e6": 5905.580032,
+          "GB_1e9": 5.905580032,
+          "MiB_2pow20": 5632,
+          "GiB_2pow30": 5.5
+        },
+        "bandwidth_GB_per_s": 3.125,
+        "wire_time": {
+          "formula": "bytes / per-direction bandwidth",
+          "value": 1889.78561,
+          "unit": "ms",
+          "s": 1.88978561
+        },
+        "overhead": {
+          "value": 2,
+          "unit": "ms",
+          "s": 0.002,
+          "note": "HYPOTHETICAL fixed software cost"
+        },
+        "total": {
+          "formula": "wire_time + overhead",
+          "value": 1891.78561,
+          "unit": "ms",
+          "s": 1.89178561
+        },
+        "label": "HYPOTHETICAL"
+      }
+    },
+    "k3_bf16_mla": {
+      "nvlink4_h100": {
+        "bytes_on_bottleneck_link": {
+          "value": 1355341824,
+          "unit": "B",
+          "MB_1e6": 1355.341824,
+          "GB_1e9": 1.355341824,
+          "MiB_2pow20": 1292.554688,
+          "GiB_2pow30": 1.262260437
+        },
+        "bandwidth_GB_per_s": 450,
+        "wire_time": {
+          "formula": "bytes / per-direction bandwidth",
+          "value": 3.01187072,
+          "unit": "ms",
+          "s": 0.00301187072
+        },
+        "overhead": {
+          "value": 2,
+          "unit": "ms",
+          "s": 0.002,
+          "note": "HYPOTHETICAL fixed software cost"
+        },
+        "total": {
+          "formula": "wire_time + overhead",
+          "value": 5.01187072,
+          "unit": "ms",
+          "s": 0.00501187072
+        }
+      },
+      "nvlink5_gb300": {
+        "bytes_on_bottleneck_link": {
+          "value": 1355341824,
+          "unit": "B",
+          "MB_1e6": 1355.341824,
+          "GB_1e9": 1.355341824,
+          "MiB_2pow20": 1292.554688,
+          "GiB_2pow30": 1.262260437
+        },
+        "bandwidth_GB_per_s": 900,
+        "wire_time": {
+          "formula": "bytes / per-direction bandwidth",
+          "value": 1.50593536,
+          "unit": "ms",
+          "s": 0.00150593536
+        },
+        "overhead": {
+          "value": 2,
+          "unit": "ms",
+          "s": 0.002,
+          "note": "HYPOTHETICAL fixed software cost"
+        },
+        "total": {
+          "formula": "wire_time + overhead",
+          "value": 3.50593536,
+          "unit": "ms",
+          "s": 0.00350593536
+        }
+      },
+      "ib_ndr_400g": {
+        "bytes_on_bottleneck_link": {
+          "value": 1355341824,
+          "unit": "B",
+          "MB_1e6": 1355.341824,
+          "GB_1e9": 1.355341824,
+          "MiB_2pow20": 1292.554688,
+          "GiB_2pow30": 1.262260437
+        },
+        "bandwidth_GB_per_s": 50,
+        "wire_time": {
+          "formula": "bytes / per-direction bandwidth",
+          "value": 27.10683648,
+          "unit": "ms",
+          "s": 0.02710683648
+        },
+        "overhead": {
+          "value": 2,
+          "unit": "ms",
+          "s": 0.002,
+          "note": "HYPOTHETICAL fixed software cost"
+        },
+        "total": {
+          "formula": "wire_time + overhead",
+          "value": 29.10683648,
+          "unit": "ms",
+          "s": 0.02910683648
+        }
+      },
+      "gb300_nic_800g": {
+        "bytes_on_bottleneck_link": {
+          "value": 1355341824,
+          "unit": "B",
+          "MB_1e6": 1355.341824,
+          "GB_1e9": 1.355341824,
+          "MiB_2pow20": 1292.554688,
+          "GiB_2pow30": 1.262260437
+        },
+        "bandwidth_GB_per_s": 100,
+        "wire_time": {
+          "formula": "bytes / per-direction bandwidth",
+          "value": 13.55341824,
+          "unit": "ms",
+          "s": 0.01355341824
+        },
+        "overhead": {
+          "value": 2,
+          "unit": "ms",
+          "s": 0.002,
+          "note": "HYPOTHETICAL fixed software cost"
+        },
+        "total": {
+          "formula": "wire_time + overhead",
+          "value": 15.55341824,
+          "unit": "ms",
+          "s": 0.01555341824
+        }
+      },
+      "roce_200g": {
+        "bytes_on_bottleneck_link": {
+          "value": 1355341824,
+          "unit": "B",
+          "MB_1e6": 1355.341824,
+          "GB_1e9": 1.355341824,
+          "MiB_2pow20": 1292.554688,
+          "GiB_2pow30": 1.262260437
+        },
+        "bandwidth_GB_per_s": 25,
+        "wire_time": {
+          "formula": "bytes / per-direction bandwidth",
+          "value": 54.21367296,
+          "unit": "ms",
+          "s": 0.05421367296
+        },
+        "overhead": {
+          "value": 2,
+          "unit": "ms",
+          "s": 0.002,
+          "note": "HYPOTHETICAL fixed software cost"
+        },
+        "total": {
+          "formula": "wire_time + overhead",
+          "value": 56.21367296,
+          "unit": "ms",
+          "s": 0.05621367296
+        },
+        "total_at_measured_effective": {
+          "value": 64.31456662,
+          "unit": "ms",
+          "s": 0.06431456662
+        }
+      },
+      "tcp_25g_slow_path": {
+        "bytes_on_bottleneck_link": {
+          "value": 1355341824,
+          "unit": "B",
+          "MB_1e6": 1355.341824,
+          "GB_1e9": 1.355341824,
+          "MiB_2pow20": 1292.554688,
+          "GiB_2pow30": 1.262260437
+        },
+        "bandwidth_GB_per_s": 3.125,
+        "wire_time": {
+          "formula": "bytes / per-direction bandwidth",
+          "value": 433.7093837,
+          "unit": "ms",
+          "s": 0.4337093837
+        },
+        "overhead": {
+          "value": 2,
+          "unit": "ms",
+          "s": 0.002,
+          "note": "HYPOTHETICAL fixed software cost"
+        },
+        "total": {
+          "formula": "wire_time + overhead",
+          "value": 435.7093837,
+          "unit": "ms",
+          "s": 0.4357093837
+        },
+        "label": "HYPOTHETICAL"
+      }
+    },
+    "k3_fp8_mla": {
+      "nvlink4_h100": {
+        "bytes_on_bottleneck_link": {
+          "value": 902356992,
+          "unit": "B",
+          "MB_1e6": 902.356992,
+          "GB_1e9": 0.902356992,
+          "MiB_2pow20": 860.5546875,
+          "GiB_2pow30": 0.840385437
+        },
+        "bandwidth_GB_per_s": 450,
+        "wire_time": {
+          "formula": "bytes / per-direction bandwidth",
+          "value": 2.00523776,
+          "unit": "ms",
+          "s": 0.00200523776
+        },
+        "overhead": {
+          "value": 2,
+          "unit": "ms",
+          "s": 0.002,
+          "note": "HYPOTHETICAL fixed software cost"
+        },
+        "total": {
+          "formula": "wire_time + overhead",
+          "value": 4.00523776,
+          "unit": "ms",
+          "s": 0.00400523776
+        }
+      },
+      "nvlink5_gb300": {
+        "bytes_on_bottleneck_link": {
+          "value": 902356992,
+          "unit": "B",
+          "MB_1e6": 902.356992,
+          "GB_1e9": 0.902356992,
+          "MiB_2pow20": 860.5546875,
+          "GiB_2pow30": 0.840385437
+        },
+        "bandwidth_GB_per_s": 900,
+        "wire_time": {
+          "formula": "bytes / per-direction bandwidth",
+          "value": 1.00261888,
+          "unit": "ms",
+          "s": 0.00100261888
+        },
+        "overhead": {
+          "value": 2,
+          "unit": "ms",
+          "s": 0.002,
+          "note": "HYPOTHETICAL fixed software cost"
+        },
+        "total": {
+          "formula": "wire_time + overhead",
+          "value": 3.00261888,
+          "unit": "ms",
+          "s": 0.00300261888
+        }
+      },
+      "ib_ndr_400g": {
+        "bytes_on_bottleneck_link": {
+          "value": 902356992,
+          "unit": "B",
+          "MB_1e6": 902.356992,
+          "GB_1e9": 0.902356992,
+          "MiB_2pow20": 860.5546875,
+          "GiB_2pow30": 0.840385437
+        },
+        "bandwidth_GB_per_s": 50,
+        "wire_time": {
+          "formula": "bytes / per-direction bandwidth",
+          "value": 18.04713984,
+          "unit": "ms",
+          "s": 0.01804713984
+        },
+        "overhead": {
+          "value": 2,
+          "unit": "ms",
+          "s": 0.002,
+          "note": "HYPOTHETICAL fixed software cost"
+        },
+        "total": {
+          "formula": "wire_time + overhead",
+          "value": 20.04713984,
+          "unit": "ms",
+          "s": 0.02004713984
+        }
+      },
+      "gb300_nic_800g": {
+        "bytes_on_bottleneck_link": {
+          "value": 902356992,
+          "unit": "B",
+          "MB_1e6": 902.356992,
+          "GB_1e9": 0.902356992,
+          "MiB_2pow20": 860.5546875,
+          "GiB_2pow30": 0.840385437
+        },
+        "bandwidth_GB_per_s": 100,
+        "wire_time": {
+          "formula": "bytes / per-direction bandwidth",
+          "value": 9.02356992,
+          "unit": "ms",
+          "s": 0.00902356992
+        },
+        "overhead": {
+          "value": 2,
+          "unit": "ms",
+          "s": 0.002,
+          "note": "HYPOTHETICAL fixed software cost"
+        },
+        "total": {
+          "formula": "wire_time + overhead",
+          "value": 11.02356992,
+          "unit": "ms",
+          "s": 0.01102356992
+        }
+      },
+      "roce_200g": {
+        "bytes_on_bottleneck_link": {
+          "value": 902356992,
+          "unit": "B",
+          "MB_1e6": 902.356992,
+          "GB_1e9": 0.902356992,
+          "MiB_2pow20": 860.5546875,
+          "GiB_2pow30": 0.840385437
+        },
+        "bandwidth_GB_per_s": 25,
+        "wire_time": {
+          "formula": "bytes / per-direction bandwidth",
+          "value": 36.09427968,
+          "unit": "ms",
+          "s": 0.03609427968
+        },
+        "overhead": {
+          "value": 2,
+          "unit": "ms",
+          "s": 0.002,
+          "note": "HYPOTHETICAL fixed software cost"
+        },
+        "total": {
+          "formula": "wire_time + overhead",
+          "value": 38.09427968,
+          "unit": "ms",
+          "s": 0.03809427968
+        },
+        "total_at_measured_effective": {
+          "value": 43.48767779,
+          "unit": "ms",
+          "s": 0.04348767779
+        }
+      },
+      "tcp_25g_slow_path": {
+        "bytes_on_bottleneck_link": {
+          "value": 902356992,
+          "unit": "B",
+          "MB_1e6": 902.356992,
+          "GB_1e9": 0.902356992,
+          "MiB_2pow20": 860.5546875,
+          "GiB_2pow30": 0.840385437
+        },
+        "bandwidth_GB_per_s": 3.125,
+        "wire_time": {
+          "formula": "bytes / per-direction bandwidth",
+          "value": 288.7542374,
+          "unit": "ms",
+          "s": 0.2887542374
+        },
+        "overhead": {
+          "value": 2,
+          "unit": "ms",
+          "s": 0.002,
+          "note": "HYPOTHETICAL fixed software cost"
+        },
+        "total": {
+          "formula": "wire_time + overhead",
+          "value": 290.7542374,
+          "unit": "ms",
+          "s": 0.2907542374
+        },
+        "label": "HYPOTHETICAL"
+      }
+    }
+  },
+  "layerwise_streaming_m_dense": {
+    "model": "M-dense, BF16 KV, TP=8 prefill → TP=8 decode",
+    "per_layer_compute_formula": "[2 × params_per_layer × T + 2 × H × d_head × T × (T + 1)] / G_node",
+    "per_layer_bytes_formula": "T × 2 × H_kv × d_head × 2 B (÷ TP per GPU link)",
+    "exposed_formula": "t_x + (L − 1) × max(0, t_x − t_c)  (+ overhead)",
+    "exposed_note": "Layer i's KV is sent when layer i finishes; transfers queue on the link. If t_x ≤ t_c only the last layer's transfer is left after prefill ends. The lm_head and sampling after the last layer are not counted, so the exposed time is an upper bound.",
+    "params_per_layer": 1384120320,
+    "G_node_flop_per_s": 3958000000000000,
+    "layers": 88,
+    "contexts": {
+      "2048": {
+        "per_layer_flops": {
+          "value": 5772486377472,
+          "unit": "FLOP"
+        },
+        "per_layer_compute": {
+          "value": 1.458435164,
+          "unit": "ms",
+          "s": 0.001458435164
+        },
+        "per_layer_kv_bytes_node": {
+          "value": 8388608,
+          "unit": "B",
+          "MB_1e6": 8.388608,
+          "GB_1e9": 0.008388608,
+          "MiB_2pow20": 8,
+          "GiB_2pow30": 0.0078125
+        },
+        "per_layer_kv_bytes_per_gpu": {
+          "value": 1048576,
+          "unit": "B",
+          "MB_1e6": 1.048576,
+          "GB_1e9": 0.001048576,
+          "MiB_2pow20": 1,
+          "GiB_2pow30": 0.0009765625
+        },
+        "prefill_all_layers": {
+          "value": 128.3422944,
+          "unit": "ms",
+          "s": 0.1283422944,
+          "note": "88 layers; lm_head excluded"
+        },
+        "links": {
+          "nvlink4_h100": {
+            "per_layer_transfer": {
+              "value": 0.002330168889,
+              "unit": "ms",
+              "s": 2.330168889e-06
+            },
+            "transfer_over_compute_per_layer": 0.001597718532,
+            "hidden_behind_compute": true,
+            "exposed_streamed": {
+              "formula": "closed form + overhead",
+              "value": 2.002330169,
+              "unit": "ms",
+              "s": 0.002002330169,
+              "closed_form_ms": 0.002330168889,
+              "event_sim_ms": 0.002330168889,
+              "closed_form_matches_event_sim": true
+            },
+            "exposed_not_streamed": {
+              "formula": "L × t_x + overhead (send after prefill)",
+              "value": 2.205054862,
+              "unit": "ms",
+              "s": 0.002205054862
+            }
+          },
+          "nvlink5_gb300": {
+            "per_layer_transfer": {
+              "value": 0.001165084444,
+              "unit": "ms",
+              "s": 1.165084444e-06
+            },
+            "transfer_over_compute_per_layer": 0.0007988592661,
+            "hidden_behind_compute": true,
+            "exposed_streamed": {
+              "formula": "closed form + overhead",
+              "value": 2.001165084,
+              "unit": "ms",
+              "s": 0.002001165084,
+              "closed_form_ms": 0.001165084444,
+              "event_sim_ms": 0.001165084444,
+              "closed_form_matches_event_sim": true
+            },
+            "exposed_not_streamed": {
+              "formula": "L × t_x + overhead (send after prefill)",
+              "value": 2.102527431,
+              "unit": "ms",
+              "s": 0.002102527431
+            }
+          },
+          "ib_ndr_400g": {
+            "per_layer_transfer": {
+              "value": 0.02097152,
+              "unit": "ms",
+              "s": 2.097152e-05
+            },
+            "transfer_over_compute_per_layer": 0.01437946679,
+            "hidden_behind_compute": true,
+            "exposed_streamed": {
+              "formula": "closed form + overhead",
+              "value": 2.02097152,
+              "unit": "ms",
+              "s": 0.00202097152,
+              "closed_form_ms": 0.02097152,
+              "event_sim_ms": 0.02097152,
+              "closed_form_matches_event_sim": true
+            },
+            "exposed_not_streamed": {
+              "formula": "L × t_x + overhead (send after prefill)",
+              "value": 3.84549376,
+              "unit": "ms",
+              "s": 0.00384549376
+            }
+          },
+          "gb300_nic_800g": {
+            "per_layer_transfer": {
+              "value": 0.01048576,
+              "unit": "ms",
+              "s": 1.048576e-05
+            },
+            "transfer_over_compute_per_layer": 0.007189733395,
+            "hidden_behind_compute": true,
+            "exposed_streamed": {
+              "formula": "closed form + overhead",
+              "value": 2.01048576,
+              "unit": "ms",
+              "s": 0.00201048576,
+              "closed_form_ms": 0.01048576,
+              "event_sim_ms": 0.01048576,
+              "closed_form_matches_event_sim": true
+            },
+            "exposed_not_streamed": {
+              "formula": "L × t_x + overhead (send after prefill)",
+              "value": 2.92274688,
+              "unit": "ms",
+              "s": 0.00292274688
+            }
+          },
+          "roce_200g": {
+            "per_layer_transfer": {
+              "value": 0.04194304,
+              "unit": "ms",
+              "s": 4.194304e-05
+            },
+            "transfer_over_compute_per_layer": 0.02875893358,
+            "hidden_behind_compute": true,
+            "exposed_streamed": {
+              "formula": "closed form + overhead",
+              "value": 2.04194304,
+              "unit": "ms",
+              "s": 0.00204194304,
+              "closed_form_ms": 0.04194304,
+              "event_sim_ms": 0.04194304,
+              "closed_form_matches_event_sim": true
+            },
+            "exposed_not_streamed": {
+              "formula": "L × t_x + overhead (send after prefill)",
+              "value": 5.69098752,
+              "unit": "ms",
+              "s": 0.00569098752
+            }
+          },
+          "tcp_25g_slow_path": {
+            "per_layer_transfer": {
+              "value": 2.68435456,
+              "unit": "ms",
+              "s": 0.00268435456
+            },
+            "transfer_over_compute_per_layer": 1.840571749,
+            "hidden_behind_compute": false,
+            "exposed_streamed": {
+              "formula": "closed form + overhead",
+              "value": 111.339342,
+              "unit": "ms",
+              "s": 0.111339342,
+              "closed_form_ms": 109.339342,
+              "event_sim_ms": 109.339342,
+              "closed_form_matches_event_sim": true
+            },
+            "exposed_not_streamed": {
+              "formula": "L × t_x + overhead (send after prefill)",
+              "value": 238.2232013,
+              "unit": "ms",
+              "s": 0.2382232013
+            },
+            "label": "HYPOTHETICAL"
+          }
+        }
+      },
+      "8192": {
+        "per_layer_flops": {
+          "value": 24326896091136,
+          "unit": "FLOP"
+        },
+        "per_layer_compute": {
+          "value": 6.14625975,
+          "unit": "ms",
+          "s": 0.00614625975
+        },
+        "per_layer_kv_bytes_node": {
+          "value": 33554432,
+          "unit": "B",
+          "MB_1e6": 33.554432,
+          "GB_1e9": 0.033554432,
+          "MiB_2pow20": 32,
+          "GiB_2pow30": 0.03125
+        },
+        "per_layer_kv_bytes_per_gpu": {
+          "value": 4194304,
+          "unit": "B",
+          "MB_1e6": 4.194304,
+          "GB_1e9": 0.004194304,
+          "MiB_2pow20": 4,
+          "GiB_2pow30": 0.00390625
+        },
+        "prefill_all_layers": {
+          "value": 540.870858,
+          "unit": "ms",
+          "s": 0.540870858,
+          "note": "88 layers; lm_head excluded"
+        },
+        "links": {
+          "nvlink4_h100": {
+            "per_layer_transfer": {
+              "value": 0.009320675556,
+              "unit": "ms",
+              "s": 9.320675556e-06
+            },
+            "transfer_over_compute_per_layer": 0.001516479279,
+            "hidden_behind_compute": true,
+            "exposed_streamed": {
+              "formula": "closed form + overhead",
+              "value": 2.009320676,
+              "unit": "ms",
+              "s": 0.002009320676,
+              "closed_form_ms": 0.009320675556,
+              "event_sim_ms": 0.009320675556,
+              "closed_form_matches_event_sim": true
+            },
+            "exposed_not_streamed": {
+              "formula": "L × t_x + overhead (send after prefill)",
+              "value": 2.820219449,
+              "unit": "ms",
+              "s": 0.002820219449
+            }
+          },
+          "nvlink5_gb300": {
+            "per_layer_transfer": {
+              "value": 0.004660337778,
+              "unit": "ms",
+              "s": 4.660337778e-06
+            },
+            "transfer_over_compute_per_layer": 0.0007582396396,
+            "hidden_behind_compute": true,
+            "exposed_streamed": {
+              "formula": "closed form + overhead",
+              "value": 2.004660338,
+              "unit": "ms",
+              "s": 0.002004660338,
+              "closed_form_ms": 0.004660337778,
+              "event_sim_ms": 0.004660337778,
+              "closed_form_matches_event_sim": true
+            },
+            "exposed_not_streamed": {
+              "formula": "L × t_x + overhead (send after prefill)",
+              "value": 2.410109724,
+              "unit": "ms",
+              "s": 0.002410109724
+            }
+          },
+          "ib_ndr_400g": {
+            "per_layer_transfer": {
+              "value": 0.08388608,
+              "unit": "ms",
+              "s": 8.388608e-05
+            },
+            "transfer_over_compute_per_layer": 0.01364831351,
+            "hidden_behind_compute": true,
+            "exposed_streamed": {
+              "formula": "closed form + overhead",
+              "value": 2.08388608,
+              "unit": "ms",
+              "s": 0.00208388608,
+              "closed_form_ms": 0.08388608,
+              "event_sim_ms": 0.08388608,
+              "closed_form_matches_event_sim": true
+            },
+            "exposed_not_streamed": {
+              "formula": "L × t_x + overhead (send after prefill)",
+              "value": 9.38197504,
+              "unit": "ms",
+              "s": 0.00938197504
+            }
+          },
+          "gb300_nic_800g": {
+            "per_layer_transfer": {
+              "value": 0.04194304,
+              "unit": "ms",
+              "s": 4.194304e-05
+            },
+            "transfer_over_compute_per_layer": 0.006824156756,
+            "hidden_behind_compute": true,
+            "exposed_streamed": {
+              "formula": "closed form + overhead",
+              "value": 2.04194304,
+              "unit": "ms",
+              "s": 0.00204194304,
+              "closed_form_ms": 0.04194304,
+              "event_sim_ms": 0.04194304,
+              "closed_form_matches_event_sim": true
+            },
+            "exposed_not_streamed": {
+              "formula": "L × t_x + overhead (send after prefill)",
+              "value": 5.69098752,
+              "unit": "ms",
+              "s": 0.00569098752
+            }
+          },
+          "roce_200g": {
+            "per_layer_transfer": {
+              "value": 0.16777216,
+              "unit": "ms",
+              "s": 0.00016777216
+            },
+            "transfer_over_compute_per_layer": 0.02729662703,
+            "hidden_behind_compute": true,
+            "exposed_streamed": {
+              "formula": "closed form + overhead",
+              "value": 2.16777216,
+              "unit": "ms",
+              "s": 0.00216777216,
+              "closed_form_ms": 0.16777216,
+              "event_sim_ms": 0.16777216,
+              "closed_form_matches_event_sim": true
+            },
+            "exposed_not_streamed": {
+              "formula": "L × t_x + overhead (send after prefill)",
+              "value": 16.76395008,
+              "unit": "ms",
+              "s": 0.01676395008
+            }
+          },
+          "tcp_25g_slow_path": {
+            "per_layer_transfer": {
+              "value": 10.73741824,
+              "unit": "ms",
+              "s": 0.01073741824
+            },
+            "transfer_over_compute_per_layer": 1.74698413,
+            "hidden_behind_compute": false,
+            "exposed_streamed": {
+              "formula": "closed form + overhead",
+              "value": 412.1682069,
+              "unit": "ms",
+              "s": 0.4121682069,
+              "closed_form_ms": 410.1682069,
+              "event_sim_ms": 410.1682069,
+              "closed_form_matches_event_sim": true
+            },
+            "exposed_not_streamed": {
+              "formula": "L × t_x + overhead (send after prefill)",
+              "value": 946.8928051,
+              "unit": "ms",
+              "s": 0.9468928051
+            },
+            "label": "HYPOTHETICAL"
+          }
+        }
+      },
+      "32768": {
+        "per_layer_flops": {
+          "value": 117098793664512,
+          "unit": "FLOP"
+        },
+        "per_layer_compute": {
+          "value": 29.58534453,
+          "unit": "ms",
+          "s": 0.02958534453
+        },
+        "per_layer_kv_bytes_node": {
+          "value": 134217728,
+          "unit": "B",
+          "MB_1e6": 134.217728,
+          "GB_1e9": 0.134217728,
+          "MiB_2pow20": 128,
+          "GiB_2pow30": 0.125
+        },
+        "per_layer_kv_bytes_per_gpu": {
+          "value": 16777216,
+          "unit": "B",
+          "MB_1e6": 16.777216,
+          "GB_1e9": 0.016777216,
+          "MiB_2pow20": 16,
+          "GiB_2pow30": 0.015625
+        },
+        "prefill_all_layers": {
+          "value": 2603.510319,
+          "unit": "ms",
+          "s": 2.603510319,
+          "note": "88 layers; lm_head excluded"
+        },
+        "links": {
+          "nvlink4_h100": {
+            "per_layer_transfer": {
+              "value": 0.03728270222,
+              "unit": "ms",
+              "s": 3.728270222e-05
+            },
+            "transfer_over_compute_per_layer": 0.001260174685,
+            "hidden_behind_compute": true,
+            "exposed_streamed": {
+              "formula": "closed form + overhead",
+              "value": 2.037282702,
+              "unit": "ms",
+              "s": 0.002037282702,
+              "closed_form_ms": 0.03728270222,
+              "event_sim_ms": 0.03728270222,
+              "closed_form_matches_event_sim": true
+            },
+            "exposed_not_streamed": {
+              "formula": "L × t_x + overhead (send after prefill)",
+              "value": 5.280877796,
+              "unit": "ms",
+              "s": 0.005280877796
+            }
+          },
+          "nvlink5_gb300": {
+            "per_layer_transfer": {
+              "value": 0.01864135111,
+              "unit": "ms",
+              "s": 1.864135111e-05
+            },
+            "transfer_over_compute_per_layer": 0.0006300873424,
+            "hidden_behind_compute": true,
+            "exposed_streamed": {
+              "formula": "closed form + overhead",
+              "value": 2.018641351,
+              "unit": "ms",
+              "s": 0.002018641351,
+              "closed_form_ms": 0.01864135111,
+              "event_sim_ms": 0.01864135111,
+              "closed_form_matches_event_sim": true
+            },
+            "exposed_not_streamed": {
+              "formula": "L × t_x + overhead (send after prefill)",
+              "value": 3.640438898,
+              "unit": "ms",
+              "s": 0.003640438898
+            }
+          },
+          "ib_ndr_400g": {
+            "per_layer_transfer": {
+              "value": 0.33554432,
+              "unit": "ms",
+              "s": 0.00033554432
+            },
+            "transfer_over_compute_per_layer": 0.01134157216,
+            "hidden_behind_compute": true,
+            "exposed_streamed": {
+              "formula": "closed form + overhead",
+              "value": 2.33554432,
+              "unit": "ms",
+              "s": 0.00233554432,
+              "closed_form_ms": 0.33554432,
+              "event_sim_ms": 0.33554432,
+              "closed_form_matches_event_sim": true
+            },
+            "exposed_not_streamed": {
+              "formula": "L × t_x + overhead (send after prefill)",
+              "value": 31.52790016,
+              "unit": "ms",
+              "s": 0.03152790016
+            }
+          },
+          "gb300_nic_800g": {
+            "per_layer_transfer": {
+              "value": 0.16777216,
+              "unit": "ms",
+              "s": 0.00016777216
+            },
+            "transfer_over_compute_per_layer": 0.005670786082,
+            "hidden_behind_compute": true,
+            "exposed_streamed": {
+              "formula": "closed form + overhead",
+              "value": 2.16777216,
+              "unit": "ms",
+              "s": 0.00216777216,
+              "closed_form_ms": 0.16777216,
+              "event_sim_ms": 0.16777216,
+              "closed_form_matches_event_sim": true
+            },
+            "exposed_not_streamed": {
+              "formula": "L × t_x + overhead (send after prefill)",
+              "value": 16.76395008,
+              "unit": "ms",
+              "s": 0.01676395008
+            }
+          },
+          "roce_200g": {
+            "per_layer_transfer": {
+              "value": 0.67108864,
+              "unit": "ms",
+              "s": 0.00067108864
+            },
+            "transfer_over_compute_per_layer": 0.02268314433,
+            "hidden_behind_compute": true,
+            "exposed_streamed": {
+              "formula": "closed form + overhead",
+              "value": 2.67108864,
+              "unit": "ms",
+              "s": 0.00267108864,
+              "closed_form_ms": 0.67108864,
+              "event_sim_ms": 0.67108864,
+              "closed_form_matches_event_sim": true
+            },
+            "exposed_not_streamed": {
+              "formula": "L × t_x + overhead (send after prefill)",
+              "value": 61.05580032,
+              "unit": "ms",
+              "s": 0.06105580032
+            }
+          },
+          "tcp_25g_slow_path": {
+            "per_layer_transfer": {
+              "value": 42.94967296,
+              "unit": "ms",
+              "s": 0.04294967296
+            },
+            "transfer_over_compute_per_layer": 1.451721237,
+            "hidden_behind_compute": false,
+            "exposed_streamed": {
+              "formula": "closed form + overhead",
+              "value": 1207.646246,
+              "unit": "ms",
+              "s": 1.207646246,
+              "closed_form_ms": 1205.646246,
+              "event_sim_ms": 1205.646246,
+              "closed_form_matches_event_sim": true
+            },
+            "exposed_not_streamed": {
+              "formula": "L × t_x + overhead (send after prefill)",
+              "value": 3781.57122,
+              "unit": "ms",
+              "s": 3.78157122
+            },
+            "label": "HYPOTHETICAL"
+          }
+        }
+      },
+      "131072": {
+        "per_layer_flops": {
+          "value": 785054523457536,
+          "unit": "FLOP"
+        },
+        "per_layer_compute": {
+          "value": 198.3462667,
+          "unit": "ms",
+          "s": 0.1983462667
+        },
+        "per_layer_kv_bytes_node": {
+          "value": 536870912,
+          "unit": "B",
+          "MB_1e6": 536.870912,
+          "GB_1e9": 0.536870912,
+          "MiB_2pow20": 512,
+          "GiB_2pow30": 0.5
+        },
+        "per_layer_kv_bytes_per_gpu": {
+          "value": 67108864,
+          "unit": "B",
+          "MB_1e6": 67.108864,
+          "GB_1e9": 0.067108864,
+          "MiB_2pow20": 64,
+          "GiB_2pow30": 0.0625
+        },
+        "prefill_all_layers": {
+          "value": 17454.47147,
+          "unit": "ms",
+          "s": 17.45447147,
+          "note": "88 layers; lm_head excluded"
+        },
+        "links": {
+          "nvlink4_h100": {
+            "per_layer_transfer": {
+              "value": 0.1491308089,
+              "unit": "ms",
+              "s": 0.0001491308089
+            },
+            "transfer_over_compute_per_layer": 0.0007518710153,
+            "hidden_behind_compute": true,
+            "exposed_streamed": {
+              "formula": "closed form + overhead",
+              "value": 2.149130809,
+              "unit": "ms",
+              "s": 0.002149130809,
+              "closed_form_ms": 0.1491308089,
+              "event_sim_ms": 0.1491308089,
+              "closed_form_matches_event_sim": true
+            },
+            "exposed_not_streamed": {
+              "formula": "L × t_x + overhead (send after prefill)",
+              "value": 15.12351118,
+              "unit": "ms",
+              "s": 0.01512351118
+            }
+          },
+          "nvlink5_gb300": {
+            "per_layer_transfer": {
+              "value": 0.07456540444,
+              "unit": "ms",
+              "s": 7.456540444e-05
+            },
+            "transfer_over_compute_per_layer": 0.0003759355076,
+            "hidden_behind_compute": true,
+            "exposed_streamed": {
+              "formula": "closed form + overhead",
+              "value": 2.074565404,
+              "unit": "ms",
+              "s": 0.002074565404,
+              "closed_form_ms": 0.07456540444,
+              "event_sim_ms": 0.07456540444,
+              "closed_form_matches_event_sim": true
+            },
+            "exposed_not_streamed": {
+              "formula": "L × t_x + overhead (send after prefill)",
+              "value": 8.561755591,
+              "unit": "ms",
+              "s": 0.008561755591
+            }
+          },
+          "ib_ndr_400g": {
+            "per_layer_transfer": {
+              "value": 1.34217728,
+              "unit": "ms",
+              "s": 0.00134217728
+            },
+            "transfer_over_compute_per_layer": 0.006766839137,
+            "hidden_behind_compute": true,
+            "exposed_streamed": {
+              "formula": "closed form + overhead",
+              "value": 3.34217728,
+              "unit": "ms",
+              "s": 0.00334217728,
+              "closed_form_ms": 1.34217728,
+              "event_sim_ms": 1.34217728,
+              "closed_form_matches_event_sim": true
+            },
+            "exposed_not_streamed": {
+              "formula": "L × t_x + overhead (send after prefill)",
+              "value": 120.1116006,
+              "unit": "ms",
+              "s": 0.1201116006
+            }
+          },
+          "gb300_nic_800g": {
+            "per_layer_transfer": {
+              "value": 0.67108864,
+              "unit": "ms",
+              "s": 0.00067108864
+            },
+            "transfer_over_compute_per_layer": 0.003383419569,
+            "hidden_behind_compute": true,
+            "exposed_streamed": {
+              "formula": "closed form + overhead",
+              "value": 2.67108864,
+              "unit": "ms",
+              "s": 0.00267108864,
+              "closed_form_ms": 0.67108864,
+              "event_sim_ms": 0.67108864,
+              "closed_form_matches_event_sim": true
+            },
+            "exposed_not_streamed": {
+              "formula": "L × t_x + overhead (send after prefill)",
+              "value": 61.05580032,
+              "unit": "ms",
+              "s": 0.06105580032
+            }
+          },
+          "roce_200g": {
+            "per_layer_transfer": {
+              "value": 2.68435456,
+              "unit": "ms",
+              "s": 0.00268435456
+            },
+            "transfer_over_compute_per_layer": 0.01353367827,
+            "hidden_behind_compute": true,
+            "exposed_streamed": {
+              "formula": "closed form + overhead",
+              "value": 4.68435456,
+              "unit": "ms",
+              "s": 0.00468435456,
+              "closed_form_ms": 2.68435456,
+              "event_sim_ms": 2.68435456,
+              "closed_form_matches_event_sim": true
+            },
+            "exposed_not_streamed": {
+              "formula": "L × t_x + overhead (send after prefill)",
+              "value": 238.2232013,
+              "unit": "ms",
+              "s": 0.2382232013
+            }
+          },
+          "tcp_25g_slow_path": {
+            "per_layer_transfer": {
+              "value": 171.7986918,
+              "unit": "ms",
+              "s": 0.1717986918
+            },
+            "transfer_over_compute_per_layer": 0.8661554096,
+            "hidden_behind_compute": true,
+            "exposed_streamed": {
+              "formula": "closed form + overhead",
+              "value": 173.7986918,
+              "unit": "ms",
+              "s": 0.1737986918,
+              "closed_form_ms": 171.7986918,
+              "event_sim_ms": 171.7986918,
+              "closed_form_matches_event_sim": true
+            },
+            "exposed_not_streamed": {
+              "formula": "L × t_x + overhead (send after prefill)",
+              "value": 15120.28488,
+              "unit": "ms",
+              "s": 15.12028488
+            },
+            "label": "HYPOTHETICAL"
+          }
+        }
+      }
+    },
+    "min_context_fully_hidden": {
+      "formula": "smallest T with t_x(T) ≤ t_c(T): T + 1 ≥ (G_node × b / B − 2 × params_per_layer) / (2 × H × d_head)",
+      "terms": "b = KV bytes per token per layer on the bottleneck link, B = its per-direction bandwidth",
+      "note": "Per-layer compute grows as T² (attention) while per-layer transfer grows as T, so every link is hidden beyond some context length.",
+      "links": {
+        "nvlink4_h100": {
+          "value": 1,
+          "unit": "tokens",
+          "b_B_per_token_per_layer": 512
+        },
+        "nvlink5_gb300": {
+          "value": 1,
+          "unit": "tokens",
+          "b_B_per_token_per_layer": 512
+        },
+        "ib_ndr_400g": {
+          "value": 1,
+          "unit": "tokens",
+          "b_B_per_token_per_layer": 512
+        },
+        "gb300_nic_800g": {
+          "value": 1,
+          "unit": "tokens",
+          "b_B_per_token_per_layer": 512
+        },
+        "roce_200g": {
+          "value": 1,
+          "unit": "tokens",
+          "b_B_per_token_per_layer": 512
+        },
+        "tcp_25g_slow_path": {
+          "value": 98453,
+          "unit": "tokens",
+          "b_B_per_token_per_layer": 4096
+        }
+      }
+    }
+  },
+  "when_disaggregation_helps": {
+    "context_tokens": 32768,
+    "prefill_time": {
+      "m_dense_h_teach": {
+        "formula": "prefill FLOPs / (8 × H100 BF16 dense × prefill_mfu)",
+        "value": 2630.178615,
+        "unit": "ms",
+        "s": 2.630178615,
+        "flops": 10410246958743552
+      },
+      "k3_gb300_tep8_lower_bound": {
+        "formula": "(2 × active_params × T + causal MLA attention) / (8 × GB300 BF16 dense × prefill_mfu) (TEP8)",
+        "value": 761.984313,
+        "unit": "ms",
+        "s": 0.761984313,
+        "flops": 7619843129868288,
+        "note": "KDA recurrence FLOPs are not counted, so this is a lower bound. The MoE runs in MXFP4/MXFP8, so the BF16 peak is a convention here."
+      }
+    },
+    "decode_step": {
+      "tpot_p95_slo": {
+        "value": 60,
+        "unit": "ms",
+        "s": 0.06,
+        "from": "hypothetical.slo.p95_tpot_ms"
+      },
+      "tpot_from_decode_speed": {
+        "formula": "1 / per_request_decode_speed",
+        "value": 50,
+        "unit": "ms",
+        "s": 0.05,
+        "from": "hypothetical.traffic.per_request_decode_speed"
+      }
+    },
+    "verdicts": {
+      "m_dense_bf16": {
+        "nvlink4_h100": {
+          "transfer_total_ms": 5.280877796,
+          "transfer_over_prefill": 0.002007801967,
+          "transfer_over_tpot_slo": 0.08801462993,
+          "verdict_not_streamed": "helps: the TTFT cost is below one decode step",
+          "exposed_if_streamed_ms": 2.037282702,
+          "exposed_over_tpot_slo": 0.0339547117,
+          "verdict_streamed": "helps: the TTFT cost is below one decode step"
+        },
+        "ib_ndr_400g": {
+          "transfer_total_ms": 31.52790016,
+          "transfer_over_prefill": 0.01198698065,
+          "transfer_over_tpot_slo": 0.5254650027,
+          "verdict_not_streamed": "helps: the TTFT cost is below one decode step",
+          "exposed_if_streamed_ms": 2.33554432,
+          "exposed_over_tpot_slo": 0.03892573867,
+          "verdict_streamed": "helps: the TTFT cost is below one decode step"
+        },
+        "roce_200g": {
+          "transfer_total_ms": 61.05580032,
+          "transfer_over_prefill": 0.02321355667,
+          "transfer_over_tpot_slo": 1.017596672,
+          "verdict_not_streamed": "costly: TTFT grows by more than one decode step, but less than a prefill",
+          "exposed_if_streamed_ms": 2.67108864,
+          "exposed_over_tpot_slo": 0.044518144,
+          "verdict_streamed": "helps: the TTFT cost is below one decode step"
+        },
+        "tcp_25g_slow_path": {
+          "transfer_total_ms": 3781.57122,
+          "transfer_over_prefill": 1.437762135,
+          "transfer_over_tpot_slo": 63.026187,
+          "verdict_not_streamed": "transfer erases the gain: moving the KV takes longer than computing it on the decode side",
+          "exposed_if_streamed_ms": 1207.646246,
+          "exposed_over_tpot_slo": 20.12743743,
+          "verdict_streamed": "costly: TTFT grows by more than one decode step, but less than a prefill",
+          "label": "HYPOTHETICAL"
+        }
+      },
+      "m_dense_fp8": {
+        "ib_ndr_400g": {
+          "transfer_total_ms": 16.76395008,
+          "transfer_over_prefill": 0.00637369264,
+          "transfer_over_tpot_slo": 0.279399168,
+          "verdict_not_streamed": "helps: the TTFT cost is below one decode step"
+        },
+        "tcp_25g_slow_path": {
+          "transfer_total_ms": 1891.78561,
+          "transfer_over_prefill": 0.7192612696,
+          "transfer_over_tpot_slo": 31.52976017,
+          "verdict_not_streamed": "costly: TTFT grows by more than one decode step, but less than a prefill",
+          "label": "HYPOTHETICAL"
+        }
+      },
+      "k3_bf16_mla": {
+        "nvlink5_gb300": {
+          "transfer_total_ms": 3.50593536,
+          "transfer_over_prefill": 0.00460105976,
+          "transfer_over_tpot_slo": 0.058432256,
+          "verdict_not_streamed": "helps: the TTFT cost is below one decode step"
+        },
+        "gb300_nic_800g": {
+          "transfer_total_ms": 15.55341824,
+          "transfer_over_prefill": 0.02041173023,
+          "transfer_over_tpot_slo": 0.2592236373,
+          "verdict_not_streamed": "helps: the TTFT cost is below one decode step"
+        },
+        "roce_200g": {
+          "transfer_total_ms": 56.21367296,
+          "transfer_over_prefill": 0.07377274309,
+          "transfer_over_tpot_slo": 0.9368945493,
+          "verdict_not_streamed": "helps: the TTFT cost is below one decode step"
+        },
+        "tcp_25g_slow_path": {
+          "transfer_total_ms": 435.7093837,
+          "transfer_over_prefill": 0.5718088631,
+          "transfer_over_tpot_slo": 7.261823062,
+          "verdict_not_streamed": "costly: TTFT grows by more than one decode step, but less than a prefill",
+          "label": "HYPOTHETICAL"
+        }
+      },
+      "k3_fp8_mla": {
+        "nvlink5_gb300": {
+          "transfer_total_ms": 3.00261888,
+          "transfer_over_prefill": 0.003940525846,
+          "transfer_over_tpot_slo": 0.050043648,
+          "verdict_not_streamed": "helps: the TTFT cost is below one decode step"
+        },
+        "gb300_nic_800g": {
+          "transfer_total_ms": 11.02356992,
+          "transfer_over_prefill": 0.01446692502,
+          "transfer_over_tpot_slo": 0.1837261653,
+          "verdict_not_streamed": "helps: the TTFT cost is below one decode step"
+        },
+        "tcp_25g_slow_path": {
+          "transfer_total_ms": 290.7542374,
+          "transfer_over_prefill": 0.381575096,
+          "transfer_over_tpot_slo": 4.845903957,
+          "verdict_not_streamed": "costly: TTFT grows by more than one decode step, but less than a prefill",
+          "label": "HYPOTHETICAL"
+        }
+      }
+    },
+    "rule": {
+      "statement": "Disaggregation pays when the KV transfer that cannot be hidden is shorter than one decode step; then a new request's TTFT grows by less than one token interval, while running decodes no longer wait behind a long prefill. Transfer erases the gain when moving the KV takes as long as computing it, i.e. bandwidth per GPU below the break-even kv_bytes_per_token_per_gpu / prefill_time_per_token (see kv_tiers.json crossover).",
+      "numbers": "M-dense, 32,768 tokens, BF16 KV: prefill 2630 ms; 400 Gb/s RDMA transfer 31.5 ms (2.3 ms exposed if streamed per layer), below the 60 ms TPOT SLO; the HYPOTHETICAL 25 Gb/s TCP path takes 3782 ms, 1.44× the prefill (1208 ms exposed if streamed; fully hidden only from 98,453 tokens)."
+    },
+    "dynamo_conditional_disaggregation": {
+      "rule": "Dynamo (off by default) prefills locally on the decode worker when the effective ISL is below 2,048 tokens and below 0.7 of the ISL.",
+      "m_dense_at_threshold": {
+        "prefill": {
+          "value": 130.0090629,
+          "unit": "ms",
+          "s": 0.1300090629
+        },
+        "transfer_ndr": {
+          "value": 3.84549376,
+          "unit": "ms",
+          "s": 0.00384549376
+        },
+        "tokens": 2048
+      }
+    }
+  }
+}

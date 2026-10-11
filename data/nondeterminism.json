@@ -1,0 +1,2959 @@
+{
+  "meta": {
+    "script": "sim/nondeterminism_demo.py",
+    "generated_at": "2026-10-09T06:48:51+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T06:45:24+00:00",
+      "sha256": "36e36e01982d"
+    },
+    "constants_used": {
+      "models.M-dense.hidden_size": 12288,
+      "models.M-dense.vocab_size": 131072
+    }
+  },
+  "label": "Illustrative toy inputs chosen so every step can be checked by hand with a calculator. They are not real model weights, activations or logits.",
+  "serves": {
+    "requirements": [
+      "R-X.12"
+    ],
+    "video_sequence": 11,
+    "manuscript": "Part 10 (where sampling runs and determinism)"
+  },
+  "part1_sum": {
+    "numbers": [
+      "0.1",
+      "0.7",
+      "0.3",
+      "0.9",
+      "0.2",
+      "0.6",
+      "0.4",
+      "0.8"
+    ],
+    "exact_sum_of_decimals": "4",
+    "float32": {
+      "significand_bits": 24,
+      "stored_inputs": [
+        {
+          "value": 0.10000000149011612,
+          "exact": "0.100000001490116119384765625",
+          "display": "0.1",
+          "display_fixed": "0.1000000",
+          "bits": "0x3DCCCCCD"
+        },
+        {
+          "value": 0.699999988079071,
+          "exact": "0.699999988079071044921875",
+          "display": "0.7",
+          "display_fixed": "0.7000000",
+          "bits": "0x3F333333"
+        },
+        {
+          "value": 0.30000001192092896,
+          "exact": "0.300000011920928955078125",
+          "display": "0.3",
+          "display_fixed": "0.3000000",
+          "bits": "0x3E99999A"
+        },
+        {
+          "value": 0.8999999761581421,
+          "exact": "0.89999997615814208984375",
+          "display": "0.9",
+          "display_fixed": "0.9000000",
+          "bits": "0x3F666666"
+        },
+        {
+          "value": 0.20000000298023224,
+          "exact": "0.20000000298023223876953125",
+          "display": "0.2",
+          "display_fixed": "0.2000000",
+          "bits": "0x3E4CCCCD"
+        },
+        {
+          "value": 0.6000000238418579,
+          "exact": "0.60000002384185791015625",
+          "display": "0.6",
+          "display_fixed": "0.6000000",
+          "bits": "0x3F19999A"
+        },
+        {
+          "value": 0.4000000059604645,
+          "exact": "0.4000000059604644775390625",
+          "display": "0.4",
+          "display_fixed": "0.4000000",
+          "bits": "0x3ECCCCCD"
+        },
+        {
+          "value": 0.800000011920929,
+          "exact": "0.800000011920928955078125",
+          "display": "0.8",
+          "display_fixed": "0.8000000",
+          "bits": "0x3F4CCCCD"
+        }
+      ],
+      "exact_sum_of_stored_inputs": "4.000000022351741790771484375",
+      "sequential": {
+        "plan": "one pass: ((x0 + x1) + x2) + ... + x7",
+        "steps": [
+          {
+            "k": 0,
+            "add": {
+              "value": 0.10000000149011612,
+              "exact": "0.100000001490116119384765625",
+              "display": "0.1",
+              "display_fixed": "0.1000000",
+              "bits": "0x3DCCCCCD"
+            },
+            "partial": {
+              "value": 0.10000000149011612,
+              "exact": "0.100000001490116119384765625",
+              "display": "0.1",
+              "display_fixed": "0.1000000",
+              "bits": "0x3DCCCCCD"
+            },
+            "exact_partial": "0.100000001490116119384765625",
+            "rounding_error": 0.0
+          },
+          {
+            "k": 1,
+            "add": {
+              "value": 0.699999988079071,
+              "exact": "0.699999988079071044921875",
+              "display": "0.7",
+              "display_fixed": "0.7000000",
+              "bits": "0x3F333333"
+            },
+            "partial": {
+              "value": 0.800000011920929,
+              "exact": "0.800000011920928955078125",
+              "display": "0.8",
+              "display_fixed": "0.8000000",
+              "bits": "0x3F4CCCCD"
+            },
+            "exact_partial": "0.799999989569187164306640625",
+            "rounding_error": 2.2351741790771484e-08
+          },
+          {
+            "k": 2,
+            "add": {
+              "value": 0.30000001192092896,
+              "exact": "0.300000011920928955078125",
+              "display": "0.3",
+              "display_fixed": "0.3000000",
+              "bits": "0x3E99999A"
+            },
+            "partial": {
+              "value": 1.100000023841858,
+              "exact": "1.10000002384185791015625",
+              "display": "1.1",
+              "display_fixed": "1.1000000",
+              "bits": "0x3F8CCCCD"
+            },
+            "exact_partial": "1.100000001490116119384765625",
+            "rounding_error": 2.2351741790771484e-08
+          },
+          {
+            "k": 3,
+            "add": {
+              "value": 0.8999999761581421,
+              "exact": "0.89999997615814208984375",
+              "display": "0.9",
+              "display_fixed": "0.9000000",
+              "bits": "0x3F666666"
+            },
+            "partial": {
+              "value": 2.0,
+              "exact": "2",
+              "display": "2",
+              "display_fixed": "2.0000000",
+              "bits": "0x40000000"
+            },
+            "exact_partial": "1.999999977648258209228515625",
+            "rounding_error": 2.2351741790771484e-08
+          },
+          {
+            "k": 4,
+            "add": {
+              "value": 0.20000000298023224,
+              "exact": "0.20000000298023223876953125",
+              "display": "0.2",
+              "display_fixed": "0.2000000",
+              "bits": "0x3E4CCCCD"
+            },
+            "partial": {
+              "value": 2.200000047683716,
+              "exact": "2.2000000476837158203125",
+              "display": "2.2",
+              "display_fixed": "2.2000000",
+              "bits": "0x400CCCCD"
+            },
+            "exact_partial": "2.199999980628490447998046875",
+            "rounding_error": 6.705522537231445e-08
+          },
+          {
+            "k": 5,
+            "add": {
+              "value": 0.6000000238418579,
+              "exact": "0.60000002384185791015625",
+              "display": "0.6",
+              "display_fixed": "0.6000000",
+              "bits": "0x3F19999A"
+            },
+            "partial": {
+              "value": 2.8000001907348633,
+              "exact": "2.80000019073486328125",
+              "display": "2.8000002",
+              "display_fixed": "2.8000002",
+              "bits": "0x40333334"
+            },
+            "exact_partial": "2.800000004470348358154296875",
+            "rounding_error": 1.862645149230957e-07
+          },
+          {
+            "k": 6,
+            "add": {
+              "value": 0.4000000059604645,
+              "exact": "0.4000000059604644775390625",
+              "display": "0.4",
+              "display_fixed": "0.4000000",
+              "bits": "0x3ECCCCCD"
+            },
+            "partial": {
+              "value": 3.200000286102295,
+              "exact": "3.200000286102294921875",
+              "display": "3.2000003",
+              "display_fixed": "3.2000003",
+              "bits": "0x404CCCCE"
+            },
+            "exact_partial": "3.200000010430812835693359375",
+            "rounding_error": 2.7567148208618164e-07
+          },
+          {
+            "k": 7,
+            "add": {
+              "value": 0.800000011920929,
+              "exact": "0.800000011920928955078125",
+              "display": "0.8",
+              "display_fixed": "0.8000000",
+              "bits": "0x3F4CCCCD"
+            },
+            "partial": {
+              "value": 4.000000476837158,
+              "exact": "4.000000476837158203125",
+              "display": "4.0000005",
+              "display_fixed": "4.0000005",
+              "bits": "0x40800001"
+            },
+            "exact_partial": "4.000000022351741790771484375",
+            "rounding_error": 4.544854164123535e-07
+          }
+        ],
+        "result": {
+          "value": 4.000000476837158,
+          "exact": "4.000000476837158203125",
+          "display": "4.0000005",
+          "display_fixed": "4.0000005",
+          "bits": "0x40800001"
+        }
+      },
+      "split_k2": {
+        "plan": "split-K: 2 chunks of 4, each summed on its own core, then the 2 partial sums are added",
+        "chunks": [
+          {
+            "plan": "chunk 0: x0 .. x3 summed in order (one core)",
+            "steps": [
+              {
+                "k": 0,
+                "add": {
+                  "value": 0.10000000149011612,
+                  "exact": "0.100000001490116119384765625",
+                  "display": "0.1",
+                  "display_fixed": "0.1000000",
+                  "bits": "0x3DCCCCCD"
+                },
+                "partial": {
+                  "value": 0.10000000149011612,
+                  "exact": "0.100000001490116119384765625",
+                  "display": "0.1",
+                  "display_fixed": "0.1000000",
+                  "bits": "0x3DCCCCCD"
+                },
+                "exact_partial": "0.100000001490116119384765625",
+                "rounding_error": 0.0
+              },
+              {
+                "k": 1,
+                "add": {
+                  "value": 0.699999988079071,
+                  "exact": "0.699999988079071044921875",
+                  "display": "0.7",
+                  "display_fixed": "0.7000000",
+                  "bits": "0x3F333333"
+                },
+                "partial": {
+                  "value": 0.800000011920929,
+                  "exact": "0.800000011920928955078125",
+                  "display": "0.8",
+                  "display_fixed": "0.8000000",
+                  "bits": "0x3F4CCCCD"
+                },
+                "exact_partial": "0.799999989569187164306640625",
+                "rounding_error": 2.2351741790771484e-08
+              },
+              {
+                "k": 2,
+                "add": {
+                  "value": 0.30000001192092896,
+                  "exact": "0.300000011920928955078125",
+                  "display": "0.3",
+                  "display_fixed": "0.3000000",
+                  "bits": "0x3E99999A"
+                },
+                "partial": {
+                  "value": 1.100000023841858,
+                  "exact": "1.10000002384185791015625",
+                  "display": "1.1",
+                  "display_fixed": "1.1000000",
+                  "bits": "0x3F8CCCCD"
+                },
+                "exact_partial": "1.100000001490116119384765625",
+                "rounding_error": 2.2351741790771484e-08
+              },
+              {
+                "k": 3,
+                "add": {
+                  "value": 0.8999999761581421,
+                  "exact": "0.89999997615814208984375",
+                  "display": "0.9",
+                  "display_fixed": "0.9000000",
+                  "bits": "0x3F666666"
+                },
+                "partial": {
+                  "value": 2.0,
+                  "exact": "2",
+                  "display": "2",
+                  "display_fixed": "2.0000000",
+                  "bits": "0x40000000"
+                },
+                "exact_partial": "1.999999977648258209228515625",
+                "rounding_error": 2.2351741790771484e-08
+              }
+            ],
+            "result": {
+              "value": 2.0,
+              "exact": "2",
+              "display": "2",
+              "display_fixed": "2.0000000",
+              "bits": "0x40000000"
+            }
+          },
+          {
+            "plan": "chunk 1: x4 .. x7 summed in order (one core)",
+            "steps": [
+              {
+                "k": 0,
+                "add": {
+                  "value": 0.20000000298023224,
+                  "exact": "0.20000000298023223876953125",
+                  "display": "0.2",
+                  "display_fixed": "0.2000000",
+                  "bits": "0x3E4CCCCD"
+                },
+                "partial": {
+                  "value": 0.20000000298023224,
+                  "exact": "0.20000000298023223876953125",
+                  "display": "0.2",
+                  "display_fixed": "0.2000000",
+                  "bits": "0x3E4CCCCD"
+                },
+                "exact_partial": "0.20000000298023223876953125",
+                "rounding_error": 0.0
+              },
+              {
+                "k": 1,
+                "add": {
+                  "value": 0.6000000238418579,
+                  "exact": "0.60000002384185791015625",
+                  "display": "0.6",
+                  "display_fixed": "0.6000000",
+                  "bits": "0x3F19999A"
+                },
+                "partial": {
+                  "value": 0.800000011920929,
+                  "exact": "0.800000011920928955078125",
+                  "display": "0.8",
+                  "display_fixed": "0.8000000",
+                  "bits": "0x3F4CCCCD"
+                },
+                "exact_partial": "0.80000002682209014892578125",
+                "rounding_error": -1.4901161193847656e-08
+              },
+              {
+                "k": 2,
+                "add": {
+                  "value": 0.4000000059604645,
+                  "exact": "0.4000000059604644775390625",
+                  "display": "0.4",
+                  "display_fixed": "0.4000000",
+                  "bits": "0x3ECCCCCD"
+                },
+                "partial": {
+                  "value": 1.2000000476837158,
+                  "exact": "1.2000000476837158203125",
+                  "display": "1.2",
+                  "display_fixed": "1.2000000",
+                  "bits": "0x3F99999A"
+                },
+                "exact_partial": "1.20000003278255462646484375",
+                "rounding_error": 1.4901161193847656e-08
+              },
+              {
+                "k": 3,
+                "add": {
+                  "value": 0.800000011920929,
+                  "exact": "0.800000011920928955078125",
+                  "display": "0.8",
+                  "display_fixed": "0.8000000",
+                  "bits": "0x3F4CCCCD"
+                },
+                "partial": {
+                  "value": 2.0,
+                  "exact": "2",
+                  "display": "2",
+                  "display_fixed": "2.0000000",
+                  "bits": "0x40000000"
+                },
+                "exact_partial": "2.00000004470348358154296875",
+                "rounding_error": -4.470348358154297e-08
+              }
+            ],
+            "result": {
+              "value": 2.0,
+              "exact": "2",
+              "display": "2",
+              "display_fixed": "2.0000000",
+              "bits": "0x40000000"
+            }
+          }
+        ],
+        "combine": {
+          "plan": "add the chunk partial sums: P0 + P1",
+          "steps": [
+            {
+              "k": 0,
+              "add": {
+                "value": 2.0,
+                "exact": "2",
+                "display": "2",
+                "display_fixed": "2.0000000",
+                "bits": "0x40000000"
+              },
+              "partial": {
+                "value": 2.0,
+                "exact": "2",
+                "display": "2",
+                "display_fixed": "2.0000000",
+                "bits": "0x40000000"
+              },
+              "exact_partial": "2",
+              "rounding_error": 0.0
+            },
+            {
+              "k": 1,
+              "add": {
+                "value": 2.0,
+                "exact": "2",
+                "display": "2",
+                "display_fixed": "2.0000000",
+                "bits": "0x40000000"
+              },
+              "partial": {
+                "value": 4.0,
+                "exact": "4",
+                "display": "4",
+                "display_fixed": "4.0000000",
+                "bits": "0x40800000"
+              },
+              "exact_partial": "4",
+              "rounding_error": 0.0
+            }
+          ],
+          "result": {
+            "value": 4.0,
+            "exact": "4",
+            "display": "4",
+            "display_fixed": "4.0000000",
+            "bits": "0x40800000"
+          }
+        },
+        "result": {
+          "value": 4.0,
+          "exact": "4",
+          "display": "4",
+          "display_fixed": "4.0000000",
+          "bits": "0x40800000"
+        }
+      },
+      "results_differ": true,
+      "difference": 4.76837158203125e-07,
+      "ulp_at_4": 4.76837158203125e-07,
+      "difference_in_ulps_at_4": 1.0,
+      "display": {
+        "sequential": "4.0000005",
+        "split_k2": "4.0000000"
+      }
+    },
+    "bfloat16": {
+      "significand_bits": 8,
+      "stored_inputs": [
+        {
+          "value": 0.10009765625,
+          "exact": "0.10009765625",
+          "display": "0.1",
+          "display_fixed": "0.10010",
+          "bits": "0x3DCD"
+        },
+        {
+          "value": 0.69921875,
+          "exact": "0.69921875",
+          "display": "0.7",
+          "display_fixed": "0.69922",
+          "bits": "0x3F33"
+        },
+        {
+          "value": 0.30078125,
+          "exact": "0.30078125",
+          "display": "0.3",
+          "display_fixed": "0.30078",
+          "bits": "0x3E9A"
+        },
+        {
+          "value": 0.8984375,
+          "exact": "0.8984375",
+          "display": "0.9",
+          "display_fixed": "0.89844",
+          "bits": "0x3F66"
+        },
+        {
+          "value": 0.2001953125,
+          "exact": "0.2001953125",
+          "display": "0.2",
+          "display_fixed": "0.20020",
+          "bits": "0x3E4D"
+        },
+        {
+          "value": 0.6015625,
+          "exact": "0.6015625",
+          "display": "0.6",
+          "display_fixed": "0.60156",
+          "bits": "0x3F1A"
+        },
+        {
+          "value": 0.400390625,
+          "exact": "0.400390625",
+          "display": "0.4",
+          "display_fixed": "0.40039",
+          "bits": "0x3ECD"
+        },
+        {
+          "value": 0.80078125,
+          "exact": "0.80078125",
+          "display": "0.8",
+          "display_fixed": "0.80078",
+          "bits": "0x3F4D"
+        }
+      ],
+      "exact_sum_of_stored_inputs": "4.00146484375",
+      "sequential": {
+        "plan": "one pass: ((x0 + x1) + x2) + ... + x7",
+        "steps": [
+          {
+            "k": 0,
+            "add": {
+              "value": 0.10009765625,
+              "exact": "0.10009765625",
+              "display": "0.1",
+              "display_fixed": "0.10010",
+              "bits": "0x3DCD"
+            },
+            "partial": {
+              "value": 0.10009765625,
+              "exact": "0.10009765625",
+              "display": "0.1",
+              "display_fixed": "0.10010",
+              "bits": "0x3DCD"
+            },
+            "exact_partial": "0.10009765625",
+            "rounding_error": 0.0
+          },
+          {
+            "k": 1,
+            "add": {
+              "value": 0.69921875,
+              "exact": "0.69921875",
+              "display": "0.7",
+              "display_fixed": "0.69922",
+              "bits": "0x3F33"
+            },
+            "partial": {
+              "value": 0.80078125,
+              "exact": "0.80078125",
+              "display": "0.8",
+              "display_fixed": "0.80078",
+              "bits": "0x3F4D"
+            },
+            "exact_partial": "0.79931640625",
+            "rounding_error": 0.00146484375
+          },
+          {
+            "k": 2,
+            "add": {
+              "value": 0.30078125,
+              "exact": "0.30078125",
+              "display": "0.3",
+              "display_fixed": "0.30078",
+              "bits": "0x3E9A"
+            },
+            "partial": {
+              "value": 1.1015625,
+              "exact": "1.1015625",
+              "display": "1.1",
+              "display_fixed": "1.10156",
+              "bits": "0x3F8D"
+            },
+            "exact_partial": "1.10009765625",
+            "rounding_error": 0.00146484375
+          },
+          {
+            "k": 3,
+            "add": {
+              "value": 0.8984375,
+              "exact": "0.8984375",
+              "display": "0.9",
+              "display_fixed": "0.89844",
+              "bits": "0x3F66"
+            },
+            "partial": {
+              "value": 2.0,
+              "exact": "2",
+              "display": "2",
+              "display_fixed": "2.00000",
+              "bits": "0x4000"
+            },
+            "exact_partial": "1.99853515625",
+            "rounding_error": 0.00146484375
+          },
+          {
+            "k": 4,
+            "add": {
+              "value": 0.2001953125,
+              "exact": "0.2001953125",
+              "display": "0.2",
+              "display_fixed": "0.20020",
+              "bits": "0x3E4D"
+            },
+            "partial": {
+              "value": 2.203125,
+              "exact": "2.203125",
+              "display": "2.2",
+              "display_fixed": "2.20312",
+              "bits": "0x400D"
+            },
+            "exact_partial": "2.19873046875",
+            "rounding_error": 0.00439453125
+          },
+          {
+            "k": 5,
+            "add": {
+              "value": 0.6015625,
+              "exact": "0.6015625",
+              "display": "0.6",
+              "display_fixed": "0.60156",
+              "bits": "0x3F1A"
+            },
+            "partial": {
+              "value": 2.8125,
+              "exact": "2.8125",
+              "display": "2.81",
+              "display_fixed": "2.81250",
+              "bits": "0x4034"
+            },
+            "exact_partial": "2.80029296875",
+            "rounding_error": 0.01220703125
+          },
+          {
+            "k": 6,
+            "add": {
+              "value": 0.400390625,
+              "exact": "0.400390625",
+              "display": "0.4",
+              "display_fixed": "0.40039",
+              "bits": "0x3ECD"
+            },
+            "partial": {
+              "value": 3.21875,
+              "exact": "3.21875",
+              "display": "3.22",
+              "display_fixed": "3.21875",
+              "bits": "0x404E"
+            },
+            "exact_partial": "3.20068359375",
+            "rounding_error": 0.01806640625
+          },
+          {
+            "k": 7,
+            "add": {
+              "value": 0.80078125,
+              "exact": "0.80078125",
+              "display": "0.8",
+              "display_fixed": "0.80078",
+              "bits": "0x3F4D"
+            },
+            "partial": {
+              "value": 4.03125,
+              "exact": "4.03125",
+              "display": "4.03",
+              "display_fixed": "4.03125",
+              "bits": "0x4081"
+            },
+            "exact_partial": "4.00146484375",
+            "rounding_error": 0.02978515625
+          }
+        ],
+        "result": {
+          "value": 4.03125,
+          "exact": "4.03125",
+          "display": "4.03",
+          "display_fixed": "4.03125",
+          "bits": "0x4081"
+        }
+      },
+      "split_k2": {
+        "plan": "split-K: 2 chunks of 4, each summed on its own core, then the 2 partial sums are added",
+        "chunks": [
+          {
+            "plan": "chunk 0: x0 .. x3 summed in order (one core)",
+            "steps": [
+              {
+                "k": 0,
+                "add": {
+                  "value": 0.10009765625,
+                  "exact": "0.10009765625",
+                  "display": "0.1",
+                  "display_fixed": "0.10010",
+                  "bits": "0x3DCD"
+                },
+                "partial": {
+                  "value": 0.10009765625,
+                  "exact": "0.10009765625",
+                  "display": "0.1",
+                  "display_fixed": "0.10010",
+                  "bits": "0x3DCD"
+                },
+                "exact_partial": "0.10009765625",
+                "rounding_error": 0.0
+              },
+              {
+                "k": 1,
+                "add": {
+                  "value": 0.69921875,
+                  "exact": "0.69921875",
+                  "display": "0.7",
+                  "display_fixed": "0.69922",
+                  "bits": "0x3F33"
+                },
+                "partial": {
+                  "value": 0.80078125,
+                  "exact": "0.80078125",
+                  "display": "0.8",
+                  "display_fixed": "0.80078",
+                  "bits": "0x3F4D"
+                },
+                "exact_partial": "0.79931640625",
+                "rounding_error": 0.00146484375
+              },
+              {
+                "k": 2,
+                "add": {
+                  "value": 0.30078125,
+                  "exact": "0.30078125",
+                  "display": "0.3",
+                  "display_fixed": "0.30078",
+                  "bits": "0x3E9A"
+                },
+                "partial": {
+                  "value": 1.1015625,
+                  "exact": "1.1015625",
+                  "display": "1.1",
+                  "display_fixed": "1.10156",
+                  "bits": "0x3F8D"
+                },
+                "exact_partial": "1.10009765625",
+                "rounding_error": 0.00146484375
+              },
+              {
+                "k": 3,
+                "add": {
+                  "value": 0.8984375,
+                  "exact": "0.8984375",
+                  "display": "0.9",
+                  "display_fixed": "0.89844",
+                  "bits": "0x3F66"
+                },
+                "partial": {
+                  "value": 2.0,
+                  "exact": "2",
+                  "display": "2",
+                  "display_fixed": "2.00000",
+                  "bits": "0x4000"
+                },
+                "exact_partial": "1.99853515625",
+                "rounding_error": 0.00146484375
+              }
+            ],
+            "result": {
+              "value": 2.0,
+              "exact": "2",
+              "display": "2",
+              "display_fixed": "2.00000",
+              "bits": "0x4000"
+            }
+          },
+          {
+            "plan": "chunk 1: x4 .. x7 summed in order (one core)",
+            "steps": [
+              {
+                "k": 0,
+                "add": {
+                  "value": 0.2001953125,
+                  "exact": "0.2001953125",
+                  "display": "0.2",
+                  "display_fixed": "0.20020",
+                  "bits": "0x3E4D"
+                },
+                "partial": {
+                  "value": 0.2001953125,
+                  "exact": "0.2001953125",
+                  "display": "0.2",
+                  "display_fixed": "0.20020",
+                  "bits": "0x3E4D"
+                },
+                "exact_partial": "0.2001953125",
+                "rounding_error": 0.0
+              },
+              {
+                "k": 1,
+                "add": {
+                  "value": 0.6015625,
+                  "exact": "0.6015625",
+                  "display": "0.6",
+                  "display_fixed": "0.60156",
+                  "bits": "0x3F1A"
+                },
+                "partial": {
+                  "value": 0.80078125,
+                  "exact": "0.80078125",
+                  "display": "0.8",
+                  "display_fixed": "0.80078",
+                  "bits": "0x3F4D"
+                },
+                "exact_partial": "0.8017578125",
+                "rounding_error": -0.0009765625
+              },
+              {
+                "k": 2,
+                "add": {
+                  "value": 0.400390625,
+                  "exact": "0.400390625",
+                  "display": "0.4",
+                  "display_fixed": "0.40039",
+                  "bits": "0x3ECD"
+                },
+                "partial": {
+                  "value": 1.203125,
+                  "exact": "1.203125",
+                  "display": "1.2",
+                  "display_fixed": "1.20312",
+                  "bits": "0x3F9A"
+                },
+                "exact_partial": "1.2021484375",
+                "rounding_error": 0.0009765625
+              },
+              {
+                "k": 3,
+                "add": {
+                  "value": 0.80078125,
+                  "exact": "0.80078125",
+                  "display": "0.8",
+                  "display_fixed": "0.80078",
+                  "bits": "0x3F4D"
+                },
+                "partial": {
+                  "value": 2.0,
+                  "exact": "2",
+                  "display": "2",
+                  "display_fixed": "2.00000",
+                  "bits": "0x4000"
+                },
+                "exact_partial": "2.0029296875",
+                "rounding_error": -0.0029296875
+              }
+            ],
+            "result": {
+              "value": 2.0,
+              "exact": "2",
+              "display": "2",
+              "display_fixed": "2.00000",
+              "bits": "0x4000"
+            }
+          }
+        ],
+        "combine": {
+          "plan": "add the chunk partial sums: P0 + P1",
+          "steps": [
+            {
+              "k": 0,
+              "add": {
+                "value": 2.0,
+                "exact": "2",
+                "display": "2",
+                "display_fixed": "2.00000",
+                "bits": "0x4000"
+              },
+              "partial": {
+                "value": 2.0,
+                "exact": "2",
+                "display": "2",
+                "display_fixed": "2.00000",
+                "bits": "0x4000"
+              },
+              "exact_partial": "2",
+              "rounding_error": 0.0
+            },
+            {
+              "k": 1,
+              "add": {
+                "value": 2.0,
+                "exact": "2",
+                "display": "2",
+                "display_fixed": "2.00000",
+                "bits": "0x4000"
+              },
+              "partial": {
+                "value": 4.0,
+                "exact": "4",
+                "display": "4",
+                "display_fixed": "4.00000",
+                "bits": "0x4080"
+              },
+              "exact_partial": "4",
+              "rounding_error": 0.0
+            }
+          ],
+          "result": {
+            "value": 4.0,
+            "exact": "4",
+            "display": "4",
+            "display_fixed": "4.00000",
+            "bits": "0x4080"
+          }
+        },
+        "result": {
+          "value": 4.0,
+          "exact": "4",
+          "display": "4",
+          "display_fixed": "4.00000",
+          "bits": "0x4080"
+        }
+      },
+      "results_differ": true,
+      "difference": 0.03125,
+      "ulp_at_4": 0.03125,
+      "difference_in_ulps_at_4": 1.0,
+      "display": {
+        "sequential": "4.03125",
+        "split_k2": "4.00000"
+      },
+      "method": "bfloat16 emulation: take the float32 bit pattern, add 0x7FFF plus the lowest kept bit ((bits >> 16) & 1), then clear the low 16 bits. This is round-to-nearest-even to 8 significand bits (7 stored + 1 implicit), the same rule as torch's float32 -> bfloat16 conversion. Each addition is done in float32 (exact for these operands) and the result is rounded to bfloat16, which emulates a bfloat16 accumulator.",
+      "note": "bfloat16 keeps 8 significand bits against float32's 24, so each rounding step is 2^16 = 65,536 times coarser and the same reordering moves the result in the second decimal. GEMM kernels commonly keep float32 accumulators and round the output to bfloat16 (class B); the bfloat16 column shows the effect at bfloat16 precision."
+    },
+    "why": "Each addition rounds its exact result to the nearest representable number. Which rounding errors happen depends on which partial sums are formed, so (a + b) + c can differ from a + (b + c): floating-point addition is not associative."
+  },
+  "part2_lm_head": {
+    "context": {
+      "text": "Richard Feynman was born in",
+      "note": "illustrative; the two candidate tokens echo the divergence in [S27]'s experiment ('Queens, New York' vs 'New York City'). The numbers are toy."
+    },
+    "tokens": [
+      " Queens",
+      " New",
+      " Brooklyn",
+      " the"
+    ],
+    "d": 8,
+    "h": {
+      "value": [
+        0.5,
+        1.0,
+        2.0,
+        1.0,
+        0.5,
+        2.0,
+        -1.0,
+        0.5
+      ],
+      "display": [
+        "0.5",
+        "1",
+        "2",
+        "1",
+        "0.5",
+        "2",
+        "-1",
+        "0.5"
+      ],
+      "note": "hidden vector after the final norm (toy); every entry is a power of two, so each product h_k * W[t][k] is exact in float32"
+    },
+    "W": {
+      "rows": {
+        " Queens": [
+          "0.2",
+          "0.7",
+          "0.15",
+          "0.9",
+          "0.4",
+          "0.3",
+          "-0.4",
+          "1.6"
+        ],
+        " New": [
+          "0.8",
+          "0.3",
+          "0.2",
+          "0.2",
+          "1.2",
+          "0.4",
+          "-0.7",
+          "1.2"
+        ],
+        " Brooklyn": [
+          "0.4",
+          "0.5",
+          "0.5",
+          "0.3",
+          "0.2",
+          "0.1",
+          "-0.2",
+          "0.6"
+        ],
+        " the": [
+          "-1",
+          "0.2",
+          "-0.3",
+          "0.1",
+          "0.4",
+          "-0.2",
+          "0.5",
+          "-0.4"
+        ]
+      },
+      "shape": [
+        4,
+        8
+      ]
+    },
+    "products": [
+      {
+        "token": " Queens",
+        "w": [
+          "0.2",
+          "0.7",
+          "0.15",
+          "0.9",
+          "0.4",
+          "0.3",
+          "-0.4",
+          "1.6"
+        ],
+        "products": [
+          "0.1",
+          "0.7",
+          "0.3",
+          "0.9",
+          "0.2",
+          "0.6",
+          "0.4",
+          "0.8"
+        ],
+        "text": "(0.5)(0.2) + (1)(0.7) + (2)(0.15) + (1)(0.9) + (0.5)(0.4) + (2)(0.3) + (-1)(-0.4) + (0.5)(1.6)",
+        "exact_logit": "4",
+        "exact_sum_of_stored_float32_products": "4.000000022351741790771484375"
+      },
+      {
+        "token": " New",
+        "w": [
+          "0.8",
+          "0.3",
+          "0.2",
+          "0.2",
+          "1.2",
+          "0.4",
+          "-0.7",
+          "1.2"
+        ],
+        "products": [
+          "0.4",
+          "0.3",
+          "0.4",
+          "0.2",
+          "0.6",
+          "0.8",
+          "0.7",
+          "0.6"
+        ],
+        "text": "(0.5)(0.8) + (1)(0.3) + (2)(0.2) + (1)(0.2) + (0.5)(1.2) + (2)(0.4) + (-1)(-0.7) + (0.5)(1.2)",
+        "exact_logit": "4",
+        "exact_sum_of_stored_float32_products": "4.00000007450580596923828125"
+      },
+      {
+        "token": " Brooklyn",
+        "w": [
+          "0.4",
+          "0.5",
+          "0.5",
+          "0.3",
+          "0.2",
+          "0.1",
+          "-0.2",
+          "0.6"
+        ],
+        "products": [
+          "0.2",
+          "0.5",
+          "1",
+          "0.3",
+          "0.1",
+          "0.2",
+          "0.2",
+          "0.3"
+        ],
+        "text": "(0.5)(0.4) + (1)(0.5) + (2)(0.5) + (1)(0.3) + (0.5)(0.2) + (2)(0.1) + (-1)(-0.2) + (0.5)(0.6)",
+        "exact_logit": "2.8",
+        "exact_sum_of_stored_float32_products": "2.800000034272670745849609375"
+      },
+      {
+        "token": " the",
+        "w": [
+          "-1",
+          "0.2",
+          "-0.3",
+          "0.1",
+          "0.4",
+          "-0.2",
+          "0.5",
+          "-0.4"
+        ],
+        "products": [
+          "-0.5",
+          "0.2",
+          "-0.6",
+          "0.1",
+          "0.2",
+          "-0.4",
+          "-0.5",
+          "-0.2"
+        ],
+        "text": "(0.5)(-1) + (1)(0.2) + (2)(-0.3) + (1)(0.1) + (0.5)(0.4) + (2)(-0.2) + (-1)(0.5) + (0.5)(-0.4)",
+        "exact_logit": "-1.7",
+        "exact_sum_of_stored_float32_products": "-1.700000025331974029541015625"
+      }
+    ],
+    "exact_logits": {
+      " Queens": "4",
+      " New": "4",
+      " Brooklyn": "2.8",
+      " the": "-1.7"
+    },
+    "batch_1": {
+      "batch_size": 1,
+      "plan": "split-K: the batch has one row, so the kernel splits the 8-term sum into 2 chunks on different cores to keep them busy, then adds the partials",
+      "per_token": {
+        " Queens": {
+          "plan": "split-K: 2 chunks of 4, each summed on its own core, then the 2 partial sums are added",
+          "chunks": [
+            {
+              "plan": "chunk 0: x0 .. x3 summed in order (one core)",
+              "steps": [
+                {
+                  "k": 0,
+                  "add": {
+                    "value": 0.10000000149011612,
+                    "exact": "0.100000001490116119384765625",
+                    "display": "0.1",
+                    "display_fixed": "0.1000000",
+                    "bits": "0x3DCCCCCD"
+                  },
+                  "partial": {
+                    "value": 0.10000000149011612,
+                    "exact": "0.100000001490116119384765625",
+                    "display": "0.1",
+                    "display_fixed": "0.1000000",
+                    "bits": "0x3DCCCCCD"
+                  },
+                  "exact_partial": "0.100000001490116119384765625",
+                  "rounding_error": 0.0
+                },
+                {
+                  "k": 1,
+                  "add": {
+                    "value": 0.699999988079071,
+                    "exact": "0.699999988079071044921875",
+                    "display": "0.7",
+                    "display_fixed": "0.7000000",
+                    "bits": "0x3F333333"
+                  },
+                  "partial": {
+                    "value": 0.800000011920929,
+                    "exact": "0.800000011920928955078125",
+                    "display": "0.8",
+                    "display_fixed": "0.8000000",
+                    "bits": "0x3F4CCCCD"
+                  },
+                  "exact_partial": "0.799999989569187164306640625",
+                  "rounding_error": 2.2351741790771484e-08
+                },
+                {
+                  "k": 2,
+                  "add": {
+                    "value": 0.30000001192092896,
+                    "exact": "0.300000011920928955078125",
+                    "display": "0.3",
+                    "display_fixed": "0.3000000",
+                    "bits": "0x3E99999A"
+                  },
+                  "partial": {
+                    "value": 1.100000023841858,
+                    "exact": "1.10000002384185791015625",
+                    "display": "1.1",
+                    "display_fixed": "1.1000000",
+                    "bits": "0x3F8CCCCD"
+                  },
+                  "exact_partial": "1.100000001490116119384765625",
+                  "rounding_error": 2.2351741790771484e-08
+                },
+                {
+                  "k": 3,
+                  "add": {
+                    "value": 0.8999999761581421,
+                    "exact": "0.89999997615814208984375",
+                    "display": "0.9",
+                    "display_fixed": "0.9000000",
+                    "bits": "0x3F666666"
+                  },
+                  "partial": {
+                    "value": 2.0,
+                    "exact": "2",
+                    "display": "2",
+                    "display_fixed": "2.0000000",
+                    "bits": "0x40000000"
+                  },
+                  "exact_partial": "1.999999977648258209228515625",
+                  "rounding_error": 2.2351741790771484e-08
+                }
+              ],
+              "result": {
+                "value": 2.0,
+                "exact": "2",
+                "display": "2",
+                "display_fixed": "2.0000000",
+                "bits": "0x40000000"
+              }
+            },
+            {
+              "plan": "chunk 1: x4 .. x7 summed in order (one core)",
+              "steps": [
+                {
+                  "k": 0,
+                  "add": {
+                    "value": 0.20000000298023224,
+                    "exact": "0.20000000298023223876953125",
+                    "display": "0.2",
+                    "display_fixed": "0.2000000",
+                    "bits": "0x3E4CCCCD"
+                  },
+                  "partial": {
+                    "value": 0.20000000298023224,
+                    "exact": "0.20000000298023223876953125",
+                    "display": "0.2",
+                    "display_fixed": "0.2000000",
+                    "bits": "0x3E4CCCCD"
+                  },
+                  "exact_partial": "0.20000000298023223876953125",
+                  "rounding_error": 0.0
+                },
+                {
+                  "k": 1,
+                  "add": {
+                    "value": 0.6000000238418579,
+                    "exact": "0.60000002384185791015625",
+                    "display": "0.6",
+                    "display_fixed": "0.6000000",
+                    "bits": "0x3F19999A"
+                  },
+                  "partial": {
+                    "value": 0.800000011920929,
+                    "exact": "0.800000011920928955078125",
+                    "display": "0.8",
+                    "display_fixed": "0.8000000",
+                    "bits": "0x3F4CCCCD"
+                  },
+                  "exact_partial": "0.80000002682209014892578125",
+                  "rounding_error": -1.4901161193847656e-08
+                },
+                {
+                  "k": 2,
+                  "add": {
+                    "value": 0.4000000059604645,
+                    "exact": "0.4000000059604644775390625",
+                    "display": "0.4",
+                    "display_fixed": "0.4000000",
+                    "bits": "0x3ECCCCCD"
+                  },
+                  "partial": {
+                    "value": 1.2000000476837158,
+                    "exact": "1.2000000476837158203125",
+                    "display": "1.2",
+                    "display_fixed": "1.2000000",
+                    "bits": "0x3F99999A"
+                  },
+                  "exact_partial": "1.20000003278255462646484375",
+                  "rounding_error": 1.4901161193847656e-08
+                },
+                {
+                  "k": 3,
+                  "add": {
+                    "value": 0.800000011920929,
+                    "exact": "0.800000011920928955078125",
+                    "display": "0.8",
+                    "display_fixed": "0.8000000",
+                    "bits": "0x3F4CCCCD"
+                  },
+                  "partial": {
+                    "value": 2.0,
+                    "exact": "2",
+                    "display": "2",
+                    "display_fixed": "2.0000000",
+                    "bits": "0x40000000"
+                  },
+                  "exact_partial": "2.00000004470348358154296875",
+                  "rounding_error": -4.470348358154297e-08
+                }
+              ],
+              "result": {
+                "value": 2.0,
+                "exact": "2",
+                "display": "2",
+                "display_fixed": "2.0000000",
+                "bits": "0x40000000"
+              }
+            }
+          ],
+          "combine": {
+            "plan": "add the chunk partial sums: P0 + P1",
+            "steps": [
+              {
+                "k": 0,
+                "add": {
+                  "value": 2.0,
+                  "exact": "2",
+                  "display": "2",
+                  "display_fixed": "2.0000000",
+                  "bits": "0x40000000"
+                },
+                "partial": {
+                  "value": 2.0,
+                  "exact": "2",
+                  "display": "2",
+                  "display_fixed": "2.0000000",
+                  "bits": "0x40000000"
+                },
+                "exact_partial": "2",
+                "rounding_error": 0.0
+              },
+              {
+                "k": 1,
+                "add": {
+                  "value": 2.0,
+                  "exact": "2",
+                  "display": "2",
+                  "display_fixed": "2.0000000",
+                  "bits": "0x40000000"
+                },
+                "partial": {
+                  "value": 4.0,
+                  "exact": "4",
+                  "display": "4",
+                  "display_fixed": "4.0000000",
+                  "bits": "0x40800000"
+                },
+                "exact_partial": "4",
+                "rounding_error": 0.0
+              }
+            ],
+            "result": {
+              "value": 4.0,
+              "exact": "4",
+              "display": "4",
+              "display_fixed": "4.0000000",
+              "bits": "0x40800000"
+            }
+          },
+          "result": {
+            "value": 4.0,
+            "exact": "4",
+            "display": "4",
+            "display_fixed": "4.0000000",
+            "bits": "0x40800000"
+          }
+        },
+        " New": {
+          "plan": "split-K: 2 chunks of 4, each summed on its own core, then the 2 partial sums are added",
+          "chunks": [
+            {
+              "plan": "chunk 0: x0 .. x3 summed in order (one core)",
+              "steps": [
+                {
+                  "k": 0,
+                  "add": {
+                    "value": 0.4000000059604645,
+                    "exact": "0.4000000059604644775390625",
+                    "display": "0.4",
+                    "display_fixed": "0.4000000",
+                    "bits": "0x3ECCCCCD"
+                  },
+                  "partial": {
+                    "value": 0.4000000059604645,
+                    "exact": "0.4000000059604644775390625",
+                    "display": "0.4",
+                    "display_fixed": "0.4000000",
+                    "bits": "0x3ECCCCCD"
+                  },
+                  "exact_partial": "0.4000000059604644775390625",
+                  "rounding_error": 0.0
+                },
+                {
+                  "k": 1,
+                  "add": {
+                    "value": 0.30000001192092896,
+                    "exact": "0.300000011920928955078125",
+                    "display": "0.3",
+                    "display_fixed": "0.3000000",
+                    "bits": "0x3E99999A"
+                  },
+                  "partial": {
+                    "value": 0.7000000476837158,
+                    "exact": "0.7000000476837158203125",
+                    "display": "0.70000005",
+                    "display_fixed": "0.7000000",
+                    "bits": "0x3F333334"
+                  },
+                  "exact_partial": "0.7000000178813934326171875",
+                  "rounding_error": 2.9802322387695312e-08
+                },
+                {
+                  "k": 2,
+                  "add": {
+                    "value": 0.4000000059604645,
+                    "exact": "0.4000000059604644775390625",
+                    "display": "0.4",
+                    "display_fixed": "0.4000000",
+                    "bits": "0x3ECCCCCD"
+                  },
+                  "partial": {
+                    "value": 1.100000023841858,
+                    "exact": "1.10000002384185791015625",
+                    "display": "1.1",
+                    "display_fixed": "1.1000000",
+                    "bits": "0x3F8CCCCD"
+                  },
+                  "exact_partial": "1.10000002384185791015625",
+                  "rounding_error": 0.0
+                },
+                {
+                  "k": 3,
+                  "add": {
+                    "value": 0.20000000298023224,
+                    "exact": "0.20000000298023223876953125",
+                    "display": "0.2",
+                    "display_fixed": "0.2000000",
+                    "bits": "0x3E4CCCCD"
+                  },
+                  "partial": {
+                    "value": 1.3000000715255737,
+                    "exact": "1.30000007152557373046875",
+                    "display": "1.3000001",
+                    "display_fixed": "1.3000001",
+                    "bits": "0x3FA66667"
+                  },
+                  "exact_partial": "1.30000002682209014892578125",
+                  "rounding_error": 4.470348358154297e-08
+                }
+              ],
+              "result": {
+                "value": 1.3000000715255737,
+                "exact": "1.30000007152557373046875",
+                "display": "1.3000001",
+                "display_fixed": "1.3000001",
+                "bits": "0x3FA66667"
+              }
+            },
+            {
+              "plan": "chunk 1: x4 .. x7 summed in order (one core)",
+              "steps": [
+                {
+                  "k": 0,
+                  "add": {
+                    "value": 0.6000000238418579,
+                    "exact": "0.60000002384185791015625",
+                    "display": "0.6",
+                    "display_fixed": "0.6000000",
+                    "bits": "0x3F19999A"
+                  },
+                  "partial": {
+                    "value": 0.6000000238418579,
+                    "exact": "0.60000002384185791015625",
+                    "display": "0.6",
+                    "display_fixed": "0.6000000",
+                    "bits": "0x3F19999A"
+                  },
+                  "exact_partial": "0.60000002384185791015625",
+                  "rounding_error": 0.0
+                },
+                {
+                  "k": 1,
+                  "add": {
+                    "value": 0.800000011920929,
+                    "exact": "0.800000011920928955078125",
+                    "display": "0.8",
+                    "display_fixed": "0.8000000",
+                    "bits": "0x3F4CCCCD"
+                  },
+                  "partial": {
+                    "value": 1.4000000953674316,
+                    "exact": "1.400000095367431640625",
+                    "display": "1.4000001",
+                    "display_fixed": "1.4000001",
+                    "bits": "0x3FB33334"
+                  },
+                  "exact_partial": "1.400000035762786865234375",
+                  "rounding_error": 5.960464477539063e-08
+                },
+                {
+                  "k": 2,
+                  "add": {
+                    "value": 0.699999988079071,
+                    "exact": "0.699999988079071044921875",
+                    "display": "0.7",
+                    "display_fixed": "0.7000000",
+                    "bits": "0x3F333333"
+                  },
+                  "partial": {
+                    "value": 2.1000001430511475,
+                    "exact": "2.1000001430511474609375",
+                    "display": "2.1000001",
+                    "display_fixed": "2.1000001",
+                    "bits": "0x40066667"
+                  },
+                  "exact_partial": "2.10000002384185791015625",
+                  "rounding_error": 1.1920928955078125e-07
+                },
+                {
+                  "k": 3,
+                  "add": {
+                    "value": 0.6000000238418579,
+                    "exact": "0.60000002384185791015625",
+                    "display": "0.6",
+                    "display_fixed": "0.6000000",
+                    "bits": "0x3F19999A"
+                  },
+                  "partial": {
+                    "value": 2.700000286102295,
+                    "exact": "2.700000286102294921875",
+                    "display": "2.7000003",
+                    "display_fixed": "2.7000003",
+                    "bits": "0x402CCCCE"
+                  },
+                  "exact_partial": "2.7000000476837158203125",
+                  "rounding_error": 2.384185791015625e-07
+                }
+              ],
+              "result": {
+                "value": 2.700000286102295,
+                "exact": "2.700000286102294921875",
+                "display": "2.7000003",
+                "display_fixed": "2.7000003",
+                "bits": "0x402CCCCE"
+              }
+            }
+          ],
+          "combine": {
+            "plan": "add the chunk partial sums: P0 + P1",
+            "steps": [
+              {
+                "k": 0,
+                "add": {
+                  "value": 1.3000000715255737,
+                  "exact": "1.30000007152557373046875",
+                  "display": "1.3000001",
+                  "display_fixed": "1.3000001",
+                  "bits": "0x3FA66667"
+                },
+                "partial": {
+                  "value": 1.3000000715255737,
+                  "exact": "1.30000007152557373046875",
+                  "display": "1.3000001",
+                  "display_fixed": "1.3000001",
+                  "bits": "0x3FA66667"
+                },
+                "exact_partial": "1.30000007152557373046875",
+                "rounding_error": 0.0
+              },
+              {
+                "k": 1,
+                "add": {
+                  "value": 2.700000286102295,
+                  "exact": "2.700000286102294921875",
+                  "display": "2.7000003",
+                  "display_fixed": "2.7000003",
+                  "bits": "0x402CCCCE"
+                },
+                "partial": {
+                  "value": 4.000000476837158,
+                  "exact": "4.000000476837158203125",
+                  "display": "4.0000005",
+                  "display_fixed": "4.0000005",
+                  "bits": "0x40800001"
+                },
+                "exact_partial": "4.00000035762786865234375",
+                "rounding_error": 1.1920928955078125e-07
+              }
+            ],
+            "result": {
+              "value": 4.000000476837158,
+              "exact": "4.000000476837158203125",
+              "display": "4.0000005",
+              "display_fixed": "4.0000005",
+              "bits": "0x40800001"
+            }
+          },
+          "result": {
+            "value": 4.000000476837158,
+            "exact": "4.000000476837158203125",
+            "display": "4.0000005",
+            "display_fixed": "4.0000005",
+            "bits": "0x40800001"
+          }
+        },
+        " Brooklyn": {
+          "plan": "split-K: 2 chunks of 4, each summed on its own core, then the 2 partial sums are added",
+          "chunks": [
+            {
+              "plan": "chunk 0: x0 .. x3 summed in order (one core)",
+              "steps": [
+                {
+                  "k": 0,
+                  "add": {
+                    "value": 0.20000000298023224,
+                    "exact": "0.20000000298023223876953125",
+                    "display": "0.2",
+                    "display_fixed": "0.2000000",
+                    "bits": "0x3E4CCCCD"
+                  },
+                  "partial": {
+                    "value": 0.20000000298023224,
+                    "exact": "0.20000000298023223876953125",
+                    "display": "0.2",
+                    "display_fixed": "0.2000000",
+                    "bits": "0x3E4CCCCD"
+                  },
+                  "exact_partial": "0.20000000298023223876953125",
+                  "rounding_error": 0.0
+                },
+                {
+                  "k": 1,
+                  "add": {
+                    "value": 0.5,
+                    "exact": "0.5",
+                    "display": "0.5",
+                    "display_fixed": "0.5000000",
+                    "bits": "0x3F000000"
+                  },
+                  "partial": {
+                    "value": 0.699999988079071,
+                    "exact": "0.699999988079071044921875",
+                    "display": "0.7",
+                    "display_fixed": "0.7000000",
+                    "bits": "0x3F333333"
+                  },
+                  "exact_partial": "0.70000000298023223876953125",
+                  "rounding_error": -1.4901161193847656e-08
+                },
+                {
+                  "k": 2,
+                  "add": {
+                    "value": 1.0,
+                    "exact": "1",
+                    "display": "1",
+                    "display_fixed": "1.0000000",
+                    "bits": "0x3F800000"
+                  },
+                  "partial": {
+                    "value": 1.7000000476837158,
+                    "exact": "1.7000000476837158203125",
+                    "display": "1.7",
+                    "display_fixed": "1.7000000",
+                    "bits": "0x3FD9999A"
+                  },
+                  "exact_partial": "1.70000000298023223876953125",
+                  "rounding_error": 4.470348358154297e-08
+                },
+                {
+                  "k": 3,
+                  "add": {
+                    "value": 0.30000001192092896,
+                    "exact": "0.300000011920928955078125",
+                    "display": "0.3",
+                    "display_fixed": "0.3000000",
+                    "bits": "0x3E99999A"
+                  },
+                  "partial": {
+                    "value": 2.0,
+                    "exact": "2",
+                    "display": "2",
+                    "display_fixed": "2.0000000",
+                    "bits": "0x40000000"
+                  },
+                  "exact_partial": "2.00000001490116119384765625",
+                  "rounding_error": -1.4901161193847656e-08
+                }
+              ],
+              "result": {
+                "value": 2.0,
+                "exact": "2",
+                "display": "2",
+                "display_fixed": "2.0000000",
+                "bits": "0x40000000"
+              }
+            },
+            {
+              "plan": "chunk 1: x4 .. x7 summed in order (one core)",
+              "steps": [
+                {
+                  "k": 0,
+                  "add": {
+                    "value": 0.10000000149011612,
+                    "exact": "0.100000001490116119384765625",
+                    "display": "0.1",
+                    "display_fixed": "0.1000000",
+                    "bits": "0x3DCCCCCD"
+                  },
+                  "partial": {
+                    "value": 0.10000000149011612,
+                    "exact": "0.100000001490116119384765625",
+                    "display": "0.1",
+                    "display_fixed": "0.1000000",
+                    "bits": "0x3DCCCCCD"
+                  },
+                  "exact_partial": "0.100000001490116119384765625",
+                  "rounding_error": 0.0
+                },
+                {
+                  "k": 1,
+                  "add": {
+                    "value": 0.20000000298023224,
+                    "exact": "0.20000000298023223876953125",
+                    "display": "0.2",
+                    "display_fixed": "0.2000000",
+                    "bits": "0x3E4CCCCD"
+                  },
+                  "partial": {
+                    "value": 0.30000001192092896,
+                    "exact": "0.300000011920928955078125",
+                    "display": "0.3",
+                    "display_fixed": "0.3000000",
+                    "bits": "0x3E99999A"
+                  },
+                  "exact_partial": "0.300000004470348358154296875",
+                  "rounding_error": 7.450580596923828e-09
+                },
+                {
+                  "k": 2,
+                  "add": {
+                    "value": 0.20000000298023224,
+                    "exact": "0.20000000298023223876953125",
+                    "display": "0.2",
+                    "display_fixed": "0.2000000",
+                    "bits": "0x3E4CCCCD"
+                  },
+                  "partial": {
+                    "value": 0.5,
+                    "exact": "0.5",
+                    "display": "0.5",
+                    "display_fixed": "0.5000000",
+                    "bits": "0x3F000000"
+                  },
+                  "exact_partial": "0.500000007450580596923828125",
+                  "rounding_error": -7.450580596923828e-09
+                },
+                {
+                  "k": 3,
+                  "add": {
+                    "value": 0.30000001192092896,
+                    "exact": "0.300000011920928955078125",
+                    "display": "0.3",
+                    "display_fixed": "0.3000000",
+                    "bits": "0x3E99999A"
+                  },
+                  "partial": {
+                    "value": 0.800000011920929,
+                    "exact": "0.800000011920928955078125",
+                    "display": "0.8",
+                    "display_fixed": "0.8000000",
+                    "bits": "0x3F4CCCCD"
+                  },
+                  "exact_partial": "0.800000019371509552001953125",
+                  "rounding_error": -7.450580596923828e-09
+                }
+              ],
+              "result": {
+                "value": 0.800000011920929,
+                "exact": "0.800000011920928955078125",
+                "display": "0.8",
+                "display_fixed": "0.8000000",
+                "bits": "0x3F4CCCCD"
+              }
+            }
+          ],
+          "combine": {
+            "plan": "add the chunk partial sums: P0 + P1",
+            "steps": [
+              {
+                "k": 0,
+                "add": {
+                  "value": 2.0,
+                  "exact": "2",
+                  "display": "2",
+                  "display_fixed": "2.0000000",
+                  "bits": "0x40000000"
+                },
+                "partial": {
+                  "value": 2.0,
+                  "exact": "2",
+                  "display": "2",
+                  "display_fixed": "2.0000000",
+                  "bits": "0x40000000"
+                },
+                "exact_partial": "2",
+                "rounding_error": 0.0
+              },
+              {
+                "k": 1,
+                "add": {
+                  "value": 0.800000011920929,
+                  "exact": "0.800000011920928955078125",
+                  "display": "0.8",
+                  "display_fixed": "0.8000000",
+                  "bits": "0x3F4CCCCD"
+                },
+                "partial": {
+                  "value": 2.799999952316284,
+                  "exact": "2.7999999523162841796875",
+                  "display": "2.8",
+                  "display_fixed": "2.8000000",
+                  "bits": "0x40333333"
+                },
+                "exact_partial": "2.800000011920928955078125",
+                "rounding_error": -5.960464477539063e-08
+              }
+            ],
+            "result": {
+              "value": 2.799999952316284,
+              "exact": "2.7999999523162841796875",
+              "display": "2.8",
+              "display_fixed": "2.8000000",
+              "bits": "0x40333333"
+            }
+          },
+          "result": {
+            "value": 2.799999952316284,
+            "exact": "2.7999999523162841796875",
+            "display": "2.8",
+            "display_fixed": "2.8000000",
+            "bits": "0x40333333"
+          }
+        },
+        " the": {
+          "plan": "split-K: 2 chunks of 4, each summed on its own core, then the 2 partial sums are added",
+          "chunks": [
+            {
+              "plan": "chunk 0: x0 .. x3 summed in order (one core)",
+              "steps": [
+                {
+                  "k": 0,
+                  "add": {
+                    "value": -0.5,
+                    "exact": "-0.5",
+                    "display": "-0.5",
+                    "display_fixed": "-0.5000000",
+                    "bits": "0xBF000000"
+                  },
+                  "partial": {
+                    "value": -0.5,
+                    "exact": "-0.5",
+                    "display": "-0.5",
+                    "display_fixed": "-0.5000000",
+                    "bits": "0xBF000000"
+                  },
+                  "exact_partial": "-0.5",
+                  "rounding_error": 0.0
+                },
+                {
+                  "k": 1,
+                  "add": {
+                    "value": 0.20000000298023224,
+                    "exact": "0.20000000298023223876953125",
+                    "display": "0.2",
+                    "display_fixed": "0.2000000",
+                    "bits": "0x3E4CCCCD"
+                  },
+                  "partial": {
+                    "value": -0.30000001192092896,
+                    "exact": "-0.300000011920928955078125",
+                    "display": "-0.3",
+                    "display_fixed": "-0.3000000",
+                    "bits": "0xBE99999A"
+                  },
+                  "exact_partial": "-0.29999999701976776123046875",
+                  "rounding_error": -1.4901161193847656e-08
+                },
+                {
+                  "k": 2,
+                  "add": {
+                    "value": -0.6000000238418579,
+                    "exact": "-0.60000002384185791015625",
+                    "display": "-0.6",
+                    "display_fixed": "-0.6000000",
+                    "bits": "0xBF19999A"
+                  },
+                  "partial": {
+                    "value": -0.9000000357627869,
+                    "exact": "-0.900000035762786865234375",
+                    "display": "-0.90000004",
+                    "display_fixed": "-0.9000000",
+                    "bits": "0xBF666667"
+                  },
+                  "exact_partial": "-0.90000002086162567138671875",
+                  "rounding_error": -1.4901161193847656e-08
+                },
+                {
+                  "k": 3,
+                  "add": {
+                    "value": 0.10000000149011612,
+                    "exact": "0.100000001490116119384765625",
+                    "display": "0.1",
+                    "display_fixed": "0.1000000",
+                    "bits": "0x3DCCCCCD"
+                  },
+                  "partial": {
+                    "value": -0.800000011920929,
+                    "exact": "-0.800000011920928955078125",
+                    "display": "-0.8",
+                    "display_fixed": "-0.8000000",
+                    "bits": "0xBF4CCCCD"
+                  },
+                  "exact_partial": "-0.800000019371509552001953125",
+                  "rounding_error": 7.450580596923828e-09
+                }
+              ],
+              "result": {
+                "value": -0.800000011920929,
+                "exact": "-0.800000011920928955078125",
+                "display": "-0.8",
+                "display_fixed": "-0.8000000",
+                "bits": "0xBF4CCCCD"
+              }
+            },
+            {
+              "plan": "chunk 1: x4 .. x7 summed in order (one core)",
+              "steps": [
+                {
+                  "k": 0,
+                  "add": {
+                    "value": 0.20000000298023224,
+                    "exact": "0.20000000298023223876953125",
+                    "display": "0.2",
+                    "display_fixed": "0.2000000",
+                    "bits": "0x3E4CCCCD"
+                  },
+                  "partial": {
+                    "value": 0.20000000298023224,
+                    "exact": "0.20000000298023223876953125",
+                    "display": "0.2",
+                    "display_fixed": "0.2000000",
+                    "bits": "0x3E4CCCCD"
+                  },
+                  "exact_partial": "0.20000000298023223876953125",
+                  "rounding_error": 0.0
+                },
+                {
+                  "k": 1,
+                  "add": {
+                    "value": -0.4000000059604645,
+                    "exact": "-0.4000000059604644775390625",
+                    "display": "-0.4",
+                    "display_fixed": "-0.4000000",
+                    "bits": "0xBECCCCCD"
+                  },
+                  "partial": {
+                    "value": -0.20000000298023224,
+                    "exact": "-0.20000000298023223876953125",
+                    "display": "-0.2",
+                    "display_fixed": "-0.2000000",
+                    "bits": "0xBE4CCCCD"
+                  },
+                  "exact_partial": "-0.20000000298023223876953125",
+                  "rounding_error": 0.0
+                },
+                {
+                  "k": 2,
+                  "add": {
+                    "value": -0.5,
+                    "exact": "-0.5",
+                    "display": "-0.5",
+                    "display_fixed": "-0.5000000",
+                    "bits": "0xBF000000"
+                  },
+                  "partial": {
+                    "value": -0.699999988079071,
+                    "exact": "-0.699999988079071044921875",
+                    "display": "-0.7",
+                    "display_fixed": "-0.7000000",
+                    "bits": "0xBF333333"
+                  },
+                  "exact_partial": "-0.70000000298023223876953125",
+                  "rounding_error": 1.4901161193847656e-08
+                },
+                {
+                  "k": 3,
+                  "add": {
+                    "value": -0.20000000298023224,
+                    "exact": "-0.20000000298023223876953125",
+                    "display": "-0.2",
+                    "display_fixed": "-0.2000000",
+                    "bits": "0xBE4CCCCD"
+                  },
+                  "partial": {
+                    "value": -0.8999999761581421,
+                    "exact": "-0.89999997615814208984375",
+                    "display": "-0.9",
+                    "display_fixed": "-0.9000000",
+                    "bits": "0xBF666666"
+                  },
+                  "exact_partial": "-0.9000000059604644775390625",
+                  "rounding_error": 2.9802322387695312e-08
+                }
+              ],
+              "result": {
+                "value": -0.8999999761581421,
+                "exact": "-0.89999997615814208984375",
+                "display": "-0.9",
+                "display_fixed": "-0.9000000",
+                "bits": "0xBF666666"
+              }
+            }
+          ],
+          "combine": {
+            "plan": "add the chunk partial sums: P0 + P1",
+            "steps": [
+              {
+                "k": 0,
+                "add": {
+                  "value": -0.800000011920929,
+                  "exact": "-0.800000011920928955078125",
+                  "display": "-0.8",
+                  "display_fixed": "-0.8000000",
+                  "bits": "0xBF4CCCCD"
+                },
+                "partial": {
+                  "value": -0.800000011920929,
+                  "exact": "-0.800000011920928955078125",
+                  "display": "-0.8",
+                  "display_fixed": "-0.8000000",
+                  "bits": "0xBF4CCCCD"
+                },
+                "exact_partial": "-0.800000011920928955078125",
+                "rounding_error": 0.0
+              },
+              {
+                "k": 1,
+                "add": {
+                  "value": -0.8999999761581421,
+                  "exact": "-0.89999997615814208984375",
+                  "display": "-0.9",
+                  "display_fixed": "-0.9000000",
+                  "bits": "0xBF666666"
+                },
+                "partial": {
+                  "value": -1.7000000476837158,
+                  "exact": "-1.7000000476837158203125",
+                  "display": "-1.7",
+                  "display_fixed": "-1.7000000",
+                  "bits": "0xBFD9999A"
+                },
+                "exact_partial": "-1.699999988079071044921875",
+                "rounding_error": -5.960464477539063e-08
+              }
+            ],
+            "result": {
+              "value": -1.7000000476837158,
+              "exact": "-1.7000000476837158203125",
+              "display": "-1.7",
+              "display_fixed": "-1.7000000",
+              "bits": "0xBFD9999A"
+            }
+          },
+          "result": {
+            "value": -1.7000000476837158,
+            "exact": "-1.7000000476837158203125",
+            "display": "-1.7",
+            "display_fixed": "-1.7000000",
+            "bits": "0xBFD9999A"
+          }
+        }
+      },
+      "logits": {
+        " Queens": {
+          "value": 4.0,
+          "display": "4",
+          "display_fixed": "4.0000000",
+          "bits": "0x40800000"
+        },
+        " New": {
+          "value": 4.000000476837158,
+          "display": "4.0000005",
+          "display_fixed": "4.0000005",
+          "bits": "0x40800001"
+        },
+        " Brooklyn": {
+          "value": 2.799999952316284,
+          "display": "2.8",
+          "display_fixed": "2.8000000",
+          "bits": "0x40333333"
+        },
+        " the": {
+          "value": -1.7000000476837158,
+          "display": "-1.7",
+          "display_fixed": "-1.7000000",
+          "bits": "0xBFD9999A"
+        }
+      },
+      "greedy_token": " New"
+    },
+    "batch_8": {
+      "batch_size": 8,
+      "plan": "single pass: with 8 rows there is enough parallel work, so each row's sum runs in one pass on one core, k = 0..7",
+      "per_token": {
+        " Queens": {
+          "plan": "one pass: ((x0 + x1) + x2) + ... + x7",
+          "steps": [
+            {
+              "k": 0,
+              "add": {
+                "value": 0.10000000149011612,
+                "exact": "0.100000001490116119384765625",
+                "display": "0.1",
+                "display_fixed": "0.1000000",
+                "bits": "0x3DCCCCCD"
+              },
+              "partial": {
+                "value": 0.10000000149011612,
+                "exact": "0.100000001490116119384765625",
+                "display": "0.1",
+                "display_fixed": "0.1000000",
+                "bits": "0x3DCCCCCD"
+              },
+              "exact_partial": "0.100000001490116119384765625",
+              "rounding_error": 0.0
+            },
+            {
+              "k": 1,
+              "add": {
+                "value": 0.699999988079071,
+                "exact": "0.699999988079071044921875",
+                "display": "0.7",
+                "display_fixed": "0.7000000",
+                "bits": "0x3F333333"
+              },
+              "partial": {
+                "value": 0.800000011920929,
+                "exact": "0.800000011920928955078125",
+                "display": "0.8",
+                "display_fixed": "0.8000000",
+                "bits": "0x3F4CCCCD"
+              },
+              "exact_partial": "0.799999989569187164306640625",
+              "rounding_error": 2.2351741790771484e-08
+            },
+            {
+              "k": 2,
+              "add": {
+                "value": 0.30000001192092896,
+                "exact": "0.300000011920928955078125",
+                "display": "0.3",
+                "display_fixed": "0.3000000",
+                "bits": "0x3E99999A"
+              },
+              "partial": {
+                "value": 1.100000023841858,
+                "exact": "1.10000002384185791015625",
+                "display": "1.1",
+                "display_fixed": "1.1000000",
+                "bits": "0x3F8CCCCD"
+              },
+              "exact_partial": "1.100000001490116119384765625",
+              "rounding_error": 2.2351741790771484e-08
+            },
+            {
+              "k": 3,
+              "add": {
+                "value": 0.8999999761581421,
+                "exact": "0.89999997615814208984375",
+                "display": "0.9",
+                "display_fixed": "0.9000000",
+                "bits": "0x3F666666"
+              },
+              "partial": {
+                "value": 2.0,
+                "exact": "2",
+                "display": "2",
+                "display_fixed": "2.0000000",
+                "bits": "0x40000000"
+              },
+              "exact_partial": "1.999999977648258209228515625",
+              "rounding_error": 2.2351741790771484e-08
+            },
+            {
+              "k": 4,
+              "add": {
+                "value": 0.20000000298023224,
+                "exact": "0.20000000298023223876953125",
+                "display": "0.2",
+                "display_fixed": "0.2000000",
+                "bits": "0x3E4CCCCD"
+              },
+              "partial": {
+                "value": 2.200000047683716,
+                "exact": "2.2000000476837158203125",
+                "display": "2.2",
+                "display_fixed": "2.2000000",
+                "bits": "0x400CCCCD"
+              },
+              "exact_partial": "2.199999980628490447998046875",
+              "rounding_error": 6.705522537231445e-08
+            },
+            {
+              "k": 5,
+              "add": {
+                "value": 0.6000000238418579,
+                "exact": "0.60000002384185791015625",
+                "display": "0.6",
+                "display_fixed": "0.6000000",
+                "bits": "0x3F19999A"
+              },
+              "partial": {
+                "value": 2.8000001907348633,
+                "exact": "2.80000019073486328125",
+                "display": "2.8000002",
+                "display_fixed": "2.8000002",
+                "bits": "0x40333334"
+              },
+              "exact_partial": "2.800000004470348358154296875",
+              "rounding_error": 1.862645149230957e-07
+            },
+            {
+              "k": 6,
+              "add": {
+                "value": 0.4000000059604645,
+                "exact": "0.4000000059604644775390625",
+                "display": "0.4",
+                "display_fixed": "0.4000000",
+                "bits": "0x3ECCCCCD"
+              },
+              "partial": {
+                "value": 3.200000286102295,
+                "exact": "3.200000286102294921875",
+                "display": "3.2000003",
+                "display_fixed": "3.2000003",
+                "bits": "0x404CCCCE"
+              },
+              "exact_partial": "3.200000010430812835693359375",
+              "rounding_error": 2.7567148208618164e-07
+            },
+            {
+              "k": 7,
+              "add": {
+                "value": 0.800000011920929,
+                "exact": "0.800000011920928955078125",
+                "display": "0.8",
+                "display_fixed": "0.8000000",
+                "bits": "0x3F4CCCCD"
+              },
+              "partial": {
+                "value": 4.000000476837158,
+                "exact": "4.000000476837158203125",
+                "display": "4.0000005",
+                "display_fixed": "4.0000005",
+                "bits": "0x40800001"
+              },
+              "exact_partial": "4.000000022351741790771484375",
+              "rounding_error": 4.544854164123535e-07
+            }
+          ],
+          "result": {
+            "value": 4.000000476837158,
+            "exact": "4.000000476837158203125",
+            "display": "4.0000005",
+            "display_fixed": "4.0000005",
+            "bits": "0x40800001"
+          }
+        },
+        " New": {
+          "plan": "one pass: ((x0 + x1) + x2) + ... + x7",
+          "steps": [
+            {
+              "k": 0,
+              "add": {
+                "value": 0.4000000059604645,
+                "exact": "0.4000000059604644775390625",
+                "display": "0.4",
+                "display_fixed": "0.4000000",
+                "bits": "0x3ECCCCCD"
+              },
+              "partial": {
+                "value": 0.4000000059604645,
+                "exact": "0.4000000059604644775390625",
+                "display": "0.4",
+                "display_fixed": "0.4000000",
+                "bits": "0x3ECCCCCD"
+              },
+              "exact_partial": "0.4000000059604644775390625",
+              "rounding_error": 0.0
+            },
+            {
+              "k": 1,
+              "add": {
+                "value": 0.30000001192092896,
+                "exact": "0.300000011920928955078125",
+                "display": "0.3",
+                "display_fixed": "0.3000000",
+                "bits": "0x3E99999A"
+              },
+              "partial": {
+                "value": 0.7000000476837158,
+                "exact": "0.7000000476837158203125",
+                "display": "0.70000005",
+                "display_fixed": "0.7000000",
+                "bits": "0x3F333334"
+              },
+              "exact_partial": "0.7000000178813934326171875",
+              "rounding_error": 2.9802322387695312e-08
+            },
+            {
+              "k": 2,
+              "add": {
+                "value": 0.4000000059604645,
+                "exact": "0.4000000059604644775390625",
+                "display": "0.4",
+                "display_fixed": "0.4000000",
+                "bits": "0x3ECCCCCD"
+              },
+              "partial": {
+                "value": 1.100000023841858,
+                "exact": "1.10000002384185791015625",
+                "display": "1.1",
+                "display_fixed": "1.1000000",
+                "bits": "0x3F8CCCCD"
+              },
+              "exact_partial": "1.10000002384185791015625",
+              "rounding_error": 0.0
+            },
+            {
+              "k": 3,
+              "add": {
+                "value": 0.20000000298023224,
+                "exact": "0.20000000298023223876953125",
+                "display": "0.2",
+                "display_fixed": "0.2000000",
+                "bits": "0x3E4CCCCD"
+              },
+              "partial": {
+                "value": 1.3000000715255737,
+                "exact": "1.30000007152557373046875",
+                "display": "1.3000001",
+                "display_fixed": "1.3000001",
+                "bits": "0x3FA66667"
+              },
+              "exact_partial": "1.30000002682209014892578125",
+              "rounding_error": 4.470348358154297e-08
+            },
+            {
+              "k": 4,
+              "add": {
+                "value": 0.6000000238418579,
+                "exact": "0.60000002384185791015625",
+                "display": "0.6",
+                "display_fixed": "0.6000000",
+                "bits": "0x3F19999A"
+              },
+              "partial": {
+                "value": 1.9000000953674316,
+                "exact": "1.900000095367431640625",
+                "display": "1.9000001",
+                "display_fixed": "1.9000001",
+                "bits": "0x3FF33334"
+              },
+              "exact_partial": "1.90000005066394805908203125",
+              "rounding_error": 4.470348358154297e-08
+            },
+            {
+              "k": 5,
+              "add": {
+                "value": 0.800000011920929,
+                "exact": "0.800000011920928955078125",
+                "display": "0.8",
+                "display_fixed": "0.8000000",
+                "bits": "0x3F4CCCCD"
+              },
+              "partial": {
+                "value": 2.700000047683716,
+                "exact": "2.7000000476837158203125",
+                "display": "2.7",
+                "display_fixed": "2.7000000",
+                "bits": "0x402CCCCD"
+              },
+              "exact_partial": "2.70000006258487701416015625",
+              "rounding_error": -1.4901161193847656e-08
+            },
+            {
+              "k": 6,
+              "add": {
+                "value": 0.699999988079071,
+                "exact": "0.699999988079071044921875",
+                "display": "0.7",
+                "display_fixed": "0.7000000",
+                "bits": "0x3F333333"
+              },
+              "partial": {
+                "value": 3.4000000953674316,
+                "exact": "3.400000095367431640625",
+                "display": "3.4",
+                "display_fixed": "3.4000001",
+                "bits": "0x4059999A"
+              },
+              "exact_partial": "3.40000005066394805908203125",
+              "rounding_error": 4.470348358154297e-08
+            },
+            {
+              "k": 7,
+              "add": {
+                "value": 0.6000000238418579,
+                "exact": "0.60000002384185791015625",
+                "display": "0.6",
+                "display_fixed": "0.6000000",
+                "bits": "0x3F19999A"
+              },
+              "partial": {
+                "value": 4.0,
+                "exact": "4",
+                "display": "4",
+                "display_fixed": "4.0000000",
+                "bits": "0x40800000"
+              },
+              "exact_partial": "4.00000007450580596923828125",
+              "rounding_error": -7.450580596923828e-08
+            }
+          ],
+          "result": {
+            "value": 4.0,
+            "exact": "4",
+            "display": "4",
+            "display_fixed": "4.0000000",
+            "bits": "0x40800000"
+          }
+        },
+        " Brooklyn": {
+          "plan": "one pass: ((x0 + x1) + x2) + ... + x7",
+          "steps": [
+            {
+              "k": 0,
+              "add": {
+                "value": 0.20000000298023224,
+                "exact": "0.20000000298023223876953125",
+                "display": "0.2",
+                "display_fixed": "0.2000000",
+                "bits": "0x3E4CCCCD"
+              },
+              "partial": {
+                "value": 0.20000000298023224,
+                "exact": "0.20000000298023223876953125",
+                "display": "0.2",
+                "display_fixed": "0.2000000",
+                "bits": "0x3E4CCCCD"
+              },
+              "exact_partial": "0.20000000298023223876953125",
+              "rounding_error": 0.0
+            },
+            {
+              "k": 1,
+              "add": {
+                "value": 0.5,
+                "exact": "0.5",
+                "display": "0.5",
+                "display_fixed": "0.5000000",
+                "bits": "0x3F000000"
+              },
+              "partial": {
+                "value": 0.699999988079071,
+                "exact": "0.699999988079071044921875",
+                "display": "0.7",
+                "display_fixed": "0.7000000",
+                "bits": "0x3F333333"
+              },
+              "exact_partial": "0.70000000298023223876953125",
+              "rounding_error": -1.4901161193847656e-08
+            },
+            {
+              "k": 2,
+              "add": {
+                "value": 1.0,
+                "exact": "1",
+                "display": "1",
+                "display_fixed": "1.0000000",
+                "bits": "0x3F800000"
+              },
+              "partial": {
+                "value": 1.7000000476837158,
+                "exact": "1.7000000476837158203125",
+                "display": "1.7",
+                "display_fixed": "1.7000000",
+                "bits": "0x3FD9999A"
+              },
+              "exact_partial": "1.70000000298023223876953125",
+              "rounding_error": 4.470348358154297e-08
+            },
+            {
+              "k": 3,
+              "add": {
+                "value": 0.30000001192092896,
+                "exact": "0.300000011920928955078125",
+                "display": "0.3",
+                "display_fixed": "0.3000000",
+                "bits": "0x3E99999A"
+              },
+              "partial": {
+                "value": 2.0,
+                "exact": "2",
+                "display": "2",
+                "display_fixed": "2.0000000",
+                "bits": "0x40000000"
+              },
+              "exact_partial": "2.00000001490116119384765625",
+              "rounding_error": -1.4901161193847656e-08
+            },
+            {
+              "k": 4,
+              "add": {
+                "value": 0.10000000149011612,
+                "exact": "0.100000001490116119384765625",
+                "display": "0.1",
+                "display_fixed": "0.1000000",
+                "bits": "0x3DCCCCCD"
+              },
+              "partial": {
+                "value": 2.0999999046325684,
+                "exact": "2.099999904632568359375",
+                "display": "2.1",
+                "display_fixed": "2.0999999",
+                "bits": "0x40066666"
+              },
+              "exact_partial": "2.100000016391277313232421875",
+              "rounding_error": -1.1175870895385742e-07
+            },
+            {
+              "k": 5,
+              "add": {
+                "value": 0.20000000298023224,
+                "exact": "0.20000000298023223876953125",
+                "display": "0.2",
+                "display_fixed": "0.2000000",
+                "bits": "0x3E4CCCCD"
+              },
+              "partial": {
+                "value": 2.299999952316284,
+                "exact": "2.2999999523162841796875",
+                "display": "2.3",
+                "display_fixed": "2.3000000",
+                "bits": "0x40133333"
+              },
+              "exact_partial": "2.300000019371509552001953125",
+              "rounding_error": -6.705522537231445e-08
+            },
+            {
+              "k": 6,
+              "add": {
+                "value": 0.20000000298023224,
+                "exact": "0.20000000298023223876953125",
+                "display": "0.2",
+                "display_fixed": "0.2000000",
+                "bits": "0x3E4CCCCD"
+              },
+              "partial": {
+                "value": 2.5,
+                "exact": "2.5",
+                "display": "2.5",
+                "display_fixed": "2.5000000",
+                "bits": "0x40200000"
+              },
+              "exact_partial": "2.500000022351741790771484375",
+              "rounding_error": -2.2351741790771484e-08
+            },
+            {
+              "k": 7,
+              "add": {
+                "value": 0.30000001192092896,
+                "exact": "0.300000011920928955078125",
+                "display": "0.3",
+                "display_fixed": "0.3000000",
+                "bits": "0x3E99999A"
+              },
+              "partial": {
+                "value": 2.799999952316284,
+                "exact": "2.7999999523162841796875",
+                "display": "2.8",
+                "display_fixed": "2.8000000",
+                "bits": "0x40333333"
+              },
+              "exact_partial": "2.800000034272670745849609375",
+              "rounding_error": -8.195638656616211e-08
+            }
+          ],
+          "result": {
+            "value": 2.799999952316284,
+            "exact": "2.7999999523162841796875",
+            "display": "2.8",
+            "display_fixed": "2.8000000",
+            "bits": "0x40333333"
+          }
+        },
+        " the": {
+          "plan": "one pass: ((x0 + x1) + x2) + ... + x7",
+          "steps": [
+            {
+              "k": 0,
+              "add": {
+                "value": -0.5,
+                "exact": "-0.5",
+                "display": "-0.5",
+                "display_fixed": "-0.5000000",
+                "bits": "0xBF000000"
+              },
+              "partial": {
+                "value": -0.5,
+                "exact": "-0.5",
+                "display": "-0.5",
+                "display_fixed": "-0.5000000",
+                "bits": "0xBF000000"
+              },
+              "exact_partial": "-0.5",
+              "rounding_error": 0.0
+            },
+            {
+              "k": 1,
+              "add": {
+                "value": 0.20000000298023224,
+                "exact": "0.20000000298023223876953125",
+                "display": "0.2",
+                "display_fixed": "0.2000000",
+                "bits": "0x3E4CCCCD"
+              },
+              "partial": {
+                "value": -0.30000001192092896,
+                "exact": "-0.300000011920928955078125",
+                "display": "-0.3",
+                "display_fixed": "-0.3000000",
+                "bits": "0xBE99999A"
+              },
+              "exact_partial": "-0.29999999701976776123046875",
+              "rounding_error": -1.4901161193847656e-08
+            },
+            {
+              "k": 2,
+              "add": {
+                "value": -0.6000000238418579,
+                "exact": "-0.60000002384185791015625",
+                "display": "-0.6",
+                "display_fixed": "-0.6000000",
+                "bits": "0xBF19999A"
+              },
+              "partial": {
+                "value": -0.9000000357627869,
+                "exact": "-0.900000035762786865234375",
+                "display": "-0.90000004",
+                "display_fixed": "-0.9000000",
+                "bits": "0xBF666667"
+              },
+              "exact_partial": "-0.90000002086162567138671875",
+              "rounding_error": -1.4901161193847656e-08
+            },
+            {
+              "k": 3,
+              "add": {
+                "value": 0.10000000149011612,
+                "exact": "0.100000001490116119384765625",
+                "display": "0.1",
+                "display_fixed": "0.1000000",
+                "bits": "0x3DCCCCCD"
+              },
+              "partial": {
+                "value": -0.800000011920929,
+                "exact": "-0.800000011920928955078125",
+                "display": "-0.8",
+                "display_fixed": "-0.8000000",
+                "bits": "0xBF4CCCCD"
+              },
+              "exact_partial": "-0.800000019371509552001953125",
+              "rounding_error": 7.450580596923828e-09
+            },
+            {
+              "k": 4,
+              "add": {
+                "value": 0.20000000298023224,
+                "exact": "0.20000000298023223876953125",
+                "display": "0.2",
+                "display_fixed": "0.2000000",
+                "bits": "0x3E4CCCCD"
+              },
+              "partial": {
+                "value": -0.6000000238418579,
+                "exact": "-0.60000002384185791015625",
+                "display": "-0.6",
+                "display_fixed": "-0.6000000",
+                "bits": "0xBF19999A"
+              },
+              "exact_partial": "-0.600000016391277313232421875",
+              "rounding_error": -7.450580596923828e-09
+            },
+            {
+              "k": 5,
+              "add": {
+                "value": -0.4000000059604645,
+                "exact": "-0.4000000059604644775390625",
+                "display": "-0.4",
+                "display_fixed": "-0.4000000",
+                "bits": "0xBECCCCCD"
+              },
+              "partial": {
+                "value": -1.0,
+                "exact": "-1",
+                "display": "-1",
+                "display_fixed": "-1.0000000",
+                "bits": "0xBF800000"
+              },
+              "exact_partial": "-1.000000022351741790771484375",
+              "rounding_error": 2.2351741790771484e-08
+            },
+            {
+              "k": 6,
+              "add": {
+                "value": -0.5,
+                "exact": "-0.5",
+                "display": "-0.5",
+                "display_fixed": "-0.5000000",
+                "bits": "0xBF000000"
+              },
+              "partial": {
+                "value": -1.5,
+                "exact": "-1.5",
+                "display": "-1.5",
+                "display_fixed": "-1.5000000",
+                "bits": "0xBFC00000"
+              },
+              "exact_partial": "-1.500000022351741790771484375",
+              "rounding_error": 2.2351741790771484e-08
+            },
+            {
+              "k": 7,
+              "add": {
+                "value": -0.20000000298023224,
+                "exact": "-0.20000000298023223876953125",
+                "display": "-0.2",
+                "display_fixed": "-0.2000000",
+                "bits": "0xBE4CCCCD"
+              },
+              "partial": {
+                "value": -1.7000000476837158,
+                "exact": "-1.7000000476837158203125",
+                "display": "-1.7",
+                "display_fixed": "-1.7000000",
+                "bits": "0xBFD9999A"
+              },
+              "exact_partial": "-1.700000025331974029541015625",
+              "rounding_error": -2.2351741790771484e-08
+            }
+          ],
+          "result": {
+            "value": -1.7000000476837158,
+            "exact": "-1.7000000476837158203125",
+            "display": "-1.7",
+            "display_fixed": "-1.7000000",
+            "bits": "0xBFD9999A"
+          }
+        }
+      },
+      "logits": {
+        " Queens": {
+          "value": 4.000000476837158,
+          "display": "4.0000005",
+          "display_fixed": "4.0000005",
+          "bits": "0x40800001"
+        },
+        " New": {
+          "value": 4.0,
+          "display": "4",
+          "display_fixed": "4.0000000",
+          "bits": "0x40800000"
+        },
+        " Brooklyn": {
+          "value": 2.799999952316284,
+          "display": "2.8",
+          "display_fixed": "2.8000000",
+          "bits": "0x40333333"
+        },
+        " the": {
+          "value": -1.7000000476837158,
+          "display": "-1.7",
+          "display_fixed": "-1.7000000",
+          "bits": "0xBFD9999A"
+        }
+      },
+      "greedy_token": " Queens"
+    },
+    "flip": {
+      "batch_1_token": " New",
+      "batch_8_token": " Queens",
+      "flipped": true,
+      "top_two_exact_logits_equal": true,
+      "gap_batch_1_ulps": 1,
+      "gap_batch_8_ulps": 1,
+      "text": "Batch size 1: Queens 4.0000000 vs New 4.0000005 -> ' New'. Batch size 8: Queens 4.0000005 vs New 4.0000000 -> ' Queens'. The logits differ by one float32 step (7th significant digit), and greedy decoding picks a different token.",
+      "why_a_near_tie": "In exact arithmetic both logits are 4, a deliberate near-tie so the toy stays hand-checkable. Real models hit near-ties too: the flip only needs the top two logits to be closer than the rounding noise of the reduction."
+    },
+    "other_rows_do_not_matter": "The other 7 requests in the batch of 8 never enter this row's sum. Only their number changes the kernel's reduction plan.",
+    "batch_invariant": {
+      "plan": "one fixed reduction order for every batch size (here: single pass k = 0..7, never split-K)",
+      "batch_1": {
+        "batch_size": 1,
+        "logits": {
+          " Queens": {
+            "value": 4.000000476837158,
+            "display": "4.0000005",
+            "display_fixed": "4.0000005",
+            "bits": "0x40800001"
+          },
+          " New": {
+            "value": 4.0,
+            "display": "4",
+            "display_fixed": "4.0000000",
+            "bits": "0x40800000"
+          },
+          " Brooklyn": {
+            "value": 2.799999952316284,
+            "display": "2.8",
+            "display_fixed": "2.8000000",
+            "bits": "0x40333333"
+          },
+          " the": {
+            "value": -1.7000000476837158,
+            "display": "-1.7",
+            "display_fixed": "-1.7000000",
+            "bits": "0xBFD9999A"
+          }
+        },
+        "greedy_token": " Queens"
+      },
+      "batch_8": {
+        "batch_size": 8,
+        "logits": {
+          " Queens": {
+            "value": 4.000000476837158,
+            "display": "4.0000005",
+            "display_fixed": "4.0000005",
+            "bits": "0x40800001"
+          },
+          " New": {
+            "value": 4.0,
+            "display": "4",
+            "display_fixed": "4.0000000",
+            "bits": "0x40800000"
+          },
+          " Brooklyn": {
+            "value": 2.799999952316284,
+            "display": "2.8",
+            "display_fixed": "2.8000000",
+            "bits": "0x40333333"
+          },
+          " the": {
+            "value": -1.7000000476837158,
+            "display": "-1.7",
+            "display_fixed": "-1.7000000",
+            "bits": "0xBFD9999A"
+          }
+        },
+        "greedy_token": " Queens"
+      },
+      "logits_bitwise_identical": true,
+      "same_token": true,
+      "cost": "At batch size 1 the fixed plan leaves cores idle that split-K would have used, so it is slower. Measured costs: [S27] Qwen-3-8B, 1000 sequences: vLLM default 26 s, unoptimised deterministic 55 s, with an improved attention kernel 42 s (+61.5%); their batch-invariant matmul is about 20% slower than cuBLAS. SGLang deterministic mode [S33]: 34.35% average slowdown (about 24-46%) on Qwen3-8B, TP1, H200. vLLM's doc says it 'may impact performance' and gives no number.",
+      "vllm": "VLLM_BATCH_INVARIANT=1 (beta) swaps matmul, softmax, log_softmax, mean and RMSNorm for Triton kernels with a fixed tile and reduction order independent of batch size, disables TF32, and under TP pins the all-reduce algorithm.",
+      "sources": [
+        "research/notes/05-papers-architecture.md §2.C C4 [S27 He et al., Thinking Machines Lab, 'Defeating Nondeterminism in LLM Inference', 2025-09-10]",
+        "research/notes/03-engines.md §2.5 [vLLM docs: Batch Invariance; VLLM_BATCH_INVARIANT=1]",
+        "research/notes/05-papers-architecture.md §2.C C4 [S33 SGLang deterministic inference blog]"
+      ]
+    },
+    "real_model": {
+      "d_model": 12288,
+      "vocab_size": 131072,
+      "constants": [
+        "models.M-dense.hidden_size",
+        "models.M-dense.vocab_size"
+      ],
+      "note": "In M-dense each logit is a sum of 12,288 products and there are 131,072 logits per token, so there are far more rounding steps than in this 8-term toy."
+    }
+  },
+  "explanation": {
+    "cause": "Lack of batch invariance: kernels choose their reduction strategy (split-K in matmul, the number of splits in attention, split reductions in RMSNorm, a different Tensor Core instruction for small batches) from the number of tokens in the batch. Floating-point addition is not associative, so a different strategy gives different low-order bits. The batch size depends on what other users' requests are running at that moment, so from one user's side the output looks random.",
+    "not_the_cause": "Not concurrency with atomic adds: a typical LLM forward pass contains essentially no atomic adds and is run-to-run deterministic for a fixed batch [S27].",
+    "seed_does_not_help": "A seed fixes the sampler's random draws, not the logits. Greedy decoding (temperature 0) uses no randomness at all and still flips, as this example shows.",
+    "measured": "[S27] Qwen3-235B-A22B-Instruct-2507, prompt 'Tell me about Richard Feynman', 1000 completions at temperature 0: 80 unique completions, the most common appearing 78 times; all identical for the first 102 tokens, first divergence at token 103 ('Queens, New York' in 992 vs 'New York City' in 8). With batch-invariant kernels all 1000 were identical.",
+    "fix": "batch-invariant kernels: one fixed reduction order for RMSNorm, matmul and attention at every batch size",
+    "still_differs_across": "different GPU model or kernel version, different tensor-parallel degree, different engine (class B, from [S27]/[S33] scope statements)",
+    "whether_a_provider_is_batch_invariant": "not public (class D)",
+    "theme": "Other users sharing your batch change your bits, though never your data.",
+    "sources": [
+      "research/notes/05-papers-architecture.md §2.C C4 [S27 He et al., Thinking Machines Lab, 'Defeating Nondeterminism in LLM Inference', 2025-09-10]",
+      "research/notes/03-engines.md §2.19 (Model Runner V2 noise depends on seed, position, token id)"
+    ]
+  }
+}

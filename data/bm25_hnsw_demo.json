@@ -1,0 +1,1750 @@
+{
+  "meta": {
+    "script": "sim/bm25_hnsw_demo.py",
+    "generated_at": "2026-10-09T09:43:51+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T09:41:27+00:00",
+      "sha256": "4a1f5188d807"
+    },
+    "constants_used": {
+      "extra.sims_s1.dgx_h100_data_nvme_drives_per_node": 8,
+      "extra.sims_s1.h_teach_gpus_per_node": 8,
+      "hardware.H-frontier.gb300_nvl72_nic_per_gpu": 800,
+      "hardware.H-teach.h100_sxm_bf16_dense": 989.5,
+      "hardware.H-teach.h100_sxm_hbm_bandwidth": 3.35,
+      "hardware.H-teach.h100_sxm_hbm_capacity": 80,
+      "hardware.formats.mxfp4_block_size": 32,
+      "hardware.formats.nvfp4_bits_per_value": 4.5,
+      "hardware.formats.nvfp4_block_size": 16,
+      "hardware.interconnect.ib_ndr_port": 400,
+      "hardware.interconnect.pcie_gen5_x16_per_direction": 63,
+      "hardware.memory_tiers.nvme_gen5_seq_read": 14,
+      "hypothetical.reference_request.output_tokens_visible": 450,
+      "hypothetical.reference_request.rag_workspace_documents": 4200,
+      "hypothetical.retrieval_ref.acl_readable_fraction": 0.7,
+      "hypothetical.retrieval_ref.chunk_tokens_mean": 550,
+      "hypothetical.retrieval_ref.chunks_per_document_mean": 24,
+      "hypothetical.retrieval_ref.hnsw_ef_construction": 200,
+      "hypothetical.retrieval_ref.hnsw_ef_search": 100,
+      "hypothetical.retrieval_ref.hnsw_m": 16,
+      "hypothetical.retrieval_ref.pool_gpu": "H100 SXM",
+      "hypothetical.retrieval_ref.query_embed_tokens": 80,
+      "hypothetical.retrieval_ref.rerank_min_score": 0.5,
+      "hypothetical.retrieval_ref.rerank_parallel_gpus": 4,
+      "hypothetical.retrieval_ref.rerank_template_tokens": 60,
+      "hypothetical.serving_assumptions.object_store_read_gbps_per_node": 100,
+      "hypothetical.serving_assumptions.prefill_mfu": 0.5,
+      "hypothetical.serving_assumptions.reference_context_tokens": 32768,
+      "hypothetical.serving_assumptions.stream_rate_example_tokens_per_s": 100,
+      "models.M-dense.checkpoint_bytes_one_copy": 133600000000.0,
+      "models.M-dense.flops_per_token_matmul": 246800000000.0,
+      "models.M-dense.head_dim": 128,
+      "models.M-dense.hidden_size": 12288,
+      "models.M-dense.intermediate_size": 28672,
+      "models.M-dense.kv_bytes_per_token_bf16": 360448,
+      "models.M-dense.kv_bytes_per_token_fp8": 180224,
+      "models.M-dense.max_position_embeddings": 262144,
+      "models.M-dense.model_id": "mistralai/Mistral-Medium-3.5-128B",
+      "models.M-dense.num_attention_heads": 96,
+      "models.M-dense.num_hidden_layers": 88,
+      "models.M-dense.num_key_value_heads": 8,
+      "models.M-dense.text_params": 125025988608,
+      "models.M-dense.tie_word_embeddings": false,
+      "models.M-dense.torch_dtype": "bfloat16",
+      "models.M-dense.total_params": 127704210176,
+      "models.M-dense.vision_params": 2678221568,
+      "models.M-dense.vllm_recipe": {
+        "recommended_hw": "8x H200 (alt 4x B200, 2-8x MI300X)",
+        "tp": 8,
+        "eagle_num_speculative_tokens": 3,
+        "mi300x_tp8_1k_in_1k_out_conc32": {
+          "output_tok_s": 915,
+          "mean_ttft_ms": 2522,
+          "mean_tpot_ms": 26.1
+        },
+        "mi300x_tp1": {
+          "output_tok_s": 438,
+          "mean_ttft_ms": 5719,
+          "mean_tpot_ms": 55.2
+        }
+      },
+      "models.M-dense.vocab_size": 131072,
+      "models.M-dense.weight_quantization": "FP8 E4M3 per-tensor (static activation scale); vision tower, projector, lm_head unquantized",
+      "models.M-embed.dim": 4096,
+      "models.M-embed.mrl_min_dim": 32,
+      "models.M-embed.params": 7567295488,
+      "models.M-frontier.active_params": 104189614848,
+      "models.M-frontier.checkpoint_bytes": 1560936091448,
+      "models.M-frontier.kda_conv_state_shape_per_layer": [
+        36864,
+        3
+      ],
+      "models.M-frontier.kda_head_k_dim": 128,
+      "models.M-frontier.kda_head_v_dim": 128,
+      "models.M-frontier.kda_num_heads": 96,
+      "models.M-frontier.kda_recurrent_state_dtype": "float32",
+      "models.M-frontier.kda_recurrent_state_shape_per_layer": [
+        96,
+        128,
+        128
+      ],
+      "models.M-frontier.kda_short_conv_kernel": 4,
+      "models.M-frontier.kv_lora_rank": 512,
+      "models.M-frontier.max_position_embeddings": 1048576,
+      "models.M-frontier.num_attention_heads": 96,
+      "models.M-frontier.num_hidden_layers": 93,
+      "models.M-frontier.num_kda_layers": 69,
+      "models.M-frontier.num_mla_layers": 24,
+      "models.M-frontier.qk_nope_head_dim": 128,
+      "models.M-frontier.qk_rope_head_dim": 64,
+      "models.M-frontier.torch_dtype": "bfloat16",
+      "models.M-frontier.trtllm_per_rank_weights_gb": {
+        "DEP16": 210,
+        "TEP8": 213,
+        "TEP16": 115
+      },
+      "models.M-frontier.v_head_dim": 128,
+      "models.M-frontier.vllm_pd_validated_topology": "TEP8 prefill -> DEP16 decode, NIXL",
+      "models.M-rerank.params": 4021784576,
+      "retrieval_and_data.bm25_b": 0.75,
+      "retrieval_and_data.bm25_idf_lucene": "ln(1 + (docCount - docFreq + 0.5)/(docFreq + 0.5))",
+      "retrieval_and_data.bm25_k1": 1.2,
+      "retrieval_and_data.bytes_per_vector_1024_fp16": 2048,
+      "retrieval_and_data.bytes_per_vector_4096_fp16": 8192,
+      "retrieval_and_data.bytes_per_vector_4096_fp32": 16384,
+      "retrieval_and_data.hyp_exact_search_corpus_vectors": 100000000,
+      "retrieval_and_data.hyp_rerank_candidates": 100,
+      "retrieval_and_data.hyp_rerank_tokens_per_candidate": 300,
+      "retrieval_and_data.pgvector_hnsw_ef_search": 40,
+      "retrieval_and_data.pgvector_max_index_dims_halfvec": 4000,
+      "retrieval_and_data.pgvector_max_index_dims_vector": 2000,
+      "retrieval_and_data.rrf_k": 60,
+      "software.vllm.stream_interval_tokens": 1
+    }
+  },
+  "label": "illustrative toy corpus and vectors chosen for this demo; not M-embed or M-rerank outputs",
+  "corpus": {
+    "n_chunks": 12,
+    "axes": [
+      "pricing",
+      "margin",
+      "competitor",
+      "revenue",
+      "cost",
+      "people",
+      "security",
+      "roadmap"
+    ],
+    "noise_sd": 0.12,
+    "seed": 20261009,
+    "query": {
+      "text": "pricing policy competitor list price gross margin per seat",
+      "weights": [
+        0.6,
+        0.9,
+        0.7,
+        0.1,
+        0.3,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "note": "the retrieval query the orchestrator writes from your request (illustrative)"
+    },
+    "chunks": [
+      {
+        "id": "c01",
+        "tenant": "tenant_acme",
+        "doc": "pricing-policy",
+        "heading": "1 List prices",
+        "acl": [
+          "group:all_staff"
+        ],
+        "text": "Acme list prices are set per seat per month. Each plan has one list price per seat.",
+        "tokens": 17,
+        "vector": [
+          0.9457,
+          0.137,
+          0.1856,
+          0.2229,
+          0.0,
+          0.0,
+          0.0525,
+          0.0
+        ]
+      },
+      {
+        "id": "c02",
+        "tenant": "tenant_acme",
+        "doc": "pricing-policy",
+        "heading": "2 Discounts",
+        "acl": [
+          "group:sales",
+          "group:finance"
+        ],
+        "text": "Sales may discount up to 15 percent of the list price. Larger discounts need finance approval.",
+        "tokens": 16,
+        "vector": [
+          0.9324,
+          0.0775,
+          0.0,
+          0.3093,
+          0.1216,
+          0.0,
+          0.105,
+          0.056
+        ]
+      },
+      {
+        "id": "c03",
+        "tenant": "tenant_acme",
+        "doc": "pricing-policy",
+        "heading": "3 Competitor price matching",
+        "acl": [
+          "group:sales",
+          "group:finance"
+        ],
+        "text": "When a competitor list price is lower than ours, we may match it if our gross margin stays above 60 percent.",
+        "tokens": 21,
+        "vector": [
+          0.6605,
+          0.5594,
+          0.4482,
+          0.0789,
+          0.0,
+          0.139,
+          0.0945,
+          0.124
+        ]
+      },
+      {
+        "id": "c04",
+        "tenant": "tenant_acme",
+        "doc": "q3-report",
+        "heading": "3.2 Gross margin by plan",
+        "acl": [
+          "group:finance"
+        ],
+        "text": "In Q3 the gross margin per seat stayed above the 60 percent floor on every plan.",
+        "tokens": 16,
+        "vector": [
+          0.2788,
+          0.8123,
+          0.201,
+          0.3563,
+          0.308,
+          0.0135,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "id": "c05",
+        "tenant": "tenant_acme",
+        "doc": "q3-report",
+        "heading": "2 Revenue",
+        "acl": [
+          "group:finance"
+        ],
+        "text": "Q3 revenue grew 18 percent quarter over quarter, led by new Pro plan seats.",
+        "tokens": 14,
+        "vector": [
+          0.1997,
+          0.1491,
+          0.0,
+          0.9594,
+          0.0548,
+          0.0,
+          0.1195,
+          0.009
+        ]
+      },
+      {
+        "id": "c06",
+        "tenant": "tenant_acme",
+        "doc": "q3-report",
+        "heading": "3.3 Cost of revenue",
+        "acl": [
+          "group:finance"
+        ],
+        "text": "Cost of revenue is cloud hosting and support: 17.60 EUR per seat-month in Q3 (plan code PRO-M29).",
+        "tokens": 19,
+        "vector": [
+          0.1411,
+          0.4503,
+          0.0196,
+          0.1555,
+          0.8554,
+          0.0092,
+          0.0077,
+          0.1449
+        ]
+      },
+      {
+        "id": "c07",
+        "tenant": "tenant_acme",
+        "doc": "board-memo",
+        "heading": "Pricing review",
+        "acl": [
+          "group:exec"
+        ],
+        "text": "The board asks for a review of our seat prices against our three main competitors before Q4.",
+        "tokens": 17,
+        "vector": [
+          0.7079,
+          0.2272,
+          0.636,
+          0.0191,
+          0.0,
+          0.0,
+          0.0,
+          0.2059
+        ]
+      },
+      {
+        "id": "c08",
+        "tenant": "tenant_acme",
+        "doc": "hr-handbook",
+        "heading": "Holidays",
+        "acl": [
+          "group:all_staff"
+        ],
+        "text": "Staff receive 25 days of paid holiday per year. Unused days expire at the end of March.",
+        "tokens": 17,
+        "vector": [
+          0.0,
+          0.0,
+          0.0,
+          0.0003,
+          0.0,
+          0.999,
+          0.0,
+          0.0439
+        ]
+      },
+      {
+        "id": "c09",
+        "tenant": "tenant_acme",
+        "doc": "security-policy",
+        "heading": "Access reviews",
+        "acl": [
+          "group:all_staff"
+        ],
+        "text": "Team leads review access to production data every quarter and remove unused accounts.",
+        "tokens": 13,
+        "vector": [
+          0.1008,
+          0.0,
+          0.0558,
+          0.1231,
+          0.0,
+          0.079,
+          0.9813,
+          0.0497
+        ]
+      },
+      {
+        "id": "c10",
+        "tenant": "tenant_acme",
+        "doc": "sales-playbook",
+        "heading": "Objection: price",
+        "acl": [
+          "group:sales"
+        ],
+        "text": "If a prospect says the price is too high, explain the value of the Pro plan per seat.",
+        "tokens": 18,
+        "vector": [
+          0.77,
+          0.2178,
+          0.1917,
+          0.2089,
+          0.0,
+          0.0,
+          0.5285,
+          0.0
+        ]
+      },
+      {
+        "id": "c11",
+        "tenant": "tenant_acme",
+        "doc": "eng-roadmap",
+        "heading": "Q4 roadmap",
+        "acl": [
+          "group:all_staff"
+        ],
+        "text": "Q4 work covers a new reporting API and faster exports of usage data.",
+        "tokens": 13,
+        "vector": [
+          0.0,
+          0.0,
+          0.0,
+          0.0941,
+          0.0862,
+          0.0,
+          0.0869,
+          0.988
+        ]
+      },
+      {
+        "id": "c12",
+        "tenant": "tenant_birch",
+        "doc": "birch-pricing",
+        "heading": "Price list",
+        "acl": [
+          "group:all_staff"
+        ],
+        "text": "Birch list prices: Starter 9 EUR per seat and Team 25 EUR per seat. Our gross margin target is 70 percent.",
+        "tokens": 21,
+        "vector": [
+          0.8307,
+          0.5027,
+          0.0149,
+          0.0921,
+          0.1262,
+          0.1804,
+          0.0111,
+          0.0
+        ]
+      }
+    ],
+    "query_vector": [
+      0.4523,
+      0.6784,
+      0.5276,
+      0.0754,
+      0.2261,
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "similarity": {
+    "label": "illustrative toy corpus and vectors chosen for this demo; not M-embed or M-rerank outputs",
+    "query": [
+      0.4523,
+      0.6784,
+      0.5276,
+      0.0754,
+      0.2261,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "chunk": "c04",
+    "chunk_vector": [
+      0.2788,
+      0.8123,
+      0.201,
+      0.3563,
+      0.308,
+      0.0135,
+      0.0,
+      0.0
+    ],
+    "products": [
+      0.1261,
+      0.5511,
+      0.106,
+      0.0269,
+      0.0696,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "dot": 0.8797,
+    "norm_q": 1.0,
+    "norm_d": 1.0,
+    "cosine": 0.8797,
+    "euclidean": 0.4904,
+    "euclidean_sq_from_dot": 0.2406,
+    "rule": "for unit vectors cosine = dot and |q - d|^2 = 2 - 2 dot, so all three give the same order",
+    "hand_example": {
+      "q": [
+        1,
+        2,
+        2
+      ],
+      "d": [
+        2,
+        0,
+        1
+      ],
+      "dot": 4,
+      "norm_q": 3.0,
+      "norm_d": 2.2361,
+      "cosine": 0.5963,
+      "euclidean": 2.4495
+    }
+  },
+  "bm25": {
+    "k1": 1.2,
+    "b": 0.75,
+    "idf_formula": "ln(1 + (docCount - docFreq + 0.5)/(docFreq + 0.5))",
+    "score_formula": "sum over query terms of idf x tf / (tf + k1 x (1 - b + b x dl / avgdl))",
+    "scope": "tenant_acme partition only (tenant filter inside the index)",
+    "n_docs": 11,
+    "avgdl": 16.4545,
+    "query_terms": [
+      "pricing",
+      "policy",
+      "competitor",
+      "list",
+      "price",
+      "gross",
+      "margin",
+      "per",
+      "seat"
+    ],
+    "df": {
+      "pricing": 0,
+      "policy": 0,
+      "competitor": 1,
+      "list": 3,
+      "price": 4,
+      "gross": 2,
+      "margin": 2,
+      "per": 5,
+      "seat": 5
+    },
+    "idf": {
+      "pricing": 3.1781,
+      "policy": 3.1781,
+      "competitor": 2.0794,
+      "list": 1.2321,
+      "price": 0.9808,
+      "gross": 1.5686,
+      "margin": 1.5686,
+      "per": 0.7802,
+      "seat": 0.7802
+    },
+    "scores": {
+      "c01": 2.2393,
+      "c02": 1.0174,
+      "c03": 3.0342,
+      "c04": 2.1597,
+      "c05": 0.0,
+      "c06": 0.667,
+      "c07": 0.3499,
+      "c08": 0.3499,
+      "c09": 0.0,
+      "c10": 1.1123,
+      "c11": 0.0
+    },
+    "terms": {
+      "c01": [
+        {
+          "term": "list",
+          "tf": 2,
+          "df": 3,
+          "idf": 1.2321,
+          "dl": 17,
+          "length_factor": 1.0249,
+          "tf_part": 0.6192,
+          "score": 0.763
+        },
+        {
+          "term": "price",
+          "tf": 1,
+          "df": 4,
+          "idf": 0.9808,
+          "dl": 17,
+          "length_factor": 1.0249,
+          "tf_part": 0.4485,
+          "score": 0.4399
+        },
+        {
+          "term": "per",
+          "tf": 3,
+          "df": 5,
+          "idf": 0.7802,
+          "dl": 17,
+          "length_factor": 1.0249,
+          "tf_part": 0.7092,
+          "score": 0.5533
+        },
+        {
+          "term": "seat",
+          "tf": 2,
+          "df": 5,
+          "idf": 0.7802,
+          "dl": 17,
+          "length_factor": 1.0249,
+          "tf_part": 0.6192,
+          "score": 0.4831
+        }
+      ],
+      "c02": [
+        {
+          "term": "list",
+          "tf": 1,
+          "df": 3,
+          "idf": 1.2321,
+          "dl": 16,
+          "length_factor": 0.9793,
+          "tf_part": 0.4597,
+          "score": 0.5665
+        },
+        {
+          "term": "price",
+          "tf": 1,
+          "df": 4,
+          "idf": 0.9808,
+          "dl": 16,
+          "length_factor": 0.9793,
+          "tf_part": 0.4597,
+          "score": 0.4509
+        }
+      ],
+      "c03": [
+        {
+          "term": "competitor",
+          "tf": 1,
+          "df": 1,
+          "idf": 2.0794,
+          "dl": 21,
+          "length_factor": 1.2072,
+          "tf_part": 0.4084,
+          "score": 0.8492
+        },
+        {
+          "term": "list",
+          "tf": 1,
+          "df": 3,
+          "idf": 1.2321,
+          "dl": 21,
+          "length_factor": 1.2072,
+          "tf_part": 0.4084,
+          "score": 0.5032
+        },
+        {
+          "term": "price",
+          "tf": 1,
+          "df": 4,
+          "idf": 0.9808,
+          "dl": 21,
+          "length_factor": 1.2072,
+          "tf_part": 0.4084,
+          "score": 0.4006
+        },
+        {
+          "term": "gross",
+          "tf": 1,
+          "df": 2,
+          "idf": 1.5686,
+          "dl": 21,
+          "length_factor": 1.2072,
+          "tf_part": 0.4084,
+          "score": 0.6406
+        },
+        {
+          "term": "margin",
+          "tf": 1,
+          "df": 2,
+          "idf": 1.5686,
+          "dl": 21,
+          "length_factor": 1.2072,
+          "tf_part": 0.4084,
+          "score": 0.6406
+        }
+      ],
+      "c04": [
+        {
+          "term": "gross",
+          "tf": 1,
+          "df": 2,
+          "idf": 1.5686,
+          "dl": 16,
+          "length_factor": 0.9793,
+          "tf_part": 0.4597,
+          "score": 0.7212
+        },
+        {
+          "term": "margin",
+          "tf": 1,
+          "df": 2,
+          "idf": 1.5686,
+          "dl": 16,
+          "length_factor": 0.9793,
+          "tf_part": 0.4597,
+          "score": 0.7212
+        },
+        {
+          "term": "per",
+          "tf": 1,
+          "df": 5,
+          "idf": 0.7802,
+          "dl": 16,
+          "length_factor": 0.9793,
+          "tf_part": 0.4597,
+          "score": 0.3587
+        },
+        {
+          "term": "seat",
+          "tf": 1,
+          "df": 5,
+          "idf": 0.7802,
+          "dl": 16,
+          "length_factor": 0.9793,
+          "tf_part": 0.4597,
+          "score": 0.3587
+        }
+      ],
+      "c05": [],
+      "c06": [
+        {
+          "term": "per",
+          "tf": 1,
+          "df": 5,
+          "idf": 0.7802,
+          "dl": 19,
+          "length_factor": 1.116,
+          "tf_part": 0.4275,
+          "score": 0.3335
+        },
+        {
+          "term": "seat",
+          "tf": 1,
+          "df": 5,
+          "idf": 0.7802,
+          "dl": 19,
+          "length_factor": 1.116,
+          "tf_part": 0.4275,
+          "score": 0.3335
+        }
+      ],
+      "c07": [
+        {
+          "term": "seat",
+          "tf": 1,
+          "df": 5,
+          "idf": 0.7802,
+          "dl": 17,
+          "length_factor": 1.0249,
+          "tf_part": 0.4485,
+          "score": 0.3499
+        }
+      ],
+      "c08": [
+        {
+          "term": "per",
+          "tf": 1,
+          "df": 5,
+          "idf": 0.7802,
+          "dl": 17,
+          "length_factor": 1.0249,
+          "tf_part": 0.4485,
+          "score": 0.3499
+        }
+      ],
+      "c09": [],
+      "c10": [
+        {
+          "term": "price",
+          "tf": 1,
+          "df": 4,
+          "idf": 0.9808,
+          "dl": 18,
+          "length_factor": 1.0704,
+          "tf_part": 0.4377,
+          "score": 0.4293
+        },
+        {
+          "term": "per",
+          "tf": 1,
+          "df": 5,
+          "idf": 0.7802,
+          "dl": 18,
+          "length_factor": 1.0704,
+          "tf_part": 0.4377,
+          "score": 0.3415
+        },
+        {
+          "term": "seat",
+          "tf": 1,
+          "df": 5,
+          "idf": 0.7802,
+          "dl": 18,
+          "length_factor": 1.0704,
+          "tf_part": 0.4377,
+          "score": 0.3415
+        }
+      ],
+      "c11": []
+    },
+    "ranking": [
+      "c03",
+      "c01",
+      "c04",
+      "c10",
+      "c02",
+      "c06",
+      "c07",
+      "c08"
+    ],
+    "worked": {
+      "chunk": "c03",
+      "terms": [
+        {
+          "term": "competitor",
+          "tf": 1,
+          "df": 1,
+          "idf": 2.0794,
+          "dl": 21,
+          "length_factor": 1.2072,
+          "tf_part": 0.4084,
+          "score": 0.8492
+        },
+        {
+          "term": "list",
+          "tf": 1,
+          "df": 3,
+          "idf": 1.2321,
+          "dl": 21,
+          "length_factor": 1.2072,
+          "tf_part": 0.4084,
+          "score": 0.5032
+        },
+        {
+          "term": "price",
+          "tf": 1,
+          "df": 4,
+          "idf": 0.9808,
+          "dl": 21,
+          "length_factor": 1.2072,
+          "tf_part": 0.4084,
+          "score": 0.4006
+        },
+        {
+          "term": "gross",
+          "tf": 1,
+          "df": 2,
+          "idf": 1.5686,
+          "dl": 21,
+          "length_factor": 1.2072,
+          "tf_part": 0.4084,
+          "score": 0.6406
+        },
+        {
+          "term": "margin",
+          "tf": 1,
+          "df": 2,
+          "idf": 1.5686,
+          "dl": 21,
+          "length_factor": 1.2072,
+          "tf_part": 0.4084,
+          "score": 0.6406
+        }
+      ]
+    }
+  },
+  "exact_vector": {
+    "cosine": {
+      "c01": 0.6354,
+      "c02": 0.5251,
+      "c03": 0.9207,
+      "c04": 0.8797,
+      "c05": 0.2762,
+      "c06": 0.5848,
+      "c07": 0.8113,
+      "c08": 0.0,
+      "c09": 0.0843,
+      "c10": 0.6129,
+      "c11": 0.0266,
+      "c12": 0.7601
+    },
+    "ranking_all_tenants": [
+      "c03",
+      "c04",
+      "c07",
+      "c12",
+      "c01",
+      "c10",
+      "c06",
+      "c02",
+      "c05",
+      "c09",
+      "c11",
+      "c08"
+    ],
+    "ranking_tenant": [
+      "c03",
+      "c04",
+      "c07",
+      "c01",
+      "c10",
+      "c06",
+      "c02",
+      "c05",
+      "c09",
+      "c11",
+      "c08"
+    ]
+  },
+  "hnsw_toy": {
+    "label": "illustrative toy corpus and vectors chosen for this demo; not M-embed or M-rerank outputs",
+    "M": 2,
+    "Mmax0": 4,
+    "ef_construction": 6,
+    "mL": 1.4427,
+    "levels": {
+      "c01": 1,
+      "c02": 1,
+      "c03": 0,
+      "c04": 2,
+      "c05": 0,
+      "c06": 1,
+      "c07": 0,
+      "c08": 1,
+      "c09": 2,
+      "c10": 0,
+      "c11": 0,
+      "c12": 0
+    },
+    "entry_point": "c04",
+    "top_layer": 2,
+    "layers": {
+      "0": {
+        "c01": [
+          "c02",
+          "c12",
+          "c10",
+          "c07"
+        ],
+        "c02": [
+          "c01",
+          "c10",
+          "c03",
+          "c05"
+        ],
+        "c03": [
+          "c07",
+          "c12",
+          "c01",
+          "c04"
+        ],
+        "c04": [
+          "c03",
+          "c01",
+          "c05",
+          "c06"
+        ],
+        "c05": [
+          "c04",
+          "c02",
+          "c09"
+        ],
+        "c06": [
+          "c04",
+          "c03",
+          "c08"
+        ],
+        "c07": [
+          "c03",
+          "c01",
+          "c11"
+        ],
+        "c08": [
+          "c03",
+          "c06"
+        ],
+        "c09": [
+          "c05",
+          "c02",
+          "c11"
+        ],
+        "c10": [
+          "c01",
+          "c02"
+        ],
+        "c11": [
+          "c07",
+          "c09"
+        ],
+        "c12": [
+          "c01",
+          "c03"
+        ]
+      },
+      "1": {
+        "c01": [
+          "c02",
+          "c04"
+        ],
+        "c02": [
+          "c01",
+          "c04"
+        ],
+        "c04": [
+          "c06",
+          "c01"
+        ],
+        "c06": [
+          "c04",
+          "c02"
+        ],
+        "c08": [
+          "c06",
+          "c04"
+        ],
+        "c09": [
+          "c02",
+          "c01"
+        ]
+      },
+      "2": {
+        "c04": [
+          "c09"
+        ],
+        "c09": [
+          "c04"
+        ]
+      }
+    },
+    "build_distance_computations": 105,
+    "exact_top5": [
+      "c03",
+      "c04",
+      "c07",
+      "c12",
+      "c01"
+    ],
+    "search": {
+      "1": {
+        "top": [
+          "c03"
+        ],
+        "distance_computations": 12,
+        "path": [
+          {
+            "layer": 2,
+            "expand": "c04",
+            "dist": 0.1203
+          },
+          {
+            "layer": 1,
+            "expand": "c04",
+            "dist": 0.1203
+          },
+          {
+            "layer": 0,
+            "expand": "c04",
+            "dist": 0.1203
+          },
+          {
+            "layer": 0,
+            "expand": "c03",
+            "dist": 0.0793
+          }
+        ],
+        "recall_vs_exact": 1.0
+      },
+      "2": {
+        "top": [
+          "c03",
+          "c04"
+        ],
+        "distance_computations": 12,
+        "path": [
+          {
+            "layer": 2,
+            "expand": "c04",
+            "dist": 0.1203
+          },
+          {
+            "layer": 1,
+            "expand": "c04",
+            "dist": 0.1203
+          },
+          {
+            "layer": 0,
+            "expand": "c04",
+            "dist": 0.1203
+          },
+          {
+            "layer": 0,
+            "expand": "c03",
+            "dist": 0.0793
+          }
+        ],
+        "recall_vs_exact": 1.0
+      },
+      "5": {
+        "top": [
+          "c03",
+          "c04",
+          "c07",
+          "c12",
+          "c01"
+        ],
+        "distance_computations": 15,
+        "path": [
+          {
+            "layer": 2,
+            "expand": "c04",
+            "dist": 0.1203
+          },
+          {
+            "layer": 1,
+            "expand": "c04",
+            "dist": 0.1203
+          },
+          {
+            "layer": 0,
+            "expand": "c04",
+            "dist": 0.1203
+          },
+          {
+            "layer": 0,
+            "expand": "c03",
+            "dist": 0.0793
+          },
+          {
+            "layer": 0,
+            "expand": "c07",
+            "dist": 0.1887
+          },
+          {
+            "layer": 0,
+            "expand": "c12",
+            "dist": 0.2399
+          },
+          {
+            "layer": 0,
+            "expand": "c01",
+            "dist": 0.3646
+          }
+        ],
+        "recall_vs_exact": 1.0
+      },
+      "12": {
+        "top": [
+          "c03",
+          "c04",
+          "c07",
+          "c12",
+          "c01"
+        ],
+        "distance_computations": 17,
+        "path": [
+          {
+            "layer": 2,
+            "expand": "c04",
+            "dist": 0.1203
+          },
+          {
+            "layer": 1,
+            "expand": "c04",
+            "dist": 0.1203
+          },
+          {
+            "layer": 0,
+            "expand": "c04",
+            "dist": 0.1203
+          },
+          {
+            "layer": 0,
+            "expand": "c03",
+            "dist": 0.0793
+          },
+          {
+            "layer": 0,
+            "expand": "c07",
+            "dist": 0.1887
+          },
+          {
+            "layer": 0,
+            "expand": "c12",
+            "dist": 0.2399
+          },
+          {
+            "layer": 0,
+            "expand": "c01",
+            "dist": 0.3646
+          },
+          {
+            "layer": 0,
+            "expand": "c10",
+            "dist": 0.3871
+          },
+          {
+            "layer": 0,
+            "expand": "c06",
+            "dist": 0.4152
+          },
+          {
+            "layer": 0,
+            "expand": "c02",
+            "dist": 0.4749
+          },
+          {
+            "layer": 0,
+            "expand": "c05",
+            "dist": 0.7238
+          },
+          {
+            "layer": 0,
+            "expand": "c09",
+            "dist": 0.9157
+          },
+          {
+            "layer": 0,
+            "expand": "c11",
+            "dist": 0.9734
+          },
+          {
+            "layer": 0,
+            "expand": "c08",
+            "dist": 1.0
+          }
+        ],
+        "recall_vs_exact": 1.0
+      }
+    },
+    "note": "distance = 1 - cosine; both tenants in one graph here only to show the post-filter problem in 7"
+  },
+  "fusion": {
+    "k": 60,
+    "inputs": {
+      "bm25": [
+        "c03",
+        "c01",
+        "c04",
+        "c02",
+        "c06",
+        "c08"
+      ],
+      "vector": [
+        "c03",
+        "c04",
+        "c01",
+        "c06",
+        "c02",
+        "c05",
+        "c09",
+        "c11",
+        "c08"
+      ]
+    },
+    "rrf": [
+      {
+        "id": "c03",
+        "score": 0.03279,
+        "ranks": [
+          1,
+          1
+        ],
+        "terms": "1/(60+1) + 1/(60+1)"
+      },
+      {
+        "id": "c01",
+        "score": 0.032,
+        "ranks": [
+          2,
+          3
+        ],
+        "terms": "1/(60+2) + 1/(60+3)"
+      },
+      {
+        "id": "c04",
+        "score": 0.032,
+        "ranks": [
+          3,
+          2
+        ],
+        "terms": "1/(60+3) + 1/(60+2)"
+      },
+      {
+        "id": "c02",
+        "score": 0.03101,
+        "ranks": [
+          4,
+          5
+        ],
+        "terms": "1/(60+4) + 1/(60+5)"
+      },
+      {
+        "id": "c06",
+        "score": 0.03101,
+        "ranks": [
+          5,
+          4
+        ],
+        "terms": "1/(60+5) + 1/(60+4)"
+      },
+      {
+        "id": "c08",
+        "score": 0.02964,
+        "ranks": [
+          6,
+          9
+        ],
+        "terms": "1/(60+6) + 1/(60+9)"
+      },
+      {
+        "id": "c05",
+        "score": 0.01515,
+        "ranks": [
+          6
+        ],
+        "terms": "1/(60+6)"
+      },
+      {
+        "id": "c09",
+        "score": 0.01493,
+        "ranks": [
+          7
+        ],
+        "terms": "1/(60+7)"
+      },
+      {
+        "id": "c11",
+        "score": 0.01471,
+        "ranks": [
+          8
+        ],
+        "terms": "1/(60+8)"
+      }
+    ],
+    "rrf_order": [
+      "c03",
+      "c01",
+      "c04",
+      "c02",
+      "c06",
+      "c08",
+      "c05",
+      "c09",
+      "c11"
+    ],
+    "weighted_minmax": [
+      {
+        "id": "c03",
+        "score": 1.0
+      },
+      {
+        "id": "c04",
+        "score": 0.8336
+      },
+      {
+        "id": "c01",
+        "score": 0.7141
+      },
+      {
+        "id": "c02",
+        "score": 0.4528
+      },
+      {
+        "id": "c06",
+        "score": 0.4275
+      },
+      {
+        "id": "c05",
+        "score": 0.15
+      },
+      {
+        "id": "c08",
+        "score": 0.0577
+      },
+      {
+        "id": "c09",
+        "score": 0.0458
+      },
+      {
+        "id": "c11",
+        "score": 0.0144
+      }
+    ],
+    "weighted_order": [
+      "c03",
+      "c04",
+      "c01",
+      "c02",
+      "c06",
+      "c05",
+      "c08",
+      "c09",
+      "c11"
+    ]
+  },
+  "rerank": {
+    "label": "illustrative scorer P(yes) = sigmoid(A x cosine + B x BM25 + C); not M-rerank",
+    "A": 5.0,
+    "B": 0.5,
+    "C": -4.0,
+    "rows": [
+      {
+        "id": "c03",
+        "p_yes": 0.8929,
+        "logit": 2.1204
+      },
+      {
+        "id": "c04",
+        "p_yes": 0.8143,
+        "logit": 1.4784
+      },
+      {
+        "id": "c01",
+        "p_yes": 0.5736,
+        "logit": 0.2967
+      },
+      {
+        "id": "c06",
+        "p_yes": 0.3224,
+        "logit": -0.7426
+      },
+      {
+        "id": "c02",
+        "p_yes": 0.2961,
+        "logit": -0.8657
+      },
+      {
+        "id": "c05",
+        "p_yes": 0.0679,
+        "logit": -2.619
+      },
+      {
+        "id": "c09",
+        "p_yes": 0.0272,
+        "logit": -3.5784
+      },
+      {
+        "id": "c08",
+        "p_yes": 0.0214,
+        "logit": -3.825
+      },
+      {
+        "id": "c11",
+        "p_yes": 0.0205,
+        "logit": -3.8671
+      }
+    ],
+    "order": [
+      "c03",
+      "c04",
+      "c01",
+      "c06",
+      "c02",
+      "c05",
+      "c09",
+      "c08",
+      "c11"
+    ],
+    "threshold": 0.5,
+    "above_threshold": [
+      "c03",
+      "c04",
+      "c01"
+    ]
+  },
+  "permissions": {
+    "label": "illustrative toy corpus and vectors chosen for this demo; not M-embed or M-rerank outputs",
+    "user": {
+      "user_id": "u_93",
+      "tenant": "tenant_acme",
+      "principals": [
+        "user:u_93",
+        "group:all_staff",
+        "group:finance"
+      ]
+    },
+    "tenant_of": {
+      "c01": "tenant_acme",
+      "c02": "tenant_acme",
+      "c03": "tenant_acme",
+      "c04": "tenant_acme",
+      "c05": "tenant_acme",
+      "c06": "tenant_acme",
+      "c07": "tenant_acme",
+      "c08": "tenant_acme",
+      "c09": "tenant_acme",
+      "c10": "tenant_acme",
+      "c11": "tenant_acme",
+      "c12": "tenant_birch"
+    },
+    "acl_of": {
+      "c01": [
+        "group:all_staff"
+      ],
+      "c02": [
+        "group:sales",
+        "group:finance"
+      ],
+      "c03": [
+        "group:sales",
+        "group:finance"
+      ],
+      "c04": [
+        "group:finance"
+      ],
+      "c05": [
+        "group:finance"
+      ],
+      "c06": [
+        "group:finance"
+      ],
+      "c07": [
+        "group:exec"
+      ],
+      "c08": [
+        "group:all_staff"
+      ],
+      "c09": [
+        "group:all_staff"
+      ],
+      "c10": [
+        "group:sales"
+      ],
+      "c11": [
+        "group:all_staff"
+      ],
+      "c12": [
+        "group:all_staff"
+      ]
+    },
+    "allowed": [
+      "c01",
+      "c02",
+      "c03",
+      "c04",
+      "c05",
+      "c06",
+      "c08",
+      "c09",
+      "c11"
+    ],
+    "denied_in_tenant": [
+      "c07",
+      "c10"
+    ],
+    "other_tenant": [
+      "c12"
+    ],
+    "post_filter": {
+      "ann_top5": [
+        "c03",
+        "c04",
+        "c07",
+        "c12",
+        "c01"
+      ],
+      "after_filter": [
+        "c03",
+        "c04",
+        "c01"
+      ],
+      "returned": 3,
+      "lost": [
+        "c07",
+        "c12"
+      ]
+    },
+    "filter_in_index": {
+      "top5": [
+        "c03",
+        "c04",
+        "c01",
+        "c06",
+        "c02"
+      ],
+      "returned": 5
+    },
+    "final_acl_check": {
+      "rule": "re-check every chunk ID against the ACL service before its text enters the context",
+      "checked": [
+        "c03",
+        "c04",
+        "c01",
+        "c06",
+        "c02"
+      ],
+      "passed": [
+        "c03",
+        "c04",
+        "c01",
+        "c06",
+        "c02"
+      ]
+    }
+  },
+  "shared_index_overfetch": {
+    "label": "synthetic shared index (illustrative): 3,000 vectors, 50 tenants",
+    "vectors": 3000,
+    "tenants": 50,
+    "tenant_fraction": 0.02,
+    "ef_search": 40,
+    "k": 10,
+    "post_filter_mean_returned": 1.55,
+    "post_filter_expected": 0.8,
+    "post_filter_min": 1,
+    "in_index_mean_returned": 10.0,
+    "formula": "expected rows left after post-filter = ef_search x fraction of rows that match"
+  },
+  "ann_curves": {
+    "label": "synthetic clustered unit vectors (illustrative, seeded); a latency proxy, not a benchmark",
+    "vectors": 4000,
+    "dim": 48,
+    "queries": 100,
+    "k": 10,
+    "exact_distance_computations": 4000,
+    "hnsw": {
+      "M": 16,
+      "ef_construction": 200,
+      "top_layer": 3,
+      "graph_links": 103859,
+      "links_per_node": 25.96,
+      "rows": [
+        {
+          "ef_search": 10,
+          "recall_at_10": 0.649,
+          "distance_computations_per_query": 144.3,
+          "fraction_of_exact": 0.0361
+        },
+        {
+          "ef_search": 20,
+          "recall_at_10": 0.711,
+          "distance_computations_per_query": 174.2,
+          "fraction_of_exact": 0.0435
+        },
+        {
+          "ef_search": 40,
+          "recall_at_10": 0.818,
+          "distance_computations_per_query": 221.8,
+          "fraction_of_exact": 0.0554
+        },
+        {
+          "ef_search": 80,
+          "recall_at_10": 0.924,
+          "distance_computations_per_query": 316.4,
+          "fraction_of_exact": 0.0791
+        },
+        {
+          "ef_search": 160,
+          "recall_at_10": 0.954,
+          "distance_computations_per_query": 608.7,
+          "fraction_of_exact": 0.1522
+        }
+      ]
+    },
+    "ivfflat": {
+      "nlist": 64,
+      "kmeans_iterations": 10,
+      "rows": [
+        {
+          "nprobe": 1,
+          "recall_at_10": 0.701,
+          "distance_computations_per_query": 136.6,
+          "fraction_of_exact": 0.0341
+        },
+        {
+          "nprobe": 2,
+          "recall_at_10": 0.908,
+          "distance_computations_per_query": 192.9,
+          "fraction_of_exact": 0.0482
+        },
+        {
+          "nprobe": 4,
+          "recall_at_10": 0.958,
+          "distance_computations_per_query": 322.2,
+          "fraction_of_exact": 0.0806
+        },
+        {
+          "nprobe": 8,
+          "recall_at_10": 0.986,
+          "distance_computations_per_query": 572.1,
+          "fraction_of_exact": 0.143
+        },
+        {
+          "nprobe": 16,
+          "recall_at_10": 0.996,
+          "distance_computations_per_query": 1057.8,
+          "fraction_of_exact": 0.2644
+        },
+        {
+          "nprobe": 64,
+          "recall_at_10": 1.0,
+          "distance_computations_per_query": 4064.0,
+          "fraction_of_exact": 1.016
+        }
+      ],
+      "note": "nprobe = nlist visits every list, so it equals exact search plus the centroid scan"
+    }
+  },
+  "real_scale": {
+    "workspace": {
+      "documents": 4200,
+      "chunks_per_document": 24,
+      "chunks": 100800,
+      "chunk_tokens_mean": 550,
+      "tokens_indexed": 55440000,
+      "vector_bytes_1024_fp16": 2048,
+      "vector_bytes_4096_fp32": 16384,
+      "vector_bytes_4096_fp16": 8192,
+      "vectors_total_bytes_1024_fp16": 206438400,
+      "vectors_total_bytes_4096_fp32": 1651507200,
+      "vectors_total_MB_1024_fp16": 206.4,
+      "vectors_total_GB_4096_fp32": 1.65,
+      "ratio_full_fp32_over_stored": 8,
+      "hnsw_expected_upper_layers_per_node": 0.0667,
+      "hnsw_link_bytes_per_node": 132.3,
+      "hnsw_link_formula": "4 B per neighbour ID x (Mmax0 = 2M on layer 0 + M x expected upper layers 1/(M-1))",
+      "hnsw_links_total_MB": 13.3,
+      "index_bytes_per_chunk": 2180.3,
+      "pgvector_vector_index_limit": 2000,
+      "pgvector_halfvec_index_limit": 4000,
+      "exact_flops_per_query": 206438400,
+      "exact_bytes_per_query": 206438400,
+      "acl_readable_documents": 2940,
+      "acl_readable_chunks": 70560
+    },
+    "shared_corpus": {
+      "vectors": 100000000,
+      "flops_1024": 204800000000,
+      "bytes_1024_fp16": 204800000000,
+      "flops_4096": 819200000000,
+      "bytes_4096_fp32": 1638400000000,
+      "h100_read_time_ms_1024_fp16": 61.1,
+      "h100s_to_hold_1024_fp16": 3,
+      "hnsw_links_bytes": 13226666667,
+      "hnsw_expected_top_layer": 6.64,
+      "tenant_share_of_shared_index": 0.001008,
+      "post_filter_expected_rows_at_ef_search": 0.1008,
+      "note": "time = bytes / HBM bandwidth: one query reads every vector once (memory-bound)"
+    },
+    "model_cost": {
+      "embed_params": 7567295488,
+      "rerank_params": 4021784576,
+      "gpu": "H100 SXM",
+      "bf16_dense_flops": 989500000000000.0,
+      "mfu": 0.5,
+      "ingest_tokens": 55440000,
+      "ingest_flops": 839061723709440000,
+      "ingest_gpu_seconds": 1695.9,
+      "ingest_gpu_minutes": 28.3,
+      "query_tokens": 80,
+      "query_flops": 1210767278080,
+      "query_compute_ms": 2.45,
+      "query_weight_read_ms": 4.52,
+      "query_embed_ms": 4.52,
+      "query_bound": "memory",
+      "rerank_candidates": 100,
+      "rerank_pair_tokens_full": 610,
+      "rerank_pair_tokens_capped": 360,
+      "rerank_candidate_token_cap": 300,
+      "rerank_tokens_full": 61000,
+      "rerank_tokens_capped": 36000,
+      "rerank_flops_full": 490657718272000,
+      "rerank_flops_capped": 289568489472000,
+      "rerank_ms_one_gpu_full": 991.7,
+      "rerank_ms_one_gpu_capped": 585.3,
+      "rerank_gpus": 4,
+      "rerank_ms_parallel_capped": 146.3,
+      "formula": "FLOPs = 2 x parameters x tokens; time = FLOPs / (peak x utilization), or weight bytes / HBM bandwidth when that is larger"
+    },
+    "dims": {
+      "full": 4096,
+      "stored": 1024,
+      "mrl_min": 32
+    }
+  }
+}

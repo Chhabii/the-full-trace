@@ -1,0 +1,273 @@
+{
+  "meta": {
+    "script": "sim/chunked_prefill_sim.py",
+    "generated_at": "2026-10-09T09:59:23+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T09:58:26+00:00",
+      "sha256": "ee0ab6f8d4b2"
+    },
+    "constants_used": {
+      "hardware.H-teach.h100_sxm_bf16_dense": 989.5,
+      "hardware.H-teach.h100_sxm_fp8_dense": 1979,
+      "hardware.H-teach.h100_sxm_hbm_bandwidth": 3.35,
+      "hypothetical.batching_ref.chunk_budgets": [
+        512,
+        1024,
+        2048,
+        4096,
+        8192,
+        16384
+      ],
+      "hypothetical.batching_ref.long_prompt_running_decodes": 64,
+      "hypothetical.batching_ref.long_prompt_tokens": 100000,
+      "hypothetical.gpu_step_model.hbm_bandwidth_efficiency": 0.8,
+      "hypothetical.gpu_step_model.per_layer_overhead_us": 40,
+      "hypothetical.gpu_step_model.per_step_overhead_ms": 0.5,
+      "hypothetical.serving_assumptions.prefill_mfu": 0.5,
+      "hypothetical.slo.p95_tpot_ms": 60,
+      "hypothetical.traffic.mean_output_tokens": 400,
+      "hypothetical.traffic.mean_prompt_tokens": 3000,
+      "models.M-dense.head_dim": 128,
+      "models.M-dense.hidden_size": 12288,
+      "models.M-dense.intermediate_size": 28672,
+      "models.M-dense.max_position_embeddings": 262144,
+      "models.M-dense.num_attention_heads": 96,
+      "models.M-dense.num_hidden_layers": 88,
+      "models.M-dense.num_key_value_heads": 8,
+      "models.M-dense.text_params": 125025988608,
+      "models.M-dense.tie_word_embeddings": false,
+      "models.M-dense.torch_dtype": "bfloat16",
+      "models.M-dense.total_params": 127704210176,
+      "models.M-dense.vision_params": 2678221568,
+      "models.M-dense.vllm_recipe": {
+        "recommended_hw": "8x H200 (alt 4x B200, 2-8x MI300X)",
+        "tp": 8,
+        "eagle_num_speculative_tokens": 3,
+        "mi300x_tp8_1k_in_1k_out_conc32": {
+          "output_tok_s": 915,
+          "mean_ttft_ms": 2522,
+          "mean_tpot_ms": 26.1
+        },
+        "mi300x_tp1": {
+          "output_tok_s": 438,
+          "mean_ttft_ms": 5719,
+          "mean_tpot_ms": 55.2
+        }
+      },
+      "models.M-dense.vocab_size": 131072,
+      "software.vllm.block_size_tokens": 16,
+      "software.vllm.max_num_batched_tokens_h100": 8192,
+      "software.vllm.max_num_seqs_h100_b200": 1024
+    }
+  },
+  "conventions": {
+    "model": "M-dense on H-teach, TP=8, roofline step model (sim/gpu_step_lib.py)",
+    "class": "Prompt length, decode count and budgets are HYPOTHETICAL (class C, from R-XI.7); the scheduling rule is vLLM V1's (class A); times are a model.",
+    "serves": [
+      "R-XI.7"
+    ]
+  },
+  "long_prompt_tokens": 100000,
+  "running_decodes": 64,
+  "decode_context_tokens": 3200,
+  "decode_only_step_ms": 13.562,
+  "default_budget": 8192,
+  "chunk_at_default": 8128,
+  "chunks_at_default_formula": "ceil(100000 / (8192 - 64))",
+  "chunks_at_default": 13,
+  "chunks_if_budget_all_prefill": 13,
+  "tpot_slo_ms": 60,
+  "sweep": {
+    "none": {
+      "budget": "none (whole prompt in one step)",
+      "effective_budget": 262144,
+      "chunks": 1,
+      "ttft_ms": 8551.012,
+      "decode_max_gap_ms": 8551.012,
+      "decode_mean_gap_ms": 4283.131,
+      "decode_tokens_per_sequence_during_prefill": 2,
+      "gaps_over_tpot_slo_per_sequence": 1,
+      "extra_kv_read_bytes_per_gpu": 0,
+      "extra_kv_read_ms": 0
+    },
+    "512": {
+      "budget": 512,
+      "effective_budget": 512,
+      "chunks": 224,
+      "ttft_ms": 10694.972,
+      "decode_max_gap_ms": 72.314,
+      "decode_mean_gap_ms": 47.602,
+      "decode_tokens_per_sequence_during_prefill": 225,
+      "gaps_over_tpot_slo_per_sequence": 56,
+      "extra_kv_read_bytes_per_gpu": 504142757888,
+      "extra_kv_read_ms": 188.113
+    },
+    "1024": {
+      "budget": 1024,
+      "effective_budget": 1024,
+      "chunks": 105,
+      "ttft_ms": 9543.519,
+      "decode_max_gap_ms": 143.38,
+      "decode_mean_gap_ms": 90.178,
+      "decode_tokens_per_sequence_during_prefill": 106,
+      "gaps_over_tpot_slo_per_sequence": 83,
+      "extra_kv_read_bytes_per_gpu": 236165529600,
+      "extra_kv_read_ms": 88.121
+    },
+    "2048": {
+      "budget": 2048,
+      "effective_budget": 2048,
+      "chunks": 51,
+      "ttft_ms": 9026.727,
+      "decode_max_gap_ms": 283.526,
+      "decode_mean_gap_ms": 173.885,
+      "decode_tokens_per_sequence_during_prefill": 52,
+      "gaps_over_tpot_slo_per_sequence": 51,
+      "extra_kv_read_bytes_per_gpu": 113973657600,
+      "extra_kv_read_ms": 42.527
+    },
+    "4096": {
+      "budget": 4096,
+      "effective_budget": 4096,
+      "chunks": 25,
+      "ttft_ms": 8779.02,
+      "decode_max_gap_ms": 551.094,
+      "decode_mean_gap_ms": 338.242,
+      "decode_tokens_per_sequence_during_prefill": 26,
+      "gaps_over_tpot_slo_per_sequence": 25,
+      "extra_kv_read_bytes_per_gpu": 54499737600,
+      "extra_kv_read_ms": 20.336
+    },
+    "8192": {
+      "budget": 8192,
+      "effective_budget": 8192,
+      "chunks": 13,
+      "ttft_ms": 8664.939,
+      "decode_max_gap_ms": 1089.891,
+      "decode_mean_gap_ms": 620.014,
+      "decode_tokens_per_sequence_during_prefill": 14,
+      "gaps_over_tpot_slo_per_sequence": 13,
+      "extra_kv_read_bytes_per_gpu": 28564783104,
+      "extra_kv_read_ms": 10.659,
+      "steps": [
+        {
+          "step": 0,
+          "chunk_tokens": 8128,
+          "prior_tokens": 0,
+          "decodes": 64,
+          "step_ms": 295.719,
+          "prefill_attention_ms": 36.103
+        },
+        {
+          "step": 1,
+          "chunk_tokens": 8128,
+          "prior_tokens": 8128,
+          "decodes": 64,
+          "step_ms": 367.916,
+          "prefill_attention_ms": 108.299
+        },
+        {
+          "step": 2,
+          "chunk_tokens": 8128,
+          "prior_tokens": 16256,
+          "decodes": 64,
+          "step_ms": 440.114,
+          "prefill_attention_ms": 180.495
+        },
+        {
+          "step": 3,
+          "chunk_tokens": 8128,
+          "prior_tokens": 24384,
+          "decodes": 64,
+          "step_ms": 512.311,
+          "prefill_attention_ms": 252.692
+        },
+        {
+          "step": 4,
+          "chunk_tokens": 8128,
+          "prior_tokens": 32512,
+          "decodes": 64,
+          "step_ms": 584.509,
+          "prefill_attention_ms": 324.888
+        },
+        {
+          "step": 5,
+          "chunk_tokens": 8128,
+          "prior_tokens": 40640,
+          "decodes": 64,
+          "step_ms": 656.706,
+          "prefill_attention_ms": 397.085
+        },
+        {
+          "step": 6,
+          "chunk_tokens": 8128,
+          "prior_tokens": 48768,
+          "decodes": 64,
+          "step_ms": 728.903,
+          "prefill_attention_ms": 469.281
+        },
+        {
+          "step": 7,
+          "chunk_tokens": 8128,
+          "prior_tokens": 56896,
+          "decodes": 64,
+          "step_ms": 801.101,
+          "prefill_attention_ms": 541.477
+        },
+        {
+          "step": 8,
+          "chunk_tokens": 8128,
+          "prior_tokens": 65024,
+          "decodes": 64,
+          "step_ms": 873.298,
+          "prefill_attention_ms": 613.674
+        },
+        {
+          "step": 9,
+          "chunk_tokens": 8128,
+          "prior_tokens": 73152,
+          "decodes": 64,
+          "step_ms": 945.496,
+          "prefill_attention_ms": 685.87
+        },
+        {
+          "step": 10,
+          "chunk_tokens": 8128,
+          "prior_tokens": 81280,
+          "decodes": 64,
+          "step_ms": 1017.693,
+          "prefill_attention_ms": 758.067
+        },
+        {
+          "step": 11,
+          "chunk_tokens": 8128,
+          "prior_tokens": 89408,
+          "decodes": 64,
+          "step_ms": 1089.891,
+          "prefill_attention_ms": 830.263
+        },
+        {
+          "step": 12,
+          "chunk_tokens": 2464,
+          "prior_tokens": 97536,
+          "decodes": 64,
+          "step_ms": 351.282,
+          "prefill_attention_ms": 265.954
+        }
+      ]
+    },
+    "16384": {
+      "budget": 16384,
+      "effective_budget": 16384,
+      "chunks": 7,
+      "ttft_ms": 8607.956,
+      "decode_max_gap_ms": 2112.581,
+      "decode_mean_gap_ms": 1077.902,
+      "decode_tokens_per_sequence_during_prefill": 8,
+      "gaps_over_tpot_slo_per_sequence": 7,
+      "extra_kv_read_bytes_per_gpu": 15441592320,
+      "extra_kv_read_ms": 5.762
+    }
+  }
+}

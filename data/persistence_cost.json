@@ -1,0 +1,224 @@
+{
+  "meta": {
+    "script": "sim/persistence_cost.py",
+    "generated_at": "2026-10-09T12:31:38+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T12:31:14+00:00",
+      "sha256": "7760cf964886"
+    },
+    "constants_used": {
+      "hypothetical.backend.flush_every_s": 1,
+      "hypothetical.backend.flush_every_tokens": 50,
+      "hypothetical.backend.indexes_per_message_row": 2,
+      "hypothetical.reference_request.output_tokens_visible": 450,
+      "hypothetical.traffic.mean_output_tokens": 400,
+      "hypothetical.traffic.peak_arrival_rate": 50000,
+      "hypothetical.traffic.per_request_decode_speed": 20
+    }
+  },
+  "conventions": {
+    "serves": [
+      "R-III.5"
+    ],
+    "class": "HYPOTHETICAL traffic, flush intervals and index count (class C)",
+    "write": "one statement in its own transaction (one commit)"
+  },
+  "inputs": {
+    "answer_tokens": {
+      "value": 450,
+      "unit": "tokens",
+      "from": "hypothetical.reference_request.output_tokens_visible"
+    },
+    "decode_speed": {
+      "value": 20,
+      "unit": "tokens/s",
+      "from": "hypothetical.traffic.per_request_decode_speed (per-user target of the capacity plan; fleet at peak only, R-XIV.2)"
+    },
+    "reference_decode_step_s": {
+      "value": 0.047238,
+      "unit": "s",
+      "from": "request_cost:design_point.step_s (Part 14.2)"
+    },
+    "peak_arrival_rate": {
+      "value": 50000,
+      "unit": "requests/s",
+      "from": "hypothetical.traffic.peak_arrival_rate"
+    },
+    "mean_output_tokens": {
+      "value": 400,
+      "unit": "tokens",
+      "from": "hypothetical.traffic.mean_output_tokens"
+    },
+    "flush_every_tokens": {
+      "value": 50,
+      "unit": "tokens",
+      "from": "hypothetical.backend.flush_every_tokens"
+    },
+    "flush_every_s": {
+      "value": 1,
+      "unit": "s",
+      "from": "hypothetical.backend.flush_every_s"
+    },
+    "indexes_per_row": {
+      "value": 2,
+      "unit": "indexes",
+      "from": "hypothetical.backend.indexes_per_message_row"
+    }
+  },
+  "reference_answer": {
+    "answer_tokens": 450,
+    "stream_duration": {
+      "formula": "output tokens × decode step (Part 14.2)",
+      "value": 21.2571,
+      "unit": "s",
+      "arithmetic": "450 × 47.238 ms = 21.26"
+    },
+    "user_message_writes": 1,
+    "approaches": {
+      "per_token_rows": {
+        "writes": {
+          "formula": "one row per output token",
+          "value": 450,
+          "unit": "INSERTs"
+        },
+        "commits": 450,
+        "row_versions": 450,
+        "dead_row_versions": 0,
+        "index_entries": {
+          "formula": "rows × indexes",
+          "value": 900,
+          "unit": "entries",
+          "arithmetic": "450 × 2 = 900"
+        },
+        "max_tokens_lost_on_writer_crash": 0,
+        "ratio_to_finalized": 450
+      },
+      "buffered_tokens": {
+        "writes": {
+          "formula": "ceil(output tokens / N)",
+          "value": 9,
+          "unit": "UPDATEs",
+          "arithmetic": "ceil(450 / 50) = 9"
+        },
+        "commits": 9,
+        "row_versions": 9,
+        "dead_row_versions": 8,
+        "index_entries": {
+          "value": 18,
+          "unit": "entries",
+          "note": "Upper bound: an UPDATE that changes no indexed column and fits on the same page can skip new index entries in PostgreSQL (HOT update); not modelled."
+        },
+        "max_tokens_lost_on_writer_crash": {
+          "formula": "N − 1",
+          "value": 49,
+          "unit": "tokens"
+        },
+        "ratio_to_finalized": 9
+      },
+      "buffered_seconds": {
+        "writes": {
+          "formula": "ceil(stream duration / T)",
+          "value": 22,
+          "unit": "UPDATEs",
+          "arithmetic": "ceil(21.2571 / 1) = 22"
+        },
+        "commits": 22,
+        "row_versions": 22,
+        "dead_row_versions": 21,
+        "index_entries": {
+          "value": 44,
+          "unit": "entries",
+          "note": "Upper bound, as above."
+        },
+        "max_tokens_lost_on_writer_crash": {
+          "formula": "floor(T / decode step)",
+          "value": 21,
+          "unit": "tokens",
+          "arithmetic": "floor(1 s / 0.047238 s) = 21"
+        },
+        "ratio_to_finalized": 22
+      },
+      "finalized_once": {
+        "writes": {
+          "value": 1,
+          "unit": "INSERT",
+          "note": "Plus one partial write instead, if the user presses Stop or the stream fails."
+        },
+        "commits": 1,
+        "row_versions": 1,
+        "dead_row_versions": 0,
+        "index_entries": {
+          "value": 2,
+          "unit": "entries"
+        },
+        "max_tokens_lost_on_writer_crash": {
+          "value": 450,
+          "unit": "tokens",
+          "note": "Everything generated so far, if the orchestrator process dies before the final write; the client then regenerates (RA-48)."
+        },
+        "ratio_to_finalized": 1
+      }
+    }
+  },
+  "fleet_at_peak": {
+    "in_flight_streams": {
+      "formula": "arrival rate × stream duration (Little's Law)",
+      "value": 1000000,
+      "unit": "streams",
+      "arithmetic": "50,000 × 20 = 1,000,000"
+    },
+    "output_tokens_per_s": {
+      "formula": "arrival rate × mean output tokens",
+      "value": 20000000,
+      "unit": "tokens/s"
+    },
+    "assistant_message_writes_per_s": {
+      "per_token_rows": {
+        "formula": "arrival rate × mean output tokens",
+        "value": 20000000,
+        "unit": "writes/s",
+        "arithmetic": "50,000 × 400 = 20,000,000"
+      },
+      "buffered_tokens": {
+        "formula": "arrival rate × ceil(mean output / N)",
+        "value": 400000,
+        "unit": "writes/s",
+        "arithmetic": "50,000 × 8 = 400,000"
+      },
+      "buffered_seconds": {
+        "formula": "arrival rate × ceil(stream duration / T)",
+        "value": 1000000,
+        "unit": "writes/s",
+        "arithmetic": "50,000 × 20 = 1,000,000"
+      },
+      "finalized_once": {
+        "formula": "arrival rate × 1",
+        "value": 50000,
+        "unit": "writes/s"
+      }
+    },
+    "user_message_writes_per_s": {
+      "formula": "arrival rate × 1",
+      "value": 50000,
+      "unit": "writes/s"
+    },
+    "ratio_to_finalized": {
+      "per_token_rows": 400,
+      "buffered_tokens": 8,
+      "buffered_seconds": 20,
+      "finalized_once": 1
+    },
+    "total_message_writes_per_s": {
+      "per_token_rows": 20050000,
+      "buffered_tokens": 450000,
+      "buffered_seconds": 1050000,
+      "finalized_once": 100000
+    }
+  },
+  "costs_per_commit": [
+    "a WAL flush to durable storage before the commit returns (group commit can share one flush between concurrent commits)",
+    "in this reference system, a synchronous quorum acknowledgement inside the home region (RA-17)",
+    "a new MVCC row version per INSERT or UPDATE, plus index entries"
+  ]
+}

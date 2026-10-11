@@ -1,0 +1,1803 @@
+{
+  "meta": {
+    "script": "sim/sampling_toy.py",
+    "generated_at": "2026-10-09T06:48:51+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T06:45:24+00:00",
+      "sha256": "36e36e01982d"
+    },
+    "constants_used": {
+      "models.M-dense.vocab_size": 131072
+    }
+  },
+  "label": "Illustrative toy inputs chosen so every step can be checked by hand with a calculator. They are not real model weights, activations or logits.",
+  "serves": {
+    "requirements": [
+      "R-X.9",
+      "R-X.12"
+    ],
+    "video_sequence": 10,
+    "manuscript": "Part 10 (layers to logits to token)"
+  },
+  "display_decimals": 4,
+  "context": {
+    "text": "The scheduler frees the",
+    "note": "illustrative prompt ending; the next token is being chosen"
+  },
+  "vocab": {
+    "tokens": [
+      " the",
+      " a",
+      " KV",
+      " cache",
+      " GPU",
+      ".",
+      ",",
+      " block"
+    ],
+    "ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "size": 8,
+    "real_vocab_size": 131072,
+    "real_vocab_constant": "models.M-dense.vocab_size",
+    "note": "A real LM head outputs one logit per vocabulary entry: 131,072 for M-dense. The toy keeps 8 so every number fits on screen."
+  },
+  "logits": {
+    "value": [
+      -1.0,
+      1.0,
+      3.0,
+      2.5,
+      1.5,
+      -2.0,
+      -1.5,
+      2.0
+    ],
+    "display": [
+      "-1",
+      "1",
+      "3",
+      "2.5",
+      "1.5",
+      "-2",
+      "-1.5",
+      "2"
+    ]
+  },
+  "greedy": {
+    "rule": "argmax of the logits (temperature does not change the argmax)",
+    "token": " KV",
+    "id": 2,
+    "logit": {
+      "value": 3.0,
+      "display": "3"
+    }
+  },
+  "temperature": [
+    {
+      "T": 1.0,
+      "divide": [
+        "-1 / 1 = -1.0000",
+        "1 / 1 = 1.0000",
+        "3 / 1 = 3.0000",
+        "2.5 / 1 = 2.5000",
+        "1.5 / 1 = 1.5000",
+        "-2 / 1 = -2.0000",
+        "-1.5 / 1 = -1.5000",
+        "2 / 1 = 2.0000"
+      ],
+      "scaled_logits": {
+        "value": [
+          -1.0,
+          1.0,
+          3.0,
+          2.5,
+          1.5,
+          -2.0,
+          -1.5,
+          2.0
+        ],
+        "display": [
+          "-1.0000",
+          "1.0000",
+          "3.0000",
+          "2.5000",
+          "1.5000",
+          "-2.0000",
+          "-1.5000",
+          "2.0000"
+        ]
+      },
+      "softmax": {
+        "input": {
+          "value": [
+            -1.0,
+            1.0,
+            3.0,
+            2.5,
+            1.5,
+            -2.0,
+            -1.5,
+            2.0
+          ],
+          "display": [
+            "-1.0000",
+            "1.0000",
+            "3.0000",
+            "2.5000",
+            "1.5000",
+            "-2.0000",
+            "-1.5000",
+            "2.0000"
+          ]
+        },
+        "max": {
+          "value": 3.0,
+          "display": "3.0000"
+        },
+        "minus_max": {
+          "value": [
+            -4.0,
+            -2.0,
+            0.0,
+            -0.5,
+            -1.5,
+            -5.0,
+            -4.5,
+            -1.0
+          ],
+          "display": [
+            "-4.0000",
+            "-2.0000",
+            "0.0000",
+            "-0.5000",
+            "-1.5000",
+            "-5.0000",
+            "-4.5000",
+            "-1.0000"
+          ]
+        },
+        "exp": {
+          "value": [
+            0.01831563888873418,
+            0.1353352832366127,
+            1.0,
+            0.6065306597126334,
+            0.22313016014842982,
+            0.006737946999085467,
+            0.011108996538242306,
+            0.36787944117144233
+          ],
+          "display": [
+            "0.0183",
+            "0.1353",
+            "1.0000",
+            "0.6065",
+            "0.2231",
+            "0.0067",
+            "0.0111",
+            "0.3679"
+          ]
+        },
+        "sum_exp": {
+          "value": 2.3690381266951803,
+          "display": "2.3690"
+        },
+        "probs": {
+          "value": [
+            0.007731255433311487,
+            0.057126680111900974,
+            0.42211224409250214,
+            0.25602401788220547,
+            0.09418597262497311,
+            0.002844169928360307,
+            0.004689243458373298,
+            0.15528641646837316
+          ],
+          "display": [
+            "0.0077",
+            "0.0571",
+            "0.4221",
+            "0.2560",
+            "0.0942",
+            "0.0028",
+            "0.0047",
+            "0.1553"
+          ]
+        },
+        "probs_sum": {
+          "value": 0.9999999999999999,
+          "display": "1.000000000000"
+        }
+      }
+    },
+    {
+      "T": 0.7,
+      "divide": [
+        "-1 / 0.7 = -1.4286",
+        "1 / 0.7 = 1.4286",
+        "3 / 0.7 = 4.2857",
+        "2.5 / 0.7 = 3.5714",
+        "1.5 / 0.7 = 2.1429",
+        "-2 / 0.7 = -2.8571",
+        "-1.5 / 0.7 = -2.1429",
+        "2 / 0.7 = 2.8571"
+      ],
+      "scaled_logits": {
+        "value": [
+          -1.4285714285714286,
+          1.4285714285714286,
+          4.285714285714286,
+          3.5714285714285716,
+          2.142857142857143,
+          -2.857142857142857,
+          -2.142857142857143,
+          2.857142857142857
+        ],
+        "display": [
+          "-1.4286",
+          "1.4286",
+          "4.2857",
+          "3.5714",
+          "2.1429",
+          "-2.8571",
+          "-2.1429",
+          "2.8571"
+        ]
+      },
+      "softmax": {
+        "input": {
+          "value": [
+            -1.4285714285714286,
+            1.4285714285714286,
+            4.285714285714286,
+            3.5714285714285716,
+            2.142857142857143,
+            -2.857142857142857,
+            -2.142857142857143,
+            2.857142857142857
+          ],
+          "display": [
+            "-1.4286",
+            "1.4286",
+            "4.2857",
+            "3.5714",
+            "2.1429",
+            "-2.8571",
+            "-2.1429",
+            "2.8571"
+          ]
+        },
+        "max": {
+          "value": 4.285714285714286,
+          "display": "4.2857"
+        },
+        "minus_max": {
+          "value": [
+            -5.714285714285714,
+            -2.8571428571428568,
+            0.0,
+            -0.714285714285714,
+            -2.142857142857143,
+            -7.142857142857142,
+            -6.428571428571429,
+            -1.4285714285714284
+          ],
+          "display": [
+            "-5.7143",
+            "-2.8571",
+            "0.0000",
+            "-0.7143",
+            "-2.1429",
+            "-7.1429",
+            "-6.4286",
+            "-1.4286"
+          ]
+        },
+        "exp": {
+          "value": [
+            0.0032985057559390915,
+            0.05743261926761737,
+            1.0,
+            0.4895416595569533,
+            0.11731916609425078,
+            0.0007904903231199669,
+            0.0016147559818205847,
+            0.23965103644177585
+          ],
+          "display": [
+            "0.0033",
+            "0.0574",
+            "1.0000",
+            "0.4895",
+            "0.1173",
+            "0.0008",
+            "0.0016",
+            "0.2397"
+          ]
+        },
+        "sum_exp": {
+          "value": 1.909648233421477,
+          "display": "1.9096"
+        },
+        "probs": {
+          "value": [
+            0.0017272844800475253,
+            0.03007497310890422,
+            0.5236566517846697,
+            0.2563517463527048,
+            0.0614349617070849,
+            0.0004139455158731835,
+            0.0008455777108894344,
+            0.1254948593398262
+          ],
+          "display": [
+            "0.0017",
+            "0.0301",
+            "0.5237",
+            "0.2564",
+            "0.0614",
+            "0.0004",
+            "0.0008",
+            "0.1255"
+          ]
+        },
+        "probs_sum": {
+          "value": 0.9999999999999999,
+          "display": "1.000000000000"
+        }
+      }
+    }
+  ],
+  "filters_standalone": {
+    "note": "each filter applied on its own to the softmax at that temperature, to show its rule",
+    "T=1": {
+      "T": 1.0,
+      "top_k": {
+        "k": 3,
+        "sorted_desc": [
+          {
+            "token": " KV",
+            "id": 2,
+            "p": {
+              "value": 0.42211224409250214,
+              "display": "0.4221"
+            },
+            "kept": true
+          },
+          {
+            "token": " cache",
+            "id": 3,
+            "p": {
+              "value": 0.25602401788220547,
+              "display": "0.2560"
+            },
+            "kept": true
+          },
+          {
+            "token": " block",
+            "id": 7,
+            "p": {
+              "value": 0.15528641646837316,
+              "display": "0.1553"
+            },
+            "kept": true
+          },
+          {
+            "token": " GPU",
+            "id": 4,
+            "p": {
+              "value": 0.09418597262497311,
+              "display": "0.0942"
+            },
+            "kept": false
+          },
+          {
+            "token": " a",
+            "id": 1,
+            "p": {
+              "value": 0.057126680111900974,
+              "display": "0.0571"
+            },
+            "kept": false
+          },
+          {
+            "token": " the",
+            "id": 0,
+            "p": {
+              "value": 0.007731255433311487,
+              "display": "0.0077"
+            },
+            "kept": false
+          },
+          {
+            "token": ",",
+            "id": 6,
+            "p": {
+              "value": 0.004689243458373298,
+              "display": "0.0047"
+            },
+            "kept": false
+          },
+          {
+            "token": ".",
+            "id": 5,
+            "p": {
+              "value": 0.002844169928360307,
+              "display": "0.0028"
+            },
+            "kept": false
+          }
+        ],
+        "kept": [
+          " KV",
+          " cache",
+          " block"
+        ],
+        "kept_ids": [
+          2,
+          3,
+          7
+        ],
+        "kept_mass": {
+          "value": 0.8334226784430807,
+          "display": "0.8334"
+        },
+        "renormalized": {
+          "value": [
+            0.0,
+            0.0,
+            0.506480391055654,
+            0.30719588571849843,
+            0.0,
+            0.0,
+            0.0,
+            0.18632372322584762
+          ],
+          "display": [
+            "0.0000",
+            "0.0000",
+            "0.5065",
+            "0.3072",
+            "0.0000",
+            "0.0000",
+            "0.0000",
+            "0.1863"
+          ],
+          "text": "p / 0.8334 for kept tokens, 0 otherwise"
+        }
+      },
+      "top_p": {
+        "p": 0.9,
+        "rule": "sort descending, add probabilities until the running sum reaches p; keep every token up to and including the one that crosses p (the smallest set with mass >= p)",
+        "sorted_desc": [
+          {
+            "token": " KV",
+            "id": 2,
+            "p": {
+              "value": 0.42211224409250214,
+              "display": "0.4221"
+            },
+            "cumulative": {
+              "value": 0.42211224409250214,
+              "display": "0.4221"
+            },
+            "cumulative_before": {
+              "value": 0.0,
+              "display": "0.0000"
+            },
+            "kept": true
+          },
+          {
+            "token": " cache",
+            "id": 3,
+            "p": {
+              "value": 0.25602401788220547,
+              "display": "0.2560"
+            },
+            "cumulative": {
+              "value": 0.6781362619747076,
+              "display": "0.6781"
+            },
+            "cumulative_before": {
+              "value": 0.42211224409250214,
+              "display": "0.4221"
+            },
+            "kept": true
+          },
+          {
+            "token": " block",
+            "id": 7,
+            "p": {
+              "value": 0.15528641646837316,
+              "display": "0.1553"
+            },
+            "cumulative": {
+              "value": 0.8334226784430807,
+              "display": "0.8334"
+            },
+            "cumulative_before": {
+              "value": 0.6781362619747076,
+              "display": "0.6781"
+            },
+            "kept": true
+          },
+          {
+            "token": " GPU",
+            "id": 4,
+            "p": {
+              "value": 0.09418597262497311,
+              "display": "0.0942"
+            },
+            "cumulative": {
+              "value": 0.9276086510680538,
+              "display": "0.9276"
+            },
+            "cumulative_before": {
+              "value": 0.8334226784430807,
+              "display": "0.8334"
+            },
+            "kept": true
+          },
+          {
+            "token": " a",
+            "id": 1,
+            "p": {
+              "value": 0.057126680111900974,
+              "display": "0.0571"
+            },
+            "cumulative": {
+              "value": 0.9847353311799547,
+              "display": "0.9847"
+            },
+            "cumulative_before": {
+              "value": 0.9276086510680538,
+              "display": "0.9276"
+            },
+            "kept": false
+          },
+          {
+            "token": " the",
+            "id": 0,
+            "p": {
+              "value": 0.007731255433311487,
+              "display": "0.0077"
+            },
+            "cumulative": {
+              "value": 0.9924665866132661,
+              "display": "0.9925"
+            },
+            "cumulative_before": {
+              "value": 0.9847353311799547,
+              "display": "0.9847"
+            },
+            "kept": false
+          },
+          {
+            "token": ",",
+            "id": 6,
+            "p": {
+              "value": 0.004689243458373298,
+              "display": "0.0047"
+            },
+            "cumulative": {
+              "value": 0.9971558300716394,
+              "display": "0.9972"
+            },
+            "cumulative_before": {
+              "value": 0.9924665866132661,
+              "display": "0.9925"
+            },
+            "kept": false
+          },
+          {
+            "token": ".",
+            "id": 5,
+            "p": {
+              "value": 0.002844169928360307,
+              "display": "0.0028"
+            },
+            "cumulative": {
+              "value": 0.9999999999999998,
+              "display": "1.0000"
+            },
+            "cumulative_before": {
+              "value": 0.9971558300716394,
+              "display": "0.9972"
+            },
+            "kept": false
+          }
+        ],
+        "kept": [
+          " KV",
+          " cache",
+          " GPU",
+          " block"
+        ],
+        "kept_ids": [
+          2,
+          3,
+          4,
+          7
+        ],
+        "kept_mass": {
+          "value": 0.9276086510680538,
+          "display": "0.9276"
+        },
+        "renormalized": {
+          "value": [
+            0.0,
+            0.0,
+            0.45505423392341127,
+            0.27600434470659363,
+            0.1015363240915518,
+            0.0,
+            0.0,
+            0.16740509727844335
+          ],
+          "display": [
+            "0.0000",
+            "0.0000",
+            "0.4551",
+            "0.2760",
+            "0.1015",
+            "0.0000",
+            "0.0000",
+            "0.1674"
+          ],
+          "text": "p / 0.9276 for kept tokens, 0 otherwise"
+        }
+      },
+      "min_p": {
+        "min_p": 0.1,
+        "p_max": {
+          "value": 0.42211224409250214,
+          "display": "0.4221"
+        },
+        "threshold": {
+          "value": 0.042211224409250216,
+          "display": "0.0422",
+          "text": "0.1 x 0.4221 = 0.0422"
+        },
+        "per_token": [
+          {
+            "token": " the",
+            "id": 0,
+            "p": {
+              "value": 0.007731255433311487,
+              "display": "0.0077"
+            },
+            "kept": false
+          },
+          {
+            "token": " a",
+            "id": 1,
+            "p": {
+              "value": 0.057126680111900974,
+              "display": "0.0571"
+            },
+            "kept": true
+          },
+          {
+            "token": " KV",
+            "id": 2,
+            "p": {
+              "value": 0.42211224409250214,
+              "display": "0.4221"
+            },
+            "kept": true
+          },
+          {
+            "token": " cache",
+            "id": 3,
+            "p": {
+              "value": 0.25602401788220547,
+              "display": "0.2560"
+            },
+            "kept": true
+          },
+          {
+            "token": " GPU",
+            "id": 4,
+            "p": {
+              "value": 0.09418597262497311,
+              "display": "0.0942"
+            },
+            "kept": true
+          },
+          {
+            "token": ".",
+            "id": 5,
+            "p": {
+              "value": 0.002844169928360307,
+              "display": "0.0028"
+            },
+            "kept": false
+          },
+          {
+            "token": ",",
+            "id": 6,
+            "p": {
+              "value": 0.004689243458373298,
+              "display": "0.0047"
+            },
+            "kept": false
+          },
+          {
+            "token": " block",
+            "id": 7,
+            "p": {
+              "value": 0.15528641646837316,
+              "display": "0.1553"
+            },
+            "kept": true
+          }
+        ],
+        "kept": [
+          " a",
+          " KV",
+          " cache",
+          " GPU",
+          " block"
+        ],
+        "kept_ids": [
+          1,
+          2,
+          3,
+          4,
+          7
+        ],
+        "kept_mass": {
+          "value": 0.9847353311799548,
+          "display": "0.9847"
+        },
+        "renormalized": {
+          "value": [
+            0.0,
+            0.058012217397997876,
+            0.42865552877716695,
+            0.2599927206586828,
+            0.09564597678455913,
+            0.0,
+            0.0,
+            0.1576935563815933
+          ],
+          "display": [
+            "0.0000",
+            "0.0580",
+            "0.4287",
+            "0.2600",
+            "0.0956",
+            "0.0000",
+            "0.0000",
+            "0.1577"
+          ],
+          "text": "p / 0.9847 for kept tokens, 0 otherwise"
+        },
+        "why": "the threshold scales with the model's confidence: a peaked distribution cuts more of the tail"
+      }
+    },
+    "T=0.7": {
+      "T": 0.7,
+      "top_k": {
+        "k": 3,
+        "sorted_desc": [
+          {
+            "token": " KV",
+            "id": 2,
+            "p": {
+              "value": 0.5236566517846697,
+              "display": "0.5237"
+            },
+            "kept": true
+          },
+          {
+            "token": " cache",
+            "id": 3,
+            "p": {
+              "value": 0.2563517463527048,
+              "display": "0.2564"
+            },
+            "kept": true
+          },
+          {
+            "token": " block",
+            "id": 7,
+            "p": {
+              "value": 0.1254948593398262,
+              "display": "0.1255"
+            },
+            "kept": true
+          },
+          {
+            "token": " GPU",
+            "id": 4,
+            "p": {
+              "value": 0.0614349617070849,
+              "display": "0.0614"
+            },
+            "kept": false
+          },
+          {
+            "token": " a",
+            "id": 1,
+            "p": {
+              "value": 0.03007497310890422,
+              "display": "0.0301"
+            },
+            "kept": false
+          },
+          {
+            "token": " the",
+            "id": 0,
+            "p": {
+              "value": 0.0017272844800475253,
+              "display": "0.0017"
+            },
+            "kept": false
+          },
+          {
+            "token": ",",
+            "id": 6,
+            "p": {
+              "value": 0.0008455777108894344,
+              "display": "0.0008"
+            },
+            "kept": false
+          },
+          {
+            "token": ".",
+            "id": 5,
+            "p": {
+              "value": 0.0004139455158731835,
+              "display": "0.0004"
+            },
+            "kept": false
+          }
+        ],
+        "kept": [
+          " KV",
+          " cache",
+          " block"
+        ],
+        "kept_ids": [
+          2,
+          3,
+          7
+        ],
+        "kept_mass": {
+          "value": 0.9055032574772006,
+          "display": "0.9055"
+        },
+        "renormalized": {
+          "value": [
+            0.0,
+            0.0,
+            0.5783045477314086,
+            0.28310416802576704,
+            0.0,
+            0.0,
+            0.0,
+            0.1385912842428245
+          ],
+          "display": [
+            "0.0000",
+            "0.0000",
+            "0.5783",
+            "0.2831",
+            "0.0000",
+            "0.0000",
+            "0.0000",
+            "0.1386"
+          ],
+          "text": "p / 0.9055 for kept tokens, 0 otherwise"
+        }
+      },
+      "top_p": {
+        "p": 0.9,
+        "rule": "sort descending, add probabilities until the running sum reaches p; keep every token up to and including the one that crosses p (the smallest set with mass >= p)",
+        "sorted_desc": [
+          {
+            "token": " KV",
+            "id": 2,
+            "p": {
+              "value": 0.5236566517846697,
+              "display": "0.5237"
+            },
+            "cumulative": {
+              "value": 0.5236566517846697,
+              "display": "0.5237"
+            },
+            "cumulative_before": {
+              "value": 0.0,
+              "display": "0.0000"
+            },
+            "kept": true
+          },
+          {
+            "token": " cache",
+            "id": 3,
+            "p": {
+              "value": 0.2563517463527048,
+              "display": "0.2564"
+            },
+            "cumulative": {
+              "value": 0.7800083981373744,
+              "display": "0.7800"
+            },
+            "cumulative_before": {
+              "value": 0.5236566517846697,
+              "display": "0.5237"
+            },
+            "kept": true
+          },
+          {
+            "token": " block",
+            "id": 7,
+            "p": {
+              "value": 0.1254948593398262,
+              "display": "0.1255"
+            },
+            "cumulative": {
+              "value": 0.9055032574772006,
+              "display": "0.9055"
+            },
+            "cumulative_before": {
+              "value": 0.7800083981373744,
+              "display": "0.7800"
+            },
+            "kept": true
+          },
+          {
+            "token": " GPU",
+            "id": 4,
+            "p": {
+              "value": 0.0614349617070849,
+              "display": "0.0614"
+            },
+            "cumulative": {
+              "value": 0.9669382191842855,
+              "display": "0.9669"
+            },
+            "cumulative_before": {
+              "value": 0.9055032574772006,
+              "display": "0.9055"
+            },
+            "kept": false
+          },
+          {
+            "token": " a",
+            "id": 1,
+            "p": {
+              "value": 0.03007497310890422,
+              "display": "0.0301"
+            },
+            "cumulative": {
+              "value": 0.9970131922931896,
+              "display": "0.9970"
+            },
+            "cumulative_before": {
+              "value": 0.9669382191842855,
+              "display": "0.9669"
+            },
+            "kept": false
+          },
+          {
+            "token": " the",
+            "id": 0,
+            "p": {
+              "value": 0.0017272844800475253,
+              "display": "0.0017"
+            },
+            "cumulative": {
+              "value": 0.9987404767732372,
+              "display": "0.9987"
+            },
+            "cumulative_before": {
+              "value": 0.9970131922931896,
+              "display": "0.9970"
+            },
+            "kept": false
+          },
+          {
+            "token": ",",
+            "id": 6,
+            "p": {
+              "value": 0.0008455777108894344,
+              "display": "0.0008"
+            },
+            "cumulative": {
+              "value": 0.9995860544841266,
+              "display": "0.9996"
+            },
+            "cumulative_before": {
+              "value": 0.9987404767732372,
+              "display": "0.9987"
+            },
+            "kept": false
+          },
+          {
+            "token": ".",
+            "id": 5,
+            "p": {
+              "value": 0.0004139455158731835,
+              "display": "0.0004"
+            },
+            "cumulative": {
+              "value": 0.9999999999999998,
+              "display": "1.0000"
+            },
+            "cumulative_before": {
+              "value": 0.9995860544841266,
+              "display": "0.9996"
+            },
+            "kept": false
+          }
+        ],
+        "kept": [
+          " KV",
+          " cache",
+          " block"
+        ],
+        "kept_ids": [
+          2,
+          3,
+          7
+        ],
+        "kept_mass": {
+          "value": 0.9055032574772006,
+          "display": "0.9055"
+        },
+        "renormalized": {
+          "value": [
+            0.0,
+            0.0,
+            0.5783045477314086,
+            0.28310416802576704,
+            0.0,
+            0.0,
+            0.0,
+            0.1385912842428245
+          ],
+          "display": [
+            "0.0000",
+            "0.0000",
+            "0.5783",
+            "0.2831",
+            "0.0000",
+            "0.0000",
+            "0.0000",
+            "0.1386"
+          ],
+          "text": "p / 0.9055 for kept tokens, 0 otherwise"
+        }
+      },
+      "min_p": {
+        "min_p": 0.1,
+        "p_max": {
+          "value": 0.5236566517846697,
+          "display": "0.5237"
+        },
+        "threshold": {
+          "value": 0.05236566517846697,
+          "display": "0.0524",
+          "text": "0.1 x 0.5237 = 0.0524"
+        },
+        "per_token": [
+          {
+            "token": " the",
+            "id": 0,
+            "p": {
+              "value": 0.0017272844800475253,
+              "display": "0.0017"
+            },
+            "kept": false
+          },
+          {
+            "token": " a",
+            "id": 1,
+            "p": {
+              "value": 0.03007497310890422,
+              "display": "0.0301"
+            },
+            "kept": false
+          },
+          {
+            "token": " KV",
+            "id": 2,
+            "p": {
+              "value": 0.5236566517846697,
+              "display": "0.5237"
+            },
+            "kept": true
+          },
+          {
+            "token": " cache",
+            "id": 3,
+            "p": {
+              "value": 0.2563517463527048,
+              "display": "0.2564"
+            },
+            "kept": true
+          },
+          {
+            "token": " GPU",
+            "id": 4,
+            "p": {
+              "value": 0.0614349617070849,
+              "display": "0.0614"
+            },
+            "kept": true
+          },
+          {
+            "token": ".",
+            "id": 5,
+            "p": {
+              "value": 0.0004139455158731835,
+              "display": "0.0004"
+            },
+            "kept": false
+          },
+          {
+            "token": ",",
+            "id": 6,
+            "p": {
+              "value": 0.0008455777108894344,
+              "display": "0.0008"
+            },
+            "kept": false
+          },
+          {
+            "token": " block",
+            "id": 7,
+            "p": {
+              "value": 0.1254948593398262,
+              "display": "0.1255"
+            },
+            "kept": true
+          }
+        ],
+        "kept": [
+          " KV",
+          " cache",
+          " GPU",
+          " block"
+        ],
+        "kept_ids": [
+          2,
+          3,
+          4,
+          7
+        ],
+        "kept_mass": {
+          "value": 0.9669382191842855,
+          "display": "0.9669"
+        },
+        "renormalized": {
+          "value": [
+            0.0,
+            0.0,
+            0.5415616441621569,
+            0.2651169860355345,
+            0.06353556048173561,
+            0.0,
+            0.0,
+            0.12978580932057313
+          ],
+          "display": [
+            "0.0000",
+            "0.0000",
+            "0.5416",
+            "0.2651",
+            "0.0635",
+            "0.0000",
+            "0.0000",
+            "0.1298"
+          ],
+          "text": "p / 0.9669 for kept tokens, 0 otherwise"
+        },
+        "why": "the threshold scales with the model's confidence: a peaked distribution cuts more of the tail"
+      }
+    }
+  },
+  "pipeline_vllm_order": {
+    "order": [
+      "temperature",
+      "min_p",
+      "top_k",
+      "top_p",
+      "sample"
+    ],
+    "settings": {
+      "temperature": 0.7,
+      "top_k": 3,
+      "top_p": 0.9,
+      "min_p": 0.1
+    },
+    "temperature": 0.7,
+    "scaled_logits": {
+      "value": [
+        -1.4285714285714286,
+        1.4285714285714286,
+        4.285714285714286,
+        3.5714285714285716,
+        2.142857142857143,
+        -2.857142857142857,
+        -2.142857142857143,
+        2.857142857142857
+      ],
+      "display": [
+        "-1.4286",
+        "1.4286",
+        "4.2857",
+        "3.5714",
+        "2.1429",
+        "-2.8571",
+        "-2.1429",
+        "2.8571"
+      ]
+    },
+    "stages": [
+      {
+        "stage": "min_p",
+        "rule": "probs = softmax(logits / T); mask tokens with probs < min_p x max(probs)",
+        "threshold": {
+          "value": 0.05236566517846697,
+          "display": "0.0524"
+        },
+        "input_probs": {
+          "value": [
+            0.0017272844800475253,
+            0.03007497310890422,
+            0.5236566517846697,
+            0.2563517463527048,
+            0.0614349617070849,
+            0.0004139455158731835,
+            0.0008455777108894344,
+            0.1254948593398262
+          ],
+          "display": [
+            "0.0017",
+            "0.0301",
+            "0.5237",
+            "0.2564",
+            "0.0614",
+            "0.0004",
+            "0.0008",
+            "0.1255"
+          ]
+        },
+        "kept": [
+          " KV",
+          " cache",
+          " GPU",
+          " block"
+        ],
+        "probs_after": {
+          "value": [
+            0.0,
+            0.0,
+            0.5415616441621569,
+            0.2651169860355345,
+            0.06353556048173561,
+            0.0,
+            0.0,
+            0.12978580932057313
+          ],
+          "display": [
+            "0.0000",
+            "0.0000",
+            "0.5416",
+            "0.2651",
+            "0.0635",
+            "0.0000",
+            "0.0000",
+            "0.1298"
+          ]
+        }
+      },
+      {
+        "stage": "top_k",
+        "rule": "keep the 3 largest remaining logits",
+        "kept": [
+          " KV",
+          " cache",
+          " block"
+        ],
+        "probs_after": {
+          "value": [
+            0.0,
+            0.0,
+            0.5783045477314085,
+            0.283104168025767,
+            0.0,
+            0.0,
+            0.0,
+            0.1385912842428245
+          ],
+          "display": [
+            "0.0000",
+            "0.0000",
+            "0.5783",
+            "0.2831",
+            "0.0000",
+            "0.0000",
+            "0.0000",
+            "0.1386"
+          ]
+        }
+      },
+      {
+        "stage": "top_p",
+        "rule": "vLLM: sort the remaining probabilities ascending, cumulative sum, mask entries whose cumsum <= 1 - p = 0.1, always keep the largest (same set as the descending 'smallest set with mass >= p' rule)",
+        "ascending": [
+          {
+            "token": " block",
+            "p": {
+              "value": 0.1385912842428245,
+              "display": "0.1386"
+            },
+            "cumsum": {
+              "value": 0.1385912842428245,
+              "display": "0.1386"
+            },
+            "masked": false
+          },
+          {
+            "token": " cache",
+            "p": {
+              "value": 0.283104168025767,
+              "display": "0.2831"
+            },
+            "cumsum": {
+              "value": 0.4216954522685915,
+              "display": "0.4217"
+            },
+            "masked": false
+          },
+          {
+            "token": " KV",
+            "p": {
+              "value": 0.5783045477314085,
+              "display": "0.5783"
+            },
+            "cumsum": {
+              "value": 1.0,
+              "display": "1.0000"
+            },
+            "masked": false
+          }
+        ],
+        "kept": [
+          " KV",
+          " cache",
+          " block"
+        ],
+        "probs_after": {
+          "value": [
+            0.0,
+            0.0,
+            0.5783045477314085,
+            0.283104168025767,
+            0.0,
+            0.0,
+            0.0,
+            0.1385912842428245
+          ],
+          "display": [
+            "0.0000",
+            "0.0000",
+            "0.5783",
+            "0.2831",
+            "0.0000",
+            "0.0000",
+            "0.0000",
+            "0.1386"
+          ]
+        }
+      }
+    ],
+    "final_kept": [
+      " KV",
+      " cache",
+      " block"
+    ],
+    "final_kept_ids": [
+      2,
+      3,
+      7
+    ],
+    "final_probs": {
+      "value": [
+        0.0,
+        0.0,
+        0.5783045477314085,
+        0.283104168025767,
+        0.0,
+        0.0,
+        0.0,
+        0.1385912842428245
+      ],
+      "display": [
+        "0.0000",
+        "0.0000",
+        "0.5783",
+        "0.2831",
+        "0.0000",
+        "0.0000",
+        "0.0000",
+        "0.1386"
+      ]
+    },
+    "source": "research/notes/03-engines.md §2.4 (Sampler docstring, vllm/v1/sample/sampler.py) and §2.19 (Model Runner V2 keeps the same order)"
+  },
+  "sample": {
+    "method": "Gumbel-max: choose argmax_j (logit_j / T + g_j) over the tokens that survived the filters, with g_j = -ln(-ln u_j) and u_j uniform in (0, 1). This picks token j with exactly its final renormalised probability.",
+    "seed": 2,
+    "seed_note": "Any seed is valid. This one was picked so the draw lands on a token other than the greedy choice, to show that sampling is not argmax; 'other_seeds' shows what seeds 0-9 pick with the same probabilities.",
+    "position": 7,
+    "rng": "u = (first 8 bytes of SHA-256('<seed>:<position>:<token_id>') as an unsigned integer, top 53 bits, plus 0.5) / 2^53, so 0 < u < 1. The draw depends only on (seed, position, token id), never on batch size or batch position. vLLM Model Runner V2 uses the same idea with a different hash (murmur3_hash32(seed, position, token_id)), so the numbers here are illustrative, not vLLM's.",
+    "per_token": [
+      {
+        "token": " the",
+        "id": 0,
+        "u": {
+          "value": 0.8068028775150975,
+          "display": "0.8068"
+        },
+        "gumbel": {
+          "value": 1.5386258005599893,
+          "display": "1.5386",
+          "text": "-ln(-ln 0.8068) = 1.5386"
+        },
+        "scaled_logit": {
+          "value": -1.4285714285714286,
+          "display": "-1.4286"
+        },
+        "after_filters": {
+          "value": null,
+          "display": "−∞"
+        },
+        "score": {
+          "value": null,
+          "display": "−∞"
+        },
+        "filtered_out": true
+      },
+      {
+        "token": " a",
+        "id": 1,
+        "u": {
+          "value": 0.3959856538235071,
+          "display": "0.3960"
+        },
+        "gumbel": {
+          "value": 0.0764736801253036,
+          "display": "0.0765",
+          "text": "-ln(-ln 0.3960) = 0.0765"
+        },
+        "scaled_logit": {
+          "value": 1.4285714285714286,
+          "display": "1.4286"
+        },
+        "after_filters": {
+          "value": null,
+          "display": "−∞"
+        },
+        "score": {
+          "value": null,
+          "display": "−∞"
+        },
+        "filtered_out": true
+      },
+      {
+        "token": " KV",
+        "id": 2,
+        "u": {
+          "value": 0.5189739693929347,
+          "display": "0.5190"
+        },
+        "gumbel": {
+          "value": 0.4217445738818747,
+          "display": "0.4217",
+          "text": "-ln(-ln 0.5190) = 0.4217"
+        },
+        "scaled_logit": {
+          "value": 4.285714285714286,
+          "display": "4.2857"
+        },
+        "after_filters": {
+          "value": 4.285714285714286,
+          "display": "4.2857"
+        },
+        "score": {
+          "value": 4.70745885959616,
+          "display": "4.7075"
+        },
+        "filtered_out": false
+      },
+      {
+        "token": " cache",
+        "id": 3,
+        "u": {
+          "value": 0.7478824758458635,
+          "display": "0.7479"
+        },
+        "gumbel": {
+          "value": 1.2361192377951777,
+          "display": "1.2361",
+          "text": "-ln(-ln 0.7479) = 1.2361"
+        },
+        "scaled_logit": {
+          "value": 3.5714285714285716,
+          "display": "3.5714"
+        },
+        "after_filters": {
+          "value": 3.5714285714285716,
+          "display": "3.5714"
+        },
+        "score": {
+          "value": 4.807547809223749,
+          "display": "4.8075"
+        },
+        "filtered_out": false
+      },
+      {
+        "token": " GPU",
+        "id": 4,
+        "u": {
+          "value": 0.2708909419430399,
+          "display": "0.2709"
+        },
+        "gumbel": {
+          "value": -0.2669988675859054,
+          "display": "-0.2670",
+          "text": "-ln(-ln 0.2709) = -0.2670"
+        },
+        "scaled_logit": {
+          "value": 2.142857142857143,
+          "display": "2.1429"
+        },
+        "after_filters": {
+          "value": null,
+          "display": "−∞"
+        },
+        "score": {
+          "value": null,
+          "display": "−∞"
+        },
+        "filtered_out": true
+      },
+      {
+        "token": ".",
+        "id": 5,
+        "u": {
+          "value": 0.5470576119221946,
+          "display": "0.5471"
+        },
+        "gumbel": {
+          "value": 0.5055045414259463,
+          "display": "0.5055",
+          "text": "-ln(-ln 0.5471) = 0.5055"
+        },
+        "scaled_logit": {
+          "value": -2.857142857142857,
+          "display": "-2.8571"
+        },
+        "after_filters": {
+          "value": null,
+          "display": "−∞"
+        },
+        "score": {
+          "value": null,
+          "display": "−∞"
+        },
+        "filtered_out": true
+      },
+      {
+        "token": ",",
+        "id": 6,
+        "u": {
+          "value": 0.6929975524569656,
+          "display": "0.6930"
+        },
+        "gumbel": {
+          "value": 1.0031326370251268,
+          "display": "1.0031",
+          "text": "-ln(-ln 0.6930) = 1.0031"
+        },
+        "scaled_logit": {
+          "value": -2.142857142857143,
+          "display": "-2.1429"
+        },
+        "after_filters": {
+          "value": null,
+          "display": "−∞"
+        },
+        "score": {
+          "value": null,
+          "display": "−∞"
+        },
+        "filtered_out": true
+      },
+      {
+        "token": " block",
+        "id": 7,
+        "u": {
+          "value": 0.16668884792340816,
+          "display": "0.1667"
+        },
+        "gumbel": {
+          "value": -0.583123805395996,
+          "display": "-0.5831",
+          "text": "-ln(-ln 0.1667) = -0.5831"
+        },
+        "scaled_logit": {
+          "value": 2.857142857142857,
+          "display": "2.8571"
+        },
+        "after_filters": {
+          "value": 2.857142857142857,
+          "display": "2.8571"
+        },
+        "score": {
+          "value": 2.274019051746861,
+          "display": "2.2740"
+        },
+        "filtered_out": false
+      }
+    ],
+    "chosen": {
+      "token": " cache",
+      "id": 3,
+      "final_prob": {
+        "value": 0.283104168025767,
+        "display": "0.2831"
+      },
+      "differs_from_greedy": true
+    },
+    "other_seeds": [
+      {
+        "seed": 0,
+        "token": " KV",
+        "id": 2
+      },
+      {
+        "seed": 1,
+        "token": " KV",
+        "id": 2
+      },
+      {
+        "seed": 2,
+        "token": " cache",
+        "id": 3
+      },
+      {
+        "seed": 3,
+        "token": " block",
+        "id": 7
+      },
+      {
+        "seed": 4,
+        "token": " KV",
+        "id": 2
+      },
+      {
+        "seed": 5,
+        "token": " block",
+        "id": 7
+      },
+      {
+        "seed": 6,
+        "token": " cache",
+        "id": 3
+      },
+      {
+        "seed": 7,
+        "token": " KV",
+        "id": 2
+      },
+      {
+        "seed": 8,
+        "token": " KV",
+        "id": 2
+      },
+      {
+        "seed": 9,
+        "token": " cache",
+        "id": 3
+      }
+    ],
+    "monte_carlo_check": {
+      "draws": 200000,
+      "seed": 20261009,
+      "rng": "numpy default_rng(seed).gumbel",
+      "frequencies": {
+        "value": [
+          0.0,
+          0.0,
+          0.57678,
+          0.28394,
+          0.0,
+          0.0,
+          0.0,
+          0.13928
+        ],
+        "display": [
+          "0.0000",
+          "0.0000",
+          "0.5768",
+          "0.2839",
+          "0.0000",
+          "0.0000",
+          "0.0000",
+          "0.1393"
+        ]
+      },
+      "final_probs": {
+        "value": [
+          0.0,
+          0.0,
+          0.5783045477314085,
+          0.283104168025767,
+          0.0,
+          0.0,
+          0.0,
+          0.1385912842428245
+        ],
+        "display": [
+          "0.0000",
+          "0.0000",
+          "0.5783",
+          "0.2831",
+          "0.0000",
+          "0.0000",
+          "0.0000",
+          "0.1386"
+        ]
+      },
+      "max_abs_deviation": 0.001524547731408532,
+      "note": "Gumbel-max frequencies match the final probabilities to sampling noise"
+    },
+    "vllm_v1_variant": "vLLM's V1 sampler draws q ~ Exponential(1) per entry and returns argmax(probs / q), the same distribution in another form, and avoids torch.multinomial because it forces a CPU-GPU synchronisation.",
+    "source": "research/notes/03-engines.md §2.19 (vllm/v1/worker/gpu/sample/gumbel.py) and §2.4 (V1 exponential-race form)"
+  },
+  "order_matters": {
+    "statement": "Engines differ in the order of these steps, for example whether temperature is applied before or after truncation. vLLM applies temperature, then min_p, then top_k/top_p, then samples. Top-k keeps the same set at any temperature (dividing by T keeps the ranking); top-p and min-p do not, because they look at probability values.",
+    "top_p_before_temperature": [
+      " KV",
+      " cache",
+      " GPU",
+      " block"
+    ],
+    "top_p_after_temperature": [
+      " KV",
+      " cache",
+      " block"
+    ],
+    "sources": [
+      "research/notes/03-engines.md §2.4 (Sampler docstring, vllm/v1/sample/sampler.py) and §2.19 (Model Runner V2 keeps the same order)",
+      "research/notes/05-papers-architecture.md §2.F (library ordering note)"
+    ]
+  },
+  "where_it_runs": "vLLM samples on the GPU right after the LM head; only the chosen token ids (int32, 4 bytes per request) are copied to the CPU, not the [batch, vocab] logits. Source: research/notes/03-engines.md §2.4.",
+  "seed_scope": "A per-request seed fixes the random draws. In Model Runner V2 the noise for a request depends only on (seed, position, token id), not on batch size or batch position. It does not fix the logits themselves; see data/nondeterminism.json. Source: research/notes/03-engines.md §2.19.",
+  "min_p_caveat": "min-p is presented as a definition adopted by libraries; its quality claims are contested (research/notes/05-papers-architecture.md §2.F).",
+  "sources": {
+    "temperature": "research/notes/05-papers-architecture.md §2.F [S55 Holtzman et al., eq. 4]",
+    "top_k": "research/notes/05-papers-architecture.md §2.F",
+    "top_p": "research/notes/05-papers-architecture.md §2.F [S55 eqs. 2-3]",
+    "min_p": "research/notes/05-papers-architecture.md §2.F [S56 Nguyen et al., eqs. 1-3]",
+    "vllm_order": "research/notes/03-engines.md §2.4 (Sampler docstring, vllm/v1/sample/sampler.py) and §2.19 (Model Runner V2 keeps the same order)",
+    "gumbel": "research/notes/03-engines.md §2.19 (vllm/v1/worker/gpu/sample/gumbel.py) and §2.4 (V1 exponential-race form)"
+  }
+}

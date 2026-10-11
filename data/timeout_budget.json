@@ -1,0 +1,712 @@
+{
+  "meta": {
+    "script": "sim/timeout_budget.py",
+    "generated_at": "2026-10-09T13:03:07+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T12:31:14+00:00",
+      "sha256": "7760cf964886"
+    },
+    "constants_used": {
+      "hypothetical.slo.top_level_deadline_s": 120,
+      "hypothetical.timeout_budget_ref.conversation_read_cap_s": 1.0,
+      "hypothetical.timeout_budget_ref.edge_reserve_s": 0.5,
+      "hypothetical.timeout_budget_ref.final_pass_cap_s": 60,
+      "hypothetical.timeout_budget_ref.final_write_reserve_s": 2.0,
+      "hypothetical.timeout_budget_ref.gateway_reserve_s": 0.5,
+      "hypothetical.timeout_budget_ref.memory_read_cap_s": 0.5,
+      "hypothetical.timeout_budget_ref.memory_read_expected_s": 0.02,
+      "hypothetical.timeout_budget_ref.retrieval_cap_s": 3.0,
+      "hypothetical.timeout_budget_ref.tool_pass_cap_s": 40,
+      "hypothetical.tool_call_story.pass2_timeout_s": 30,
+      "hypothetical.tool_exec_limits.run_python_deadline_margin_s": 5,
+      "hypothetical.tool_exec_limits.web_search_deadline_s": 20,
+      "hypothetical.web_search_pipeline.rerank_latency_ms": 25
+    }
+  },
+  "conventions": {
+    "serves": [
+      "R-XVII.1"
+    ],
+    "class": "HYPOTHETICAL deadlines (class C, RA-11); rule from gRPC (SRC-148)",
+    "rule": "child deadline = min(cap, parent time left − reserve); every hop passes a timeout, not a clock time"
+  },
+  "chain": {
+    "edge": {
+      "formula": "top-level deadline (hypothetical.slo.top_level_deadline_s)",
+      "value": 120,
+      "unit": "s"
+    },
+    "gateway": {
+      "formula": "edge deadline − edge reserve",
+      "value": 119.5,
+      "unit": "s",
+      "arithmetic": "120 − 0.5 = 119.5 s"
+    },
+    "orchestrator": {
+      "formula": "gateway deadline − gateway reserve",
+      "value": 119,
+      "unit": "s",
+      "arithmetic": "119.5 − 0.5 = 119.0 s"
+    },
+    "orchestrator_usable": {
+      "formula": "orchestrator deadline − final write reserve",
+      "value": 117,
+      "unit": "s",
+      "arithmetic": "119.0 − 2.0 = 117.0 s"
+    }
+  },
+  "sum_of_caps": {
+    "formula": "sum of the child caps on the path if each ran to its cap (the parallel fan-out counts its largest cap)",
+    "value": 198,
+    "unit": "s",
+    "note": "Larger than the usable time, so a fixed per-call timeout alone cannot keep the request inside its deadline."
+  },
+  "sum_of_caps_over_usable": {
+    "value": 1.692307692,
+    "unit": "ratio"
+  },
+  "typical": {
+    "edge_deadline_s": 120,
+    "gateway_deadline_s": 119.5,
+    "orchestrator_deadline_s": 119,
+    "final_write_reserve_s": 2,
+    "steps": [
+      {
+        "id": "conversation_read",
+        "what": "read history from the conversation store",
+        "starts_at_s": 0,
+        "parent_left_s": 119,
+        "cap_s": 1,
+        "child_deadline_s": 1,
+        "clipped": false,
+        "child_lt_parent": true,
+        "time_used_s": 0.006,
+        "status": "ok",
+        "parallel_group": "fan_out",
+        "expected_source": "reference_trace:times.conversation_read_s"
+      },
+      {
+        "id": "memory_read",
+        "what": "look up memory records",
+        "starts_at_s": 0,
+        "parent_left_s": 119,
+        "cap_s": 0.5,
+        "child_deadline_s": 0.5,
+        "clipped": false,
+        "child_lt_parent": true,
+        "time_used_s": 0.02,
+        "status": "ok",
+        "parallel_group": "fan_out",
+        "expected_source": "hypothetical.timeout_budget_ref.memory_read_expected_s (no span in the trace)"
+      },
+      {
+        "id": "retrieval",
+        "what": "hybrid retrieval and rerank",
+        "starts_at_s": 0,
+        "parent_left_s": 119,
+        "cap_s": 3,
+        "child_deadline_s": 3,
+        "clipped": false,
+        "child_lt_parent": true,
+        "time_used_s": 0.18082,
+        "status": "ok",
+        "parallel_group": "fan_out",
+        "expected_source": "reference_trace:times.rag_s"
+      },
+      {
+        "id": "pass1",
+        "what": "inference pass 1 (ends in the web_search call)",
+        "starts_at_s": 0.18082,
+        "parent_left_s": 118.81918,
+        "cap_s": 40,
+        "child_deadline_s": 40,
+        "clipped": false,
+        "child_lt_parent": true,
+        "time_used_s": 20.72956576,
+        "status": "ok",
+        "parallel_group": null,
+        "expected_detail": {
+          "formula": "queue + prefill + decode (reference_trace, Part 19.1; decode step of Part 14.2)",
+          "value": 20.72956576,
+          "unit": "s",
+          "arithmetic": "0.17 + 0.531 + 20.03 = 20.73 s",
+          "step_ms": 47.238
+        }
+      },
+      {
+        "id": "web_search",
+        "what": "web_search tool call (3 queries, 3 page fetches)",
+        "starts_at_s": 20.91038576,
+        "parent_left_s": 98.08961424,
+        "cap_s": 20,
+        "child_deadline_s": 20,
+        "clipped": false,
+        "child_lt_parent": true,
+        "time_used_s": 1.6053,
+        "status": "ok",
+        "parallel_group": null,
+        "children": {
+          "query_attempt_s": 2.5,
+          "page_fetch_s": 6.0,
+          "connect_s": 2.0
+        },
+        "expected_source": "web_search_budget:latency.monte_carlo.tool_step_ms.p50 (Part 7.2)",
+        "child_margin_s": 0.025,
+        "children_effective_s": {
+          "query_attempt_s": 2.5,
+          "page_fetch_s": 6,
+          "connect_s": 2
+        },
+        "children_clipped": false,
+        "children_lt_child": true
+      },
+      {
+        "id": "pass2",
+        "what": "inference pass 2 (ends in the run_python call)",
+        "starts_at_s": 22.51568576,
+        "parent_left_s": 96.48431424,
+        "cap_s": 40,
+        "child_deadline_s": 40,
+        "clipped": false,
+        "child_lt_parent": true,
+        "time_used_s": 21.10989627,
+        "status": "ok",
+        "parallel_group": null,
+        "expected_detail": {
+          "formula": "queue + prefill + decode (reference_trace, Part 19.1; decode step of Part 14.2)",
+          "value": 21.10989627,
+          "unit": "s",
+          "arithmetic": "0.17 + 0.155 + 20.78 = 21.11 s",
+          "step_ms": 47.238
+        }
+      },
+      {
+        "id": "run_python",
+        "what": "run_python tool call (sandbox claim, run, artifact upload)",
+        "starts_at_s": 43.62558203,
+        "parent_left_s": 75.37441797,
+        "cap_s": 35,
+        "child_deadline_s": 35,
+        "clipped": false,
+        "child_lt_parent": true,
+        "time_used_s": 1.305,
+        "status": "ok",
+        "parallel_group": null,
+        "children": {
+          "sandbox_timeout_s": 30
+        },
+        "expected_arithmetic": "25 + 1200 + 80 = 1305 ms",
+        "expected_source": "reference_trace:times.run_python_s (sandbox_pool)",
+        "child_margin_s": 5,
+        "children_effective_s": {
+          "sandbox_timeout_s": 30
+        },
+        "children_clipped": false,
+        "children_lt_child": true
+      },
+      {
+        "id": "pass3",
+        "what": "inference pass 3 (the streamed answer)",
+        "starts_at_s": 44.93058203,
+        "parent_left_s": 74.06941797,
+        "cap_s": 60,
+        "child_deadline_s": 60,
+        "clipped": false,
+        "child_lt_parent": true,
+        "time_used_s": 40.89388825,
+        "status": "ok",
+        "parallel_group": null,
+        "expected_detail": {
+          "formula": "queue + prefill + decode (reference_trace, Part 19.1; decode step of Part 14.2)",
+          "value": 40.89388825,
+          "unit": "s",
+          "arithmetic": "0.17 + 0.005 + 40.72 = 40.89 s",
+          "step_ms": 47.238
+        }
+      }
+    ],
+    "by_id": {
+      "conversation_read": {
+        "id": "conversation_read",
+        "what": "read history from the conversation store",
+        "starts_at_s": 0,
+        "parent_left_s": 119,
+        "cap_s": 1,
+        "child_deadline_s": 1,
+        "clipped": false,
+        "child_lt_parent": true,
+        "time_used_s": 0.006,
+        "status": "ok",
+        "parallel_group": "fan_out",
+        "expected_source": "reference_trace:times.conversation_read_s"
+      },
+      "memory_read": {
+        "id": "memory_read",
+        "what": "look up memory records",
+        "starts_at_s": 0,
+        "parent_left_s": 119,
+        "cap_s": 0.5,
+        "child_deadline_s": 0.5,
+        "clipped": false,
+        "child_lt_parent": true,
+        "time_used_s": 0.02,
+        "status": "ok",
+        "parallel_group": "fan_out",
+        "expected_source": "hypothetical.timeout_budget_ref.memory_read_expected_s (no span in the trace)"
+      },
+      "retrieval": {
+        "id": "retrieval",
+        "what": "hybrid retrieval and rerank",
+        "starts_at_s": 0,
+        "parent_left_s": 119,
+        "cap_s": 3,
+        "child_deadline_s": 3,
+        "clipped": false,
+        "child_lt_parent": true,
+        "time_used_s": 0.18082,
+        "status": "ok",
+        "parallel_group": "fan_out",
+        "expected_source": "reference_trace:times.rag_s"
+      },
+      "pass1": {
+        "id": "pass1",
+        "what": "inference pass 1 (ends in the web_search call)",
+        "starts_at_s": 0.18082,
+        "parent_left_s": 118.81918,
+        "cap_s": 40,
+        "child_deadline_s": 40,
+        "clipped": false,
+        "child_lt_parent": true,
+        "time_used_s": 20.72956576,
+        "status": "ok",
+        "parallel_group": null,
+        "expected_detail": {
+          "formula": "queue + prefill + decode (reference_trace, Part 19.1; decode step of Part 14.2)",
+          "value": 20.72956576,
+          "unit": "s",
+          "arithmetic": "0.17 + 0.531 + 20.03 = 20.73 s",
+          "step_ms": 47.238
+        }
+      },
+      "web_search": {
+        "id": "web_search",
+        "what": "web_search tool call (3 queries, 3 page fetches)",
+        "starts_at_s": 20.91038576,
+        "parent_left_s": 98.08961424,
+        "cap_s": 20,
+        "child_deadline_s": 20,
+        "clipped": false,
+        "child_lt_parent": true,
+        "time_used_s": 1.6053,
+        "status": "ok",
+        "parallel_group": null,
+        "children": {
+          "query_attempt_s": 2.5,
+          "page_fetch_s": 6.0,
+          "connect_s": 2.0
+        },
+        "expected_source": "web_search_budget:latency.monte_carlo.tool_step_ms.p50 (Part 7.2)",
+        "child_margin_s": 0.025,
+        "children_effective_s": {
+          "query_attempt_s": 2.5,
+          "page_fetch_s": 6,
+          "connect_s": 2
+        },
+        "children_clipped": false,
+        "children_lt_child": true
+      },
+      "pass2": {
+        "id": "pass2",
+        "what": "inference pass 2 (ends in the run_python call)",
+        "starts_at_s": 22.51568576,
+        "parent_left_s": 96.48431424,
+        "cap_s": 40,
+        "child_deadline_s": 40,
+        "clipped": false,
+        "child_lt_parent": true,
+        "time_used_s": 21.10989627,
+        "status": "ok",
+        "parallel_group": null,
+        "expected_detail": {
+          "formula": "queue + prefill + decode (reference_trace, Part 19.1; decode step of Part 14.2)",
+          "value": 21.10989627,
+          "unit": "s",
+          "arithmetic": "0.17 + 0.155 + 20.78 = 21.11 s",
+          "step_ms": 47.238
+        }
+      },
+      "run_python": {
+        "id": "run_python",
+        "what": "run_python tool call (sandbox claim, run, artifact upload)",
+        "starts_at_s": 43.62558203,
+        "parent_left_s": 75.37441797,
+        "cap_s": 35,
+        "child_deadline_s": 35,
+        "clipped": false,
+        "child_lt_parent": true,
+        "time_used_s": 1.305,
+        "status": "ok",
+        "parallel_group": null,
+        "children": {
+          "sandbox_timeout_s": 30
+        },
+        "expected_arithmetic": "25 + 1200 + 80 = 1305 ms",
+        "expected_source": "reference_trace:times.run_python_s (sandbox_pool)",
+        "child_margin_s": 5,
+        "children_effective_s": {
+          "sandbox_timeout_s": 30
+        },
+        "children_clipped": false,
+        "children_lt_child": true
+      },
+      "pass3": {
+        "id": "pass3",
+        "what": "inference pass 3 (the streamed answer)",
+        "starts_at_s": 44.93058203,
+        "parent_left_s": 74.06941797,
+        "cap_s": 60,
+        "child_deadline_s": 60,
+        "clipped": false,
+        "child_lt_parent": true,
+        "time_used_s": 40.89388825,
+        "status": "ok",
+        "parallel_group": null,
+        "expected_detail": {
+          "formula": "queue + prefill + decode (reference_trace, Part 19.1; decode step of Part 14.2)",
+          "value": 40.89388825,
+          "unit": "s",
+          "arithmetic": "0.17 + 0.005 + 40.72 = 40.89 s",
+          "step_ms": 47.238
+        }
+      }
+    },
+    "total_used_s": 85.82447028,
+    "left_at_end_s": 33.17552972,
+    "every_child_smaller_than_parent": true
+  },
+  "trace_check": {
+    "orchestrator_turn_span_s": 85.82447027703026,
+    "typical_total_equals_span": true,
+    "note": "the typical total is the orchestrator.turn span of Part 19.1; the end-to-end time from the key press is super_trace:milestones.e2e_s (Part 21)"
+  },
+  "slow": {
+    "edge_deadline_s": 120,
+    "gateway_deadline_s": 119.5,
+    "orchestrator_deadline_s": 119,
+    "final_write_reserve_s": 2,
+    "steps": [
+      {
+        "id": "conversation_read",
+        "what": "read history from the conversation store",
+        "starts_at_s": 0,
+        "parent_left_s": 119,
+        "cap_s": 1,
+        "child_deadline_s": 1,
+        "clipped": false,
+        "child_lt_parent": true,
+        "time_used_s": 1,
+        "status": "ok",
+        "parallel_group": "fan_out",
+        "expected_source": "reference_trace:times.conversation_read_s"
+      },
+      {
+        "id": "memory_read",
+        "what": "look up memory records",
+        "starts_at_s": 0,
+        "parent_left_s": 119,
+        "cap_s": 0.5,
+        "child_deadline_s": 0.5,
+        "clipped": false,
+        "child_lt_parent": true,
+        "time_used_s": 0.5,
+        "status": "ok",
+        "parallel_group": "fan_out",
+        "expected_source": "hypothetical.timeout_budget_ref.memory_read_expected_s (no span in the trace)"
+      },
+      {
+        "id": "retrieval",
+        "what": "hybrid retrieval and rerank",
+        "starts_at_s": 0,
+        "parent_left_s": 119,
+        "cap_s": 3,
+        "child_deadline_s": 3,
+        "clipped": false,
+        "child_lt_parent": true,
+        "time_used_s": 3,
+        "status": "ok",
+        "parallel_group": "fan_out",
+        "expected_source": "reference_trace:times.rag_s"
+      },
+      {
+        "id": "pass1",
+        "what": "inference pass 1 (ends in the web_search call)",
+        "starts_at_s": 3,
+        "parent_left_s": 116,
+        "cap_s": 40,
+        "child_deadline_s": 40,
+        "clipped": false,
+        "child_lt_parent": true,
+        "time_used_s": 40,
+        "status": "ok",
+        "parallel_group": null,
+        "expected_detail": {
+          "formula": "queue + prefill + decode (reference_trace, Part 19.1; decode step of Part 14.2)",
+          "value": 20.72956576,
+          "unit": "s",
+          "arithmetic": "0.17 + 0.531 + 20.03 = 20.73 s",
+          "step_ms": 47.238
+        }
+      },
+      {
+        "id": "web_search",
+        "what": "web_search tool call (3 queries, 3 page fetches)",
+        "starts_at_s": 43,
+        "parent_left_s": 76,
+        "cap_s": 20,
+        "child_deadline_s": 20,
+        "clipped": false,
+        "child_lt_parent": true,
+        "time_used_s": 20,
+        "status": "ok",
+        "parallel_group": null,
+        "children": {
+          "query_attempt_s": 2.5,
+          "page_fetch_s": 6.0,
+          "connect_s": 2.0
+        },
+        "expected_source": "web_search_budget:latency.monte_carlo.tool_step_ms.p50 (Part 7.2)",
+        "child_margin_s": 0.025,
+        "children_effective_s": {
+          "query_attempt_s": 2.5,
+          "page_fetch_s": 6,
+          "connect_s": 2
+        },
+        "children_clipped": false,
+        "children_lt_child": true
+      },
+      {
+        "id": "pass2",
+        "what": "inference pass 2 (ends in the run_python call)",
+        "starts_at_s": 63,
+        "parent_left_s": 56,
+        "cap_s": 40,
+        "child_deadline_s": 40,
+        "clipped": false,
+        "child_lt_parent": true,
+        "time_used_s": 40,
+        "status": "ok",
+        "parallel_group": null,
+        "expected_detail": {
+          "formula": "queue + prefill + decode (reference_trace, Part 19.1; decode step of Part 14.2)",
+          "value": 21.10989627,
+          "unit": "s",
+          "arithmetic": "0.17 + 0.155 + 20.78 = 21.11 s",
+          "step_ms": 47.238
+        }
+      },
+      {
+        "id": "run_python",
+        "what": "run_python tool call (sandbox claim, run, artifact upload)",
+        "starts_at_s": 103,
+        "parent_left_s": 16,
+        "cap_s": 35,
+        "child_deadline_s": 14,
+        "clipped": true,
+        "child_lt_parent": true,
+        "time_used_s": 14,
+        "status": "clipped, then expired",
+        "parallel_group": null,
+        "children": {
+          "sandbox_timeout_s": 30
+        },
+        "expected_arithmetic": "25 + 1200 + 80 = 1305 ms",
+        "expected_source": "reference_trace:times.run_python_s (sandbox_pool)",
+        "child_margin_s": 5,
+        "children_effective_s": {
+          "sandbox_timeout_s": 9
+        },
+        "children_clipped": true,
+        "children_lt_child": true
+      },
+      {
+        "id": "pass3",
+        "what": "inference pass 3 (the streamed answer)",
+        "starts_at_s": 117,
+        "parent_left_s": 2,
+        "cap_s": 60,
+        "child_deadline_s": 0,
+        "clipped": true,
+        "child_lt_parent": true,
+        "time_used_s": 0,
+        "status": "skipped: no time left",
+        "parallel_group": null,
+        "expected_detail": {
+          "formula": "queue + prefill + decode (reference_trace, Part 19.1; decode step of Part 14.2)",
+          "value": 40.89388825,
+          "unit": "s",
+          "arithmetic": "0.17 + 0.005 + 40.72 = 40.89 s",
+          "step_ms": 47.238
+        }
+      }
+    ],
+    "by_id": {
+      "conversation_read": {
+        "id": "conversation_read",
+        "what": "read history from the conversation store",
+        "starts_at_s": 0,
+        "parent_left_s": 119,
+        "cap_s": 1,
+        "child_deadline_s": 1,
+        "clipped": false,
+        "child_lt_parent": true,
+        "time_used_s": 1,
+        "status": "ok",
+        "parallel_group": "fan_out",
+        "expected_source": "reference_trace:times.conversation_read_s"
+      },
+      "memory_read": {
+        "id": "memory_read",
+        "what": "look up memory records",
+        "starts_at_s": 0,
+        "parent_left_s": 119,
+        "cap_s": 0.5,
+        "child_deadline_s": 0.5,
+        "clipped": false,
+        "child_lt_parent": true,
+        "time_used_s": 0.5,
+        "status": "ok",
+        "parallel_group": "fan_out",
+        "expected_source": "hypothetical.timeout_budget_ref.memory_read_expected_s (no span in the trace)"
+      },
+      "retrieval": {
+        "id": "retrieval",
+        "what": "hybrid retrieval and rerank",
+        "starts_at_s": 0,
+        "parent_left_s": 119,
+        "cap_s": 3,
+        "child_deadline_s": 3,
+        "clipped": false,
+        "child_lt_parent": true,
+        "time_used_s": 3,
+        "status": "ok",
+        "parallel_group": "fan_out",
+        "expected_source": "reference_trace:times.rag_s"
+      },
+      "pass1": {
+        "id": "pass1",
+        "what": "inference pass 1 (ends in the web_search call)",
+        "starts_at_s": 3,
+        "parent_left_s": 116,
+        "cap_s": 40,
+        "child_deadline_s": 40,
+        "clipped": false,
+        "child_lt_parent": true,
+        "time_used_s": 40,
+        "status": "ok",
+        "parallel_group": null,
+        "expected_detail": {
+          "formula": "queue + prefill + decode (reference_trace, Part 19.1; decode step of Part 14.2)",
+          "value": 20.72956576,
+          "unit": "s",
+          "arithmetic": "0.17 + 0.531 + 20.03 = 20.73 s",
+          "step_ms": 47.238
+        }
+      },
+      "web_search": {
+        "id": "web_search",
+        "what": "web_search tool call (3 queries, 3 page fetches)",
+        "starts_at_s": 43,
+        "parent_left_s": 76,
+        "cap_s": 20,
+        "child_deadline_s": 20,
+        "clipped": false,
+        "child_lt_parent": true,
+        "time_used_s": 20,
+        "status": "ok",
+        "parallel_group": null,
+        "children": {
+          "query_attempt_s": 2.5,
+          "page_fetch_s": 6.0,
+          "connect_s": 2.0
+        },
+        "expected_source": "web_search_budget:latency.monte_carlo.tool_step_ms.p50 (Part 7.2)",
+        "child_margin_s": 0.025,
+        "children_effective_s": {
+          "query_attempt_s": 2.5,
+          "page_fetch_s": 6,
+          "connect_s": 2
+        },
+        "children_clipped": false,
+        "children_lt_child": true
+      },
+      "pass2": {
+        "id": "pass2",
+        "what": "inference pass 2 (ends in the run_python call)",
+        "starts_at_s": 63,
+        "parent_left_s": 56,
+        "cap_s": 40,
+        "child_deadline_s": 40,
+        "clipped": false,
+        "child_lt_parent": true,
+        "time_used_s": 40,
+        "status": "ok",
+        "parallel_group": null,
+        "expected_detail": {
+          "formula": "queue + prefill + decode (reference_trace, Part 19.1; decode step of Part 14.2)",
+          "value": 21.10989627,
+          "unit": "s",
+          "arithmetic": "0.17 + 0.155 + 20.78 = 21.11 s",
+          "step_ms": 47.238
+        }
+      },
+      "run_python": {
+        "id": "run_python",
+        "what": "run_python tool call (sandbox claim, run, artifact upload)",
+        "starts_at_s": 103,
+        "parent_left_s": 16,
+        "cap_s": 35,
+        "child_deadline_s": 14,
+        "clipped": true,
+        "child_lt_parent": true,
+        "time_used_s": 14,
+        "status": "clipped, then expired",
+        "parallel_group": null,
+        "children": {
+          "sandbox_timeout_s": 30
+        },
+        "expected_arithmetic": "25 + 1200 + 80 = 1305 ms",
+        "expected_source": "reference_trace:times.run_python_s (sandbox_pool)",
+        "child_margin_s": 5,
+        "children_effective_s": {
+          "sandbox_timeout_s": 9
+        },
+        "children_clipped": true,
+        "children_lt_child": true
+      },
+      "pass3": {
+        "id": "pass3",
+        "what": "inference pass 3 (the streamed answer)",
+        "starts_at_s": 117,
+        "parent_left_s": 2,
+        "cap_s": 60,
+        "child_deadline_s": 0,
+        "clipped": true,
+        "child_lt_parent": true,
+        "time_used_s": 0,
+        "status": "skipped: no time left",
+        "parallel_group": null,
+        "expected_detail": {
+          "formula": "queue + prefill + decode (reference_trace, Part 19.1; decode step of Part 14.2)",
+          "value": 40.89388825,
+          "unit": "s",
+          "arithmetic": "0.17 + 0.005 + 40.72 = 40.89 s",
+          "step_ms": 47.238
+        }
+      }
+    },
+    "total_used_s": 117,
+    "left_at_end_s": 2,
+    "every_child_smaller_than_parent": true
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "tool_call_story": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Content of the reference request's two tool calls (Part 06). Fictional companies and prices; Parts 07 and 08 can reuse them so the story stays consistent.",
+    "competitor_names": {
+      "value": ["AlderSoft", "Birchline", "Cedar Systems"],
+      "unit": "names",
+      "note": "Fictional names of the three main competitors named in the user's Q3 report. No real company is meant."
+    },
+    "search_queries": {
+      "value": ["AlderSoft list price per seat 2026", "Birchline pricing plans list price per user", "Cedar Systems pricing per seat per month"],
+      "unit": "queries",
+      "note": "The three queries the model writes into its pass-1 web_search call (count = hypothetical.reference_request.web_queries)."
+    },
+    "recency_days": {
+      "value": 90,
+      "unit": "days",
+      "note": "The model asks for pages from the last quarter, because the user asked for current prices."
+    },
+    "competitor_prices_eur": {
+      "value": [42.0, 55.0, 38.0],
+      "unit": "EUR per seat per month",
+      "note": "List prices that the fetched pages state (pass-1 result), in the order of competitor_names. Fictional."
+    },
+    "unit_cost_eur": {
+      "value": 17.6,
+      "unit": "EUR per seat per month",
+      "note": "Fully loaded cost per seat per month from a table in the user's Q3 report (RAG chunk). Fictional."
+    },
+    "pass1_preamble": {
+      "value": "I will check the current list prices first.",
+      "unit": "text",
+      "note": "Short visible text the model writes in its response channel before the pass-1 tool call."
+    },
+    "chart_path": {
+      "value": "/mnt/output/margin_by_competitor.png",
+      "unit": "path",
+      "note": "File the pass-2 code writes; the sandbox returns it as an artifact (RA-30)."
+    },
+    "chart_file_id": {
+      "value": "file_9c41d2e07b",
+      "unit": "id",
+      "note": "Opaque artifact ID the code executor assigns to the chart file."
+    },
+    "pass2_timeout_s": {
+      "value": 30,
+      "unit": "s",
+      "note": "timeout_s the model puts in its run_python call (schema maximum 120 s)."
+    }
+  },
+  "tool_exec_limits": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Per-call limits the orchestrator applies in the tool loop (Part 06.2, 06.3). They fit RA-11 (deadlines), RA-12 (retries) and RA-32 (approval).",
+    "web_search_deadline_s": {
+      "value": 20,
+      "unit": "s",
+      "note": "Deadline for one web_search call, search plus page fetches; smaller than the 120 s request deadline (RA-11)."
+    },
+    "run_python_deadline_margin_s": {
+      "value": 5,
+      "unit": "s",
+      "note": "Extra time beyond the call's timeout_s for sandbox restore and result upload, so the executor deadline = timeout_s + this margin."
+    },
+    "tool_calls_per_user_per_minute": {
+      "value": 60,
+      "unit": "calls/min",
+      "note": "Per-user token bucket for tool calls (step 5 of the loop); separate from the request rate limit of Part 03."
+    },
+    "max_parallel_calls_per_pass": {
+      "value": 4,
+      "unit": "calls",
+      "note": "Most tool calls of one pass that the orchestrator runs at the same time; more calls wait for a free slot."
+    },
+    "approval_wait_s": {
+      "value": 600,
+      "unit": "s",
+      "note": "How long a side-effecting call waits for the user's approval before it returns a 'not approved' tool result."
+    },
+    "broker_token_ttl_s": {
+      "value": 300,
+      "unit": "s",
+      "note": "Lifetime of the access token the credential broker hands to an executor for one call (RA-31)."
+    }
+  }
+}

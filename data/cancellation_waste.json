@@ -1,0 +1,250 @@
+{
+  "meta": {
+    "script": "sim/cancellation_waste.py",
+    "generated_at": "2026-10-09T18:19:57+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T18:10:51+00:00",
+      "sha256": "0612e70d815b"
+    },
+    "constants_used": {
+      "hypothetical.cancellation_ref.cancel_fraction": 0.05,
+      "hypothetical.cancellation_ref.in_region_hops_to_engine": 4,
+      "hypothetical.cancellation_ref.mean_remaining_fraction": 0.5,
+      "hypothetical.cancellation_ref.stop_at_visible_token": 120,
+      "hypothetical.deployment.k3_decode_gpus_per_worker": 16,
+      "hypothetical.edge.user_to_pop_rtt_ms": 20,
+      "hypothetical.epp_calibration.peak_prefill_tokens_per_s": 16000,
+      "hypothetical.fleet_price_ref.gb300_gpu_hour_usd": 6.0,
+      "hypothetical.sandbox_pool.reference_run_ms": 1200,
+      "hypothetical.streaming_ref.in_region_hop_forward_ms": 0.25,
+      "hypothetical.traffic.mean_output_tokens": 400,
+      "hypothetical.traffic.peak_arrival_rate": 50000,
+      "models.M-frontier.active_params": 104189614848,
+      "models.M-frontier.kda_conv_state_shape_per_layer": [
+        36864,
+        3
+      ],
+      "models.M-frontier.kda_head_k_dim": 128,
+      "models.M-frontier.kda_head_v_dim": 128,
+      "models.M-frontier.kda_num_heads": 96,
+      "models.M-frontier.kda_recurrent_state_dtype": "float32",
+      "models.M-frontier.kda_recurrent_state_shape_per_layer": [
+        96,
+        128,
+        128
+      ],
+      "models.M-frontier.kda_short_conv_kernel": 4,
+      "models.M-frontier.kv_lora_rank": 512,
+      "models.M-frontier.max_position_embeddings": 1048576,
+      "models.M-frontier.num_attention_heads": 96,
+      "models.M-frontier.num_hidden_layers": 93,
+      "models.M-frontier.num_kda_layers": 69,
+      "models.M-frontier.num_mla_layers": 24,
+      "models.M-frontier.qk_nope_head_dim": 128,
+      "models.M-frontier.qk_rope_head_dim": 64,
+      "models.M-frontier.torch_dtype": "bfloat16",
+      "models.M-frontier.v_head_dim": 128
+    }
+  },
+  "conventions": {
+    "serves": [
+      "R-XVII.2"
+    ],
+    "class": "Decode batch and step from Part 14's design point (class C, RA-55; capacity_math); cancel rates and hop times HYPOTHETICAL (class C)",
+    "batch_source": {
+      "sequences_per_worker": 1504,
+      "step_ms": 47.2,
+      "tokens_per_s_per_sequence": 21.17,
+      "source": "capacity_math:fleet.million.m_frontier_h_frontier (Part 14.2)"
+    },
+    "model": "a cancelled sequence keeps its batch slot and its GPU share until the scheduler frees it"
+  },
+  "chain_ms": {
+    "1_client_to_pop": {
+      "formula": "user→PoP RTT / 2",
+      "value": 10,
+      "unit": "ms",
+      "arithmetic": "20 / 2 = 10.0 ms"
+    },
+    "2_pop_to_region": {
+      "formula": "fiber one way PoP → ap_south (network_latency)",
+      "value": 22.23938841,
+      "unit": "ms"
+    },
+    "3_in_region_hops": {
+      "formula": "hops × per-hop forward time",
+      "value": 1,
+      "unit": "ms",
+      "arithmetic": "4 × 0.25 ms"
+    },
+    "4_engine_frees_blocks": {
+      "formula": "at most one decode step (Part 14 step at the design batch)",
+      "value": 47.2,
+      "unit": "ms",
+      "source": "capacity_math:fleet.million.m_frontier_h_frontier.step.step_ms"
+    },
+    "total": {
+      "formula": "sum of 1 to 4",
+      "value": 80.43938841,
+      "unit": "ms",
+      "arithmetic": "10.0 + 22.2 + 1.0 + 47.2 = 80.4 ms"
+    }
+  },
+  "per_second_of_delay": {
+    "gpu_share": {
+      "formula": "GPUs per worker / concurrent sequences",
+      "value": 0.01063829787,
+      "unit": "GPUs",
+      "arithmetic": "16 / 1,504 = 0.0106"
+    },
+    "tokens": {
+      "formula": "per-sequence decode speed at Part 14's design batch",
+      "value": 21.17,
+      "unit": "tokens/s",
+      "source": "capacity_math:fleet.million.m_frontier_h_frontier.step.tokens_per_s_per_sequence"
+    },
+    "gpu_seconds": {
+      "formula": "GPU share × 1 s",
+      "value": 0.01063829787,
+      "unit": "GPU-s per s of delay"
+    },
+    "usd": {
+      "formula": "GPU share × GPU-hour price / 3600",
+      "value": 1.773049645e-05,
+      "unit": "USD per s of delay",
+      "arithmetic": "0.0106 × 6.0 / 3600 = 0.000018 USD"
+    },
+    "kv_held": {
+      "formula": "fixed KDA state + MLA bytes/token × context",
+      "value": 1304110080,
+      "unit": "B",
+      "MB_1e6": 1304.11008,
+      "GB_1e9": 1.30411008,
+      "MiB_2pow20": 1243.696289,
+      "GiB_2pow30": 1.214547157,
+      "arithmetic": "449,372,160 + 27,648 × 30,915 B",
+      "context_tokens": 30915
+    }
+  },
+  "reference_request": {
+    "propagated": {
+      "delay": {
+        "value": 80.43938841,
+        "unit": "ms",
+        "s": 0.08043938841
+      },
+      "tokens_wasted": {
+        "value": 1.702901853,
+        "unit": "tokens"
+      },
+      "gpu_seconds": {
+        "value": 0.0008557381746,
+        "unit": "GPU-s"
+      }
+    },
+    "engine_never_told": {
+      "what": "The orchestrator stops reading, but no cancel reaches the model server; pass 3 decodes to its end.",
+      "tokens_wasted": {
+        "formula": "visible pass-3 tokens − tokens shown at Stop",
+        "value": 343,
+        "unit": "tokens",
+        "arithmetic": "463 − 120 = 343"
+      },
+      "delay": {
+        "formula": "tokens wasted / per-user speed",
+        "value": 16202.17289,
+        "unit": "ms",
+        "s": 16.20217289,
+        "arithmetic": "343 / 21.17 = 16.20 s"
+      },
+      "gpu_seconds": {
+        "value": 0.1723635413,
+        "unit": "GPU-s",
+        "arithmetic": "0.0106 × 16.20"
+      },
+      "usd": {
+        "value": 0.0002872725689,
+        "unit": "USD"
+      }
+    },
+    "loop_never_told": {
+      "what": "Stop arrives during pass 1's tool call, and the orchestrator runs passes 2 and 3 anyway.",
+      "stop_point": "after pass 1, during web_search",
+      "decode_tokens": {
+        "formula": "pass-2 output + pass-3 output",
+        "value": 1303,
+        "unit": "tokens",
+        "arithmetic": "440 + 863"
+      },
+      "prefill_tokens": {
+        "formula": "pass-2 prefill + pass-3 prefill (after prefix hits)",
+        "value": 6451,
+        "unit": "tokens",
+        "arithmetic": "6264 + 187"
+      },
+      "delay": {
+        "formula": "decode tokens / per-user speed + prefill tokens / prefill rate",
+        "value": 61952.54981,
+        "unit": "ms",
+        "s": 61.95254981,
+        "arithmetic": "1303 / 21.17 + 6451 / 16000 = 62.0 s"
+      },
+      "gpu_seconds_decode": {
+        "value": 0.6547804501,
+        "unit": "GPU-s"
+      },
+      "sandbox_seconds": {
+        "value": 1.2,
+        "unit": "s",
+        "note": "the run_python call also runs, and its side effects (the chart) happen"
+      }
+    }
+  },
+  "fleet": {
+    "cancels_per_s": {
+      "formula": "peak arrivals × cancel fraction",
+      "value": 2500,
+      "unit": "cancels/s",
+      "arithmetic": "50,000 × 0.05 = 2,500"
+    },
+    "mean_tokens_after_cancel": {
+      "value": 200,
+      "unit": "tokens",
+      "arithmetic": "400 × 0.5"
+    },
+    "delay_not_propagated": {
+      "formula": "mean tokens after cancel / per-user speed",
+      "value": 9447.331129,
+      "unit": "ms",
+      "s": 9.447331129,
+      "arithmetic": "200 / 21.17 = 9.45 s"
+    },
+    "busy_gpus_propagated": {
+      "formula": "cancels/s × delay × GPU share",
+      "value": 2.139345436,
+      "unit": "GPUs"
+    },
+    "busy_gpus_not_propagated": {
+      "formula": "cancels/s × delay × GPU share",
+      "value": 251.2588066,
+      "unit": "GPUs",
+      "arithmetic": "2,500 × 9.45 × 0.0106 = 251"
+    },
+    "usd_per_hour_not_propagated": {
+      "value": 1507.55284,
+      "unit": "USD/h"
+    },
+    "share_of_decode_work": {
+      "formula": "cancel fraction × remaining fraction",
+      "value": 0.025,
+      "unit": "fraction of all decode tokens",
+      "arithmetic": "0.05 × 0.5 = 0.025"
+    },
+    "gpus_per_ms_of_delay": {
+      "formula": "cancels/s × GPU share × 1 ms",
+      "value": 0.02659574468,
+      "unit": "GPUs busy per ms of delay"
+    }
+  }
+}

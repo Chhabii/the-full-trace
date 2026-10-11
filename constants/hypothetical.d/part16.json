@@ -1,0 +1,178 @@
+{
+  "_about": "Part 16 (storage, caches and events) class C values. Every value is HYPOTHETICAL and chosen to agree with RA-10, RA-17 to RA-21, RA-60. Author w16, 2026-10-09.",
+  "storage_ref": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Sizing inputs for the conversation store (RA-17, RA-18). Part 16.1.",
+    "messages_per_request": {
+      "value": 2,
+      "unit": "message rows per request",
+      "note": "One user message and one assistant message per turn (RA-18; part 3.5). Tool results stay inside the assistant message record."
+    },
+    "mean_user_message_tokens": {
+      "value": 60,
+      "unit": "tokens",
+      "note": "Mean new user text per turn; the rest of hypothetical.traffic.mean_prompt_tokens is system prompt, tools and history."
+    },
+    "bytes_per_token_text": {
+      "value": 4,
+      "unit": "B per token (UTF-8)",
+      "note": "Mean UTF-8 bytes per token for mostly English text with a BPE vocabulary; a round estimate, not a measurement."
+    },
+    "message_row_overhead_bytes": {
+      "value": 300,
+      "unit": "B per row",
+      "note": "IDs (tenant, conversation, message), sequence number, timestamps, status, model ID, token counts, citation and file references, row header."
+    },
+    "replicas_per_range": {
+      "value": 3,
+      "unit": "replicas",
+      "note": "One voting replica per availability zone of the home region, the smallest group with a quorum (RA-17)."
+    },
+    "in_region_commit_ms": {
+      "value": 2,
+      "unit": "ms",
+      "note": "One quorum commit across availability zones of one region: about one inter-zone round trip plus a log flush. Assumption, not a vendor figure."
+    },
+    "large_tenant_requests_per_s": {
+      "value": 2000,
+      "unit": "requests/s",
+      "note": "Peak request rate of the largest single tenant (an enterprise organization) in the hot-row example."
+    },
+    "quota_counter_shards": {
+      "value": 32,
+      "unit": "rows per counter",
+      "note": "A hard-quota counter split into this many rows; the request picks one row at random and the check sums all of them."
+    }
+  },
+  "event_stream_ref": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Event-log inputs (RA-20). Part 16.2.",
+    "tool_calls_per_tool_request": {
+      "value": 2,
+      "unit": "tool calls",
+      "note": "Mean tool calls of a request that uses tools; each call adds one inference pass. The reference request has 2 (web_search, run_python)."
+    },
+    "usage_event_bytes": {
+      "value": 400,
+      "unit": "B per event",
+      "note": "Serialized Protobuf: event ID, tenant, user, request, pass number, model, region, token counts, timestamps. No text."
+    },
+    "audit_event_bytes": {
+      "value": 600,
+      "unit": "B per event",
+      "note": "Actor, action, resource IDs, decision, policy version, trace ID. No user text (part 18.4)."
+    },
+    "analytics_event_bytes": {
+      "value": 1000,
+      "unit": "B per event",
+      "note": "One request summary: stage timings, model, cache hits, sizes, status. No user text."
+    },
+    "turn_completed_event_bytes": {
+      "value": 300,
+      "unit": "B per event",
+      "note": "IDs only (tenant, user, conversation, message); consumers read the text from the conversation store."
+    },
+    "min_insync_replicas": {
+      "value": 2,
+      "unit": "replicas",
+      "note": "RA-20: with replication factor 3 and acks=all, a write needs 2 in-sync replicas, so one broker can fail without blocking producers."
+    },
+    "usage_topic_partitions": {
+      "value": 64,
+      "unit": "partitions per region",
+      "note": "Chosen above the consumer count the peak needs, so the billing aggregator can grow without a repartition."
+    },
+    "aggregator_events_per_s": {
+      "value": 5000,
+      "unit": "events/s per consumer",
+      "note": "Events one billing-aggregator consumer process decodes, deduplicates and sums per second. Assumption."
+    },
+    "dedupe_window_s": {
+      "value": 86400,
+      "unit": "s",
+      "note": "How long the aggregator remembers an event ID; longer than any producer retry or consumer replay of a normal day."
+    },
+    "dedupe_entry_bytes": {
+      "value": 64,
+      "unit": "B per event ID",
+      "note": "16-byte event ID plus hash-table and TTL overhead in the dedupe store."
+    }
+  },
+  "cache_map_ref": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Lifetimes of the caches on the cache map that earlier parts left open (RA-19). Part 16.3.",
+    "static_asset_max_age_s": {
+      "value": 31536000,
+      "unit": "s",
+      "note": "Cache-Control max-age for JS, CSS and font files whose names contain a content hash (one year), sent with immutable (RFC 8246)."
+    },
+    "app_shell_max_age_s": {
+      "value": 0,
+      "unit": "s",
+      "note": "The HTML page that names the hashed files is sent with no-cache: every load revalidates it, so a new release reaches users at once."
+    },
+    "entitlement_cache_ttl_s": {
+      "value": 60,
+      "unit": "s",
+      "note": "Plan and entitlements per tenant in the Redis-compatible cache (part 3.1); a plan change reaches every gateway within one minute."
+    },
+    "signing_key_cache_ttl_s": {
+      "value": 3600,
+      "unit": "s",
+      "note": "Public token-signing keys held in gateway process memory; a key rotation publishes the new key before it signs anything."
+    },
+    "retrieval_result_ttl_s": {
+      "value": 300,
+      "unit": "s",
+      "note": "Hybrid-retrieval result lists per tenant, ACL scope, index version and normalized query text; a document change bumps the index version."
+    }
+  },
+  "billing_ref": {
+    "_class": "C",
+    "_label": "HYPOTHETICAL",
+    "_about": "Illustrative list prices and aggregation settings for usage billing (Part 16.4). Not any provider's prices.",
+    "price_input_usd_per_mtok": {
+      "value": 2.0,
+      "unit": "USD per 1,000,000 uncached prompt tokens",
+      "note": "Illustrative price."
+    },
+    "price_cached_input_usd_per_mtok": {
+      "value": 0.2,
+      "unit": "USD per 1,000,000 cached prompt tokens",
+      "note": "Illustrative: a 90% discount for prompt tokens the prefix cache served."
+    },
+    "price_output_usd_per_mtok": {
+      "value": 8.0,
+      "unit": "USD per 1,000,000 output tokens",
+      "note": "Illustrative; reasoning tokens are output tokens and pay this price (RA-60)."
+    },
+    "price_web_search_usd_per_1000_queries": {
+      "value": 10.0,
+      "unit": "USD per 1,000 search queries",
+      "note": "Illustrative; billed per query sent to the search provider, not per tool call."
+    },
+    "price_code_exec_usd_per_s": {
+      "value": 0.0001,
+      "unit": "USD per sandbox-second",
+      "note": "Illustrative; billed per second of run time of the run_python call (0.36 USD per hour)."
+    },
+    "price_storage_usd_per_gb_month": {
+      "value": 0.1,
+      "unit": "USD per GB-month",
+      "note": "Illustrative; uploaded files in the object store, prorated by the day."
+    },
+    "aggregation_window_s": {
+      "value": 3600,
+      "unit": "s",
+      "note": "The billing aggregator sums usage per tenant, model and usage kind over one hour before it writes a ledger row."
+    },
+    "active_hours_per_tenant_per_day": {
+      "value": 3,
+      "unit": "hours with usage per tenant per day",
+      "note": "Mean number of distinct hours in which one active tenant sends requests. Most tenants are single users."
+    }
+  }
+}

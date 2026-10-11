@@ -1,0 +1,628 @@
+{
+  "meta": {
+    "script": "sim/web_search_budget.py",
+    "generated_at": "2026-10-09T09:24:45+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T09:24:44+00:00",
+      "sha256": "c54dbd118757"
+    },
+    "constants_used": {
+      "hypothetical.own_index_sizing.indexed_pages": 5000000000,
+      "hypothetical.own_index_sizing.mean_recrawl_interval_days": 30,
+      "hypothetical.own_index_sizing.passages_per_page": 4,
+      "hypothetical.own_index_sizing.postings_bytes_per_token": 1.5,
+      "hypothetical.own_index_sizing.raw_html_bytes_per_page": 100000,
+      "hypothetical.own_index_sizing.raw_parse_cpu_s": 0.05,
+      "hypothetical.own_index_sizing.render_cpu_s": 2.0,
+      "hypothetical.own_index_sizing.render_fraction": 0.2,
+      "hypothetical.own_index_sizing.text_tokens_per_page": 1500,
+      "hypothetical.reference_request.rag_chunks_selected": 6,
+      "hypothetical.reference_request.web_pages_fetched": 3,
+      "hypothetical.reference_request.web_queries": 3,
+      "hypothetical.reference_request.web_results_considered": 8,
+      "hypothetical.tool_call_story.competitor_names": [
+        "AlderSoft",
+        "Birchline",
+        "Cedar Systems"
+      ],
+      "hypothetical.tool_call_story.recency_days": 90,
+      "hypothetical.tool_call_story.search_queries": [
+        "AlderSoft list price per seat 2026",
+        "Birchline pricing plans list price per user",
+        "Cedar Systems pricing per seat per month"
+      ],
+      "hypothetical.tool_loop.fetched_page_tokens_cap": 3000,
+      "hypothetical.tool_loop.fetched_page_tokens_reference": 1800,
+      "hypothetical.tool_loop.web_snippet_tokens_per_result": 80,
+      "hypothetical.traffic.daily_active_users": 250000000,
+      "hypothetical.traffic.peak_arrival_rate": 50000,
+      "hypothetical.traffic.requests_per_dau_per_day": 12,
+      "hypothetical.traffic.web_search_fraction": 0.15,
+      "hypothetical.web_cache_ttl.empty_result_s": 300,
+      "hypothetical.web_cache_ttl.fetched_page_default_s": 3600,
+      "hypothetical.web_cache_ttl.general_s": 21600,
+      "hypothetical.web_cache_ttl.news_s": 600,
+      "hypothetical.web_cache_ttl.product_pricing_s": 3600,
+      "hypothetical.web_cache_ttl.reference_docs_s": 86400,
+      "hypothetical.web_cache_ttl.stock_quote_s": 0,
+      "hypothetical.web_cache_ttl.weather_s": 900,
+      "hypothetical.web_fetch.connect_timeout_ms": 2000,
+      "hypothetical.web_fetch.dns_resolve_ms": 15,
+      "hypothetical.web_fetch.download_mbps": 50,
+      "hypothetical.web_fetch.extract_ms_per_page": 40,
+      "hypothetical.web_fetch.origin_rtt_ms": 40,
+      "hypothetical.web_fetch.page_html_bytes_reference": 450000,
+      "hypothetical.web_fetch.server_time_p50_ms": 200,
+      "hypothetical.web_fetch.server_time_p95_ms": 1200,
+      "hypothetical.web_fetch.total_timeout_ms": 6000,
+      "hypothetical.web_search_pipeline.breaker_failure_rate_to_open": 0.5,
+      "hypothetical.web_search_pipeline.breaker_half_open_trials": 3,
+      "hypothetical.web_search_pipeline.breaker_min_calls": 10,
+      "hypothetical.web_search_pipeline.breaker_open_duration_s": 30,
+      "hypothetical.web_search_pipeline.breaker_window_calls": 20,
+      "hypothetical.web_search_pipeline.cache_lookup_ms": 1,
+      "hypothetical.web_search_pipeline.rerank_latency_ms": 25,
+      "hypothetical.web_search_provider.contracted_qps_per_region": 4000,
+      "hypothetical.web_search_provider.mean_pages_fetched_per_search": 2,
+      "hypothetical.web_search_provider.mean_queries_per_search": 2,
+      "hypothetical.web_search_provider.per_query_latency_p50_ms": 450,
+      "hypothetical.web_search_provider.per_query_latency_p95_ms": 1200,
+      "hypothetical.web_search_provider.price_usd_per_1000_queries": 5,
+      "hypothetical.web_search_provider.request_timeout_ms": 2500,
+      "hypothetical.web_search_provider.results_per_query": 5,
+      "hypothetical.web_search_provider.search_cache_hit_fraction": 0.3,
+      "retrieval_and_data.bytes_per_vector_1024_fp16": 2048,
+      "retrieval_and_data.frontier_back_queues_per_thread": 3,
+      "retrieval_and_data.frontier_politeness_gap_factor": 10,
+      "retrieval_and_data.http_heuristic_freshness_fraction": 0.1,
+      "retrieval_and_data.rrf_k": 60,
+      "retrieval_and_data.simhash_fingerprint_bits": 64
+    }
+  },
+  "conventions": {
+    "serves": [
+      "R-VII.1",
+      "R-VII.2",
+      "R-VII.3",
+      "R-VII.7",
+      "R-VII.8"
+    ],
+    "class": "All inputs are HYPOTHETICAL (class C) or ILLUSTRATIVE; RRF k, the RFC 9111 fraction and the crawler factors are class A.",
+    "times": "ms unless the key says otherwise"
+  },
+  "reference_call": {
+    "tool": "web_search",
+    "arguments": {
+      "queries": [
+        "AlderSoft list price per seat 2026",
+        "Birchline pricing plans list price per user",
+        "Cedar Systems pricing per seat per month"
+      ],
+      "recency_days": 90,
+      "fetch_top": 3
+    },
+    "competitors": [
+      "AlderSoft",
+      "Birchline",
+      "Cedar Systems"
+    ],
+    "query_chars": [
+      34,
+      43,
+      40
+    ],
+    "label": "HYPOTHETICAL model output (hypothetical.tool_call_story)"
+  },
+  "merge": {
+    "raw_count": 15,
+    "raw": [
+      {
+        "query": 1,
+        "rank": 1,
+        "url": "https://aldersoft.example/pricing",
+        "canonical": "https://aldersoft.example/pricing"
+      },
+      {
+        "query": 1,
+        "rank": 2,
+        "url": "https://compare.saasreviews.example/aldersoft-vs-birchline-vs-cedar",
+        "canonical": "https://compare.saasreviews.example/aldersoft-vs-birchline-vs-cedar"
+      },
+      {
+        "query": 1,
+        "rank": 3,
+        "url": "https://aldersoft.example/blog/new-plans",
+        "canonical": "https://aldersoft.example/blog/new-plans"
+      },
+      {
+        "query": 1,
+        "rank": 4,
+        "url": "https://aldersoft.example/pricing?utm_source=ads",
+        "canonical": "https://aldersoft.example/pricing"
+      },
+      {
+        "query": 1,
+        "rank": 5,
+        "url": "https://news.techdaily.example/2026/08/birchline-raises-prices",
+        "canonical": "https://news.techdaily.example/2026/08/birchline-raises-prices"
+      },
+      {
+        "query": 2,
+        "rank": 1,
+        "url": "https://birchline.example/pricing",
+        "canonical": "https://birchline.example/pricing"
+      },
+      {
+        "query": 2,
+        "rank": 2,
+        "url": "https://news.techdaily.example/2026/08/birchline-raises-prices",
+        "canonical": "https://news.techdaily.example/2026/08/birchline-raises-prices"
+      },
+      {
+        "query": 2,
+        "rank": 3,
+        "url": "https://compare.saasreviews.example/aldersoft-vs-birchline-vs-cedar",
+        "canonical": "https://compare.saasreviews.example/aldersoft-vs-birchline-vs-cedar"
+      },
+      {
+        "query": 2,
+        "rank": 4,
+        "url": "https://birchline.example/pricing#team",
+        "canonical": "https://birchline.example/pricing"
+      },
+      {
+        "query": 2,
+        "rank": 5,
+        "url": "https://aldersoft.example/pricing",
+        "canonical": "https://aldersoft.example/pricing"
+      },
+      {
+        "query": 3,
+        "rank": 1,
+        "url": "https://www.cedarsystems.example/pricing",
+        "canonical": "https://www.cedarsystems.example/pricing"
+      },
+      {
+        "query": 3,
+        "rank": 2,
+        "url": "https://docs.cedarsystems.example/billing/annual",
+        "canonical": "https://docs.cedarsystems.example/billing/annual"
+      },
+      {
+        "query": 3,
+        "rank": 3,
+        "url": "https://compare.saasreviews.example/aldersoft-vs-birchline-vs-cedar",
+        "canonical": "https://compare.saasreviews.example/aldersoft-vs-birchline-vs-cedar"
+      },
+      {
+        "query": 3,
+        "rank": 4,
+        "url": "https://forum.example/t/cedar-systems-discount",
+        "canonical": "https://forum.example/t/cedar-systems-discount"
+      },
+      {
+        "query": 3,
+        "rank": 5,
+        "url": "https://WWW.cedarsystems.example/pricing/",
+        "canonical": "https://www.cedarsystems.example/pricing"
+      }
+    ],
+    "duplicates_removed": 7,
+    "unique_count": 8,
+    "rrf_k": 60,
+    "by_rrf": [
+      {
+        "canonical": "https://compare.saasreviews.example/aldersoft-vs-birchline-vs-cedar",
+        "ranks_by_query": {
+          "1": 2,
+          "2": 3,
+          "3": 3
+        },
+        "formula": "1/(60+2) + 1/(60+3) + 1/(60+3)",
+        "rrf": 0.04788,
+        "rerank": 0.66,
+        "rrf_position": 1,
+        "rerank_position": 5,
+        "source_id": 11
+      },
+      {
+        "canonical": "https://aldersoft.example/pricing",
+        "ranks_by_query": {
+          "1": 1,
+          "2": 5
+        },
+        "formula": "1/(60+1) + 1/(60+5)",
+        "rrf": 0.03178,
+        "rerank": 0.94,
+        "rrf_position": 2,
+        "rerank_position": 1,
+        "source_id": 7
+      },
+      {
+        "canonical": "https://news.techdaily.example/2026/08/birchline-raises-prices",
+        "ranks_by_query": {
+          "1": 5,
+          "2": 2
+        },
+        "formula": "1/(60+5) + 1/(60+2)",
+        "rrf": 0.03151,
+        "rerank": 0.71,
+        "rrf_position": 3,
+        "rerank_position": 4,
+        "source_id": 10
+      },
+      {
+        "canonical": "https://birchline.example/pricing",
+        "ranks_by_query": {
+          "2": 1
+        },
+        "formula": "1/(60+1)",
+        "rrf": 0.01639,
+        "rerank": 0.93,
+        "rrf_position": 4,
+        "rerank_position": 2,
+        "source_id": 8
+      },
+      {
+        "canonical": "https://www.cedarsystems.example/pricing",
+        "ranks_by_query": {
+          "3": 1
+        },
+        "formula": "1/(60+1)",
+        "rrf": 0.01639,
+        "rerank": 0.92,
+        "rrf_position": 5,
+        "rerank_position": 3,
+        "source_id": 9
+      },
+      {
+        "canonical": "https://docs.cedarsystems.example/billing/annual",
+        "ranks_by_query": {
+          "3": 2
+        },
+        "formula": "1/(60+2)",
+        "rrf": 0.01613,
+        "rerank": 0.58,
+        "rrf_position": 6,
+        "rerank_position": 6,
+        "source_id": 12
+      },
+      {
+        "canonical": "https://aldersoft.example/blog/new-plans",
+        "ranks_by_query": {
+          "1": 3
+        },
+        "formula": "1/(60+3)",
+        "rrf": 0.01587,
+        "rerank": 0.41,
+        "rrf_position": 7,
+        "rerank_position": 7,
+        "source_id": 13
+      },
+      {
+        "canonical": "https://forum.example/t/cedar-systems-discount",
+        "ranks_by_query": {
+          "3": 4
+        },
+        "formula": "1/(60+4)",
+        "rrf": 0.01562,
+        "rerank": 0.22,
+        "rrf_position": 8,
+        "rerank_position": 8,
+        "source_id": 14
+      }
+    ],
+    "by_rerank": [
+      {
+        "source_id": 7,
+        "canonical": "https://aldersoft.example/pricing",
+        "rerank": 0.94,
+        "rrf_position": 2
+      },
+      {
+        "source_id": 8,
+        "canonical": "https://birchline.example/pricing",
+        "rerank": 0.93,
+        "rrf_position": 4
+      },
+      {
+        "source_id": 9,
+        "canonical": "https://www.cedarsystems.example/pricing",
+        "rerank": 0.92,
+        "rrf_position": 5
+      },
+      {
+        "source_id": 10,
+        "canonical": "https://news.techdaily.example/2026/08/birchline-raises-prices",
+        "rerank": 0.71,
+        "rrf_position": 3
+      },
+      {
+        "source_id": 11,
+        "canonical": "https://compare.saasreviews.example/aldersoft-vs-birchline-vs-cedar",
+        "rerank": 0.66,
+        "rrf_position": 1
+      },
+      {
+        "source_id": 12,
+        "canonical": "https://docs.cedarsystems.example/billing/annual",
+        "rerank": 0.58,
+        "rrf_position": 6
+      },
+      {
+        "source_id": 13,
+        "canonical": "https://aldersoft.example/blog/new-plans",
+        "rerank": 0.41,
+        "rrf_position": 7
+      },
+      {
+        "source_id": 14,
+        "canonical": "https://forum.example/t/cedar-systems-discount",
+        "rerank": 0.22,
+        "rrf_position": 8
+      }
+    ],
+    "source_id_offset": 6,
+    "fetched": [
+      "https://aldersoft.example/pricing",
+      "https://birchline.example/pricing",
+      "https://www.cedarsystems.example/pricing"
+    ],
+    "snippet_only": [
+      "https://news.techdaily.example/2026/08/birchline-raises-prices",
+      "https://compare.saasreviews.example/aldersoft-vs-birchline-vs-cedar",
+      "https://docs.cedarsystems.example/billing/annual",
+      "https://aldersoft.example/blog/new-plans",
+      "https://forum.example/t/cedar-systems-discount"
+    ],
+    "label": "ILLUSTRATIVE result lists and rerank scores"
+  },
+  "latency": {
+    "median_path": {
+      "cache_lookup_ms": 1,
+      "search_ms_one_query_p50": 450,
+      "rerank_ms": 25,
+      "fetch_steps_ms": {
+        "dns": 15,
+        "tcp_tls_request_3_rtt": 120,
+        "server_time_p50": 200,
+        "transfer": 72.0,
+        "transfer_formula": "450,000 B × 8 / 50 Mb/s",
+        "extract": 40,
+        "total": 447.0
+      },
+      "total_ms": 923.0,
+      "note": "Uses the median of one query and one page; the parallel maximum below is longer."
+    },
+    "monte_carlo": {
+      "samples": 200000,
+      "seed": 7,
+      "model": "lognormal fitted to p50 and p95; timeouts cut the tail",
+      "one_query_ms": {
+        "p50": 449.9,
+        "p95": 1199.2,
+        "p99": 1811.6
+      },
+      "search_wall_ms": {
+        "p50": 733.3,
+        "p95": 1595.6,
+        "p99": 2268.6
+      },
+      "one_page_ms": {
+        "p50": 446.7,
+        "p95": 1445.9,
+        "p99": 2729.7
+      },
+      "fetch_wall_ms": {
+        "p50": 735.2,
+        "p95": 2247.7,
+        "p99": 4008.4
+      },
+      "tool_step_ms": {
+        "p50": 1605.3,
+        "p95": 3279.3,
+        "p99": 4967.2
+      },
+      "p_any_query_timeout": 0.0061,
+      "p_any_page_timeout": 0.0028,
+      "max_of_n_note": "The step waits for the slowest of 3 queries and the slowest of 3 pages."
+    },
+    "timeouts_ms": {
+      "query": 2500,
+      "page_total": 6000,
+      "connect": 2000
+    }
+  },
+  "tokens": {
+    "snippets": {
+      "formula": "8 results × 80 tokens",
+      "value": 640,
+      "unit": "tokens"
+    },
+    "pages": {
+      "formula": "3 pages × 1800 tokens",
+      "value": 5400,
+      "unit": "tokens"
+    },
+    "tool_result_total": {
+      "value": 6040,
+      "unit": "tokens",
+      "note": "Pass totals: part 5.6."
+    },
+    "reference_at_cap": {
+      "formula": "640 + 3 × 3000",
+      "value": 9640,
+      "unit": "tokens"
+    },
+    "schema_maximum": {
+      "formula": "4 queries × 5 results × 80 + 5 pages × 3000",
+      "value": 16600,
+      "unit": "tokens",
+      "note": "queries maxItems 4 and fetch_top maximum 5 (data/reference_tools.json)."
+    },
+    "page_share": 0.894
+  },
+  "fleet": {
+    "peak_searching_requests_per_s": {
+      "formula": "50,000 × 0.15",
+      "value": 7500.0
+    },
+    "peak_queries_per_s": {
+      "formula": "7,500 × 2",
+      "value": 15000.0
+    },
+    "peak_provider_qps": {
+      "formula": "15,000 × (1 − 0.3)",
+      "value": 10500.0
+    },
+    "contracted_qps_total": {
+      "formula": "4,000 × 4 regions",
+      "value": 16000
+    },
+    "quota_headroom": 1.52,
+    "peak_page_fetches_per_s": {
+      "formula": "7,500 × 2",
+      "value": 15000.0
+    },
+    "peak_egress_gbps": {
+      "formula": "15,000 × 450,000 B × 8 / 10⁹",
+      "value": 54.0
+    },
+    "daily_requests": 3000000000,
+    "daily_provider_queries": {
+      "formula": "3,000,000,000 × 0.15 × 2 × (1 − 0.3)",
+      "value": 630000000.0
+    },
+    "daily_cost_usd": {
+      "formula": "630,000,000 / 1,000 × 5 USD",
+      "value": 3150000.0
+    },
+    "yearly_cost_usd": 1149750000.0,
+    "reference_request_cost_usd": {
+      "formula": "3 queries / 1,000 × 5 USD",
+      "value": 0.015
+    },
+    "regions": 4
+  },
+  "breaker": {
+    "script": {
+      "calls_per_s": 1,
+      "duration_s": 120,
+      "outage_from_s": 20,
+      "outage_to_s": 70,
+      "label": "ILLUSTRATIVE outage"
+    },
+    "params": {
+      "window_calls": 20,
+      "min_calls": 10,
+      "failure_rate_to_open": 0.5,
+      "open_s": 30,
+      "half_open_trials": 3
+    },
+    "events": [
+      {
+        "t_s": 29,
+        "event": "open: 10 of 20 calls failed"
+      },
+      {
+        "t_s": 59,
+        "event": "half-open: allow trial calls"
+      },
+      {
+        "t_s": 59,
+        "event": "trial failed: open again"
+      },
+      {
+        "t_s": 89,
+        "event": "half-open: allow trial calls"
+      },
+      {
+        "t_s": 91,
+        "event": "closed after 3 good trials"
+      }
+    ],
+    "counts": {
+      "sent": 62,
+      "failed_fast": 58,
+      "provider_errors": 11
+    }
+  },
+  "ttl": {
+    "classes_s": {
+      "reference_docs_s": 86400,
+      "general_s": 21600,
+      "product_pricing_s": 3600,
+      "news_s": 600,
+      "weather_s": 900,
+      "stock_quote_s": 0,
+      "empty_result_s": 300,
+      "fetched_page_default_s": 3600
+    },
+    "classes_h": {
+      "reference_docs_s": 24.0,
+      "general_s": 6.0,
+      "product_pricing_s": 1.0,
+      "news_s": 0.17,
+      "weather_s": 0.25,
+      "stock_quote_s": 0.0,
+      "empty_result_s": 0.08,
+      "fetched_page_default_s": 1.0
+    },
+    "heuristic_example": {
+      "last_modified_age_s": 2592000,
+      "fraction": 0.1,
+      "formula": "0.1 × 2,592,000 s",
+      "heuristic_s": 259200.0,
+      "heuristic_days": 3.0,
+      "effective_s": 3600,
+      "rule": "effective TTL = min(origin or heuristic freshness, query-class TTL)"
+    },
+    "cache_key": {
+      "material": "org_7f3a|birchline pricing plans list price per user|recency=90|locale=en|safe=moderate|results=5",
+      "key": "ws:v1:org_7f3a:e50d37caad2a9af3",
+      "label": "ILLUSTRATIVE tenant ID"
+    }
+  },
+  "own_index": {
+    "fetch_rate_pages_per_s": {
+      "formula": "5,000,000,000 / (30 × 86,400 s)",
+      "value": 1929.0
+    },
+    "crawl_gbps": {
+      "formula": "1,929 × 100,000 B × 8 / 10⁹",
+      "value": 1.54
+    },
+    "cpu_cores": {
+      "formula": "1,929 × ((1 − 0.2) × 0.05 + 0.2 × 2.0) CPU-s",
+      "value": 849.0
+    },
+    "cpu_cores_if_no_render": 96.0,
+    "render_over_raw": 40.0,
+    "postings_tb": {
+      "formula": "5,000,000,000 × 1,500 × 1.5 B / 10¹²",
+      "value": 11.25
+    },
+    "vectors_tb": {
+      "formula": "5,000,000,000 × 4 × 2,048 B / 10¹²",
+      "value": 41.0
+    },
+    "simhash_gb": {
+      "formula": "5,000,000,000 × 8 B / 10⁹",
+      "value": 40.0
+    },
+    "one_fetch_s": 0.336,
+    "concurrent_fetches": {
+      "formula": "1,929 pages/s × 0.336 s",
+      "value": 648.0
+    },
+    "back_queues": 1944.0,
+    "per_host_gap_s": {
+      "formula": "10 × 0.336 s",
+      "value": 3.36
+    },
+    "per_host_max_pages_per_day": 25714.0,
+    "host_with_1m_pages_recrawl_days": 38.9,
+    "label": "HYPOTHETICAL sizing illustration; no real search engine"
+  }
+}

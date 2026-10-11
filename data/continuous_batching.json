@@ -1,0 +1,642 @@
+{
+  "meta": {
+    "script": "sim/continuous_batching_sim.py",
+    "generated_at": "2026-10-09T09:59:23+00:00",
+    "constants": {
+      "version": 1,
+      "built_at": "2026-10-09T09:58:26+00:00",
+      "sha256": "ee0ab6f8d4b2"
+    },
+    "constants_used": {
+      "hardware.H-teach.h100_sxm_bf16_dense": 989.5,
+      "hardware.H-teach.h100_sxm_fp8_dense": 1979,
+      "hardware.H-teach.h100_sxm_hbm_bandwidth": 3.35,
+      "hypothetical.batching_ref.comparison_arrival_rate_rps": 1.2,
+      "hypothetical.batching_ref.length_lognormal_sigma": 1.0,
+      "hypothetical.batching_ref.load_sweep_rates_rps": [
+        0.25,
+        1,
+        2,
+        4,
+        6,
+        8,
+        10,
+        12,
+        14,
+        16
+      ],
+      "hypothetical.batching_ref.max_output_tokens": 4096,
+      "hypothetical.batching_ref.num_requests": 1200,
+      "hypothetical.batching_ref.static_batch_size": 64,
+      "hypothetical.batching_ref.token_budget_example_decodes": [
+        1,
+        1
+      ],
+      "hypothetical.batching_ref.token_budget_example_prefills": [
+        4000,
+        4190
+      ],
+      "hypothetical.context_budget_ref.prompt_budget_tokens": 131072,
+      "hypothetical.gpu_step_model.hbm_bandwidth_efficiency": 0.8,
+      "hypothetical.gpu_step_model.per_layer_overhead_us": 40,
+      "hypothetical.gpu_step_model.per_step_overhead_ms": 0.5,
+      "hypothetical.serving_assumptions.prefill_mfu": 0.5,
+      "hypothetical.slo.p95_tpot_ms": 60,
+      "hypothetical.slo.p95_ttft_ms": 1500,
+      "hypothetical.traffic.mean_output_tokens": 400,
+      "hypothetical.traffic.mean_prompt_tokens": 3000,
+      "hypothetical.traffic.prefix_cache_hit_fraction": 0.6,
+      "models.M-dense.head_dim": 128,
+      "models.M-dense.hidden_size": 12288,
+      "models.M-dense.intermediate_size": 28672,
+      "models.M-dense.max_position_embeddings": 262144,
+      "models.M-dense.num_attention_heads": 96,
+      "models.M-dense.num_hidden_layers": 88,
+      "models.M-dense.num_key_value_heads": 8,
+      "models.M-dense.text_params": 125025988608,
+      "models.M-dense.tie_word_embeddings": false,
+      "models.M-dense.torch_dtype": "bfloat16",
+      "models.M-dense.total_params": 127704210176,
+      "models.M-dense.vision_params": 2678221568,
+      "models.M-dense.vllm_recipe": {
+        "recommended_hw": "8x H200 (alt 4x B200, 2-8x MI300X)",
+        "tp": 8,
+        "eagle_num_speculative_tokens": 3,
+        "mi300x_tp8_1k_in_1k_out_conc32": {
+          "output_tok_s": 915,
+          "mean_ttft_ms": 2522,
+          "mean_tpot_ms": 26.1
+        },
+        "mi300x_tp1": {
+          "output_tok_s": 438,
+          "mean_ttft_ms": 5719,
+          "mean_tpot_ms": 55.2
+        }
+      },
+      "models.M-dense.vocab_size": 131072,
+      "software.vllm.block_size_tokens": 16,
+      "software.vllm.max_num_batched_tokens_h100": 8192,
+      "software.vllm.max_num_seqs_h100_b200": 1024
+    }
+  },
+  "conventions": {
+    "model": "M-dense on H-teach, TP=8, roofline step model (sim/gpu_step_lib.py)",
+    "class": "Arrival rates, length distributions and batch sizes are HYPOTHETICAL (class C); the scheduler rules are vLLM V1's (class A); times are a model.",
+    "serves": [
+      "R-XI.5",
+      "R-XI.6",
+      "R-XI.12",
+      "R-XXII.8"
+    ]
+  },
+  "toy_iteration_table": {
+    "label": "ILLUSTRATIVE toy: 3 batch slots, one token per sequence per step, prefill and token 1 in the same step",
+    "slots": 3,
+    "requests": {
+      "A": {
+        "arrives": 0,
+        "output_tokens": 2
+      },
+      "B": {
+        "arrives": 0,
+        "output_tokens": 5
+      },
+      "C": {
+        "arrives": 0,
+        "output_tokens": 3
+      },
+      "D": {
+        "arrives": 1,
+        "output_tokens": 3
+      }
+    },
+    "static": {
+      "rows": [
+        {
+          "step": 0,
+          "A": "P+t1",
+          "B": "P+t1",
+          "C": "P+t1",
+          "D": "-"
+        },
+        {
+          "step": 1,
+          "A": "t2",
+          "B": "t2",
+          "C": "t2",
+          "D": "wait"
+        },
+        {
+          "step": 2,
+          "A": "pad",
+          "B": "t3",
+          "C": "t3",
+          "D": "wait"
+        },
+        {
+          "step": 3,
+          "A": "pad",
+          "B": "t4",
+          "C": "pad",
+          "D": "wait"
+        },
+        {
+          "step": 4,
+          "A": "pad",
+          "B": "t5",
+          "C": "pad",
+          "D": "wait"
+        },
+        {
+          "step": 5,
+          "A": "done",
+          "B": "done",
+          "C": "done",
+          "D": "P+t1"
+        },
+        {
+          "step": 6,
+          "A": "done",
+          "B": "done",
+          "C": "done",
+          "D": "t2"
+        },
+        {
+          "step": 7,
+          "A": "done",
+          "B": "done",
+          "C": "done",
+          "D": "t3"
+        }
+      ],
+      "steps": 8,
+      "useful_slot_steps": 13,
+      "slot_steps": 24,
+      "slot_use": 0.5417,
+      "finish_step": {
+        "A": 1,
+        "B": 4,
+        "C": 2,
+        "D": 7
+      },
+      "d_first_token_step": 5
+    },
+    "continuous": {
+      "rows": [
+        {
+          "step": 0,
+          "A": "P+t1",
+          "B": "P+t1",
+          "C": "P+t1",
+          "D": "-"
+        },
+        {
+          "step": 1,
+          "A": "t2",
+          "B": "t2",
+          "C": "t2",
+          "D": "wait"
+        },
+        {
+          "step": 2,
+          "A": "done",
+          "B": "t3",
+          "C": "t3",
+          "D": "P+t1"
+        },
+        {
+          "step": 3,
+          "A": "done",
+          "B": "t4",
+          "C": "done",
+          "D": "t2"
+        },
+        {
+          "step": 4,
+          "A": "done",
+          "B": "t5",
+          "C": "done",
+          "D": "t3"
+        }
+      ],
+      "steps": 5,
+      "useful_slot_steps": 13,
+      "slot_steps": 15,
+      "slot_use": 0.8667,
+      "finish_step": {
+        "A": 1,
+        "B": 4,
+        "C": 2,
+        "D": 4
+      },
+      "d_first_token_step": 2
+    }
+  },
+  "token_budget_example": {
+    "budget": 8192,
+    "max_num_seqs": 1024,
+    "block_size": 16,
+    "usable_blocks": 72969,
+    "decode_context_tokens": 3000,
+    "case_fits": {
+      "scheduled": [
+        {
+          "req": "A",
+          "tokens": 1,
+          "kind": "decode"
+        },
+        {
+          "req": "B",
+          "tokens": 1,
+          "kind": "decode"
+        },
+        {
+          "req": "C",
+          "tokens": 4000,
+          "kind": "prefill"
+        },
+        {
+          "req": "D",
+          "tokens": 4190,
+          "kind": "prefill"
+        }
+      ],
+      "total_tokens": 8192,
+      "blocks_c": 250,
+      "blocks_d": 262,
+      "free_blocks_before": 72593,
+      "free_blocks_after": 72080,
+      "budget_left": 0,
+      "decode_new_blocks": 1,
+      "b_context_before": 3008
+    },
+    "case_chunked": {
+      "d_prompt": 5000,
+      "scheduled": [
+        {
+          "req": "A",
+          "tokens": 1,
+          "kind": "decode"
+        },
+        {
+          "req": "B",
+          "tokens": 1,
+          "kind": "decode"
+        },
+        {
+          "req": "C",
+          "tokens": 4000,
+          "kind": "prefill"
+        },
+        {
+          "req": "D",
+          "tokens": 4190,
+          "kind": "prefill"
+        }
+      ],
+      "d_left_for_next_step": 810,
+      "label": "ILLUSTRATIVE variant: D has 810 more prompt tokens"
+    },
+    "case_no_blocks": {
+      "free_blocks": 350,
+      "scheduled": [
+        {
+          "req": "A",
+          "tokens": 1,
+          "kind": "decode"
+        },
+        {
+          "req": "B",
+          "tokens": 1,
+          "kind": "decode"
+        },
+        {
+          "req": "C",
+          "tokens": 4000,
+          "kind": "prefill"
+        }
+      ],
+      "waiting_after": [
+        "D"
+      ],
+      "budget_left": 4190,
+      "label": "ILLUSTRATIVE variant: only C's blocks + 100 are free"
+    }
+  },
+  "static_vs_continuous": {
+    "arrival_rate_rps": 1.2,
+    "requests": 1200,
+    "seed": 20261011,
+    "population": {
+      "prompt_mean": 3073.8492,
+      "uncached_mean": 1237.3558,
+      "output_mean": 389.2917,
+      "output_max": 4096
+    },
+    "static": {
+      "requests": 1200,
+      "span_s": 1061.2536,
+      "output_tokens": 467150,
+      "throughput_tokens_per_s": 440.187,
+      "requests_per_s": 1.1307,
+      "ttft_p50_ms": 10736.7029,
+      "ttft_p99_ms": 41400.8735,
+      "ttft_mean_ms": 13216.4187,
+      "tpot_p50_ms": 10.8883,
+      "tpot_p95_ms": 12.6204,
+      "within_slo_fraction": 0.035,
+      "goodput_rps": 0.0396,
+      "utilization": 1,
+      "mfu": 0.0574,
+      "steps": 98361,
+      "max_queue": 63,
+      "slot_use": 0.2076
+    },
+    "continuous": {
+      "requests": 1200,
+      "span_s": 1043.8318,
+      "output_tokens": 467150,
+      "throughput_tokens_per_s": 447.5338,
+      "requests_per_s": 1.1496,
+      "ttft_p50_ms": 36.7906,
+      "ttft_p99_ms": 432.4545,
+      "ttft_mean_ms": 61.3774,
+      "tpot_p50_ms": 10.5148,
+      "tpot_p95_ms": 11.9869,
+      "within_slo_fraction": 1,
+      "goodput_rps": 1.1496,
+      "utilization": 0.9944,
+      "mfu": 0.0318,
+      "steps": 97394,
+      "max_queue": 2,
+      "mean_batch": 4.7966,
+      "preemptions": 0
+    },
+    "saturated": {
+      "static": {
+        "requests": 1200,
+        "span_s": 588.2073,
+        "output_tokens": 467150,
+        "throughput_tokens_per_s": 794.1928,
+        "requests_per_s": 2.0401,
+        "ttft_p50_ms": 281071.936,
+        "ttft_p99_ms": 566169.8829,
+        "ttft_mean_ms": 282283.3051,
+        "tpot_p50_ms": 12.5381,
+        "tpot_p95_ms": 13.8216,
+        "within_slo_fraction": 0,
+        "goodput_rps": 0,
+        "utilization": 1,
+        "mfu": 0.1278,
+        "steps": 49934,
+        "max_queue": 1200,
+        "slot_use": 0.1477
+      },
+      "continuous": {
+        "requests": 1200,
+        "span_s": 135.2747,
+        "output_tokens": 467150,
+        "throughput_tokens_per_s": 3453.3441,
+        "requests_per_s": 8.8708,
+        "ttft_p50_ms": 39731.8895,
+        "ttft_p99_ms": 85679.7862,
+        "ttft_mean_ms": 40445.693,
+        "tpot_p50_ms": 80.3807,
+        "tpot_p95_ms": 186.9665,
+        "within_slo_fraction": 0.0008,
+        "goodput_rps": 0.0074,
+        "utilization": 1,
+        "mfu": 0.2497,
+        "steps": 4576,
+        "max_queue": 1200,
+        "mean_batch": 102.1045,
+        "preemptions": 37
+      },
+      "throughput_ratio": 4.3482,
+      "requests_per_s_ratio": 4.3482
+    },
+    "static_batch_size": 64
+  },
+  "load_sweep": {
+    "policy": "continuous (vLLM V1 defaults)",
+    "rows": [
+      {
+        "requests": 1200,
+        "span_s": 4959.1145,
+        "output_tokens": 467150,
+        "throughput_tokens_per_s": 94.2003,
+        "requests_per_s": 0.242,
+        "ttft_p50_ms": 33.3004,
+        "ttft_p99_ms": 424.2743,
+        "ttft_mean_ms": 55.8041,
+        "tpot_p50_ms": 9.9789,
+        "tpot_p95_ms": 10.5344,
+        "within_slo_fraction": 1,
+        "goodput_rps": 0.242,
+        "utilization": 0.6226,
+        "mfu": 0.0067,
+        "steps": 305442,
+        "max_queue": 2,
+        "mean_batch": 1.5295,
+        "preemptions": 0,
+        "arrival_rate_rps": 0.25
+      },
+      {
+        "requests": 1200,
+        "span_s": 1248.7784,
+        "output_tokens": 467150,
+        "throughput_tokens_per_s": 374.0856,
+        "requests_per_s": 0.9609,
+        "ttft_p50_ms": 35.6837,
+        "ttft_p99_ms": 434.2388,
+        "ttft_mean_ms": 60.5182,
+        "tpot_p50_ms": 10.4045,
+        "tpot_p95_ms": 11.7294,
+        "within_slo_fraction": 1,
+        "goodput_rps": 0.9609,
+        "utilization": 0.9863,
+        "mfu": 0.0266,
+        "steps": 117058,
+        "max_queue": 2,
+        "mean_batch": 3.9909,
+        "preemptions": 0,
+        "arrival_rate_rps": 1
+      },
+      {
+        "requests": 1200,
+        "span_s": 634.0241,
+        "output_tokens": 467150,
+        "throughput_tokens_per_s": 736.8016,
+        "requests_per_s": 1.8927,
+        "ttft_p50_ms": 38.1054,
+        "ttft_p99_ms": 458.6667,
+        "ttft_mean_ms": 66.9706,
+        "tpot_p50_ms": 11.1126,
+        "tpot_p95_ms": 13.3518,
+        "within_slo_fraction": 1,
+        "goodput_rps": 1.8927,
+        "utilization": 1,
+        "mfu": 0.0523,
+        "steps": 56362,
+        "max_queue": 3,
+        "mean_batch": 8.2886,
+        "preemptions": 0,
+        "arrival_rate_rps": 2
+      },
+      {
+        "requests": 1200,
+        "span_s": 328.022,
+        "output_tokens": 467150,
+        "throughput_tokens_per_s": 1424.1423,
+        "requests_per_s": 3.6583,
+        "ttft_p50_ms": 42.4898,
+        "ttft_p99_ms": 734.1569,
+        "ttft_mean_ms": 84.2557,
+        "tpot_p50_ms": 12.9229,
+        "tpot_p95_ms": 16.6749,
+        "within_slo_fraction": 1,
+        "goodput_rps": 3.6583,
+        "utilization": 1,
+        "mfu": 0.1011,
+        "steps": 25244,
+        "max_queue": 5,
+        "mean_batch": 18.5061,
+        "preemptions": 0,
+        "arrival_rate_rps": 4
+      },
+      {
+        "requests": 1200,
+        "span_s": 233.4169,
+        "output_tokens": 467150,
+        "throughput_tokens_per_s": 2001.3543,
+        "requests_per_s": 5.141,
+        "ttft_p50_ms": 51.2107,
+        "ttft_p99_ms": 890.5611,
+        "ttft_mean_ms": 105.3529,
+        "tpot_p50_ms": 15.4535,
+        "tpot_p95_ms": 21.5951,
+        "within_slo_fraction": 1,
+        "goodput_rps": 5.141,
+        "utilization": 1,
+        "mfu": 0.1421,
+        "steps": 15564,
+        "max_queue": 6,
+        "mean_batch": 30.0159,
+        "preemptions": 0,
+        "arrival_rate_rps": 6
+      },
+      {
+        "requests": 1200,
+        "span_s": 186.9521,
+        "output_tokens": 467150,
+        "throughput_tokens_per_s": 2498.7684,
+        "requests_per_s": 6.4188,
+        "ttft_p50_ms": 64.7886,
+        "ttft_p99_ms": 1066.7913,
+        "ttft_mean_ms": 137.5743,
+        "tpot_p50_ms": 19.6124,
+        "tpot_p95_ms": 30.453,
+        "within_slo_fraction": 0.9967,
+        "goodput_rps": 6.3974,
+        "utilization": 1,
+        "mfu": 0.1774,
+        "steps": 10750,
+        "max_queue": 10,
+        "mean_batch": 43.4583,
+        "preemptions": 0,
+        "arrival_rate_rps": 8
+      },
+      {
+        "requests": 1200,
+        "span_s": 160.4481,
+        "output_tokens": 467150,
+        "throughput_tokens_per_s": 2911.5333,
+        "requests_per_s": 7.4791,
+        "ttft_p50_ms": 83.7343,
+        "ttft_p99_ms": 1425.8446,
+        "ttft_mean_ms": 185.8091,
+        "tpot_p50_ms": 26.5485,
+        "tpot_p95_ms": 42.3383,
+        "within_slo_fraction": 0.9808,
+        "goodput_rps": 7.3357,
+        "utilization": 1,
+        "mfu": 0.2067,
+        "steps": 7930,
+        "max_queue": 16,
+        "mean_batch": 58.9135,
+        "preemptions": 0,
+        "arrival_rate_rps": 10
+      },
+      {
+        "requests": 1200,
+        "span_s": 145.5049,
+        "output_tokens": 467150,
+        "throughput_tokens_per_s": 3210.5441,
+        "requests_per_s": 8.2471,
+        "ttft_p50_ms": 120.9848,
+        "ttft_p99_ms": 1710.4089,
+        "ttft_mean_ms": 265.3259,
+        "tpot_p50_ms": 40.3293,
+        "tpot_p95_ms": 63.0749,
+        "within_slo_fraction": 0.9067,
+        "goodput_rps": 7.4774,
+        "utilization": 1,
+        "mfu": 0.2279,
+        "steps": 6230,
+        "max_queue": 26,
+        "mean_batch": 74.9917,
+        "preemptions": 0,
+        "arrival_rate_rps": 12
+      },
+      {
+        "requests": 1200,
+        "span_s": 140.1843,
+        "output_tokens": 467150,
+        "throughput_tokens_per_s": 3332.3984,
+        "requests_per_s": 8.5602,
+        "ttft_p50_ms": 363.6432,
+        "ttft_p99_ms": 3364.4993,
+        "ttft_mean_ms": 923.5848,
+        "tpot_p50_ms": 65.4947,
+        "tpot_p95_ms": 90.5226,
+        "within_slo_fraction": 0.2692,
+        "goodput_rps": 2.3041,
+        "utilization": 1,
+        "mfu": 0.2375,
+        "steps": 5376,
+        "max_queue": 50,
+        "mean_batch": 86.9061,
+        "preemptions": 8,
+        "arrival_rate_rps": 14
+      },
+      {
+        "requests": 1200,
+        "span_s": 138.2774,
+        "output_tokens": 467150,
+        "throughput_tokens_per_s": 3378.3529,
+        "requests_per_s": 8.6782,
+        "ttft_p50_ms": 2360.6635,
+        "ttft_p99_ms": 12241.2582,
+        "ttft_mean_ms": 3745.018,
+        "tpot_p50_ms": 78.8757,
+        "tpot_p95_ms": 110.3509,
+        "within_slo_fraction": 0.1042,
+        "goodput_rps": 0.904,
+        "utilization": 1,
+        "mfu": 0.2436,
+        "steps": 4999,
+        "max_queue": 165,
+        "mean_batch": 93.4609,
+        "preemptions": 29,
+        "arrival_rate_rps": 16
+      }
+    ],
+    "best_goodput_rate_rps": 12,
+    "best_goodput_rps": 7.4774,
+    "slo": {
+      "ttft_ms": 1500,
+      "tpot_ms": 60
+    },
+    "note": "goodput = requests per second whose own TTFT and TPOT both meet the objectives"
+  }
+}
